@@ -16,18 +16,6 @@ export default function Documentation() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <div className="container mx-auto px-6 py-8">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-            VibeSight API Documentation
-          </h1>
-          <p className="text-xl text-slate-600 dark:text-slate-300">
-            Complete reference for integrating with VibeSight's AI-native issue tracking platform
-          </p>
-        </div>
-      </div>
-
       <div className="container mx-auto px-6 py-8 flex gap-8">
         {/* Sidebar Navigation */}
         <div className="w-64 flex-shrink-0">
