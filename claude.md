@@ -30,6 +30,7 @@ AI Native Agile Board. It will be a UI Humans can monitor + review + control to 
 - Created User
 - CreatedTs
 - UpdatedTs
+- isAiAllowedTask (boolean, default true)
 
 ### 5. User Table
 - Id
