@@ -1,10 +1,19 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import LoginModal from '@/components/login-modal';
 
 export default function Home() {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  const getUserDisplayName = (email: string) => {
+    return email.split('@')[0];
+  };
 
   return (
     <div className="min-h-screen">
@@ -76,11 +85,59 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Desktop Sign In Button */}
+            {/* Desktop Auth Section */}
             <div className="hidden md:flex items-center">
-              <button className="px-6 py-2 text-sm text-blue-600 dark:text-blue-400 font-medium">
-                Sign In
-              </button>
+              {session ? (
+                <div 
+                  className="relative h-full"
+                  onMouseEnter={() => setIsUserMenuOpen(true)}
+                  onMouseLeave={() => setIsUserMenuOpen(false)}
+                >
+                  <button className="flex items-center gap-2 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+                    <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                      {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
+                    <svg className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  
+                  {/* User Dropdown Menu */}
+                  <div className={`absolute top-full right-0 mt-2 w-56 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${
+                    isUserMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                  }`}>
+                    <div className="py-2 px-2 space-y-1">
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Account Settings
+                      </button>
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Projects
+                      </button>
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Board
+                      </button>
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Organization Settings
+                      </button>
+                      <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+                      <button 
+                        onClick={() => signOut()}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-500"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="px-6 py-2 text-sm text-blue-600 dark:text-blue-400 font-medium"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -125,11 +182,45 @@ export default function Home() {
               </div>
             </div>
             
-            {/* Mobile Sign In */}
+            {/* Mobile Auth Section */}
             <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-              <button className="block w-full text-left px-4 py-3 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300">
-                Sign In
-              </button>
+              {session ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                      {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span className="text-slate-600 dark:text-slate-300 font-medium">
+                      {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
+                    </span>
+                  </div>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Account Settings
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Projects
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Board
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Organization Settings
+                  </button>
+                  <button 
+                    onClick={() => signOut()}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="block w-full text-left px-4 py-3 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -518,6 +609,12 @@ export default function Home() {
         </div>
       </footer>
       </div>
+      
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
     </div>
   );
 }
