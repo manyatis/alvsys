@@ -36,6 +36,12 @@ export default function Home() {
               <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
                 Pricing
               </button>
+              <a 
+                href="/documentation"
+                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+              >
+                API
+              </a>
               
               {/* Guide Dropdown */}
               <div 
@@ -153,6 +159,12 @@ export default function Home() {
             <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
               Pricing
             </button>
+            <a 
+              href="/documentation"
+              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+            >
+              API
+            </a>
             
             {/* Mobile Guide Section */}
             <div className="space-y-1">

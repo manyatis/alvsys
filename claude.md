@@ -30,7 +30,24 @@ AI Native Agile Board. It will be a UI Humans can monitor + review + control to 
 - Created User
 - CreatedTs
 - UpdatedTs
+- Title (string)
+- Description (string, optional)
+- Acceptance Criteria (string, optional)
 - isAiAllowedTask (boolean, default true)
+- Agent Developer Instructions (relation to AgentDeveloperInstruction[])
+
+### 4a. Agent Developer Instructions
+- Id
+- Card (relation)
+- Type (enum -> GIT, SPIKE, CODING, ARCHITECTURE)
+- Branch Name (string, optional)
+- Create New Branch (boolean, default false)
+- Web Research Prompt (string, optional)
+- Code Research Prompt (string, optional)
+- Architecture Prompt (string, optional)
+- General Instructions (string, optional)
+- CreatedTs
+- UpdatedTs
 
 ### 5. User Table
 - Id

@@ -32,6 +32,13 @@ enum SubscriptionTierType {
   PROFESSIONAL
 }
 
+enum AgentInstructionType {
+  GIT
+  SPIKE
+  CODING
+  ARCHITECTURE
+}
+
 model Organization {
   id        String    @id @default(cuid())
   name      String
@@ -50,6 +57,7 @@ model Project {
   owner          User           @relation("ProjectOwner", fields: [ownerId], references: [id])
   users          ProjectUser[]
   cards          Card[]
+  apiKey         String?        @unique
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
 }
@@ -65,17 +73,41 @@ model AIWorkLog {
 }
 
 model Card {
-  id          String     @id @default(cuid())
-  status      CardStatus @default(REFINEMENT)
-  projectId   String
-  project     Project    @relation(fields: [projectId], references: [id])
-  createdById String
-  createdBy   User       @relation(fields: [createdById], references: [id])
-  title       String
-  description String?
-  isAiAllowedTask Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id                      String                @id @default(cuid())
+  status                  CardStatus            @default(REFINEMENT)
+  projectId               String
+  project                 Project               @relation(fields: [projectId], references: [id])
+  createdById             String
+  createdBy               User                  @relation(fields: [createdById], references: [id])
+  title                   String
+  description             String?
+  acceptanceCriteria      String?
+  isAiAllowedTask         Boolean               @default(true)
+  agentDeveloperInstructions AgentDeveloperInstruction[]
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
+}
+
+model AgentDeveloperInstruction {
+  id                    String                @id @default(cuid())
+  cardId                String
+  card                  Card                  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  type                  AgentInstructionType
+  
+  // Git Instructions
+  branchName            String?
+  createNewBranch       Boolean               @default(false)
+  
+  // Spike/Research Instructions
+  webResearchPrompt     String?
+  codeResearchPrompt    String?
+  architecturePrompt    String?
+  
+  // General Instructions
+  instructions          String?
+  
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
 }
 
 model User {

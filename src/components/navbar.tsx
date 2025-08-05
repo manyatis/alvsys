@@ -1,0 +1,248 @@
+'use client';
+
+import { useState } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import LoginModal from '@/components/login-modal';
+
+export default function Navbar() {
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
+
+  const getUserDisplayName = (email: string) => {
+    return email.split('@')[0];
+  };
+
+  return (
+    <>
+      {/* Sticky Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
+        <div className="container mx-auto px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <button className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
+                VibeSight
+              </button>
+            </div>
+            
+            {/* Center Navigation */}
+            <div className="hidden md:flex items-center h-full">
+              <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+                Features
+              </button>
+              <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+                Pricing
+              </button>
+              <a 
+                href="/documentation"
+                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+              >
+                API
+              </a>
+              
+              {/* Guide Dropdown */}
+              <div 
+                className="relative h-full"
+                onMouseEnter={() => setIsGuideOpen(true)}
+                onMouseLeave={() => setIsGuideOpen(false)}
+              >
+                <button className="flex items-center gap-1 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+                  Guide
+                  <svg className={`w-4 h-4 transition-transform ${isGuideOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Dropdown Menu */}
+                <div className={`absolute top-full left-0 mt-2 w-48 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${
+                  isGuideOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                }`}>
+                  <div className="py-2 px-2 space-y-1">
+                    <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      Product Guide
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      Best Practices
+                    </button>
+                    <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      Example Workflow
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
+
+            {/* Desktop Auth Section */}
+            <div className="hidden md:flex items-center">
+              {session ? (
+                <div 
+                  className="relative h-full"
+                  onMouseEnter={() => setIsUserMenuOpen(true)}
+                  onMouseLeave={() => setIsUserMenuOpen(false)}
+                >
+                  <button className="flex items-center gap-2 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+                    <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                      {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
+                    <svg className={`w-4 h-4 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  
+                  {/* User Dropdown Menu */}
+                  <div className={`absolute top-full right-0 mt-2 w-56 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${
+                    isUserMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                  }`}>
+                    <div className="py-2 px-2 space-y-1">
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Account Settings
+                      </button>
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Projects
+                      </button>
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Board
+                      </button>
+                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                        Organization Settings
+                      </button>
+                      <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
+                      <button 
+                        onClick={() => signOut()}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-500"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="px-6 py-2 text-sm text-blue-600 dark:text-blue-400 font-medium"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {/* Mobile Menu */}
+        <div className={`md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-t border-slate-200 dark:border-slate-700 transition-all duration-300 ${
+          isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+        }`}>
+          <div className="px-6 py-4 space-y-2">
+            <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
+              Features
+            </button>
+            <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
+              Pricing
+            </button>
+            <a 
+              href="/documentation"
+              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+            >
+              API
+            </a>
+            
+            {/* Mobile Guide Section */}
+            <div className="space-y-1">
+              <button 
+                onClick={() => setIsGuideOpen(!isGuideOpen)}
+                className="flex items-center justify-between w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              >
+                Guide
+                <svg className={`w-4 h-4 transition-transform ${isGuideOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {/* Mobile Guide Dropdown */}
+              <div className={`pl-4 space-y-1 transition-all duration-300 ${
+                isGuideOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
+              }`}>
+                <button className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  Product Guide
+                </button>
+                <button className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  Best Practices
+                </button>
+                <button className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  Example Workflow
+                </button>
+              </div>
+            </div>
+            
+            {/* Mobile Auth Section */}
+            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              {session ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                      {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
+                    </div>
+                    <span className="text-slate-600 dark:text-slate-300 font-medium">
+                      {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
+                    </span>
+                  </div>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Account Settings
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Projects
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Board
+                  </button>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                    Organization Settings
+                  </button>
+                  <button 
+                    onClick={() => signOut()}
+                    className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <button 
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="block w-full text-left px-4 py-3 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
+                >
+                  Sign In
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </nav>
+      
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+      />
+    </>
+  );
+}
