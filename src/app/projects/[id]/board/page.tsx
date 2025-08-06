@@ -603,12 +603,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Left Sidebar */}
       <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-screen z-10 ${
-        sidebarCollapsed ? 'w-10' : 'w-48'
+        sidebarCollapsed ? 'w-8 md:w-10' : 'w-44 md:w-48'
       }`}>
-        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-2 md:p-3 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Board Actions</h2>
+              <h2 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white">Board Actions</h2>
             )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -619,7 +619,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        <div className="p-3 space-y-1">
+        <div className="p-2 md:p-3 space-y-1">
           {!sidebarCollapsed ? (
             <>
               <button
@@ -627,7 +627,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   setShowCreateModal(true);
                   setTimeout(() => setModalVisible(true), 10);
                 }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
               >
                 <Plus className="h-3 w-3" />
                 Create Issue
@@ -657,7 +657,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                       className="fixed inset-0 z-30"
                       onClick={() => setShowFilterMenu(false)}
                     />
-                    <div className="absolute left-0 top-full mt-1 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-4">
+                    <div className="absolute left-0 top-full mt-1 w-64 md:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-3 md:p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
                         {hasActiveFilters() && (
@@ -839,7 +839,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                       className="fixed inset-0 z-30"
                       onClick={() => setShowFilterMenu(false)}
                     />
-                    <div className="absolute left-full top-0 ml-2 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-4">
+                    <div className="absolute left-full top-0 ml-2 w-64 md:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-3 md:p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
                         {hasActiveFilters() && (
@@ -981,17 +981,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-4 py-2">
           <div className="flex items-center justify-between max-w-full">
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+              <h1 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">
                 {project?.name}
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                 Software project • {project?.organization.name}
               </p>
             </div>
-            <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-2 md:ml-4">
               <button className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                 Share
               </button>
@@ -1003,8 +1003,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Board */}
-        <div className="flex-1 p-4 h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
-          <div className="flex gap-3 h-full overflow-x-auto pb-4">
+        <div className="flex-1 p-2 md:p-4 h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
+          <div className="flex gap-2 md:gap-3 h-full overflow-x-auto pb-4">
             {statusColumns.map((column) => {
               const Icon = column.icon;
               const columnCards = getCardsByStatus(column.status);
@@ -1012,13 +1012,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               return (
                 <div
                   key={column.status}
-                  className="w-64 min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
+                  className="w-56 md:w-64 min-w-56 md:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
                 >
-                  <div className={`px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-2xl`}>
+                  <div className={`px-2 md:px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-xl md:rounded-t-2xl`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Icon className={`h-3 w-3 ${column.textColor}`} />
-                        <h3 className={`text-sm font-medium ${column.textColor} dark:text-white`}>
+                        <h3 className={`text-xs md:text-sm font-medium ${column.textColor} dark:text-white`}>
                           {column.title}
                         </h3>
                       </div>
@@ -1147,15 +1147,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           </div>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={closeModal}>
             <div 
-              className={`bg-white dark:bg-gray-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
+              className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:w-96 max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 mx-4 ${
                 modalVisible 
                   ? 'scale-100 opacity-100 translate-y-0' 
                   : 'scale-95 opacity-0 translate-y-4'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                 Create Issue
               </h2>
               <button 
@@ -1195,7 +1195,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Status
