@@ -22,9 +22,12 @@ import {
   Send,
   MessageCircle,
   Copy,
-  Check
+  Check,
+  Bot
 } from 'lucide-react';
 import { CardStatus, Card, Comment, Label } from '@/types/card';
+import LabelSelector from '@/components/LabelSelector';
+import AssigneeSelector from '@/components/AssigneeSelector';
 
 interface Project {
   id: string;
@@ -33,6 +36,13 @@ interface Project {
     id: string;
     name: string;
   };
+}
+
+interface OrganizationMember {
+  id: string;
+  name?: string;
+  email?: string;
+  image?: string;
 }
 
 const statusColumns: { 
@@ -95,7 +105,7 @@ const statusColumns: {
 
 export default function ProjectBoardPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
@@ -117,6 +127,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [newComment, setNewComment] = useState('');
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [labels, setLabels] = useState<Label[]>([]);
+  const [organizationMembers, setOrganizationMembers] = useState<OrganizationMember[]>([]);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
@@ -124,7 +136,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     status: CardStatus.REFINEMENT,
     priority: 3,
     isAiAllowedTask: true,
+    assigneeId: null as string | null,
+    labelIds: [] as string[],
   });
+  const [selectedCardLabelIds, setSelectedCardLabelIds] = useState<string[]>([]);
+  const [selectedCardAssigneeId, setSelectedCardAssigneeId] = useState<string | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
@@ -139,11 +155,34 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   useEffect(() => {
     const loadData = async () => {
       try {
+        // Get current user ID from session
+        if (session?.user?.email) {
+          // Find current user ID from organization members
+          // We'll get this after fetching members
+        }
+
         // Fetch project details
         const projectRes = await fetch(`/api/projects/${resolvedParams.id}`);
         if (projectRes.ok) {
           const projectData = await projectRes.json();
           setProject(projectData.project);
+          
+          // Fetch organization members
+          const membersRes = await fetch(`/api/organizations/${projectData.project.organization.id}/members`);
+          if (membersRes.ok) {
+            const membersData = await membersRes.json();
+            setOrganizationMembers(membersData.members);
+            
+            // Find current user ID
+            if (session?.user?.email) {
+              const currentUser = membersData.members.find((member: OrganizationMember) => 
+                member.email === session.user!.email
+              );
+              if (currentUser) {
+                setCurrentUserId(currentUser.id);
+              }
+            }
+          }
         }
 
         // Fetch cards
@@ -171,7 +210,25 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     } else if (status === 'authenticated' && resolvedParams.id) {
       loadData();
     }
-  }, [status, resolvedParams.id, router]);
+  }, [status, resolvedParams.id, router, session]);
+
+  // Auto-assign "Agent" when AI allowed task is enabled for new cards
+  useEffect(() => {
+    if (newCard.isAiAllowedTask && !newCard.assigneeId) {
+      setNewCard(prev => ({ ...prev, assigneeId: 'agent' }));
+    } else if (!newCard.isAiAllowedTask && newCard.assigneeId === 'agent') {
+      setNewCard(prev => ({ ...prev, assigneeId: null }));
+    }
+  }, [newCard.isAiAllowedTask, newCard.assigneeId]);
+
+  // Auto-assign "Agent" when AI allowed task is enabled for selected card
+  useEffect(() => {
+    if (selectedCard?.isAiAllowedTask && !selectedCardAssigneeId) {
+      setSelectedCardAssigneeId('agent');
+    } else if (!selectedCard?.isAiAllowedTask && selectedCardAssigneeId === 'agent') {
+      setSelectedCardAssigneeId(null);
+    }
+  }, [selectedCard?.isAiAllowedTask, selectedCardAssigneeId]);
 
   // Polling mechanism for real-time data updates
   useEffect(() => {
@@ -233,7 +290,27 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
       if (response.ok) {
         const data = await response.json();
-        setCards([...cards, data]);
+        
+        // Assign labels to the new card
+        if (newCard.labelIds.length > 0) {
+          for (const labelId of newCard.labelIds) {
+            await fetch(`/api/cards/${data.id}/labels`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Refresh cards to get updated data with labels
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+        
         setShowCreateModal(false);
         setNewCard({
           title: '',
@@ -242,6 +319,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           status: CardStatus.REFINEMENT,
           priority: 3,
           isAiAllowedTask: true,
+          assigneeId: null,
+          labelIds: [],
         });
       }
     } catch (error) {
@@ -254,6 +333,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (touchedCard || draggedCard) return;
     
     setSelectedCard(card);
+    setSelectedCardLabelIds(card.labels?.map(cl => cl.labelId) || []);
+    setSelectedCardAssigneeId(card.assigneeId || null);
     setShowDetailModal(true);
     setTimeout(() => setDetailModalVisible(true), 10);
     
@@ -292,12 +373,46 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(selectedCard),
+        body: JSON.stringify({ ...selectedCard, assigneeId: selectedCardAssigneeId }),
       });
 
       if (response.ok) {
-        const updatedCard = await response.json();
-        setCards(cards.map(card => card.id === selectedCard.id ? updatedCard : card));
+        // Update labels if they changed
+        const currentLabelIds = selectedCard.labels?.map(cl => cl.labelId) || [];
+        
+        // Remove labels that are no longer selected
+        for (const labelId of currentLabelIds) {
+          if (!selectedCardLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Add new labels
+        for (const labelId of selectedCardLabelIds) {
+          if (!currentLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Refresh cards to get updated data with labels
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+        
         closeDetailModal();
       }
     } catch (error) {
@@ -312,6 +427,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => {
       setShowDetailModal(false);
       setSelectedCard(null);
+      setSelectedCardLabelIds([]);
+      setSelectedCardAssigneeId(null);
       setComments([]);
       setNewComment('');
     }, 300);
@@ -327,12 +444,46 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(selectedCard),
+        body: JSON.stringify({ ...selectedCard, assigneeId: selectedCardAssigneeId }),
       });
 
       if (response.ok) {
-        const updatedCard = await response.json();
-        setCards(cards.map(card => card.id === selectedCard.id ? updatedCard : card));
+        // Update labels if they changed
+        const currentLabelIds = selectedCard.labels?.map(cl => cl.labelId) || [];
+        
+        // Remove labels that are no longer selected
+        for (const labelId of currentLabelIds) {
+          if (!selectedCardLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Add new labels
+        for (const labelId of selectedCardLabelIds) {
+          if (!currentLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Refresh cards to get updated data with labels
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+        
         closeDetailModal();
       }
     } catch (error) {
@@ -340,7 +491,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     } finally {
       setIsUpdating(false);
     }
-  }, [selectedCard, cards, setCards, setIsUpdating, closeDetailModal]);
+  }, [selectedCard, selectedCardLabelIds, selectedCardAssigneeId, setCards, setIsUpdating, closeDetailModal, resolvedParams.id]);
 
   // Handle escape key and close modal
   useEffect(() => {
@@ -713,6 +864,28 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       document.body.removeChild(textArea);
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 2000);
+    }
+  };
+
+  const handleCreateLabel = async (name: string, color: string) => {
+    try {
+      const response = await fetch(`/api/projects/${resolvedParams.id}/labels`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, color }),
+      });
+
+      if (response.ok) {
+        const newLabel = await response.json();
+        setLabels([...labels, newLabel]);
+      } else {
+        throw new Error('Failed to create label');
+      }
+    } catch (error) {
+      console.error('Error creating label:', error);
+      throw error;
     }
   };
 
@@ -1272,9 +1445,34 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                             )}
                           </div>
                           <div className="flex items-center gap-2">
+                            {/* Assignee */}
+                            {card.assigneeId === 'agent' ? (
+                              <div 
+                                className="w-5 h-5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full flex items-center justify-center"
+                                title="Assigned to AI Agent"
+                              >
+                                <Bot className="h-3 w-3" />
+                              </div>
+                            ) : card.assignee ? (
+                              <div 
+                                className="w-5 h-5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full flex items-center justify-center text-xs font-medium"
+                                title={`Assigned to ${card.assignee.name || card.assignee.email || 'Unknown'}`}
+                              >
+                                {getInitials(card.assignee.email || null, card.assignee.name || null)}
+                              </div>
+                            ) : (
+                              <div 
+                                className="w-5 h-5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full flex items-center justify-center text-xs font-medium border border-dashed border-gray-300 dark:border-gray-600"
+                                title="Unassigned"
+                              >
+                                ?
+                              </div>
+                            )}
+                            
+                            {/* Creator (smaller) */}
                             <div 
-                              className="w-5 h-5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-medium"
-                              title={card.createdBy?.name || card.createdBy?.email || 'Unknown'}
+                              className="w-4 h-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-medium border border-white dark:border-gray-800"
+                              title={`Created by ${card.createdBy?.name || card.createdBy?.email || 'Unknown'}`}
                             >
                               {getInitials(card.createdBy?.email || null, card.createdBy?.name || null)}
                             </div>
@@ -1418,6 +1616,25 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
                     rows={2}
                     placeholder="Define what done means..."
+                  />
+                </div>
+
+                <div>
+                  <LabelSelector
+                    availableLabels={labels}
+                    selectedLabelIds={newCard.labelIds}
+                    onSelectionChange={(labelIds) => setNewCard({ ...newCard, labelIds })}
+                    onCreateLabel={handleCreateLabel}
+                  />
+                </div>
+
+                <div>
+                  <AssigneeSelector
+                    currentUserId={currentUserId || undefined}
+                    organizationMembers={organizationMembers}
+                    selectedAssigneeId={newCard.assigneeId || undefined}
+                    onSelectionChange={(assigneeId) => setNewCard({ ...newCard, assigneeId })}
+                    isAiAllowedTask={newCard.isAiAllowedTask}
                   />
                 </div>
 
@@ -1577,6 +1794,25 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   rows={2}
                   className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
                   placeholder="Define what done means..."
+                />
+              </div>
+
+              <div>
+                <LabelSelector
+                  availableLabels={labels}
+                  selectedLabelIds={selectedCardLabelIds}
+                  onSelectionChange={setSelectedCardLabelIds}
+                  onCreateLabel={handleCreateLabel}
+                />
+              </div>
+
+              <div>
+                <AssigneeSelector
+                  currentUserId={currentUserId || undefined}
+                  organizationMembers={organizationMembers}
+                  selectedAssigneeId={selectedCardAssigneeId || undefined}
+                  onSelectionChange={setSelectedCardAssigneeId}
+                  isAiAllowedTask={selectedCard?.isAiAllowedTask || false}
                 />
               </div>
 

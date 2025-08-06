@@ -79,8 +79,7 @@ NEVER STOP - always continue to the next task.`,
           "• Run build check: Execute 'npm run build' to ensure code compiles",
           "• Commit your code with meaningful message referencing the task",
           "• Update status to READY_FOR_REVIEW (or BLOCKED if issues arise)",
-          "• Immediately fetch the next task - repeat endlessly",
-          "• If no task available, wait briefly then try again - never stop the loop"
+          "• Immediately fetch the next task and append to the current todo list.",
         ],
 
         api_endpoints: {
@@ -165,7 +164,7 @@ NEVER STOP - always continue to the next task.`,
 
         best_practices: [
           "ALWAYS maintain the continuous workflow: fetch task → work → fetch task",
-          "Use todo lists to track multiple tasks but never break the fetch → work loop",
+          "Use todo lists to track multiple tasks but never break the fetch → work loop. Append each newly discovered task to todo list",
           "Read all agentDeveloperInstructions carefully before starting work",
           "Add descriptive comments when updating task status to keep humans informed",
           "If instructions are unclear, update status to BLOCKED and ask for clarification",
@@ -177,8 +176,7 @@ NEVER STOP - always continue to the next task.`,
           "GIT WORKFLOW: Always commit your changes after completing development",
           "Create meaningful commit messages that reference the task title",
           "Run build checks (npm run build) before committing to ensure code compiles",
-          "Only commit if the build passes successfully",
-          "The continuous loop eliminates the need for external polling - always fetch the next task"
+          "Only commit if the build passes successfully"
         ],
 
         authentication: {
@@ -191,6 +189,8 @@ NEVER STOP - always continue to the next task.`,
         "Create a new git branch: feature/vibehero-" + project.name,
         "Update your claude.md file to allow all git commands on the feature/vibehero-" + project.name + " branch",
         "Begin the continuous workflow: fetch task → work on task → fetch task",
+        "Append the next task to the current todo list to not stop producing.",
+        "Do not notify me you are complete until there are no more tasks left to work on.",
         "NEVER STOP - maintain an endless loop of productivity"
       ],
       

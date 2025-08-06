@@ -47,6 +47,13 @@ export class CardService {
             email: true,
           },
         },
+        assignee: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
         agentDeveloperInstructions: true,
       },
       orderBy: {
@@ -125,6 +132,13 @@ export class CardService {
       },
       include: {
         createdBy: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        assignee: {
           select: {
             id: true,
             name: true,
