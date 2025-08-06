@@ -87,14 +87,92 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        return NextResponse.json({
+        // Check if the card was moved to READY_FOR_REVIEW or COMPLETED, then fetch next task
+        let autoNextCard = null
+        if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
+          autoNextCard = await prisma.card.findFirst({
+            where: {
+              projectId,
+              status: 'READY',
+              isAiAllowedTask: true,
+            },
+            orderBy: [
+              { priority: 'asc' },
+              { createdAt: 'asc' },
+            ],
+            include: {
+              project: true,
+              agentDeveloperInstructions: true,
+              createdBy: true,
+            },
+          })
+
+          // Log the next card fetch activity
+          if (autoNextCard) {
+            await prisma.aIWorkLog.create({
+              data: {
+                activity: 'auto_fetch_next_ready_card',
+                endpoint: '/api/ai/cards',
+                payload: { afterCardId: cardId, projectId },
+                response: { nextCardId: autoNextCard.id, nextCardTitle: autoNextCard.title },
+              },
+            })
+          }
+        }
+
+        const response: {
+          message: string;
+          card: {
+            id: string;
+            status: string;
+            title: string;
+          };
+          nextCard?: {
+            id: string;
+            title: string;
+            description: string | null;
+            acceptanceCriteria: string | null;
+            status: string;
+            priority: number;
+            projectId: string;
+            isAiAllowedTask: boolean;
+            agentInstructions: unknown[];
+            project: unknown;
+            createdBy: unknown;
+            createdAt: Date;
+            updatedAt: Date;
+          };
+        } = {
           message: 'Card status updated successfully',
           card: {
             id: updatedCard.id,
             status: updatedCard.status,
             title: updatedCard.title,
           },
-        })
+        }
+
+        // Include next card in response if found
+        if (autoNextCard) {
+          response.nextCard = {
+            id: autoNextCard.id,
+            title: autoNextCard.title,
+            description: autoNextCard.description,
+            acceptanceCriteria: autoNextCard.acceptanceCriteria,
+            status: autoNextCard.status,
+            priority: autoNextCard.priority,
+            projectId: autoNextCard.projectId,
+            isAiAllowedTask: autoNextCard.isAiAllowedTask,
+            agentInstructions: autoNextCard.agentDeveloperInstructions,
+            project: autoNextCard.project,
+            createdBy: autoNextCard.createdBy,
+            createdAt: autoNextCard.createdAt,
+            updatedAt: autoNextCard.updatedAt,
+          }
+        } else if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
+          response.message = 'Card status updated successfully. No more ready tasks available.'
+        }
+
+        return NextResponse.json(response)
 
       case 'get_card_details':
         if (!cardId || !projectId) {
