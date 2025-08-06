@@ -266,9 +266,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       if (response.ok) {
         const commentsData = await response.json();
         setComments(commentsData);
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to load comments:', errorData.error || 'Unknown error');
+        setComments([]);
       }
     } catch (error) {
       console.error('Error loading comments:', error);
+      setComments([]);
     } finally {
       setLoadingComments(false);
     }
@@ -379,9 +384,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         const comment = await response.json();
         setComments([...comments, comment]);
         setNewComment('');
+      } else {
+        const errorData = await response.json();
+        console.error('Failed to add comment:', errorData.error || 'Unknown error');
+        alert(`Failed to add comment: ${errorData.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error adding comment:', error);
+      alert('Network error: Failed to add comment. Please check your connection.');
     } finally {
       setIsAddingComment(false);
     }

@@ -204,13 +204,13 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
       
       next_steps: [
         "Save these instructions to 'vibesight_instructions.md'",
-        "Create a new git branch: feature/vibesight-" + project.name,
+        "Create a new git branch: feature/vibesight",
         "Update your claude.md file to allow all git commands on the feature/vibesight-" + project.name + " branch",
-        "IMPORTANT: Create a todo list with these 4 steps:",
+        "IMPORTANT: Create a todo list steps and continue to add onto it as we go:",
         "  1. Fetch Task - Call 'next_ready' to get highest priority task",
         "  2. Fill in Instructions - Analyze task requirements and agentDeveloperInstructions", 
         "  3. Work on Task - Complete work, run builds, commit code, update status",
-        "  4. Fetch New Task - Return to step 1 to continue the cycle",
+        "  4. Fetch New Task - call curl and add on to this existing todo list ",
         "Begin the todo-based workflow by executing step 1 (Fetch Task)",
         "Let the todo list drive your productivity - no external polling needed"
       ],
