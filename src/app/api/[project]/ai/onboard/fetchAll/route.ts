@@ -46,7 +46,7 @@ export async function GET(
             webResearchPrompt: true,
             codeResearchPrompt: true,
             architecturePrompt: true,
-            generalInstructions: true
+            instructions: true
           }
         }
       },
