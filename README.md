@@ -1,6 +1,6 @@
-# VibeSight - AI Native Agile Board
+# VibeHero - AI Native Agile Board
 
-VibeSight is an AI-native agile board designed for AI agents like Claude Code to collaborate with human developers. It provides a Jira-style kanban board where humans can monitor, review, and control AI work through structured task cards.
+VibeHero is an AI-native agile board designed for AI agents like Claude Code to collaborate with human developers. It provides a Jira-style kanban board where humans can monitor, review, and control AI work through structured task cards.
 
 ## Features
 
@@ -95,7 +95,7 @@ The application is optimized for Vercel deployment.
 
 ## AI Agent Integration
 
-AI agents can integrate with VibeSight by:
+AI agents can integrate with VibeHero by:
 1. Calling the onboarding endpoint to receive instructions
 2. Polling the `next_ready` endpoint for available tasks
 3. Updating task status and adding progress comments

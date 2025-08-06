@@ -47,7 +47,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
         {/* Header */}
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-            Welcome to VibeSight
+            Welcome to VibeHero
           </h2>
           <p className="text-slate-600 dark:text-slate-300">
             Sign in to get started with AI-native issue tracking

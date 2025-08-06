@@ -3,13 +3,13 @@
 You are permitted to run curl commands (GET/POST/PUT etc),
 You are permitted to edit files in this directory
 You are permitted to run any bash commands in this directory.
-You have full access to all git commands on the feature/vibesight-vibesight branch.
+You have full access to all git commands on the feature/vibehero-vibehero branch.
 
-# VibeSight - AI Native Agile Board
+# VibeHero - AI Native Agile Board
 
 ## Project Description
 
-VibeSight is an AI-native agile board designed for AI agents like Claude Code to collaborate with human developers. It provides a Jira-style kanban board where humans can monitor, review, and control AI work through structured task cards. The core of the app is a set of API endpoints that AI agents interact with to onboard, receive instructions, update task status, and add progress comments.
+VibeHero is an AI-native agile board designed for AI agents like Claude Code to collaborate with human developers. It provides a Jira-style kanban board where humans can monitor, review, and control AI work through structured task cards. The core of the app is a set of API endpoints that AI agents interact with to onboard, receive instructions, update task status, and add progress comments.
 
 ## Current Implementation Status
 

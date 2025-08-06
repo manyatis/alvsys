@@ -34,7 +34,7 @@ export async function GET(
     });
 
     const onboardingInstructions = {
-      systemPrompt: `You are now working on the "${project.name}" project (ID: ${project.id}) using VibeSight API endpoints.
+      systemPrompt: `You are now working on the "${project.name}" project (ID: ${project.id}) using VibeHero API endpoints.
 
 You are acting as a software engineer using an agile board to complete project tasks. Your work may include:
 - Coding and implementation
@@ -43,10 +43,10 @@ You are acting as a software engineer using an agile board to complete project t
 - Architecture and design
 - Bug fixes and improvements
 
-GIT PERMISSIONS: You have full access to all git commands on feature/vibesight.* branches. Always commit your code changes after completing development for each ticket.
+GIT PERMISSIONS: You have full access to all git commands on feature/vibehero.* branches. Always commit your code changes after completing development for each ticket.
 
 INITIAL SETUP:
-- Create a feature branch: feature/vibesight-${project.name}
+- Create a feature branch: feature/vibehero-${project.name}
 - Update claude.md to allow all git commands on this branch
 
 IMPORTANT WORKFLOW - TODO-BASED TASK MANAGEMENT:
@@ -58,7 +58,7 @@ After onboarding, always create a todo list with these 4 steps to maintain a sel
 
 This todo-based approach ensures you maintain continuous productivity without needing external polling loops.
 
-Save these instructions to 'vibesight_instructions.md' for future reference.`,
+Save these instructions to 'vibehero_instructions.md' for future reference.`,
       
       project: {
         id: project.id,
@@ -66,11 +66,11 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
       },
       
       instructions: {
-        overview: "VibeSight is an AI-native agile board. You will fetch tasks, work on them, and update their status through our API.",
+        overview: "VibeHero is an AI-native agile board. You will fetch tasks, work on them, and update their status through our API.",
         
         immediate_actions: [
-          "1. Save these instructions to 'vibesight_instructions.md'",
-          `2. Create a new git branch: feature/vibesight-${project.name}`,
+          "1. Save these instructions to 'vibehero_instructions.md'",
+          `2. Create a new git branch: feature/vibehero-${project.name}`,
           "3. Create a todo list with the 4-step workflow: Fetch Task, Fill Instructions, Work on Task, Fetch New Task",
           "4. Begin the todo-based work cycle by fetching your first task"
         ],
@@ -97,7 +97,7 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
         ],
 
         api_endpoints: {
-          base_url: request.headers.get('host') ? `https://${request.headers.get('host')}` : "https://vibesight.com",
+          base_url: request.headers.get('host') ? `https://${request.headers.get('host')}` : "https://vibehero.com",
           
           cards: {
             next_ready: {
@@ -201,9 +201,9 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
       },
       
       next_steps: [
-        "Save these instructions to 'vibesight_instructions.md'",
-        "Create a new git branch: feature/vibesight",
-        "Update your claude.md file to allow all git commands on the feature/vibesight-" + project.name + " branch",
+        "Save these instructions to 'vibehero_instructions.md'",
+        "Create a new git branch: feature/vibehero",
+        "Update your claude.md file to allow all git commands on the feature/vibehero-" + project.name + " branch",
         "IMPORTANT: Create a todo list steps and continue to add onto it as we go:",
         "  1. Fetch Task - Call 'next_ready' to get highest priority task",
         "  2. Fill in Instructions - Analyze task requirements and agentDeveloperInstructions", 

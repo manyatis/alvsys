@@ -24,7 +24,7 @@ export default function Home() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <button className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
-                VibeSight
+                VibeHero
               </button>
             </div>
             
@@ -606,7 +606,7 @@ export default function Home() {
       {/* Simple Footer */}
       <footer className="py-12 bg-slate-900 text-slate-400">
         <div className="container mx-auto px-6 text-center">
-          <p>&copy; 2024 VibeSight. All rights reserved.</p>
+          <p>&copy; 2024 VibeHero. All rights reserved.</p>
         </div>
       </footer>
       </div>
