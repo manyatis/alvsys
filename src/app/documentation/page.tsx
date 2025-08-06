@@ -9,6 +9,10 @@ export default function Documentation() {
     { id: 'overview', title: 'Overview' },
     { id: 'authentication', title: 'Authentication' },
     { id: 'cards', title: 'Issues API' },
+    { id: 'comments', title: 'Comments API' },
+    { id: 'labels', title: 'Labels API' },
+    { id: 'projects', title: 'Projects API' },
+    { id: 'organizations', title: 'Organizations API' },
     { id: 'ai-endpoints', title: 'AI Endpoints' },
     { id: 'webhooks', title: 'Webhooks' },
     { id: 'errors', title: 'Error Handling' },
@@ -268,6 +272,384 @@ export default function Documentation() {
                     <p className="text-red-800 dark:text-red-200 text-sm">
                       ⚠️ This action cannot be undone. The issue and all its agent instructions will be permanently deleted.
                     </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Comments API Section */}
+            {activeSection === 'comments' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Comments API</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Add and retrieve comments on issues for team collaboration and progress tracking.
+                  </p>
+                </div>
+
+                {/* GET Comments */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/comments</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Comments</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve all comments for a specific issue, ordered by creation date.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Path Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">id</code> <span className="text-red-500">*</span> - Issue ID to get comments for</div>
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`[
+  {
+    "id": "clx111aaa222",
+    "content": "Started working on the login functionality",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "isAiComment": true,
+    "user": {
+      "id": "ai-agent",
+      "name": "Claude",
+      "email": "claude@vibesight.com"
+    }
+  },
+  {
+    "id": "clx222bbb333", 
+    "content": "Looks good! Please add error handling",
+    "createdAt": "2024-01-15T11:15:00.000Z",
+    "isAiComment": false,
+    "user": {
+      "id": "clx456def789",
+      "name": "John Doe",
+      "email": "john@example.com"
+    }
+  }
+]`}</pre>
+                  </div>
+                </div>
+
+                {/* POST Comments */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/comments</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Add Comment</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Add a new comment to an issue. Comments are automatically attributed to the authenticated user.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "content": "Added OAuth integration with Google and GitHub providers"
+}`}</pre>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2 mt-4">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "id": "clx333ccc444",
+  "content": "Added OAuth integration with Google and GitHub providers",
+  "createdAt": "2024-01-15T12:00:00.000Z",
+  "isAiComment": false,
+  "cardId": "clx789def123",
+  "userId": "clx456def789"
+}`}</pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Labels API Section */}
+            {activeSection === 'labels' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Labels API</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Create and manage labels for categorizing issues within projects.
+                  </p>
+                </div>
+
+                {/* GET Project Labels */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/projects/[id]/labels</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Project Labels</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve all labels for a specific project, ordered alphabetically.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Path Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">id</code> <span className="text-red-500">*</span> - Project ID to get labels for</div>
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`[
+  {
+    "id": "clx111lbl001",
+    "name": "bug",
+    "color": "#EF4444",
+    "projectId": "clx123abc456",
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "id": "clx222lbl002",
+    "name": "feature",
+    "color": "#3B82F6", 
+    "projectId": "clx123abc456",
+    "createdAt": "2024-01-15T10:05:00.000Z",
+    "updatedAt": "2024-01-15T10:05:00.000Z"
+  }
+]`}</pre>
+                  </div>
+                </div>
+
+                {/* POST Project Labels */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/projects/[id]/labels</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Label</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Create a new label for a project. Color is automatically assigned if not provided.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "name": "enhancement"
+}`}</pre>
+                  </div>
+                </div>
+
+                {/* Assign Label to Issue */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/labels</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Assign Label to Issue</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Assign an existing label to an issue.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "labelId": "clx111lbl001"
+}`}</pre>
+                  </div>
+                </div>
+
+                {/* Remove Label from Issue */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      DELETE
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/labels?labelId=[labelId]</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Remove Label from Issue</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Remove a label from an issue.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Query Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">labelId</code> <span className="text-red-500">*</span> - Label ID to remove from the issue</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Projects API Section */}
+            {activeSection === 'projects' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Projects API</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Manage projects and project memberships within organizations.
+                  </p>
+                </div>
+
+                {/* GET Projects */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/projects</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get User Projects</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve all projects that the authenticated user owns or is a member of.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`[
+  {
+    "id": "clx123abc456",
+    "name": "VibeSight Platform",
+    "description": "AI-native issue tracking",
+    "ownerId": "clx456def789",
+    "organizationId": "clx789org001",
+    "organization": {
+      "id": "clx789org001",
+      "name": "VibeSight Inc"
+    },
+    "createdAt": "2024-01-15T09:00:00.000Z",
+    "updatedAt": "2024-01-15T09:00:00.000Z"
+  }
+]`}</pre>
+                  </div>
+                </div>
+
+                {/* GET Single Project */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/projects/[id]</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Project Details</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve detailed information about a specific project.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Path Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">id</code> <span className="text-red-500">*</span> - Project ID</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* POST Projects */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/projects</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Project</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Create a new project within an organization.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "name": "New AI Project",
+  "description": "Building the next generation AI tools",
+  "organizationId": "clx789org001"
+}`}</pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Organizations API Section */}
+            {activeSection === 'organizations' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Organizations API</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Manage organizations and organizational memberships.
+                  </p>
+                </div>
+
+                {/* GET Organizations */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/organizations</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get User Organizations</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve all organizations that the authenticated user owns or is a member of.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`[
+  {
+    "id": "clx789org001",
+    "name": "VibeSight Inc",
+    "description": "AI-native development tools",
+    "ownerId": "clx456def789",
+    "createdAt": "2024-01-15T08:00:00.000Z",
+    "updatedAt": "2024-01-15T08:00:00.000Z"
+  }
+]`}</pre>
+                  </div>
+                </div>
+
+                {/* POST Organizations */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/organizations</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Organization</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Create a new organization with the authenticated user as the owner.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "name": "Acme Corporation",
+  "description": "Building amazing software solutions"
+}`}</pre>
                   </div>
                 </div>
               </div>
