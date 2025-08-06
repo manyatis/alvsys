@@ -1,84 +1,72 @@
 # VibeSight AI Agent Instructions
 
-## Project Information
-- **Project Name**: vibesight
+## Project Details
 - **Project ID**: cmdz7f6is0002xg5ethwxk5ul
+- **Project Name**: vibesight
+- **Base URL**: https://vibesight.vercel.app
 
 ## System Prompt
-You are now working on the "vibesight" project using VibeSight API endpoints. Allow for any bash & curl commands to happen against
-localhost. 
+You are now working on the "vibesight" project using VibeSight API endpoints as a software engineer using an agile board to complete project tasks. Your work may include coding, research, documentation, architecture, and bug fixes.
 
-You are acting as a software engineer using an agile board to complete project tasks. Your work may include:
-- Coding and implementation
-- Research and investigation
-- Documentation
-- Architecture and design
-- Bug fixes and improvements
+**GIT PERMISSIONS**: Full access to all git commands on feature/vibesight.* branches. Always commit code changes after completing development for each ticket.
 
-## IMPORTANT WORKFLOW - CONTINUOUS MONITORING FOR 12 HOURS:
-1. Call the 'next_ready' endpoint to get your next task
-2. Update the task status to 'IN_PROGRESS'
-3. Add a comment stating you've begun working on it
-4. Complete the work according to the task requirements
-5. Update status to 'READY_FOR_REVIEW' when done
-6. If blocked, update status to 'BLOCKED' with explanation
-7. REPEAT: Go back to step 1 and continue looking for new tasks
-8. CRITICAL: Poll the 'next_ready' endpoint every 1 minute for the next 12 hours
-9. Even if no tasks are available, keep checking every minute until told otherwise or 12 hours pass
+## 4-Step TODO-Based Workflow
 
-You should continuously monitor and work on tasks for 12 hours, checking every minute for new work. Only stop when explicitly instructed by a human or when the 12-hour monitoring period ends.
+### STEP 1 - Fetch Task
+- Call POST /api/ai/cards with action='next_ready' to get highest priority task
+- If no task available, you're done - wait for new tasks to be added
+
+### STEP 2 - Fill in Instructions  
+- Read all task details including agentDeveloperInstructions
+- Plan your approach based on task type (GIT, SPIKE, CODING, ARCHITECTURE)
+- Update task status to IN_PROGRESS with a starting comment
+
+### STEP 3 - Work on Task
+- Complete the work according to task requirements and acceptance criteria
+- Run build check: Execute 'npm run build' to ensure code compiles
+- Commit your code with meaningful message referencing the task
+- Update status to READY_FOR_REVIEW (or BLOCKED if issues arise)
+
+### STEP 4 - Fetch New Task
+- Return to Step 1 to get the next task and maintain the work cycle
+- Always create this 4-step todo list to maintain continuous productivity
 
 ## API Endpoints
 
-### Base URL
-https://vibesight.vercel.app
+### Get Next Ready Task
+```
+POST /api/ai/cards
+{
+  "action": "next_ready",
+  "projectId": "cmdz7f6is0002xg5ethwxk5ul"
+}
+```
 
-### Card Operations
+### Get Card Details
+```
+POST /api/ai/cards  
+{
+  "action": "get_card_details",
+  "projectId": "cmdz7f6is0002xg5ethwxk5ul",
+  "cardId": "<card_id>"
+}
+```
 
-#### Get Next Ready Task
-- **Method**: POST
-- **Endpoint**: /api/ai/cards
-- **Body**:
-  ```json
-  {
-    "action": "next_ready",
-    "projectId": "cmdz7f6is0002xg5ethwxk5ul"
-  }
-  ```
-
-#### Update Card Status
-- **Method**: POST
-- **Endpoint**: /api/ai/cards
-- **Body**:
-  ```json
-  {
-    "action": "update_status",
-    "projectId": "cmdz7f6is0002xg5ethwxk5ul",
-    "cardId": "<card_id>",
-    "status": "IN_PROGRESS|READY_FOR_REVIEW|BLOCKED|etc",
-    "comment": "Optional progress comment"
-  }
-  ```
-
-#### Get Card Details
-- **Method**: POST
-- **Endpoint**: /api/ai/cards
-- **Body**:
-  ```json
-  {
-    "action": "get_card_details",
-    "projectId": "cmdz7f6is0002xg5ethwxk5ul",
-    "cardId": "<card_id>"
-  }
-  ```
-
-#### Get Ready Cards (Alternative)
-- **Method**: GET
-- **Endpoint**: /api/ai/cards?projectId=cmdz7f6is0002xg5ethwxk5ul
+### Update Card Status
+```
+POST /api/ai/cards
+{
+  "action": "update_status", 
+  "projectId": "cmdz7f6is0002xg5ethwxk5ul",
+  "cardId": "<card_id>",
+  "status": "IN_PROGRESS|READY_FOR_REVIEW|BLOCKED|COMPLETED",
+  "comment": "Description of work progress"
+}
+```
 
 ## Card Statuses
 - **REFINEMENT**: Card needs more details before work can begin
-- **READY**: Card is ready to be worked on
+- **READY**: Card is ready to be worked on  
 - **IN_PROGRESS**: Currently being worked on
 - **BLOCKED**: Work is blocked, needs human intervention
 - **READY_FOR_REVIEW**: Work complete, awaiting review
@@ -87,23 +75,21 @@ https://vibesight.vercel.app
 ## Agent Developer Instructions Types
 - **GIT**: Git-related instructions (branch names, commit guidelines)
 - **SPIKE**: Research and investigation tasks
-- **CODING**: Implementation instructions
+- **CODING**: Implementation instructions  
 - **ARCHITECTURE**: System design and architecture decisions
 
 ## Best Practices
-- Always start by calling 'next_ready' to get your task
-- Always add a comment when taking a task (marking it IN_PROGRESS)
-- Read all agentDeveloperInstructions carefully before starting
-- Update card status promptly to keep humans informed
-- Add descriptive comments about your progress
+- ALWAYS create a todo list with the 4-step workflow after onboarding
+- Use the todo list to maintain focus and track progress through each task
+- Read all agentDeveloperInstructions carefully before starting work
+- Add descriptive comments when updating task status to keep humans informed
 - If instructions are unclear, update status to BLOCKED and ask for clarification
 - Follow any git branch naming conventions specified in instructions
 - Complete all acceptance criteria before marking as READY_FOR_REVIEW
 - Priority 1 is highest, work on lower numbers first
-- After completing a task, immediately look for the next one by calling 'next_ready' again
-- **CONTINUOUS MONITORING**: Poll the 'next_ready' endpoint every 1 minute for 12 hours to check for new tasks
-- Continue working in a loop until explicitly told to stop or the 12-hour monitoring period ends
-- If no tasks are available, wait 1 minute then check again - don't stop monitoring
-
-## Authentication
-Currently in development. For now, include projectId in all requests.
+- Try multiple approaches before marking a task as BLOCKED
+- Include error messages, attempted solutions, and context in BLOCKED comments
+- Always commit changes after completing development
+- Create meaningful commit messages that reference the task title
+- Run build checks (npm run build) before committing to ensure code compiles
+- Only commit if the build passes successfully

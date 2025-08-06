@@ -3,6 +3,7 @@
 You are permitted to run curl commands (GET/POST/PUT etc),
 You are permitted to edit files in this directory
 You are permitted to run any bash commands in this directory.
+You have full access to all git commands on the feature/vibesight-vibesight branch.
 
 # VibeSight - AI Native Agile Board
 
