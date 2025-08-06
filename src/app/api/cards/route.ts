@@ -49,6 +49,11 @@ export async function GET(request: NextRequest) {
           },
         },
         agentDeveloperInstructions: true,
+        labels: {
+          include: {
+            label: true
+          }
+        },
       },
       orderBy: {
         createdAt: 'desc',
@@ -76,6 +81,7 @@ export async function POST(request: NextRequest) {
       description,
       acceptanceCriteria,
       projectId,
+      priority = 3,
       isAiAllowedTask = true,
       agentInstructions = [],
     } = body
@@ -117,6 +123,7 @@ export async function POST(request: NextRequest) {
         description,
         acceptanceCriteria,
         projectId,
+        priority,
         createdById: user.id,
         isAiAllowedTask,
         agentDeveloperInstructions: {

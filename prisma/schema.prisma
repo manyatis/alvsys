@@ -57,6 +57,7 @@ model Project {
   owner          User           @relation("ProjectOwner", fields: [ownerId], references: [id])
   users          ProjectUser[]
   cards          Card[]
+  labels         Label[]
   apiKey         String?        @unique
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -86,6 +87,7 @@ model Card {
   priority                Int                   @default(3)
   agentDeveloperInstructions AgentDeveloperInstruction[]
   comments                Comment[]
+  labels                  CardLabel[]
   createdAt               DateTime              @default(now())
   updatedAt               DateTime              @updatedAt
 }
@@ -213,4 +215,27 @@ model Comment {
   isAiComment Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Label {
+  id        String      @id @default(cuid())
+  name      String
+  color     String      // Hex color code
+  projectId String
+  project   Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  cards     CardLabel[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([name, projectId]) // Prevent duplicate label names within a project
+}
+
+model CardLabel {
+  id      String @id @default(cuid())
+  cardId  String
+  card    Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  labelId String
+  label   Label  @relation(fields: [labelId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, labelId]) // Prevent duplicate label assignments
 }

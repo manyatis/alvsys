@@ -18,9 +18,11 @@ import {
   Settings,
   Users,
   X,
-  Loader2
+  Loader2,
+  Send,
+  MessageCircle
 } from 'lucide-react';
-import { CardStatus, Card } from '@/types/card';
+import { CardStatus, Card, Comment, Label, CardLabel } from '@/types/card';
 
 interface Project {
   id: string;
@@ -105,6 +107,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<CardStatus | null>(null);
+  const [touchedCard, setTouchedCard] = useState<Card | null>(null);
+  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [isAddingComment, setIsAddingComment] = useState(false);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [loadingLabels, setLoadingLabels] = useState(false);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
@@ -129,6 +140,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
+        }
+
+        // Fetch labels
+        const labelsRes = await fetch(`/api/projects/${resolvedParams.id}/labels`);
+        if (labelsRes.ok) {
+          const labelsData = await labelsRes.json();
+          setLabels(labelsData);
         }
       } catch (error) {
         console.error('Error fetching project data:', error);
@@ -203,10 +221,31 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const handleCardClick = (card: Card) => {
+  const handleCardClick = async (card: Card) => {
+    // Don't open modal if we just finished dragging
+    if (touchedCard || draggedCard) return;
+    
     setSelectedCard(card);
     setShowDetailModal(true);
     setTimeout(() => setDetailModalVisible(true), 10);
+    
+    // Load comments for the card
+    await loadComments(card.id);
+  };
+
+  const loadComments = async (cardId: string) => {
+    setLoadingComments(true);
+    try {
+      const response = await fetch(`/api/cards/${cardId}/comments`);
+      if (response.ok) {
+        const commentsData = await response.json();
+        setComments(commentsData);
+      }
+    } catch (error) {
+      console.error('Error loading comments:', error);
+    } finally {
+      setLoadingComments(false);
+    }
   };
 
   const handleUpdateCard = async (e: React.FormEvent) => {
@@ -240,7 +279,37 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => {
       setShowDetailModal(false);
       setSelectedCard(null);
+      setComments([]);
+      setNewComment('');
     }, 300);
+  };
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCard || !newComment.trim()) return;
+    
+    setIsAddingComment(true);
+    try {
+      const response = await fetch(`/api/cards/${selectedCard.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newComment.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        const comment = await response.json();
+        setComments([...comments, comment]);
+        setNewComment('');
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    } finally {
+      setIsAddingComment(false);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, card: Card) => {
@@ -302,10 +371,129 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  const handleTouchStart = (e: React.TouchEvent, card: Card) => {
+    const touch = e.touches[0];
+    setTouchedCard(card);
+    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    setIsTouchDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchedCard || !touchStartPos) return;
+    
+    const touch = e.touches[0];
+    const moveThreshold = 10; // pixels
+    
+    // Check if we've moved enough to consider it a drag
+    const deltaX = Math.abs(touch.clientX - touchStartPos.x);
+    const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+    
+    if (deltaX > moveThreshold || deltaY > moveThreshold) {
+      // Mark as dragging
+      if (!isTouchDragging) {
+        setIsTouchDragging(true);
+        // Add visual feedback
+        const element = e.currentTarget as HTMLElement;
+        element.style.opacity = '0.5';
+        element.style.transform = 'scale(1.05)';
+        element.style.transition = 'all 0.2s ease';
+      }
+      
+      // Prevent scrolling while dragging
+      e.preventDefault();
+      
+      // Find which column we're over
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      const columnElement = element?.closest('[data-column-status]');
+      
+      if (columnElement) {
+        const status = columnElement.getAttribute('data-column-status') as CardStatus;
+        setDragOverColumn(status);
+      } else {
+        setDragOverColumn(null);
+      }
+    }
+  };
+
+  const handleTouchEnd = async (e: React.TouchEvent) => {
+    if (!touchedCard) return;
+    
+    // Reset visual feedback if we were dragging
+    if (isTouchDragging) {
+      const element = e.currentTarget as HTMLElement;
+      element.style.opacity = '1';
+      element.style.transform = 'scale(1)';
+    }
+    
+    const touch = e.changedTouches[0];
+    
+    // If we were dragging, handle the drop
+    if (isTouchDragging && dragOverColumn) {
+      const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+      const columnElement = elementBelow?.closest('[data-column-status]');
+      
+      if (columnElement) {
+        const newStatus = columnElement.getAttribute('data-column-status') as CardStatus;
+        
+        if (newStatus && newStatus !== touchedCard.status) {
+          try {
+            const response = await fetch(`/api/cards/${touchedCard.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                ...touchedCard,
+                status: newStatus,
+              }),
+            });
+
+            if (response.ok) {
+              const updatedCard = await response.json();
+              setCards(cards.map(card => 
+                card.id === touchedCard.id ? updatedCard : card
+              ));
+            }
+          } catch (error) {
+            console.error('Error updating card status:', error);
+          }
+        }
+      }
+    } else if (!isTouchDragging) {
+      // If we weren't dragging, treat it as a click
+      handleCardClick(touchedCard);
+    }
+    
+    // Clean up
+    setTouchedCard(null);
+    setTouchStartPos(null);
+    setDragOverColumn(null);
+    setIsTouchDragging(false);
+  };
+
   const getCardsByStatus = (status: CardStatus) => {
     return cards
       .filter(card => card.status === status)
-      .sort((a, b) => a.priority - b.priority);
+      .sort((a, b) => {
+        // Sort by priority first (1 is highest priority)
+        const priorityDiff = a.priority - b.priority;
+        if (priorityDiff !== 0) {
+          return priorityDiff;
+        }
+        
+        // If priorities are equal, sort by updated timestamp (most recent first)
+        const aUpdated = new Date(a.updatedAt).getTime();
+        const bUpdated = new Date(b.updatedAt).getTime();
+        const updatedDiff = bUpdated - aUpdated;
+        if (updatedDiff !== 0) {
+          return updatedDiff;
+        }
+        
+        // If both priority and updated are equal, sort by created timestamp (most recent first)
+        const aCreated = new Date(a.createdAt).getTime();
+        const bCreated = new Date(b.createdAt).getTime();
+        return bCreated - aCreated;
+      });
   };
 
   const getPriorityColor = (priority: number) => {
@@ -318,6 +506,21 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase();
     if (email) return email.split('@')[0].slice(0, 2).toUpperCase();
     return 'U';
+  };
+
+  const formatCommentDate = (date: Date | string) => {
+    const commentDate = new Date(date);
+    const now = new Date();
+    const diffMs = now.getTime() - commentDate.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return commentDate.toLocaleDateString();
   };
 
   if (loading) {
@@ -471,6 +674,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         ? 'bg-purple-50/50 dark:bg-purple-900/10' 
                         : ''
                     }`}
+                    data-column-status={column.status}
                     onDragOver={(e) => handleDragOver(e, column.status)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, column.status)}
@@ -479,11 +683,19 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                       <div
                         key={card.id}
                         draggable
-                        onClick={() => handleCardClick(card)}
+                        onClick={() => {
+                          // Prevent click if we're dragging
+                          if (!isTouchDragging && !draggedCard) {
+                            handleCardClick(card);
+                          }
+                        }}
                         onDragStart={(e) => handleDragStart(e, card)}
                         onDragEnd={handleDragEnd}
-                        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-move group ${
-                          draggedCard?.id === card.id ? 'opacity-50' : ''
+                        onTouchStart={(e) => handleTouchStart(e, card)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
+                        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-move group touch-none ${
+                          draggedCard?.id === card.id || touchedCard?.id === card.id ? 'opacity-50' : ''
                         }`}
                       >
                         <div className="flex items-start justify-between mb-1">
@@ -499,6 +711,30 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">
                             {card.description}
                           </p>
+                        )}
+
+                        {/* Labels */}
+                        {card.labels && card.labels.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {card.labels.slice(0, 3).map((cardLabel) => (
+                              <span
+                                key={cardLabel.id}
+                                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                style={{ 
+                                  backgroundColor: cardLabel.label.color + '20', 
+                                  color: cardLabel.label.color,
+                                  border: `1px solid ${cardLabel.label.color}40`
+                                }}
+                              >
+                                {cardLabel.label.name}
+                              </span>
+                            ))}
+                            {card.labels.length > 3 && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                                +{card.labels.length - 3}
+                              </span>
+                            )}
+                          </div>
                         )}
                         
                         <div className="flex items-center justify-between">
@@ -835,6 +1071,87 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   />
                   <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
+              </div>
+
+              {/* Comments Section */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                    Comments ({comments.length})
+                  </h3>
+                </div>
+
+                {/* Comments List */}
+                <div className="space-y-3 max-h-64 overflow-y-auto mb-3">
+                  {loadingComments ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                      <span className="ml-2 text-sm text-gray-500">Loading comments...</span>
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic text-center py-4">
+                      No comments yet
+                    </p>
+                  ) : (
+                    comments.map((comment) => (
+                      <div key={comment.id} className="flex gap-2">
+                        <div className="flex-shrink-0">
+                          {comment.isAiComment ? (
+                            <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full flex items-center justify-center text-xs font-semibold">
+                              AI
+                            </div>
+                          ) : (
+                            <div 
+                              className="w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-medium"
+                              title={comment.author?.name || comment.author?.email || 'Unknown'}
+                            >
+                              {getInitials(comment.author?.email || null, comment.author?.name || null)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-medium text-gray-900 dark:text-white">
+                              {comment.isAiComment 
+                                ? 'AI Agent' 
+                                : (comment.author?.name || comment.author?.email?.split('@')[0] || 'Unknown')
+                              }
+                            </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {formatCommentDate(comment.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                            {comment.content}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Add Comment Form */}
+                <form onSubmit={handleAddComment} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add a comment..."
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!newComment.trim() || isAddingComment}
+                    className="px-3 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  >
+                    {isAddingComment ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </button>
+                </form>
               </div>
 
               <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">

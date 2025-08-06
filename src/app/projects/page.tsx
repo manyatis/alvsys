@@ -153,7 +153,7 @@ export default function ProjectsPage() {
                 <div className="flex items-start justify-between mb-4">
                   <Folder className="h-8 w-8 text-purple-600" />
                   <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {project._count?.cards || 0} cards
+                    {project._count?.cards || 0} issues
                   </span>
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
