@@ -1,9 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { PrismaClient } from '@/generated/prisma';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/lib/prisma';
 
 // GET /api/projects - Get user's projects
 export async function GET() {
@@ -59,6 +57,8 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
@@ -148,5 +148,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error creating project:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
   }
 }
