@@ -20,7 +20,9 @@ import {
   X,
   Loader2,
   Send,
-  MessageCircle
+  MessageCircle,
+  Copy,
+  Check
 } from 'lucide-react';
 import { CardStatus, Card, Comment, Label, CardLabel } from '@/types/card';
 
@@ -133,6 +135,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     priority: 'all'
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -694,6 +697,26 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     return commentDate.toLocaleDateString();
   };
 
+  const copyOnboardLink = async () => {
+    const onboardUrl = `https://vibehero.io/api/${resolvedParams.id}/ai/onboard`;
+    try {
+      await navigator.clipboard.writeText(onboardUrl);
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 2000);
+    } catch (error) {
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = onboardUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 2000);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -734,6 +757,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               >
                 <Plus className="h-3 w-3" />
                 Create Issue
+              </button>
+              
+              <button
+                onClick={copyOnboardLink}
+                className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                {copyFeedback ? (
+                  <Check className="h-3 w-3 text-green-600" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
+                {copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
               </button>
               
               <div className="relative">
@@ -916,6 +951,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 title="Create Issue"
               >
                 <Plus className="h-3 w-3" />
+              </button>
+              
+              <button
+                onClick={copyOnboardLink}
+                className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                title={copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
+              >
+                {copyFeedback ? (
+                  <Check className="h-3 w-3 text-green-600" />
+                ) : (
+                  <Copy className="h-3 w-3" />
+                )}
               </button>
               
               <div className="relative">
