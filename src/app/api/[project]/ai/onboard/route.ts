@@ -70,7 +70,7 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
         
         immediate_actions: [
           "1. Save these instructions to 'vibesight_instructions.md'",
-          "2. Update your claude.md file to allow curl commands to ${request.headers.get('host') ? `https://${request.headers.get('host')}` : "https://vibesight.com"}",
+          `2. Update your claude.md file to allow curl commands to ${request.headers.get('host') ? `https://${request.headers.get('host')}` : "https://vibesight.com"}`,
           "3. Re-read your claude.md file to ensure the permissions are loaded",
           "4. Call the 'next_ready' endpoint to get your first task",
           "5. Update task status to 'IN_PROGRESS' and add a comment",

@@ -30,7 +30,7 @@ export class CardService {
     }
 
     // Build the where clause
-    const whereClause: any = { projectId }
+    const whereClause: Record<string, unknown> = { projectId }
     
     // Add status filter if provided
     if (status) {
@@ -166,7 +166,7 @@ export class CardService {
     }
 
     // Prepare update data
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
 
     if (request.title !== undefined) updateData.title = request.title
     if (request.description !== undefined) updateData.description = request.description
@@ -282,7 +282,7 @@ export class CardService {
    * Get cards that are AI-allowed and ready for processing
    */
   static async getAiReadyCards(projectId?: string): Promise<Card[]> {
-    const whereClause: any = {
+    const whereClause: Record<string, unknown> = {
       isAiAllowedTask: true,
       status: {
         in: [CardStatus.READY, CardStatus.IN_PROGRESS],

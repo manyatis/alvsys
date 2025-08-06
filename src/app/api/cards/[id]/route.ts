@@ -110,7 +110,7 @@ export async function PUT(
     }
 
     // Update card and agent instructions
-    const updateData: any = {}
+    const updateData: Record<string, unknown> = {}
 
     if (title !== undefined) updateData.title = title
     if (description !== undefined) updateData.description = description
@@ -127,7 +127,7 @@ export async function PUT(
       })
 
       updateData.agentDeveloperInstructions = {
-        create: agentInstructions.map((instruction: any) => ({
+        create: agentInstructions.map((instruction: Record<string, unknown>) => ({
           type: instruction.type,
           branchName: instruction.branchName,
           createNewBranch: instruction.createNewBranch || false,
