@@ -35,6 +35,22 @@ export interface AgentDeveloperInstruction {
   updatedAt: Date
 }
 
+export interface Comment {
+  id: string
+  cardId: string
+  content: string
+  authorId?: string
+  author?: {
+    id: string
+    name?: string
+    email?: string
+    image?: string
+  }
+  isAiComment: boolean
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Card {
   id: string
   status: CardStatus
@@ -46,6 +62,7 @@ export interface Card {
   priority: number
   isAiAllowedTask: boolean
   agentDeveloperInstructions: AgentDeveloperInstruction[]
+  comments?: Comment[]
   createdAt: Date
   updatedAt: Date
   

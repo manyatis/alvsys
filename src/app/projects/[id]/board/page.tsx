@@ -18,9 +18,11 @@ import {
   Settings,
   Users,
   X,
-  Loader2
+  Loader2,
+  Send,
+  MessageCircle
 } from 'lucide-react';
-import { CardStatus, Card } from '@/types/card';
+import { CardStatus, Card, Comment } from '@/types/card';
 
 interface Project {
   id: string;
@@ -108,6 +110,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [touchedCard, setTouchedCard] = useState<Card | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [isAddingComment, setIsAddingComment] = useState(false);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
@@ -206,13 +212,31 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const handleCardClick = (card: Card) => {
+  const handleCardClick = async (card: Card) => {
     // Don't open modal if we just finished dragging
     if (touchedCard || draggedCard) return;
     
     setSelectedCard(card);
     setShowDetailModal(true);
     setTimeout(() => setDetailModalVisible(true), 10);
+    
+    // Load comments for the card
+    await loadComments(card.id);
+  };
+
+  const loadComments = async (cardId: string) => {
+    setLoadingComments(true);
+    try {
+      const response = await fetch(`/api/cards/${cardId}/comments`);
+      if (response.ok) {
+        const commentsData = await response.json();
+        setComments(commentsData);
+      }
+    } catch (error) {
+      console.error('Error loading comments:', error);
+    } finally {
+      setLoadingComments(false);
+    }
   };
 
   const handleUpdateCard = async (e: React.FormEvent) => {
@@ -246,7 +270,37 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => {
       setShowDetailModal(false);
       setSelectedCard(null);
+      setComments([]);
+      setNewComment('');
     }, 300);
+  };
+
+  const handleAddComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCard || !newComment.trim()) return;
+    
+    setIsAddingComment(true);
+    try {
+      const response = await fetch(`/api/cards/${selectedCard.id}/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newComment.trim(),
+        }),
+      });
+
+      if (response.ok) {
+        const comment = await response.json();
+        setComments([...comments, comment]);
+        setNewComment('');
+      }
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    } finally {
+      setIsAddingComment(false);
+    }
   };
 
   const handleDragStart = (e: React.DragEvent, card: Card) => {
@@ -424,6 +478,21 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase();
     if (email) return email.split('@')[0].slice(0, 2).toUpperCase();
     return 'U';
+  };
+
+  const formatCommentDate = (date: Date | string) => {
+    const commentDate = new Date(date);
+    const now = new Date();
+    const diffMs = now.getTime() - commentDate.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return commentDate.toLocaleDateString();
   };
 
   if (loading) {
@@ -950,6 +1019,87 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   />
                   <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                 </label>
+              </div>
+
+              {/* Comments Section */}
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <MessageCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                  <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                    Comments ({comments.length})
+                  </h3>
+                </div>
+
+                {/* Comments List */}
+                <div className="space-y-3 max-h-64 overflow-y-auto mb-3">
+                  {loadingComments ? (
+                    <div className="flex items-center justify-center py-4">
+                      <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                      <span className="ml-2 text-sm text-gray-500">Loading comments...</span>
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 italic text-center py-4">
+                      No comments yet
+                    </p>
+                  ) : (
+                    comments.map((comment) => (
+                      <div key={comment.id} className="flex gap-2">
+                        <div className="flex-shrink-0">
+                          {comment.isAiComment ? (
+                            <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full flex items-center justify-center text-xs font-semibold">
+                              AI
+                            </div>
+                          ) : (
+                            <div 
+                              className="w-6 h-6 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-medium"
+                              title={comment.author?.name || comment.author?.email || 'Unknown'}
+                            >
+                              {getInitials(comment.author?.email || null, comment.author?.name || null)}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-medium text-gray-900 dark:text-white">
+                              {comment.isAiComment 
+                                ? 'AI Agent' 
+                                : (comment.author?.name || comment.author?.email?.split('@')[0] || 'Unknown')
+                              }
+                            </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                              {formatCommentDate(comment.createdAt)}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                            {comment.content}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Add Comment Form */}
+                <form onSubmit={handleAddComment} className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Add a comment..."
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!newComment.trim() || isAddingComment}
+                    className="px-3 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                  >
+                    {isAddingComment ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                  </button>
+                </form>
               </div>
 
               <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
