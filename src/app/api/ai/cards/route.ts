@@ -225,6 +225,8 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } finally {
+    await prisma.$disconnect()
   }
 }
 
@@ -270,5 +272,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error in AI cards GET endpoint:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  } finally {
+    await prisma.$disconnect()
   }
 }
