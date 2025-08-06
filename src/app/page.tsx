@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 
@@ -11,6 +12,7 @@ export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { data: session } = useSession();
+  const router = useRouter();
 
   const getUserDisplayName = (email: string) => {
     return email.split('@')[0];
@@ -124,16 +126,40 @@ export default function Home() {
                     isUserMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
                   }`}>
                     <div className="py-2 px-2 space-y-1">
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      <button 
+                        onClick={() => {
+                          router.push('/account');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Account Settings
                       </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      <button 
+                        onClick={() => {
+                          router.push('/projects');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Projects
                       </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
-                        Board
+                      <button 
+                        onClick={() => {
+                          router.push('/projects');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
+                        Dashboard
                       </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      <button 
+                        onClick={() => {
+                          router.push('/organization');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Organization Settings
                       </button>
                       <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
@@ -225,16 +251,40 @@ export default function Home() {
                       {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
                     </span>
                   </div>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  <button 
+                    onClick={() => {
+                      router.push('/account');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
                     Account Settings
                   </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  <button 
+                    onClick={() => {
+                      router.push('/projects');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
                     Projects
                   </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
-                    Board
+                  <button 
+                    onClick={() => {
+                      router.push('/projects');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
+                    Dashboard
                   </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  <button 
+                    onClick={() => {
+                      router.push('/organization');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
                     Organization Settings
                   </button>
                   <button 

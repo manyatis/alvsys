@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 
@@ -11,6 +12,7 @@ export default function Navbar() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { data: session, status } = useSession();
+  const router = useRouter();
   const userMenuRef = useRef<HTMLDivElement>(null);
   
   // Close dropdown when clicking outside
@@ -148,7 +150,7 @@ export default function Navbar() {
                     <div className="py-2 px-2 space-y-1">
                       <button 
                         onClick={() => {
-                          console.log('Account Settings clicked');
+                          router.push('/account');
                           setIsUserMenuOpen(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
@@ -164,14 +166,20 @@ export default function Navbar() {
                       </Link>
                       <button 
                         onClick={() => {
-                          console.log('Board clicked');
+                          router.push('/projects');
                           setIsUserMenuOpen(false);
                         }}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
                       >
-                        Board
+                        Dashboard
                       </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      <button 
+                        onClick={() => {
+                          router.push('/organization');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Organization Settings
                       </button>
                       <div className="border-t border-slate-200 dark:border-slate-700 my-1"></div>
@@ -272,7 +280,13 @@ export default function Navbar() {
                       {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
                     </span>
                   </div>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  <button 
+                    onClick={() => {
+                      router.push('/account');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
                     Account Settings
                   </button>
                   <Link 
@@ -282,10 +296,22 @@ export default function Navbar() {
                   >
                     Projects
                   </Link>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
-                    Board
+                  <button 
+                    onClick={() => {
+                      router.push('/projects');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
+                    Dashboard
                   </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  <button 
+                    onClick={() => {
+                      router.push('/organization');
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
                     Organization Settings
                   </button>
                   <button 
