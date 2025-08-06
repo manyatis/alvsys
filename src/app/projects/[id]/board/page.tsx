@@ -22,7 +22,7 @@ import {
   Send,
   MessageCircle
 } from 'lucide-react';
-import { CardStatus, Card, Comment } from '@/types/card';
+import { CardStatus, Card, Comment, Label, CardLabel } from '@/types/card';
 
 interface Project {
   id: string;
@@ -114,6 +114,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [isAddingComment, setIsAddingComment] = useState(false);
+  const [labels, setLabels] = useState<Label[]>([]);
+  const [loadingLabels, setLoadingLabels] = useState(false);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
@@ -138,6 +140,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
+        }
+
+        // Fetch labels
+        const labelsRes = await fetch(`/api/projects/${resolvedParams.id}/labels`);
+        if (labelsRes.ok) {
+          const labelsData = await labelsRes.json();
+          setLabels(labelsData);
         }
       } catch (error) {
         console.error('Error fetching project data:', error);
@@ -683,6 +692,30 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">
                             {card.description}
                           </p>
+                        )}
+
+                        {/* Labels */}
+                        {card.labels && card.labels.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-2">
+                            {card.labels.slice(0, 3).map((cardLabel) => (
+                              <span
+                                key={cardLabel.id}
+                                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                                style={{ 
+                                  backgroundColor: cardLabel.label.color + '20', 
+                                  color: cardLabel.label.color,
+                                  border: `1px solid ${cardLabel.label.color}40`
+                                }}
+                              >
+                                {cardLabel.label.name}
+                              </span>
+                            ))}
+                            {card.labels.length > 3 && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                                +{card.labels.length - 3}
+                              </span>
+                            )}
+                          </div>
                         )}
                         
                         <div className="flex items-center justify-between">

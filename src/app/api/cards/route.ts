@@ -49,6 +49,11 @@ export async function GET(request: NextRequest) {
           },
         },
         agentDeveloperInstructions: true,
+        labels: {
+          include: {
+            label: true
+          }
+        },
       },
       orderBy: {
         createdAt: 'desc',

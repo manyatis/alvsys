@@ -40,6 +40,11 @@ export async function GET(
           },
         },
         agentDeveloperInstructions: true,
+        labels: {
+          include: {
+            label: true
+          }
+        },
       },
     })
 
@@ -157,6 +162,11 @@ export async function PUT(
           },
         },
         agentDeveloperInstructions: true,
+        labels: {
+          include: {
+            label: true
+          }
+        },
       },
     })
 

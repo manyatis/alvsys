@@ -51,6 +51,22 @@ export interface Comment {
   updatedAt: Date
 }
 
+export interface Label {
+  id: string
+  name: string
+  color: string
+  projectId: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface CardLabel {
+  id: string
+  cardId: string
+  labelId: string
+  label: Label
+}
+
 export interface Card {
   id: string
   status: CardStatus
@@ -63,6 +79,7 @@ export interface Card {
   isAiAllowedTask: boolean
   agentDeveloperInstructions: AgentDeveloperInstruction[]
   comments?: Comment[]
+  labels?: CardLabel[]
   createdAt: Date
   updatedAt: Date
   
