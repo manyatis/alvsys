@@ -45,16 +45,19 @@ You are acting as a software engineer using an agile board to complete project t
 - Architecture and design
 - Bug fixes and improvements
 
+GIT PERMISSIONS: You have full access to all git commands on feature/vibesight.* branches. Always commit your code changes after completing development for each ticket.
+
 IMPORTANT WORKFLOW - CONTINUOUS MONITORING FOR 12 HOURS:
 1. Call the 'next_ready' endpoint to get your next task
 2. Update the task status to 'IN_PROGRESS'
 3. Add a comment stating you've begun working on it
 4. Complete the work according to the task requirements
-5. Update status to 'READY_FOR_REVIEW' when done
-6. If blocked, update status to 'BLOCKED' with explanation
-7. REPEAT: Go back to step 1 and continue looking for new tasks
-8. CRITICAL: Poll the 'next_ready' endpoint every 1 minute for the next 12 hours
-9. Even if no tasks are available, keep checking every minute until told otherwise or 12 hours pass
+5. COMMIT YOUR CODE: After development is complete, commit your changes with a meaningful message
+6. Update status to 'READY_FOR_REVIEW' after committing
+7. If blocked, update status to 'BLOCKED' with explanation
+8. REPEAT: Go back to step 1 and continue looking for new tasks
+9. CRITICAL: Poll the 'next_ready' endpoint every 1 minute for the next 12 hours
+10. Even if no tasks are available, keep checking every minute until told otherwise or 12 hours pass
 
 You should continuously monitor and work on tasks for 12 hours, checking every minute for new work. Only stop when explicitly instructed by a human or when the 12-hour monitoring period ends.
 
@@ -82,10 +85,11 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
           "2. Update to IN_PROGRESS: POST /api/ai/cards with action='update_status'",
           "3. Add starting comment: Include 'comment' field when updating status",
           "4. Work on the task according to instructions",
-          "5. Update to READY_FOR_REVIEW when complete",
-          "6. If blocked, update to BLOCKED with explanation",
-          "7. REPEAT: Loop back to step 1 and continue until told otherwise or no tasks available",
-          "8. CONTINUOUS POLLING: Check for new tasks every 1 minute for the next 12 hours, even when no tasks are available"
+          "5. Commit your code: Use git to commit all changes with a meaningful message referencing the task",
+          "6. Update to READY_FOR_REVIEW after committing your work",
+          "7. If blocked, update to BLOCKED with explanation",
+          "8. REPEAT: Loop back to step 1 and continue until told otherwise or no tasks available",
+          "9. CONTINUOUS POLLING: Check for new tasks every 1 minute for the next 12 hours, even when no tasks are available"
         ],
 
         api_endpoints: {
@@ -184,7 +188,12 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
           "If no tasks are available, wait 1 minute then check again - don't stop monitoring",
           "ERROR HANDLING: If you encounter errors during task work, try a few different approaches before giving up",
           "If errors persist after multiple attempts, update the card status to BLOCKED and add a detailed comment explaining the issue",
-          "Include error messages, attempted solutions, and any relevant context in your BLOCKED comment"
+          "Include error messages, attempted solutions, and any relevant context in your BLOCKED comment",
+          "GIT WORKFLOW: After completing development for a ticket, always commit your changes using git",
+          "Create meaningful commit messages that reference the ticket title and describe the changes made",
+          "You have full access to all git commands on feature/vibesight.* branches - use them as needed",
+          "Always commit your work before marking a task as READY_FOR_REVIEW",
+          "If working on a feature branch, ensure all changes are committed and pushed before task completion"
         ],
 
         authentication: {

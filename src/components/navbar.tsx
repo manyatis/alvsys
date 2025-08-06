@@ -44,14 +44,18 @@ export default function Navbar() {
             
             {/* Center Navigation */}
             <div className="hidden md:flex items-center h-full">
-              {session && (
-                <Link 
-                  href="/projects"
-                  className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
-                >
-                  Projects
-                </Link>
-              )}
+              <Link 
+                href="/projects"
+                onClick={(e) => {
+                  if (!session) {
+                    e.preventDefault();
+                    setIsLoginModalOpen(true);
+                  }
+                }}
+                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+              >
+                Projects
+              </Link>
               <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
                 Features
               </button>
@@ -153,6 +157,7 @@ export default function Navbar() {
                       </button>
                       <Link 
                         href="/projects"
+                        onClick={() => setIsUserMenuOpen(false)}
                         className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
                       >
                         Projects
@@ -196,6 +201,19 @@ export default function Navbar() {
           isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="px-6 py-4 space-y-2">
+            <Link 
+              href="/projects"
+              onClick={(e) => {
+                if (!session) {
+                  e.preventDefault();
+                  setIsLoginModalOpen(true);
+                }
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+            >
+              Projects
+            </Link>
             <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
               Features
             </button>
@@ -259,6 +277,7 @@ export default function Navbar() {
                   </button>
                   <Link 
                     href="/projects"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
                   >
                     Projects
