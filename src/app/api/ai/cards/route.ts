@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   try {
     // TODO: Add AI agent authentication here
     const body = await request.json()
-    const { action, cardId, status, projectId } = body
+    const { action, cardId, status, projectId, comment } = body
 
     switch (action) {
       case 'get_ready_cards':
@@ -55,12 +55,23 @@ export async function POST(request: NextRequest) {
 
         const updatedCard = await CardService.updateCardStatus(cardId, status as CardStatus)
         
+        // Add comment if provided
+        if (comment) {
+          await prisma.comment.create({
+            data: {
+              cardId,
+              content: comment,
+              isAiComment: true,
+            },
+          })
+        }
+        
         // Log AI activity
         await prisma.aIWorkLog.create({
           data: {
             activity: 'update_card_status',
             endpoint: '/api/ai/cards',
-            payload: { cardId, status },
+            payload: { cardId, status, comment },
             response: { cardId: updatedCard.id, newStatus: updatedCard.status },
           },
         })
@@ -114,9 +125,70 @@ export async function POST(request: NextRequest) {
           },
         })
 
+      case 'next_ready':
+        if (!projectId) {
+          return NextResponse.json(
+            { error: 'projectId is required for next_ready' },
+            { status: 400 }
+          )
+        }
+
+        // Get the highest priority READY card that is AI-allowed
+        const nextCard = await prisma.card.findFirst({
+          where: {
+            projectId,
+            status: 'READY',
+            isAiAllowedTask: true,
+          },
+          orderBy: [
+            { priority: 'asc' },
+            { createdAt: 'asc' },
+          ],
+          include: {
+            project: true,
+            agentDeveloperInstructions: true,
+            createdBy: true,
+          },
+        })
+
+        if (!nextCard) {
+          return NextResponse.json({
+            message: 'No ready tasks available',
+            card: null,
+          })
+        }
+
+        // Log AI activity
+        await prisma.aIWorkLog.create({
+          data: {
+            activity: 'get_next_ready_card',
+            endpoint: '/api/ai/cards',
+            payload: { projectId },
+            response: { cardId: nextCard.id, title: nextCard.title },
+          },
+        })
+
+        return NextResponse.json({
+          card: {
+            id: nextCard.id,
+            title: nextCard.title,
+            description: nextCard.description,
+            acceptanceCriteria: nextCard.acceptanceCriteria,
+            status: nextCard.status,
+            priority: nextCard.priority,
+            projectId: nextCard.projectId,
+            isAiAllowedTask: nextCard.isAiAllowedTask,
+            agentInstructions: nextCard.agentDeveloperInstructions,
+            project: nextCard.project,
+            createdBy: nextCard.createdBy,
+            createdAt: nextCard.createdAt,
+            updatedAt: nextCard.updatedAt,
+          },
+        })
+
       default:
         return NextResponse.json(
-          { error: 'Invalid action. Supported actions: get_ready_cards, update_status, get_card_details' },
+          { error: 'Invalid action. Supported actions: get_ready_cards, update_status, get_card_details, next_ready' },
           { status: 400 }
         )
     }

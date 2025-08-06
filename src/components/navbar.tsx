@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 
 export default function Navbar() {
@@ -10,6 +12,20 @@ export default function Navbar() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { data: session, status } = useSession();
+  const router = useRouter();
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const getUserDisplayName = (email: string) => {
     return email.split('@')[0];
@@ -23,25 +39,33 @@ export default function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <a href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
+              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
                 VibeSight
-              </a>
+              </Link>
             </div>
             
             {/* Center Navigation */}
             <div className="hidden md:flex items-center h-full">
+              {session && (
+                <Link 
+                  href="/projects"
+                  className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                >
+                  Projects
+                </Link>
+              )}
               <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
                 Features
               </button>
               <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
                 Pricing
               </button>
-              <a 
+              <Link 
                 href="/documentation"
                 className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
               >
                 API
-              </a>
+              </Link>
               
               {/* Guide Dropdown */}
               <div 
@@ -93,13 +117,19 @@ export default function Navbar() {
 
             {/* Desktop Auth Section */}
             <div className="hidden md:flex items-center">
-              {session ? (
+              {status === 'loading' ? (
+                <div className="px-6 py-2 flex items-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
+                </div>
+              ) : session ? (
                 <div 
+                  ref={userMenuRef}
                   className="relative h-full"
-                  onMouseEnter={() => setIsUserMenuOpen(true)}
-                  onMouseLeave={() => setIsUserMenuOpen(false)}
                 >
-                  <button className="flex items-center gap-2 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+                  <button 
+                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                    className="flex items-center gap-2 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                  >
                     <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                       {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
                     </div>
@@ -114,13 +144,28 @@ export default function Navbar() {
                     isUserMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
                   }`}>
                     <div className="py-2 px-2 space-y-1">
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      <button 
+                        onClick={() => {
+                          console.log('Account Settings clicked');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Account Settings
                       </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      <Link 
+                        href="/projects"
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Projects
-                      </button>
-                      <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                      </Link>
+                      <button 
+                        onClick={() => {
+                          console.log('Board clicked');
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                      >
                         Board
                       </button>
                       <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
@@ -159,12 +204,13 @@ export default function Navbar() {
             <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
               Pricing
             </button>
-            <a 
+            <Link 
               href="/documentation"
               className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
               API
-            </a>
+            </Link>
             
             {/* Mobile Guide Section */}
             <div className="space-y-1">
@@ -196,7 +242,11 @@ export default function Navbar() {
             
             {/* Mobile Auth Section */}
             <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-              {session ? (
+              {status === 'loading' ? (
+                <div className="flex items-center justify-center px-4 py-3">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                </div>
+              ) : session ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-3 px-4 py-3">
                     <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
@@ -209,9 +259,12 @@ export default function Navbar() {
                   <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
                     Account Settings
                   </button>
-                  <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                  <Link 
+                    href="/projects"
+                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  >
                     Projects
-                  </button>
+                  </Link>
                   <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
                     Board
                   </button>

@@ -83,7 +83,9 @@ model Card {
   description             String?
   acceptanceCriteria      String?
   isAiAllowedTask         Boolean               @default(true)
+  priority                Int                   @default(3)
   agentDeveloperInstructions AgentDeveloperInstruction[]
+  comments                Comment[]
   createdAt               DateTime              @default(now())
   updatedAt               DateTime              @updatedAt
 }
@@ -125,6 +127,7 @@ model User {
   cards                    Card[]
   ownedProjects            Project[]                @relation("ProjectOwner")
   projects                 ProjectUser[]
+  comments                 Comment[]
   accounts                 Account[]
   sessions                 Session[]
   createdAt                DateTime                 @default(now())
@@ -198,4 +201,16 @@ model ProjectUser {
   updatedAt DateTime @updatedAt
 
   @@unique([projectId, userId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  content   String
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+  isAiComment Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
