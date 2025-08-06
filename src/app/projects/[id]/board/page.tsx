@@ -124,6 +124,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     priority: 3,
     isAiAllowedTask: true,
   });
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [filters, setFilters] = useState({
+    search: '',
+    assigneeId: '',
+    aiAllowed: 'all',
+    labelIds: [] as string[],
+    priority: 'all'
+  });
 
   useEffect(() => {
     const loadData = async () => {
@@ -473,7 +481,39 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const getCardsByStatus = (status: CardStatus) => {
     return cards
-      .filter(card => card.status === status)
+      .filter(card => {
+        // Filter by status
+        if (card.status !== status) return false;
+        
+        // Filter by search text
+        if (filters.search && !card.title.toLowerCase().includes(filters.search.toLowerCase()) && 
+            !card.description?.toLowerCase().includes(filters.search.toLowerCase())) {
+          return false;
+        }
+        
+        // Filter by assignee (currently filtering by creator)
+        if (filters.assigneeId && card.createdBy?.id !== filters.assigneeId) {
+          return false;
+        }
+        
+        // Filter by AI allowed
+        if (filters.aiAllowed === 'ai-only' && !card.isAiAllowedTask) return false;
+        if (filters.aiAllowed === 'human-only' && card.isAiAllowedTask) return false;
+        
+        // Filter by priority
+        if (filters.priority !== 'all' && card.priority.toString() !== filters.priority) {
+          return false;
+        }
+        
+        // Filter by labels
+        if (filters.labelIds.length > 0) {
+          const cardLabelIds = card.labels?.map(cl => cl.labelId) || [];
+          const hasMatchingLabel = filters.labelIds.some(labelId => cardLabelIds.includes(labelId));
+          if (!hasMatchingLabel) return false;
+        }
+        
+        return true;
+      })
       .sort((a, b) => {
         // Sort by priority first (1 is highest priority)
         const priorityDiff = a.priority - b.priority;
@@ -506,6 +546,34 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase();
     if (email) return email.split('@')[0].slice(0, 2).toUpperCase();
     return 'U';
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      search: '',
+      assigneeId: '',
+      aiAllowed: 'all',
+      labelIds: [],
+      priority: 'all'
+    });
+  };
+
+  const getUniqueAssignees = () => {
+    const assignees = new Map();
+    cards.forEach(card => {
+      if (card.createdBy) {
+        assignees.set(card.createdBy.id, card.createdBy);
+      }
+    });
+    return Array.from(assignees.values());
+  };
+
+  const hasActiveFilters = () => {
+    return filters.search !== '' || 
+           filters.assigneeId !== '' || 
+           filters.aiAllowed !== 'all' || 
+           filters.labelIds.length > 0 ||
+           filters.priority !== 'all';
   };
 
   const formatCommentDate = (date: Date | string) => {
@@ -565,10 +633,157 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 Create Issue
               </button>
               
-              <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <Filter className="h-3 w-3" />
-                Filter
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className={`w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs rounded-lg transition-colors ${
+                    hasActiveFilters() 
+                      ? 'text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30' 
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <Filter className="h-3 w-3" />
+                  Filter
+                  {hasActiveFilters() && (
+                    <span className="ml-auto bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      !
+                    </span>
+                  )}
+                </button>
+                
+                {showFilterMenu && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-30"
+                      onClick={() => setShowFilterMenu(false)}
+                    />
+                    <div className="absolute left-0 top-full mt-1 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
+                        {hasActiveFilters() && (
+                          <button
+                            onClick={clearFilters}
+                            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Clear all
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Search */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Search
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Search issues..."
+                          value={filters.search}
+                          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      {/* Priority */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Priority
+                        </label>
+                        <select
+                          value={filters.priority}
+                          onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All priorities</option>
+                          <option value="1">P1 (Highest)</option>
+                          <option value="2">P2 (High)</option>
+                          <option value="3">P3 (Medium)</option>
+                          <option value="4">P4 (Low)</option>
+                          <option value="5">P5 (Lowest)</option>
+                        </select>
+                      </div>
+                      
+                      {/* Assignee */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Creator
+                        </label>
+                        <select
+                          value={filters.assigneeId}
+                          onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="">All creators</option>
+                          {getUniqueAssignees().map((assignee) => (
+                            <option key={assignee.id} value={assignee.id}>
+                              {assignee.name || assignee.email}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* AI Allowed */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          AI Tasks
+                        </label>
+                        <select
+                          value={filters.aiAllowed}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All issues</option>
+                          <option value="ai-only">AI allowed only</option>
+                          <option value="human-only">Human only</option>
+                        </select>
+                      </div>
+                      
+                      {/* Labels */}
+                      {labels.length > 0 && (
+                        <div className="mb-3">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Labels
+                          </label>
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            {labels.map((label) => (
+                              <label key={label.id} className="flex items-center gap-2 text-xs">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.labelIds.includes(label.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: [...prev.labelIds, label.id]
+                                      }));
+                                    } else {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: prev.labelIds.filter(id => id !== label.id)
+                                      }));
+                                    }
+                                  }}
+                                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span
+                                  className="px-1.5 py-0.5 rounded text-xs font-medium"
+                                  style={{
+                                    backgroundColor: label.color + '20',
+                                    color: label.color,
+                                    border: `1px solid ${label.color}40`
+                                  }}
+                                >
+                                  {label.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
               
               <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                 <Search className="h-3 w-3" />
@@ -600,12 +815,157 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 <Plus className="h-3 w-3" />
               </button>
               
-              <button 
-                className="w-full p-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                title="Filter"
-              >
-                <Filter className="h-3 w-3" />
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className={`w-full p-1.5 rounded-lg transition-colors relative ${
+                    hasActiveFilters() 
+                      ? 'text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30' 
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                  title="Filter"
+                >
+                  <Filter className="h-3 w-3" />
+                  {hasActiveFilters() && (
+                    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center">
+                      !
+                    </span>
+                  )}
+                </button>
+                
+                {showFilterMenu && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-30"
+                      onClick={() => setShowFilterMenu(false)}
+                    />
+                    <div className="absolute left-full top-0 ml-2 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
+                        {hasActiveFilters() && (
+                          <button
+                            onClick={clearFilters}
+                            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Clear all
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Search */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Search
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Search issues..."
+                          value={filters.search}
+                          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      {/* Priority */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Priority
+                        </label>
+                        <select
+                          value={filters.priority}
+                          onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All priorities</option>
+                          <option value="1">P1 (Highest)</option>
+                          <option value="2">P2 (High)</option>
+                          <option value="3">P3 (Medium)</option>
+                          <option value="4">P4 (Low)</option>
+                          <option value="5">P5 (Lowest)</option>
+                        </select>
+                      </div>
+                      
+                      {/* Assignee */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Creator
+                        </label>
+                        <select
+                          value={filters.assigneeId}
+                          onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="">All creators</option>
+                          {getUniqueAssignees().map((assignee) => (
+                            <option key={assignee.id} value={assignee.id}>
+                              {assignee.name || assignee.email}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* AI Allowed */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          AI Tasks
+                        </label>
+                        <select
+                          value={filters.aiAllowed}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All issues</option>
+                          <option value="ai-only">AI allowed only</option>
+                          <option value="human-only">Human only</option>
+                        </select>
+                      </div>
+                      
+                      {/* Labels */}
+                      {labels.length > 0 && (
+                        <div className="mb-3">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Labels
+                          </label>
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            {labels.map((label) => (
+                              <label key={label.id} className="flex items-center gap-2 text-xs">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.labelIds.includes(label.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: [...prev.labelIds, label.id]
+                                      }));
+                                    } else {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: prev.labelIds.filter(id => id !== label.id)
+                                      }));
+                                    }
+                                  }}
+                                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span
+                                  className="px-1.5 py-0.5 rounded text-xs font-medium"
+                                  style={{
+                                    backgroundColor: label.color + '20',
+                                    color: label.color,
+                                    border: `1px solid ${label.color}40`
+                                  }}
+                                >
+                                  {label.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
               
               <button 
                 className="w-full p-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
