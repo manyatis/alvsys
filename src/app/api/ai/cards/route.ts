@@ -46,10 +46,21 @@ export async function POST(request: NextRequest) {
         })
 
       case 'update_status':
-        if (!cardId || !status) {
+        if (!cardId || !status || !projectId) {
           return NextResponse.json(
-            { error: 'cardId and status are required for update_status' },
+            { error: 'cardId, status, and projectId are required for update_status' },
             { status: 400 }
+          )
+        }
+
+        // Verify card belongs to the specified project for privacy
+        const cardToUpdate = await prisma.card.findFirst({
+          where: { id: cardId, projectId }
+        })
+        if (!cardToUpdate) {
+          return NextResponse.json(
+            { error: 'Card not found in specified project' },
+            { status: 404 }
           )
         }
 
@@ -86,16 +97,24 @@ export async function POST(request: NextRequest) {
         })
 
       case 'get_card_details':
-        if (!cardId) {
+        if (!cardId || !projectId) {
           return NextResponse.json(
-            { error: 'cardId is required for get_card_details' },
+            { error: 'cardId and projectId are required for get_card_details' },
             { status: 400 }
           )
         }
 
-        const card = await CardService.getCardById(cardId)
+        // Verify card belongs to the specified project for privacy
+        const card = await prisma.card.findFirst({
+          where: { id: cardId, projectId },
+          include: {
+            project: true,
+            agentDeveloperInstructions: true,
+            createdBy: true,
+          }
+        })
         if (!card) {
-          return NextResponse.json({ error: 'Card not found' }, { status: 404 })
+          return NextResponse.json({ error: 'Card not found in specified project' }, { status: 404 })
         }
 
         // Log AI activity
@@ -215,7 +234,14 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('projectId')
 
-    const readyCards = await CardService.getAiReadyCards(projectId || undefined)
+    if (!projectId) {
+      return NextResponse.json(
+        { error: 'projectId query parameter is required' },
+        { status: 400 }
+      )
+    }
+
+    const readyCards = await CardService.getAiReadyCards(projectId)
     
     // Log AI activity
     await prisma.aIWorkLog.create({

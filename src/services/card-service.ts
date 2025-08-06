@@ -1,5 +1,5 @@
 import { PrismaClient } from '@/generated/prisma'
-import { Card, CreateCardRequest, UpdateCardRequest, AgentInstructionType, CardStatus } from '@/types/card'
+import { Card, CreateCardRequest, UpdateCardRequest, CardStatus } from '@/types/card'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined

@@ -19,7 +19,7 @@ interface Project {
 }
 
 export default function ProjectsPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function ProjectsPage() {
     useExistingOrg: false,
     organizationId: ''
   });
-  const [organizations, setOrganizations] = useState<any[]>([]);
+  const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {

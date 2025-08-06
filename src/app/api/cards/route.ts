@@ -28,7 +28,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build the where clause
-    const whereClause: any = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: { projectId: string; status?: any } = {
       projectId: projectId,
     }
 
@@ -119,6 +120,7 @@ export async function POST(request: NextRequest) {
         createdById: user.id,
         isAiAllowedTask,
         agentDeveloperInstructions: {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           create: agentInstructions.map((instruction: any) => ({
             type: instruction.type,
             branchName: instruction.branchName,

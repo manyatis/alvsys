@@ -9,7 +9,7 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
   const getUserDisplayName = (email: string) => {
     return email.split('@')[0];
@@ -248,8 +248,8 @@ export default function Home() {
             </h1>
             
             <p className="text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Transform your development workflow with intelligent task management. 
-              Bring structure to vibe coding while AI agents handle the implementation.
+              Set up your backlog anywhere, anytime. Turn on AI agents and let them get to work 
+              while you&apos;re away from your computer. Come back to completed tasks and progress updates.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -278,7 +278,7 @@ export default function Home() {
               Designed for Modern Development
             </h2>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Seamlessly integrate AI into your workflow with purpose-built features
+              Create tasks from anywhere, activate AI agents, and watch work happen automatically
             </p>
           </div>
           
@@ -290,11 +290,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                AI-Native Architecture
+                Mobile Backlog Management
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Built from the ground up to work seamlessly with AI coding assistants. 
-                Every card can be AI-enabled with intelligent task routing.
+                Create and organize tasks from your phone while commuting. Set priorities, 
+                write acceptance criteria, and enable AI automation with a few taps.
               </p>
             </div>
             
@@ -305,11 +305,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Real-time Collaboration
+                Autonomous AI Execution
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Watch AI agents work in real-time. Monitor progress, provide feedback, 
-                and maintain control while coding from anywhere.
+                AI agents automatically pick up ready tasks, implement features, and update status. 
+                Get work done 24/7 without being at your computer.
               </p>
             </div>
             
@@ -320,11 +320,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Structured Vibe Coding
+                Progress Monitoring
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Maintain project clarity while embracing flexible development. 
-                Perfect balance between creative flow and organized execution.
+                Return to detailed progress updates, completed features, and clear status reports. 
+                Full visibility into what happened while you were away.
               </p>
             </div>
           </div>
@@ -350,11 +350,11 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Mobile-First Development
+                      Set and Forget Workflow
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Code from anywhere with our responsive interface. Perfect for managing 
-                      AI development tasks on the go.
+                      Create your backlog from anywhere - commuting, traveling, or during meetings. 
+                      AI agents work while you sleep, delivering results by morning.
                     </p>
                   </div>
                 </div>
@@ -589,7 +589,8 @@ export default function Home() {
             Ready to Transform Your Workflow?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join developers who are building faster and smarter with AI-native issue tracking.
+            Join developers who create backlogs on the go and wake up to completed features. 
+            Never let distance from your computer slow down development again.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">

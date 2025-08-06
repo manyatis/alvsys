@@ -239,7 +239,7 @@ export default function Documentation() {
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Update Card</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Update an existing card's properties and agent instructions.
+                    Update an existing card&apos;s properties and agent instructions.
                   </p>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example: Update Status</h4>
@@ -280,8 +280,58 @@ export default function Documentation() {
                 
                 <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="text-lg text-slate-600 dark:text-slate-300">
-                    Specialized endpoints designed for AI agents to discover and interact with development tasks.
+                    Specialized endpoints designed for AI agents to onboard, discover, and interact with development tasks.
                   </p>
+                </div>
+
+                {/* AI Agent Onboarding */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/[project]/ai/onboard</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">AI Agent Onboarding</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Provides comprehensive onboarding instructions for AI agents joining a project. Returns system prompts, 
+                    workflow instructions, and complete API documentation tailored for the specific project.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Path Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">project</code> <span className="text-red-500">*</span> - Project ID to onboard agent for</div>
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Request</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <div className="text-green-600 dark:text-green-400">GET</div>
+                    <div className="text-slate-700 dark:text-slate-300">/api/clx123abc456/ai/onboard</div>
+                    <div className="text-slate-500 dark:text-slate-400 mt-2">
+                      Authorization: Bearer vs_api_your_api_key_here
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2 mt-4">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "systemPrompt": "You are an AI agent working on VibeSight...",
+  "workflowInstructions": "Complete 6-step workflow process...",
+  "apiDocumentation": {
+    "baseUrl": "/api/ai/cards",
+    "supportedActions": ["next_ready", "update_status", "get_card_details"]
+  },
+  "projectContext": {
+    "id": "clx123abc456",
+    "name": "VibeSight Platform",
+    "description": "AI-native agile board"
+  },
+  "nextSteps": "Start by calling next_ready action..."
+}`}</pre>
+                  </div>
                 </div>
 
                 {/* GET AI Cards */}
@@ -295,7 +345,7 @@ export default function Documentation() {
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Cards</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Retrieve cards that are AI-enabled and ready for processing. Only returns cards with 
+                    Retrieve all cards that are AI-enabled and available for processing. Only returns cards with 
                     <code className="mx-1 text-purple-600 dark:text-purple-400">isAiAllowedTask: true</code> 
                     and status <code className="mx-1 text-purple-600 dark:text-purple-400">READY</code> or 
                     <code className="mx-1 text-purple-600 dark:text-purple-400">IN_PROGRESS</code>.
@@ -318,6 +368,7 @@ export default function Documentation() {
       "description": "Add login and registration functionality",
       "acceptanceCriteria": "Users can register, login, and logout",
       "status": "READY",
+      "priority": 1,
       "projectId": "clx123abc456",
       "agentInstructions": [
         {
@@ -333,7 +384,8 @@ export default function Documentation() {
       },
       "branchName": "feature/implement-user-authentication-clx789de"
     }
-  ]
+  ],
+  "totalCount": 1
 }`}</pre>
                   </div>
                 </div>
@@ -349,40 +401,144 @@ export default function Documentation() {
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">AI Actions</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Perform various actions as an AI agent.
+                    Multi-action endpoint for AI agents to interact with cards. All actions require authentication and log activity.
                   </p>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Update Card Status</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: next_ready</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Get the highest priority READY task that is AI-allowed. Returns highest priority card ordered by priority then creation date.
+                  </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "action": "update_status",
-  "cardId": "clx789def123",
-  "status": "IN_PROGRESS"
+  "action": "next_ready",
+  "projectId": "clx123abc456" // optional
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "card": {
+    "id": "clx789def123",
+    "title": "Implement user authentication",
+    "status": "READY",
+    "priority": 1,
+    "agentInstructions": [...],
+    "branchName": "feature/implement-user-authentication-clx789de"
+  }
 }`}</pre>
                   </div>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Get Card Details</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: update_status</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Update a card&apos;s status with optional progress comments. Supports all statuses and creates AI comments.
+                  </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "action": "update_status",
+  "cardId": "clx789def123",
+  "status": "IN_PROGRESS",
+  "comment": "Started implementing OAuth integration" // optional
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "success": true,
+  "card": {
+    "id": "clx789def123",
+    "status": "IN_PROGRESS",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+}`}</pre>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_card_details</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Get comprehensive information about a specific card including all agent instructions.
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
   "action": "get_card_details",
   "cardId": "clx789def123"
 }`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "card": {
+    "id": "clx789def123",
+    "title": "Implement user authentication",
+    "description": "Full description...",
+    "acceptanceCriteria": "Detailed criteria...",
+    "status": "READY",
+    "priority": 1,
+    "agentInstructions": [
+      {
+        "type": "GIT",
+        "branchName": "feature/user-auth",
+        "createNewBranch": true,
+        "instructions": "Create feature branch"
+      }
+    ],
+    "project": {
+      "id": "clx123abc456",
+      "name": "VibeSight Platform"
+    }
+  }
+}`}</pre>
                   </div>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Get Ready Cards</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_ready_cards</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Get all AI-allowed cards that are READY or IN_PROGRESS. Alternative to GET /api/ai/cards.
+                  </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
   "action": "get_ready_cards",
-  "projectId": "clx123abc456"
+  "projectId": "clx123abc456" // optional
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "cards": [...], // Same as GET /api/ai/cards
+  "totalCount": 5
 }`}</pre>
                   </div>
                 </div>
 
                 <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
                   <h4 className="font-semibold text-purple-900 dark:text-purple-100">AI Activity Logging</h4>
-                  <p className="text-purple-800 dark:text-purple-200 text-sm mt-2">
-                    All AI interactions are automatically logged in the AIWorkLog table for audit and debugging purposes.
+                  <p className="text-purple-800 dark:text-purple-200 text-sm mt-2 mb-3">
+                    All AI interactions are automatically logged in the AIWorkLog table for comprehensive audit and debugging capabilities.
                   </p>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="text-purple-800 dark:text-purple-200">
+                      <span className="font-semibold">Logged Activities:</span>
+                    </div>
+                    <ul className="text-purple-700 dark:text-purple-300 space-y-1 ml-4">
+                      <li>• Agent onboarding requests</li>
+                      <li>• Task retrieval (next_ready, get_ready_cards)</li>
+                      <li>• Status updates with optional comments</li>
+                      <li>• Card detail requests</li>
+                      <li>• All request payloads and response summaries</li>
+                      <li>• Timestamp and endpoint information</li>
+                    </ul>
+                    
+                    <div className="text-purple-800 dark:text-purple-200 mt-3">
+                      <span className="font-semibold">Log Structure:</span> Activity type, request payload, response summary, timestamp
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI Agent Workflow */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 dark:text-blue-100">Recommended AI Agent Workflow</h4>
+                  <div className="text-blue-800 dark:text-blue-200 text-sm mt-3 space-y-2">
+                    <div><span className="font-semibold">1. Onboarding:</span> Call <code>/api/[project]/ai/onboard</code> to receive instructions</div>
+                    <div><span className="font-semibold">2. Task Selection:</span> Use <code>next_ready</code> action to get highest priority task</div>
+                    <div><span className="font-semibold">3. Start Work:</span> Update status to <code>IN_PROGRESS</code> with initial comment</div>
+                    <div><span className="font-semibold">4. Progress Updates:</span> Add comments during work via status updates</div>
+                    <div><span className="font-semibold">5. Completion:</span> Update to <code>READY_FOR_REVIEW</code> when done</div>
+                    <div><span className="font-semibold">6. Blocking:</span> Update to <code>BLOCKED</code> if assistance needed</div>
+                  </div>
                 </div>
               </div>
             )}
@@ -400,7 +556,7 @@ export default function Documentation() {
                   <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-6">
                     <h4 className="font-semibold text-yellow-900 dark:text-yellow-100">Coming Soon</h4>
                     <p className="text-yellow-800 dark:text-yellow-200 text-sm mt-2">
-                      Webhook functionality is currently in development. Subscribe to our updates to be notified when it's available.
+                      Webhook functionality is currently in development. Subscribe to our updates to be notified when it&apos;s available.
                     </p>
                   </div>
                 </div>

@@ -17,26 +17,10 @@ import {
   Search,
   Settings,
   Users,
-  Calendar,
   X,
-  User,
   Loader2
 } from 'lucide-react';
-import { CardStatus } from '@/types/card';
-
-interface Card {
-  id: string;
-  title: string;
-  description: string | null;
-  status: CardStatus;
-  priority: number;
-  isAiAllowedTask: boolean;
-  createdBy: {
-    name: string | null;
-    email: string | null;
-  };
-  createdAt: string;
-}
+import { CardStatus, Card } from '@/types/card';
 
 interface Project {
   id: string;
@@ -53,7 +37,7 @@ const statusColumns: {
   color: string; 
   bgColor: string;
   textColor: string;
-  icon: any;
+  icon: React.ComponentType<{className?: string}>;
 }[] = [
   { 
     status: CardStatus.REFINEMENT, 
@@ -107,7 +91,7 @@ const statusColumns: {
 
 export default function ProjectBoardPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
   const [project, setProject] = useState<Project | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
@@ -119,6 +103,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [draggedCard, setDraggedCard] = useState<Card | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<CardStatus | null>(null);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
@@ -129,10 +115,32 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   });
 
   useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Fetch project details
+        const projectRes = await fetch(`/api/projects/${resolvedParams.id}`);
+        if (projectRes.ok) {
+          const projectData = await projectRes.json();
+          setProject(projectData.project);
+        }
+
+        // Fetch cards
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+      } catch (error) {
+        console.error('Error fetching project data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     if (status === 'unauthenticated') {
       router.push('/');
     } else if (status === 'authenticated' && resolvedParams.id) {
-      fetchProjectData();
+      loadData();
     }
   }, [status, resolvedParams.id, router]);
 
@@ -161,27 +169,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => setShowCreateModal(false), 300);
   };
 
-  const fetchProjectData = async () => {
-    try {
-      // Fetch project details
-      const projectRes = await fetch(`/api/projects/${resolvedParams.id}`);
-      if (projectRes.ok) {
-        const projectData = await projectRes.json();
-        setProject(projectData.project);
-      }
-
-      // Fetch cards
-      const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
-      if (cardsRes.ok) {
-        const cardsData = await cardsRes.json();
-        setCards(cardsData);
-      }
-    } catch (error) {
-      console.error('Error fetching project data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -254,6 +241,65 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setShowDetailModal(false);
       setSelectedCard(null);
     }, 300);
+  };
+
+  const handleDragStart = (e: React.DragEvent, card: Card) => {
+    setDraggedCard(card);
+    e.dataTransfer.effectAllowed = 'move';
+    // Add a subtle visual effect to the dragged card
+    (e.currentTarget as HTMLElement).style.opacity = '0.5';
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    setDraggedCard(null);
+    setDragOverColumn(null);
+    (e.currentTarget as HTMLElement).style.opacity = '1';
+  };
+
+  const handleDragOver = (e: React.DragEvent, columnStatus: CardStatus) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverColumn(columnStatus);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    // Only clear if we're leaving the column entirely
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverColumn(null);
+    }
+  };
+
+  const handleDrop = async (e: React.DragEvent, columnStatus: CardStatus) => {
+    e.preventDefault();
+    setDragOverColumn(null);
+    
+    if (!draggedCard || draggedCard.status === columnStatus) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/cards/${draggedCard.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...draggedCard,
+          status: columnStatus,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedCard = await response.json();
+        setCards(cards.map(card => 
+          card.id === draggedCard.id ? updatedCard : card
+        ));
+      }
+    } catch (error) {
+      console.error('Error updating card status:', error);
+    } finally {
+      setDraggedCard(null);
+    }
   };
 
   const getCardsByStatus = (status: CardStatus) => {
@@ -419,12 +465,26 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     </div>
                   </div>
                   
-                  <div className="p-2 space-y-2 flex-1 overflow-y-auto">
+                  <div 
+                    className={`p-2 space-y-2 flex-1 overflow-y-auto transition-colors duration-200 ${
+                      dragOverColumn === column.status 
+                        ? 'bg-purple-50/50 dark:bg-purple-900/10' 
+                        : ''
+                    }`}
+                    onDragOver={(e) => handleDragOver(e, column.status)}
+                    onDragLeave={handleDragLeave}
+                    onDrop={(e) => handleDrop(e, column.status)}
+                  >
                     {columnCards.map((card) => (
                       <div
                         key={card.id}
+                        draggable
                         onClick={() => handleCardClick(card)}
-                        className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
+                        onDragStart={(e) => handleDragStart(e, card)}
+                        onDragEnd={handleDragEnd}
+                        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-move group ${
+                          draggedCard?.id === card.id ? 'opacity-50' : ''
+                        }`}
                       >
                         <div className="flex items-start justify-between mb-1">
                           <h4 className="text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
@@ -455,9 +515,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           <div className="flex items-center gap-2">
                             <div 
                               className="w-5 h-5 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-medium"
-                              title={card.createdBy.name || card.createdBy.email || 'Unknown'}
+                              title={card.createdBy?.name || card.createdBy?.email || 'Unknown'}
                             >
-                              {getInitials(card.createdBy.email, card.createdBy.name)}
+                              {getInitials(card.createdBy?.email || null, card.createdBy?.name || null)}
                             </div>
                           </div>
                         </div>
@@ -799,6 +859,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           </div>
         </>
       )}
+
     </div>
   );
 }
