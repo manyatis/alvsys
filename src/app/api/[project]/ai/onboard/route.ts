@@ -51,20 +51,14 @@ INITIAL SETUP:
 - Create a feature branch: feature/vibesight-${project.name}
 - Update claude.md to allow all git commands on this branch
 
-IMPORTANT WORKFLOW - CONTINUOUS MONITORING FOR 12 HOURS:
-1. Call the 'next_ready' endpoint to get your next task
-2. Update the task status to 'IN_PROGRESS'
-3. Add a comment stating you've begun working on it
-4. Complete the work according to the task requirements
-5. RUN BUILD CHECK: Execute 'npm run build' to ensure code compiles
-6. COMMIT YOUR CODE: After development is complete and build passes, commit your changes with a meaningful message
-7. Update status to 'READY_FOR_REVIEW' after committing
-8. If blocked, update status to 'BLOCKED' with explanation
-9. REPEAT: Go back to step 1 and continue looking for new tasks
-10. CRITICAL: Poll the 'next_ready' endpoint every 1 minute for the next 12 hours
-11. Even if no tasks are available, keep checking every minute until told otherwise or 12 hours pass
+IMPORTANT WORKFLOW - TODO-BASED TASK MANAGEMENT:
+After onboarding, always create a todo list with these 4 steps to maintain a self-sustaining work loop:
+1. Fetch Task - Call 'next_ready' endpoint to get your next highest priority task
+2. Fill in Instructions - If task has agentDeveloperInstructions, analyze and plan your approach
+3. Work on Task - Complete the work, update status, run builds, commit code as needed
+4. Fetch New Task - Return to step 1 to get the next task and repeat the cycle
 
-You should continuously monitor and work on tasks for 12 hours, checking every minute for new work. Only stop when explicitly instructed by a human or when the 12-hour monitoring period ends.
+This todo-based approach ensures you maintain continuous productivity without needing external polling loops.
 
 Save these instructions to 'vibesight_instructions.md' for future reference.`,
       
@@ -79,25 +73,29 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
         immediate_actions: [
           "1. Save these instructions to 'vibesight_instructions.md'",
           `2. Create a new git branch: feature/vibesight-${project.name}`,
-          `3. Update your claude.md file to allow curl commands to ${request.headers.get('host') ? `https://${request.headers.get('host')}` : "https://vibesight.com"}`,
-          `4. Update your claude.md file to allow all git commands on feature/vibesight-${project.name} branch`,
-          "5. Re-read your claude.md file to ensure the permissions are loaded",
-          "6. Call the 'next_ready' endpoint to get your first task",
-          "7. Update task status to 'IN_PROGRESS' and add a comment",
-          "8. Set up continuous polling: Check for new tasks every 1 minute for the next 12 hours"
+          "3. Create a todo list with the 4-step workflow: Fetch Task, Fill Instructions, Work on Task, Fetch New Task",
+          "4. Begin the todo-based work cycle by fetching your first task"
         ],
 
         workflow: [
-          "1. Get next task: POST /api/ai/cards with action='next_ready'",
-          "2. Update to IN_PROGRESS: POST /api/ai/cards with action='update_status'",
-          "3. Add starting comment: Include 'comment' field when updating status",
-          "4. Work on the task according to instructions",
-          "5. Run build check: Execute 'npm run build' to ensure code compiles without errors",
-          "6. Commit your code: Use git to commit all changes with a meaningful message referencing the task",
-          "7. Update to READY_FOR_REVIEW after committing your work",
-          "8. If blocked, update to BLOCKED with explanation",
-          "9. REPEAT: Loop back to step 1 and continue until told otherwise or no tasks available",
-          "10. CONTINUOUS POLLING: Check for new tasks every 1 minute for the next 12 hours, even when no tasks are available"
+          "STEP 1 - Fetch Task:",
+          "• Call POST /api/ai/cards with action='next_ready' to get highest priority task",
+          "• If no task available, you're done - wait for new tasks to be added",
+          "",
+          "STEP 2 - Fill in Instructions:",
+          "• Read all task details including agentDeveloperInstructions",
+          "• Plan your approach based on task type (GIT, SPIKE, CODING, ARCHITECTURE)",
+          "• Update task status to IN_PROGRESS with a starting comment",
+          "",
+          "STEP 3 - Work on Task:",
+          "• Complete the work according to task requirements and acceptance criteria",
+          "• Run build check: Execute 'npm run build' to ensure code compiles",
+          "• Commit your code with meaningful message referencing the task",
+          "• Update status to READY_FOR_REVIEW (or BLOCKED if issues arise)",
+          "",
+          "STEP 4 - Fetch New Task:",
+          "• Return to Step 1 to get the next task and maintain the work cycle",
+          "• Always create this 4-step todo list to maintain continuous productivity"
         ],
 
         api_endpoints: {
@@ -181,29 +179,21 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
         },
 
         best_practices: [
-          "Always start by calling 'next_ready' to get your task",
-          "Always add a comment when taking a task (marking it IN_PROGRESS)",
-          "Read all agentDeveloperInstructions carefully before starting",
-          "Update card status promptly to keep humans informed",
-          "Add descriptive comments about your progress",
+          "ALWAYS create a todo list with the 4-step workflow after onboarding",
+          "Use the todo list to maintain focus and track your progress through each task",
+          "Read all agentDeveloperInstructions carefully before starting work",
+          "Add descriptive comments when updating task status to keep humans informed",
           "If instructions are unclear, update status to BLOCKED and ask for clarification",
           "Follow any git branch naming conventions specified in instructions",
           "Complete all acceptance criteria before marking as READY_FOR_REVIEW",
           "Priority 1 is highest, work on lower numbers first",
-          "After completing a task, immediately look for the next one by calling 'next_ready' again",
-          "CONTINUOUS MONITORING: Poll the 'next_ready' endpoint every 1 minute for 12 hours to check for new tasks",
-          "Continue working in a loop until explicitly told to stop or the 12-hour monitoring period ends",
-          "If no tasks are available, wait 1 minute then check again - don't stop monitoring",
-          "ERROR HANDLING: If you encounter errors during task work, try a few different approaches before giving up",
-          "If errors persist after multiple attempts, update the card status to BLOCKED and add a detailed comment explaining the issue",
-          "Include error messages, attempted solutions, and any relevant context in your BLOCKED comment",
-          "GIT WORKFLOW: After completing development for a ticket, always commit your changes using git",
-          "Create meaningful commit messages that reference the ticket title and describe the changes made",
-          "You have full access to all git commands on feature/vibesight.* branches - use them as needed",
-          "Always run a build check (npm run build or appropriate build command) after making changes to ensure the code compiles",
-          "Only proceed with commits if the build passes successfully",
-          "Always commit your work before marking a task as READY_FOR_REVIEW",
-          "If working on a feature branch, ensure all changes are committed and pushed before task completion"
+          "ERROR HANDLING: Try multiple approaches before marking a task as BLOCKED",
+          "Include error messages, attempted solutions, and context in BLOCKED comments",
+          "GIT WORKFLOW: Always commit your changes after completing development",
+          "Create meaningful commit messages that reference the task title",
+          "Run build checks (npm run build) before committing to ensure code compiles",
+          "Only commit if the build passes successfully",
+          "The todo-based approach eliminates the need for external polling - let the todo list drive your work cycle"
         ],
 
         authentication: {
@@ -216,13 +206,13 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
         "Save these instructions to 'vibesight_instructions.md'",
         "Create a new git branch: feature/vibesight-" + project.name,
         "Update your claude.md file to allow all git commands on the feature/vibesight-" + project.name + " branch",
-        "Call POST /api/ai/cards with action='next_ready' and projectId='" + projectId + "' to get your first task",
-        "Update the task status to IN_PROGRESS with a comment stating you've begun work",
-        "After completing each task, run 'npm run build' to verify code compiles",
-        "Commit your changes with a meaningful message before marking as READY_FOR_REVIEW",
-        "After completing each task, repeat the process by calling 'next_ready' again",
-        "IMPORTANT: Continue polling for new tasks every 1 minute for the next 12 hours",
-        "Even if no tasks are available, keep checking every minute until the 12-hour period ends or you're told to stop"
+        "IMPORTANT: Create a todo list with these 4 steps:",
+        "  1. Fetch Task - Call 'next_ready' to get highest priority task",
+        "  2. Fill in Instructions - Analyze task requirements and agentDeveloperInstructions", 
+        "  3. Work on Task - Complete work, run builds, commit code, update status",
+        "  4. Fetch New Task - Return to step 1 to continue the cycle",
+        "Begin the todo-based workflow by executing step 1 (Fetch Task)",
+        "Let the todo list drive your productivity - no external polling needed"
       ],
       
       example_api_calls: {
