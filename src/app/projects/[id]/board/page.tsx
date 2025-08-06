@@ -870,6 +870,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const handleCreateLabel = async (name: string, color: string) => {
     try {
+      console.log('Creating label:', { name, color, projectId: resolvedParams.id });
+      
       const response = await fetch(`/api/projects/${resolvedParams.id}/labels`, {
         method: 'POST',
         headers: {
@@ -880,9 +882,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
       if (response.ok) {
         const newLabel = await response.json();
+        console.log('Label created successfully:', newLabel);
         setLabels([...labels, newLabel]);
       } else {
-        throw new Error('Failed to create label');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Label creation failed:', response.status, errorData);
+        throw new Error(errorData.error || `Failed to create label: ${response.status}`);
       }
     } catch (error) {
       console.error('Error creating label:', error);

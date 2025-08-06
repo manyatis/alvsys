@@ -183,6 +183,7 @@ export default function LabelSelector({
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
+                        e.stopPropagation();
                         handleCreateLabel();
                       }
                     }}
@@ -224,6 +225,7 @@ export default function LabelSelector({
                       type="button"
                       onClick={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         handleCreateLabel();
                       }}
                       disabled={!newLabelName.trim() || isCreating}
