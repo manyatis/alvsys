@@ -3,7 +3,7 @@
 You are permitted to run curl commands (GET/POST/PUT etc),
 You are permitted to edit files in this directory
 You are permitted to run any bash commands in this directory.
-You have full access to all git commands on the feature/vibehero-vibehero branch.
+You have full access to all git commands on the feature/vibehero-vibesight branch.
 
 # VibeHero - AI Native Agile Board
 

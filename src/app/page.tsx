@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 
 export default function Home() {
@@ -30,6 +31,21 @@ export default function Home() {
             
             {/* Center Navigation */}
             <div className="hidden md:flex items-center h-full">
+              {session ? (
+                <Link 
+                  href="/projects"
+                  className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                >
+                  Projects
+                </Link>
+              ) : (
+                <button 
+                  onClick={() => setIsLoginModalOpen(true)}
+                  className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                >
+                  Projects
+                </button>
+              )}
               <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
                 Features
               </button>
@@ -147,6 +163,21 @@ export default function Home() {
           isMobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="px-6 py-4 space-y-2">
+            {session ? (
+              <Link 
+                href="/projects"
+                className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              >
+                Projects
+              </Link>
+            ) : (
+              <button 
+                onClick={() => setIsLoginModalOpen(true)}
+                className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              >
+                Projects
+              </button>
+            )}
             <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
               Features
             </button>

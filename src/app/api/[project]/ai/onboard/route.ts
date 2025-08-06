@@ -92,8 +92,7 @@ Save these instructions to 'vibehero_instructions.md' for future reference.`,
           "• Update status to READY_FOR_REVIEW (or BLOCKED if issues arise)",
           "",
           "STEP 4 - Fetch New Task:",
-          "• Return to Step 1 to get the next task and maintain the work cycle",
-          "• Always create this 4-step todo list to maintain continuous productivity"
+          "• Create a new todo to the existing list to fetch a new task, and continue"
         ],
 
         api_endpoints: {
