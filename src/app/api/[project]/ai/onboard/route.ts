@@ -49,16 +49,12 @@ INITIAL SETUP:
 - Create a feature branch: feature/vibehero-${project.name}
 - Update claude.md to allow all git commands on this branch
 
-IMPORTANT WORKFLOW - TODO-BASED TASK MANAGEMENT:
-After onboarding, always create a todo list with these 4 steps to maintain a self-sustaining work loop:
-1. Fetch Task - Call 'next_ready' endpoint to get your next highest priority task
-2. Fill in Instructions - If task has agentDeveloperInstructions, analyze and plan your approach
-3. Work on Task - Complete the work, update status, run builds, commit code as needed
-4. Fetch New Task - Return to step 1 to get the next task and repeat the cycle
+CONTINUOUS WORKFLOW:
+After onboarding, enter a continuous work loop: fetch task → work on task → fetch task → work on task.
 
-This todo-based approach ensures you maintain continuous productivity without needing external polling loops.
+This creates a self-sustaining endless cycle of productivity without needing external polling loops.
 
-Save these instructions to 'vibehero_instructions.md' for future reference.`,
+NEVER STOP - always continue to the next task.`,
       
       project: {
         id: project.id,
@@ -69,30 +65,22 @@ Save these instructions to 'vibehero_instructions.md' for future reference.`,
         overview: "VibeHero is an AI-native agile board. You will fetch tasks, work on them, and update their status through our API.",
         
         immediate_actions: [
-          "1. Save these instructions to 'vibehero_instructions.md'",
-          `2. Create a new git branch: feature/vibehero-${project.name}`,
-          "3. Create a todo list with the 4-step workflow: Fetch Task, Fill Instructions, Work on Task, Fetch New Task",
-          "4. Begin the todo-based work cycle by fetching your first task"
+          `1. Create a new git branch: feature/vibehero-${project.name}`,
+          "2. Begin the continuous work cycle: fetch task → work on task → fetch task",
+          "3. NEVER STOP - maintain an endless loop of fetching and completing tasks"
         ],
 
         workflow: [
-          "STEP 1 - Fetch Task:",
+          "CONTINUOUS LOOP - Fetch Task → Work → Fetch Task → Work:",
           "• Call POST /api/ai/cards with action='next_ready' to get highest priority task",
-          "• If no task available, you're done - wait for new tasks to be added",
-          "",
-          "STEP 2 - Fill in Instructions:",
           "• Read all task details including agentDeveloperInstructions",
-          "• Plan your approach based on task type (GIT, SPIKE, CODING, ARCHITECTURE)",
           "• Update task status to IN_PROGRESS with a starting comment",
-          "",
-          "STEP 3 - Work on Task:",
           "• Complete the work according to task requirements and acceptance criteria",
           "• Run build check: Execute 'npm run build' to ensure code compiles",
           "• Commit your code with meaningful message referencing the task",
           "• Update status to READY_FOR_REVIEW (or BLOCKED if issues arise)",
-          "",
-          "STEP 4 - Fetch New Task:",
-          "• Create a new todo to the existing list to fetch a new task, and continue"
+          "• Immediately fetch the next task - repeat endlessly",
+          "• If no task available, wait briefly then try again - never stop the loop"
         ],
 
         api_endpoints: {
@@ -176,8 +164,8 @@ Save these instructions to 'vibehero_instructions.md' for future reference.`,
         },
 
         best_practices: [
-          "ALWAYS create a todo list with the 4-step workflow after onboarding",
-          "Use the todo list to maintain focus and track your progress through each task",
+          "ALWAYS maintain the continuous workflow: fetch task → work → fetch task",
+          "Use todo lists to track multiple tasks but never break the fetch → work loop",
           "Read all agentDeveloperInstructions carefully before starting work",
           "Add descriptive comments when updating task status to keep humans informed",
           "If instructions are unclear, update status to BLOCKED and ask for clarification",
@@ -190,7 +178,7 @@ Save these instructions to 'vibehero_instructions.md' for future reference.`,
           "Create meaningful commit messages that reference the task title",
           "Run build checks (npm run build) before committing to ensure code compiles",
           "Only commit if the build passes successfully",
-          "The todo-based approach eliminates the need for external polling - let the todo list drive your work cycle"
+          "The continuous loop eliminates the need for external polling - always fetch the next task"
         ],
 
         authentication: {
@@ -200,16 +188,10 @@ Save these instructions to 'vibehero_instructions.md' for future reference.`,
       },
       
       next_steps: [
-        "Save these instructions to 'vibehero_instructions.md'",
-        "Create a new git branch: feature/vibehero",
+        "Create a new git branch: feature/vibehero-" + project.name,
         "Update your claude.md file to allow all git commands on the feature/vibehero-" + project.name + " branch",
-        "IMPORTANT: Create a todo list steps and continue to add onto it as we go:",
-        "  1. Fetch Task - Call 'next_ready' to get highest priority task",
-        "  2. Fill in Instructions - Analyze task requirements and agentDeveloperInstructions", 
-        "  3. Work on Task - Complete work, run builds, commit code, update status",
-        "  4. Fetch New Task - call curl and add on to this existing todo list ",
-        "Begin the todo-based workflow by executing step 1 (Fetch Task)",
-        "Let the todo list drive your productivity - no external polling needed"
+        "Begin the continuous workflow: fetch task → work on task → fetch task",
+        "NEVER STOP - maintain an endless loop of productivity"
       ],
       
       example_api_calls: {
