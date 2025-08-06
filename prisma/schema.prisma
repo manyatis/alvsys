@@ -79,7 +79,9 @@ model Card {
   projectId               String
   project                 Project               @relation(fields: [projectId], references: [id])
   createdById             String
-  createdBy               User                  @relation(fields: [createdById], references: [id])
+  createdBy               User                  @relation("CardCreator", fields: [createdById], references: [id])
+  assigneeId              String?
+  assignee                User?                 @relation("CardAssignee", fields: [assigneeId], references: [id])
   title                   String
   description             String?
   acceptanceCriteria      String?
@@ -126,7 +128,8 @@ model User {
   isAdmin                  Boolean                  @default(false)
   subscriptionInformationId String?                 @unique
   subscriptionInformation  SubscriptionInformation? @relation(fields: [subscriptionInformationId], references: [id])
-  cards                    Card[]
+  createdCards             Card[]                   @relation("CardCreator")
+  assignedCards            Card[]                   @relation("CardAssignee")
   ownedProjects            Project[]                @relation("ProjectOwner")
   projects                 ProjectUser[]
   comments                 Comment[]

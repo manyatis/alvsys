@@ -72,6 +72,7 @@ export interface Card {
   status: CardStatus
   projectId: string
   createdById: string
+  assigneeId?: string
   title: string
   description?: string
   acceptanceCriteria?: string
@@ -89,6 +90,11 @@ export interface Card {
     name?: string
     email?: string
   }
+  assignee?: {
+    id: string
+    name?: string
+    email?: string
+  }
   project?: {
     id: string
     name: string
@@ -100,6 +106,7 @@ export interface CreateCardRequest {
   description?: string
   acceptanceCriteria?: string
   projectId: string
+  assigneeId?: string
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
@@ -120,6 +127,7 @@ export interface UpdateCardRequest {
   acceptanceCriteria?: string
   status?: CardStatus
   priority?: number
+  assigneeId?: string
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
