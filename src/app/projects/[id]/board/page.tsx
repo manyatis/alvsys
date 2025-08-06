@@ -474,7 +474,26 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const getCardsByStatus = (status: CardStatus) => {
     return cards
       .filter(card => card.status === status)
-      .sort((a, b) => a.priority - b.priority);
+      .sort((a, b) => {
+        // Sort by priority first (1 is highest priority)
+        const priorityDiff = a.priority - b.priority;
+        if (priorityDiff !== 0) {
+          return priorityDiff;
+        }
+        
+        // If priorities are equal, sort by updated timestamp (most recent first)
+        const aUpdated = new Date(a.updatedAt).getTime();
+        const bUpdated = new Date(b.updatedAt).getTime();
+        const updatedDiff = bUpdated - aUpdated;
+        if (updatedDiff !== 0) {
+          return updatedDiff;
+        }
+        
+        // If both priority and updated are equal, sort by created timestamp (most recent first)
+        const aCreated = new Date(a.createdAt).getTime();
+        const bCreated = new Date(b.createdAt).getTime();
+        return bCreated - aCreated;
+      });
   };
 
   const getPriorityColor = (priority: number) => {
