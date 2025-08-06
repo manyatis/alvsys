@@ -25,6 +25,7 @@ import {
   Check
 } from 'lucide-react';
 import { CardStatus, Card, Comment, Label } from '@/types/card';
+import LabelSelector from '@/components/LabelSelector';
 
 interface Project {
   id: string;
@@ -124,7 +125,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     status: CardStatus.REFINEMENT,
     priority: 3,
     isAiAllowedTask: true,
+    labelIds: [] as string[],
   });
+  const [selectedCardLabelIds, setSelectedCardLabelIds] = useState<string[]>([]);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
@@ -233,7 +236,27 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
       if (response.ok) {
         const data = await response.json();
-        setCards([...cards, data]);
+        
+        // Assign labels to the new card
+        if (newCard.labelIds.length > 0) {
+          for (const labelId of newCard.labelIds) {
+            await fetch(`/api/cards/${data.id}/labels`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Refresh cards to get updated data with labels
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+        
         setShowCreateModal(false);
         setNewCard({
           title: '',
@@ -242,6 +265,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           status: CardStatus.REFINEMENT,
           priority: 3,
           isAiAllowedTask: true,
+          labelIds: [],
         });
       }
     } catch (error) {
@@ -254,6 +278,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (touchedCard || draggedCard) return;
     
     setSelectedCard(card);
+    setSelectedCardLabelIds(card.labels?.map(cl => cl.labelId) || []);
     setShowDetailModal(true);
     setTimeout(() => setDetailModalVisible(true), 10);
     
@@ -296,8 +321,42 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       });
 
       if (response.ok) {
-        const updatedCard = await response.json();
-        setCards(cards.map(card => card.id === selectedCard.id ? updatedCard : card));
+        // Update labels if they changed
+        const currentLabelIds = selectedCard.labels?.map(cl => cl.labelId) || [];
+        
+        // Remove labels that are no longer selected
+        for (const labelId of currentLabelIds) {
+          if (!selectedCardLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Add new labels
+        for (const labelId of selectedCardLabelIds) {
+          if (!currentLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Refresh cards to get updated data with labels
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+        
         closeDetailModal();
       }
     } catch (error) {
@@ -312,6 +371,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => {
       setShowDetailModal(false);
       setSelectedCard(null);
+      setSelectedCardLabelIds([]);
       setComments([]);
       setNewComment('');
     }, 300);
@@ -331,8 +391,42 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       });
 
       if (response.ok) {
-        const updatedCard = await response.json();
-        setCards(cards.map(card => card.id === selectedCard.id ? updatedCard : card));
+        // Update labels if they changed
+        const currentLabelIds = selectedCard.labels?.map(cl => cl.labelId) || [];
+        
+        // Remove labels that are no longer selected
+        for (const labelId of currentLabelIds) {
+          if (!selectedCardLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Add new labels
+        for (const labelId of selectedCardLabelIds) {
+          if (!currentLabelIds.includes(labelId)) {
+            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ labelId }),
+            });
+          }
+        }
+        
+        // Refresh cards to get updated data with labels
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+        
         closeDetailModal();
       }
     } catch (error) {
@@ -340,7 +434,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     } finally {
       setIsUpdating(false);
     }
-  }, [selectedCard, cards, setCards, setIsUpdating, closeDetailModal]);
+  }, [selectedCard, selectedCardLabelIds, setCards, setIsUpdating, closeDetailModal, resolvedParams.id]);
 
   // Handle escape key and close modal
   useEffect(() => {
@@ -713,6 +807,28 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       document.body.removeChild(textArea);
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 2000);
+    }
+  };
+
+  const handleCreateLabel = async (name: string, color: string) => {
+    try {
+      const response = await fetch(`/api/projects/${resolvedParams.id}/labels`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, color }),
+      });
+
+      if (response.ok) {
+        const newLabel = await response.json();
+        setLabels([...labels, newLabel]);
+      } else {
+        throw new Error('Failed to create label');
+      }
+    } catch (error) {
+      console.error('Error creating label:', error);
+      throw error;
     }
   };
 
@@ -1421,6 +1537,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   />
                 </div>
 
+                <div>
+                  <LabelSelector
+                    availableLabels={labels}
+                    selectedLabelIds={newCard.labelIds}
+                    onSelectionChange={(labelIds) => setNewCard({ ...newCard, labelIds })}
+                    onCreateLabel={handleCreateLabel}
+                  />
+                </div>
+
                 <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
                     <div className="text-sm font-medium text-gray-900 dark:text-white">AI Agent Access</div>
@@ -1577,6 +1702,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   rows={2}
                   className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
                   placeholder="Define what done means..."
+                />
+              </div>
+
+              <div>
+                <LabelSelector
+                  availableLabels={labels}
+                  selectedLabelIds={selectedCardLabelIds}
+                  onSelectionChange={setSelectedCardLabelIds}
+                  onCreateLabel={handleCreateLabel}
                 />
               </div>
 
