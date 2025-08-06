@@ -101,7 +101,7 @@ export async function POST(
 
     const resolvedParams = await params;
     const projectId = resolvedParams.id;
-    const { name } = await request.json();
+    const { name, color } = await request.json();
 
     if (!name || name.trim() === '') {
       return NextResponse.json({ error: 'Label name is required' }, { status: 400 });
@@ -153,11 +153,11 @@ export async function POST(
       return NextResponse.json({ error: 'Label already exists' }, { status: 409 });
     }
 
-    // Create the label with random color
+    // Create the label with provided color or random if not provided
     const label = await prisma.label.create({
       data: {
         name: name.trim(),
-        color: generateRandomColor(),
+        color: color || generateRandomColor(),
         projectId: projectId
       }
     });
