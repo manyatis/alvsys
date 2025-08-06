@@ -272,6 +272,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => setShowCreateModal(false), 300);
   };
 
+  const openCreateModal = (status?: CardStatus) => {
+    if (status) {
+      setNewCard(prev => ({ ...prev, status }));
+    }
+    setShowCreateModal(true);
+    setTimeout(() => setModalVisible(true), 10);
+  };
+
 
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -927,10 +935,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           {!sidebarCollapsed ? (
             <>
               <button
-                onClick={() => {
-                  setShowCreateModal(true);
-                  setTimeout(() => setModalVisible(true), 10);
-                }}
+                onClick={() => openCreateModal()}
                 className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
               >
                 <Plus className="h-3 w-3" />
@@ -1356,9 +1361,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           {column.title}
                         </h3>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">
-                        {columnCards.length}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openCreateModal(column.status)}
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded transition-colors"
+                          title={`Create issue in ${column.title}`}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">
+                          {columnCards.length}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
@@ -1372,6 +1386,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     onDragOver={(e) => handleDragOver(e, column.status)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, column.status)}
+                    onDoubleClick={() => openCreateModal(column.status)}
                   >
                     {columnCards.map((card) => (
                       <div
