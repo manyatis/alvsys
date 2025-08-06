@@ -24,7 +24,7 @@ import {
   Copy,
   Check
 } from 'lucide-react';
-import { CardStatus, Card, Comment, Label, CardLabel } from '@/types/card';
+import { CardStatus, Card, Comment, Label } from '@/types/card';
 
 interface Project {
   id: string;
@@ -117,7 +117,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [newComment, setNewComment] = useState('');
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [labels, setLabels] = useState<Label[]>([]);
-  const [loadingLabels, setLoadingLabels] = useState(false);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
