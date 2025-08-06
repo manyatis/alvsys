@@ -124,6 +124,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     priority: 3,
     isAiAllowedTask: true,
   });
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [filters, setFilters] = useState({
+    search: '',
+    assigneeId: '',
+    aiAllowed: 'all',
+    labelIds: [] as string[],
+    priority: 'all'
+  });
 
   useEffect(() => {
     const loadData = async () => {
@@ -473,7 +481,39 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const getCardsByStatus = (status: CardStatus) => {
     return cards
-      .filter(card => card.status === status)
+      .filter(card => {
+        // Filter by status
+        if (card.status !== status) return false;
+        
+        // Filter by search text
+        if (filters.search && !card.title.toLowerCase().includes(filters.search.toLowerCase()) && 
+            !card.description?.toLowerCase().includes(filters.search.toLowerCase())) {
+          return false;
+        }
+        
+        // Filter by assignee (currently filtering by creator)
+        if (filters.assigneeId && card.createdBy?.id !== filters.assigneeId) {
+          return false;
+        }
+        
+        // Filter by AI allowed
+        if (filters.aiAllowed === 'ai-only' && !card.isAiAllowedTask) return false;
+        if (filters.aiAllowed === 'human-only' && card.isAiAllowedTask) return false;
+        
+        // Filter by priority
+        if (filters.priority !== 'all' && card.priority.toString() !== filters.priority) {
+          return false;
+        }
+        
+        // Filter by labels
+        if (filters.labelIds.length > 0) {
+          const cardLabelIds = card.labels?.map(cl => cl.labelId) || [];
+          const hasMatchingLabel = filters.labelIds.some(labelId => cardLabelIds.includes(labelId));
+          if (!hasMatchingLabel) return false;
+        }
+        
+        return true;
+      })
       .sort((a, b) => {
         // Sort by priority first (1 is highest priority)
         const priorityDiff = a.priority - b.priority;
@@ -508,6 +548,34 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     return 'U';
   };
 
+  const clearFilters = () => {
+    setFilters({
+      search: '',
+      assigneeId: '',
+      aiAllowed: 'all',
+      labelIds: [],
+      priority: 'all'
+    });
+  };
+
+  const getUniqueAssignees = () => {
+    const assignees = new Map();
+    cards.forEach(card => {
+      if (card.createdBy) {
+        assignees.set(card.createdBy.id, card.createdBy);
+      }
+    });
+    return Array.from(assignees.values());
+  };
+
+  const hasActiveFilters = () => {
+    return filters.search !== '' || 
+           filters.assigneeId !== '' || 
+           filters.aiAllowed !== 'all' || 
+           filters.labelIds.length > 0 ||
+           filters.priority !== 'all';
+  };
+
   const formatCommentDate = (date: Date | string) => {
     const commentDate = new Date(date);
     const now = new Date();
@@ -535,12 +603,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Left Sidebar */}
       <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-screen z-10 ${
-        sidebarCollapsed ? 'w-10' : 'w-48'
+        sidebarCollapsed ? 'w-8 md:w-10' : 'w-44 md:w-48'
       }`}>
-        <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-2 md:p-3 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
-              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Board Actions</h2>
+              <h2 className="text-xs md:text-sm font-semibold text-gray-900 dark:text-white">Board Actions</h2>
             )}
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -551,7 +619,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           </div>
         </div>
 
-        <div className="p-3 space-y-1">
+        <div className="p-2 md:p-3 space-y-1">
           {!sidebarCollapsed ? (
             <>
               <button
@@ -559,16 +627,163 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   setShowCreateModal(true);
                   setTimeout(() => setModalVisible(true), 10);
                 }}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
               >
                 <Plus className="h-3 w-3" />
                 Create Issue
               </button>
               
-              <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <Filter className="h-3 w-3" />
-                Filter
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className={`w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs rounded-lg transition-colors ${
+                    hasActiveFilters() 
+                      ? 'text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30' 
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <Filter className="h-3 w-3" />
+                  Filter
+                  {hasActiveFilters() && (
+                    <span className="ml-auto bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                      !
+                    </span>
+                  )}
+                </button>
+                
+                {showFilterMenu && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-30"
+                      onClick={() => setShowFilterMenu(false)}
+                    />
+                    <div className="absolute left-0 top-full mt-1 w-64 md:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-3 md:p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
+                        {hasActiveFilters() && (
+                          <button
+                            onClick={clearFilters}
+                            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Clear all
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Search */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Search
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Search issues..."
+                          value={filters.search}
+                          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      {/* Priority */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Priority
+                        </label>
+                        <select
+                          value={filters.priority}
+                          onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All priorities</option>
+                          <option value="1">P1 (Highest)</option>
+                          <option value="2">P2 (High)</option>
+                          <option value="3">P3 (Medium)</option>
+                          <option value="4">P4 (Low)</option>
+                          <option value="5">P5 (Lowest)</option>
+                        </select>
+                      </div>
+                      
+                      {/* Assignee */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Creator
+                        </label>
+                        <select
+                          value={filters.assigneeId}
+                          onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="">All creators</option>
+                          {getUniqueAssignees().map((assignee) => (
+                            <option key={assignee.id} value={assignee.id}>
+                              {assignee.name || assignee.email}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* AI Allowed */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          AI Tasks
+                        </label>
+                        <select
+                          value={filters.aiAllowed}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All issues</option>
+                          <option value="ai-only">AI allowed only</option>
+                          <option value="human-only">Human only</option>
+                        </select>
+                      </div>
+                      
+                      {/* Labels */}
+                      {labels.length > 0 && (
+                        <div className="mb-3">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Labels
+                          </label>
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            {labels.map((label) => (
+                              <label key={label.id} className="flex items-center gap-2 text-xs">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.labelIds.includes(label.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: [...prev.labelIds, label.id]
+                                      }));
+                                    } else {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: prev.labelIds.filter(id => id !== label.id)
+                                      }));
+                                    }
+                                  }}
+                                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span
+                                  className="px-1.5 py-0.5 rounded text-xs font-medium"
+                                  style={{
+                                    backgroundColor: label.color + '20',
+                                    color: label.color,
+                                    border: `1px solid ${label.color}40`
+                                  }}
+                                >
+                                  {label.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
               
               <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                 <Search className="h-3 w-3" />
@@ -600,12 +815,157 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 <Plus className="h-3 w-3" />
               </button>
               
-              <button 
-                className="w-full p-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                title="Filter"
-              >
-                <Filter className="h-3 w-3" />
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  className={`w-full p-1.5 rounded-lg transition-colors relative ${
+                    hasActiveFilters() 
+                      ? 'text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30' 
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                  title="Filter"
+                >
+                  <Filter className="h-3 w-3" />
+                  {hasActiveFilters() && (
+                    <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center">
+                      !
+                    </span>
+                  )}
+                </button>
+                
+                {showFilterMenu && (
+                  <>
+                    <div 
+                      className="fixed inset-0 z-30"
+                      onClick={() => setShowFilterMenu(false)}
+                    />
+                    <div className="absolute left-full top-0 ml-2 w-64 md:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-3 md:p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
+                        {hasActiveFilters() && (
+                          <button
+                            onClick={clearFilters}
+                            className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                          >
+                            Clear all
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Search */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Search
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Search issues..."
+                          value={filters.search}
+                          onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      {/* Priority */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Priority
+                        </label>
+                        <select
+                          value={filters.priority}
+                          onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All priorities</option>
+                          <option value="1">P1 (Highest)</option>
+                          <option value="2">P2 (High)</option>
+                          <option value="3">P3 (Medium)</option>
+                          <option value="4">P4 (Low)</option>
+                          <option value="5">P5 (Lowest)</option>
+                        </select>
+                      </div>
+                      
+                      {/* Assignee */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          Creator
+                        </label>
+                        <select
+                          value={filters.assigneeId}
+                          onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="">All creators</option>
+                          {getUniqueAssignees().map((assignee) => (
+                            <option key={assignee.id} value={assignee.id}>
+                              {assignee.name || assignee.email}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      
+                      {/* AI Allowed */}
+                      <div className="mb-3">
+                        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                          AI Tasks
+                        </label>
+                        <select
+                          value={filters.aiAllowed}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value }))}
+                          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                        >
+                          <option value="all">All issues</option>
+                          <option value="ai-only">AI allowed only</option>
+                          <option value="human-only">Human only</option>
+                        </select>
+                      </div>
+                      
+                      {/* Labels */}
+                      {labels.length > 0 && (
+                        <div className="mb-3">
+                          <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Labels
+                          </label>
+                          <div className="space-y-1 max-h-32 overflow-y-auto">
+                            {labels.map((label) => (
+                              <label key={label.id} className="flex items-center gap-2 text-xs">
+                                <input
+                                  type="checkbox"
+                                  checked={filters.labelIds.includes(label.id)}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: [...prev.labelIds, label.id]
+                                      }));
+                                    } else {
+                                      setFilters(prev => ({
+                                        ...prev,
+                                        labelIds: prev.labelIds.filter(id => id !== label.id)
+                                      }));
+                                    }
+                                  }}
+                                  className="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
+                                />
+                                <span
+                                  className="px-1.5 py-0.5 rounded text-xs font-medium"
+                                  style={{
+                                    backgroundColor: label.color + '20',
+                                    color: label.color,
+                                    border: `1px solid ${label.color}40`
+                                  }}
+                                >
+                                  {label.name}
+                                </span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
               
               <button 
                 className="w-full p-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -621,17 +981,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
+        <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-4 py-2">
           <div className="flex items-center justify-between max-w-full">
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+              <h1 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">
                 {project?.name}
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                 Software project • {project?.organization.name}
               </p>
             </div>
-            <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+            <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-2 md:ml-4">
               <button className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                 Share
               </button>
@@ -643,8 +1003,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Board */}
-        <div className="flex-1 p-4 h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
-          <div className="flex gap-3 h-full overflow-x-auto pb-4">
+        <div className="flex-1 p-2 md:p-4 h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
+          <div className="flex gap-2 md:gap-3 h-full overflow-x-auto pb-4">
             {statusColumns.map((column) => {
               const Icon = column.icon;
               const columnCards = getCardsByStatus(column.status);
@@ -652,13 +1012,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               return (
                 <div
                   key={column.status}
-                  className="w-64 min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
+                  className="w-56 md:w-64 min-w-56 md:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
                 >
-                  <div className={`px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-2xl`}>
+                  <div className={`px-2 md:px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-xl md:rounded-t-2xl`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Icon className={`h-3 w-3 ${column.textColor}`} />
-                        <h3 className={`text-sm font-medium ${column.textColor} dark:text-white`}>
+                        <h3 className={`text-xs md:text-sm font-medium ${column.textColor} dark:text-white`}>
                           {column.title}
                         </h3>
                       </div>
@@ -787,15 +1147,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           </div>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={closeModal}>
             <div 
-              className={`bg-white dark:bg-gray-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
+              className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:w-96 max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 mx-4 ${
                 modalVisible 
                   ? 'scale-100 opacity-100 translate-y-0' 
                   : 'scale-95 opacity-0 translate-y-4'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
                 Create Issue
               </h2>
               <button 
@@ -835,7 +1195,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Status
