@@ -8,7 +8,7 @@ export default function Documentation() {
   const sections = [
     { id: 'overview', title: 'Overview' },
     { id: 'authentication', title: 'Authentication' },
-    { id: 'cards', title: 'Cards API' },
+    { id: 'cards', title: 'Issues API' },
     { id: 'ai-endpoints', title: 'AI Endpoints' },
     { id: 'webhooks', title: 'Webhooks' },
     { id: 'errors', title: 'Error Handling' },
@@ -112,18 +112,18 @@ export default function Documentation() {
               </div>
             )}
 
-            {/* Cards API Section */}
+            {/* Issues API Section */}
             {activeSection === 'cards' && (
               <div className="space-y-8">
-                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Cards API</h2>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Issues API</h2>
                 
                 <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="text-lg text-slate-600 dark:text-slate-300">
-                    Manage development cards with titles, descriptions, acceptance criteria, and AI agent instructions.
+                    Manage development issues with titles, descriptions, acceptance criteria, and AI agent instructions.
                   </p>
                 </div>
 
-                {/* GET Cards */}
+                {/* GET Issues */}
                 <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -132,15 +132,15 @@ export default function Documentation() {
                     <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards</code>
                   </div>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Cards</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Issues</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Retrieve cards for a specific project with optional status filtering.
+                    Retrieve issues for a specific project with optional status filtering.
                   </p>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Query Parameters</h4>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
                     <div className="space-y-2 text-sm">
-                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> <span className="text-red-500">*</span> - Project ID to fetch cards from</div>
+                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> <span className="text-red-500">*</span> - Project ID to fetch issues from</div>
                       <div><code className="text-purple-600 dark:text-purple-400">status</code> - Filter by status (REFINEMENT, READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)</div>
                     </div>
                   </div>
@@ -184,7 +184,7 @@ export default function Documentation() {
                   </div>
                 </div>
 
-                {/* POST Cards */}
+                {/* POST Issues */}
                 <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -193,9 +193,9 @@ export default function Documentation() {
                     <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards</code>
                   </div>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Card</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Issue</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Create a new card with agent instructions.
+                    Create a new issue with agent instructions.
                   </p>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
@@ -228,7 +228,7 @@ export default function Documentation() {
                   </div>
                 </div>
 
-                {/* PUT Cards */}
+                {/* PUT Issues */}
                 <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -237,9 +237,9 @@ export default function Documentation() {
                     <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]</code>
                   </div>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Update Card</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Update Issue</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Update an existing card&apos;s properties and agent instructions.
+                    Update an existing issue&apos;s properties and agent instructions.
                   </p>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example: Update Status</h4>
@@ -250,7 +250,7 @@ export default function Documentation() {
                   </div>
                 </div>
 
-                {/* DELETE Cards */}
+                {/* DELETE Issues */}
                 <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -259,14 +259,14 @@ export default function Documentation() {
                     <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]</code>
                   </div>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Delete Card</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Delete Issue</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Delete a card and all associated agent instructions.
+                    Delete an issue and all associated agent instructions.
                   </p>
 
                   <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
                     <p className="text-red-800 dark:text-red-200 text-sm">
-                      ⚠️ This action cannot be undone. The card and all its agent instructions will be permanently deleted.
+                      ⚠️ This action cannot be undone. The issue and all its agent instructions will be permanently deleted.
                     </p>
                   </div>
                 </div>
@@ -334,7 +334,7 @@ export default function Documentation() {
                   </div>
                 </div>
 
-                {/* GET AI Cards */}
+                {/* GET AI Issues */}
                 <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
@@ -343,9 +343,9 @@ export default function Documentation() {
                     <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/cards</code>
                   </div>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Cards</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Issues</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Retrieve all cards that are AI-enabled and available for processing. Only returns cards with 
+                    Retrieve all issues that are AI-enabled and available for processing. Only returns issues with 
                     <code className="mx-1 text-purple-600 dark:text-purple-400">isAiAllowedTask: true</code> 
                     and status <code className="mx-1 text-purple-600 dark:text-purple-400">READY</code> or 
                     <code className="mx-1 text-purple-600 dark:text-purple-400">IN_PROGRESS</code>.
