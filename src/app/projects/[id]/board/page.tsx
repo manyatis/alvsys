@@ -18,7 +18,9 @@ import {
   Settings,
   Users,
   Calendar,
-  User
+  X,
+  User,
+  Loader2
 } from 'lucide-react';
 import { CardStatus } from '@/types/card';
 
@@ -54,7 +56,7 @@ const statusColumns: {
   icon: any;
 }[] = [
   { 
-    status: 'REFINEMENT', 
+    status: CardStatus.REFINEMENT, 
     title: 'Refinement', 
     color: 'border-gray-300', 
     bgColor: 'bg-gray-50 dark:bg-gray-700',
@@ -62,7 +64,7 @@ const statusColumns: {
     icon: RefreshCw 
   },
   { 
-    status: 'READY', 
+    status: CardStatus.READY, 
     title: 'To Do', 
     color: 'border-blue-300', 
     bgColor: 'bg-blue-50 dark:bg-gray-700',
@@ -70,7 +72,7 @@ const statusColumns: {
     icon: Clock 
   },
   { 
-    status: 'IN_PROGRESS', 
+    status: CardStatus.IN_PROGRESS, 
     title: 'In Progress', 
     color: 'border-yellow-300', 
     bgColor: 'bg-yellow-50 dark:bg-gray-700',
@@ -78,7 +80,7 @@ const statusColumns: {
     icon: Zap 
   },
   { 
-    status: 'BLOCKED', 
+    status: CardStatus.BLOCKED, 
     title: 'Blocked', 
     color: 'border-red-300', 
     bgColor: 'bg-red-50 dark:bg-gray-700',
@@ -86,7 +88,7 @@ const statusColumns: {
     icon: AlertCircle 
   },
   { 
-    status: 'READY_FOR_REVIEW', 
+    status: CardStatus.READY_FOR_REVIEW, 
     title: 'Review', 
     color: 'border-purple-300', 
     bgColor: 'bg-purple-50 dark:bg-gray-700',
@@ -94,7 +96,7 @@ const statusColumns: {
     icon: CheckCircle 
   },
   { 
-    status: 'COMPLETED', 
+    status: CardStatus.COMPLETED, 
     title: 'Done', 
     color: 'border-green-300', 
     bgColor: 'bg-green-50 dark:bg-gray-700',
@@ -111,13 +113,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [cards, setCards] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<Card | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [newCard, setNewCard] = useState({
     title: '',
     description: '',
     acceptanceCriteria: '',
-    status: 'REFINEMENT' as CardStatus,
+    status: CardStatus.REFINEMENT,
     priority: 3,
     isAiAllowedTask: true,
   });
@@ -168,7 +174,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
       if (cardsRes.ok) {
         const cardsData = await cardsRes.json();
-        setCards(cardsData.cards);
+        setCards(cardsData);
       }
     } catch (error) {
       console.error('Error fetching project data:', error);
@@ -194,13 +200,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
       if (response.ok) {
         const data = await response.json();
-        setCards([...cards, data.card]);
+        setCards([...cards, data]);
         setShowCreateModal(false);
         setNewCard({
           title: '',
           description: '',
           acceptanceCriteria: '',
-          status: 'REFINEMENT',
+          status: CardStatus.REFINEMENT,
           priority: 3,
           isAiAllowedTask: true,
         });
@@ -208,6 +214,46 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     } catch (error) {
       console.error('Error creating card:', error);
     }
+  };
+
+  const handleCardClick = (card: Card) => {
+    setSelectedCard(card);
+    setShowDetailModal(true);
+    setTimeout(() => setDetailModalVisible(true), 10);
+  };
+
+  const handleUpdateCard = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedCard) return;
+    
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/cards/${selectedCard.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(selectedCard),
+      });
+
+      if (response.ok) {
+        const updatedCard = await response.json();
+        setCards(cards.map(card => card.id === selectedCard.id ? updatedCard : card));
+        closeDetailModal();
+      }
+    } catch (error) {
+      console.error('Error updating card:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const closeDetailModal = () => {
+    setDetailModalVisible(false);
+    setTimeout(() => {
+      setShowDetailModal(false);
+      setSelectedCard(null);
+    }, 300);
   };
 
   const getCardsByStatus = (status: CardStatus) => {
@@ -327,16 +373,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
+          <div className="flex items-center justify-between max-w-full">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
                 {project?.name}
               </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                 Software project • {project?.organization.name}
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-shrink-0 ml-4">
               <button className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                 Share
               </button>
@@ -348,8 +394,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Board */}
-        <div className="flex-1 p-4 overflow-x-auto h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
-          <div className="flex gap-3 min-w-max h-full">
+        <div className="flex-1 p-4 h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
+          <div className="flex gap-3 h-full overflow-x-auto pb-4">
             {statusColumns.map((column) => {
               const Icon = column.icon;
               const columnCards = getCardsByStatus(column.status);
@@ -357,7 +403,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               return (
                 <div
                   key={column.status}
-                  className="w-64 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
+                  className="w-64 min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
                 >
                   <div className={`px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-2xl`}>
                     <div className="flex items-center justify-between">
@@ -377,6 +423,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     {columnCards.map((card) => (
                       <div
                         key={card.id}
+                        onClick={() => handleCardClick(card)}
                         className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-shadow cursor-pointer group"
                       >
                         <div className="flex items-start justify-between mb-1">
@@ -527,11 +574,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         onChange={(e) => setNewCard({ ...newCard, priority: parseInt(e.target.value) })}
                         className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
                       >
-                        <option value={1}>🔴 Highest</option>
-                        <option value={2}>🟠 High</option>
-                        <option value={3}>🟡 Medium</option>
-                        <option value={4}>🔵 Low</option>
-                        <option value={5}>⚪ Lowest</option>
+                        <option value={1}>Highest</option>
+                        <option value={2}>High</option>
+                        <option value={3}>Medium</option>
+                        <option value={4}>Low</option>
+                        <option value={5}>Lowest</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -584,6 +631,167 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   className="flex-1 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
                 >
                   Create Issue
+                </button>
+              </div>
+            </form>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Card Detail Modal */}
+      {showDetailModal && selectedCard && (
+        <>
+          <div 
+            className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+              detailModalVisible ? 'opacity-100' : 'opacity-0'
+            }`}
+            onClick={closeDetailModal}
+          >
+            <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
+          </div>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={closeDetailModal}>
+            <div 
+              className={`bg-white dark:bg-gray-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
+                detailModalVisible 
+                  ? 'scale-100 opacity-100 translate-y-0' 
+                  : 'scale-95 opacity-0 translate-y-2'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+            <form onSubmit={handleUpdateCard} className="space-y-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Issue</h2>
+                <button
+                  type="button"
+                  onClick={closeDetailModal}
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Summary *
+                </label>
+                <input
+                  type="text"
+                  value={selectedCard.title}
+                  onChange={(e) => setSelectedCard({ ...selectedCard, title: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors"
+                  placeholder="What needs to be done?"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Status
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedCard.status}
+                      onChange={(e) => setSelectedCard({ ...selectedCard, status: e.target.value as CardStatus })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      {statusColumns.map((col) => (
+                        <option key={col.status} value={col.status}>
+                          {col.title}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Priority
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedCard.priority}
+                      onChange={(e) => setSelectedCard({ ...selectedCard, priority: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      <option value={1}>Highest</option>
+                      <option value={2}>High</option>
+                      <option value={3}>Medium</option>
+                      <option value={4}>Low</option>
+                      <option value={5}>Lowest</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Description
+                </label>
+                <textarea
+                  value={selectedCard.description || ''}
+                  onChange={(e) => setSelectedCard({ ...selectedCard, description: e.target.value })}
+                  rows={2}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
+                  placeholder="Add a description..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Acceptance Criteria
+                </label>
+                <textarea
+                  value={selectedCard.acceptanceCriteria || ''}
+                  onChange={(e) => setSelectedCard({ ...selectedCard, acceptanceCriteria: e.target.value })}
+                  rows={2}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
+                  placeholder="Define what done means..."
+                />
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">AI Agent Access</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">Allow AI agents to work on this issue</div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={selectedCard.isAiAllowedTask}
+                    onChange={(e) => setSelectedCard({ ...selectedCard, isAiAllowedTask: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  type="button"
+                  onClick={closeDetailModal}
+                  className="flex-1 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isUpdating}
+                  className="flex-1 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm flex items-center justify-center gap-2"
+                >
+                  {isUpdating && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isUpdating ? 'Updating...' : 'Update Issue'}
                 </button>
               </div>
             </form>

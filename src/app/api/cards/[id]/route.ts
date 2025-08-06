@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { PrismaClient } from '@/generated/prisma'
+import { authOptions } from '@/lib/auth'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -13,16 +14,17 @@ if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 // GET /api/cards/[id] - Get a specific card
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const card = await prisma.card.findUnique({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       include: {
         createdBy: {
           select: {
@@ -55,10 +57,11 @@ export async function GET(
 // PUT /api/cards/[id] - Update a card
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -69,6 +72,7 @@ export async function PUT(
       description,
       acceptanceCriteria,
       status,
+      priority,
       isAiAllowedTask,
       agentInstructions,
     } = body
@@ -84,7 +88,7 @@ export async function PUT(
 
     // Check if card exists and user has access
     const existingCard = await prisma.card.findUnique({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       include: {
         project: {
           include: {
@@ -112,13 +116,14 @@ export async function PUT(
     if (description !== undefined) updateData.description = description
     if (acceptanceCriteria !== undefined) updateData.acceptanceCriteria = acceptanceCriteria
     if (status !== undefined) updateData.status = status
+    if (priority !== undefined) updateData.priority = priority
     if (isAiAllowedTask !== undefined) updateData.isAiAllowedTask = isAiAllowedTask
 
     // Handle agent instructions update
     if (agentInstructions !== undefined) {
       // Delete existing instructions and create new ones
       await prisma.agentDeveloperInstruction.deleteMany({
-        where: { cardId: params.id },
+        where: { cardId: resolvedParams.id },
       })
 
       updateData.agentDeveloperInstructions = {
@@ -135,7 +140,7 @@ export async function PUT(
     }
 
     const updatedCard = await prisma.card.update({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       data: updateData,
       include: {
         createdBy: {
@@ -165,10 +170,11 @@ export async function PUT(
 // DELETE /api/cards/[id] - Delete a card
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -184,7 +190,7 @@ export async function DELETE(
 
     // Check if card exists and user has access
     const existingCard = await prisma.card.findUnique({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
       include: {
         project: {
           include: {
@@ -206,7 +212,7 @@ export async function DELETE(
     }
 
     await prisma.card.delete({
-      where: { id: params.id },
+      where: { id: resolvedParams.id },
     })
 
     return NextResponse.json({ message: 'Card deleted successfully' })

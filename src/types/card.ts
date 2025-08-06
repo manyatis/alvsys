@@ -43,6 +43,7 @@ export interface Card {
   title: string
   description?: string
   acceptanceCriteria?: string
+  priority: number
   isAiAllowedTask: boolean
   agentDeveloperInstructions: AgentDeveloperInstruction[]
   createdAt: Date
@@ -84,6 +85,7 @@ export interface UpdateCardRequest {
   description?: string
   acceptanceCriteria?: string
   status?: CardStatus
+  priority?: number
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
