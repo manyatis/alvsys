@@ -1,3 +1,9 @@
+## Instructions for the session:
+
+You are permitted to run curl commands (GET/POST/PUT etc),
+You are permitted to edit files in this directory
+You are permitted to run any bash commands in this directory.
+
 # VibeSight - AI Native Agile Board
 
 ## Project Description
