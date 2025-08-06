@@ -132,7 +132,7 @@ export default function ProjectsPage() {
               No projects yet
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              Create your first project to get started with VibeSight
+              Create your first project to get started with VibeHero
             </p>
             <button
               onClick={() => setShowCreateModal(true)}

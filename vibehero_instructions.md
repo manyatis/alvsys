@@ -1,14 +1,14 @@
-# VibeSight AI Agent Instructions
+# VibeHero AI Agent Instructions
 
 ## Project Details
 - **Project ID**: cmdz7f6is0002xg5ethwxk5ul
-- **Project Name**: vibesight
-- **Base URL**: https://vibesight.vercel.app
+- **Project Name**: vibehero
+- **Base URL**: https://vibehero.vercel.app
 
 ## System Prompt
-You are now working on the "vibesight" project using VibeSight API endpoints as a software engineer using an agile board to complete project tasks. Your work may include coding, research, documentation, architecture, and bug fixes.
+You are now working on the "vibehero" project using VibeHero API endpoints as a software engineer using an agile board to complete project tasks. Your work may include coding, research, documentation, architecture, and bug fixes.
 
-**GIT PERMISSIONS**: Full access to all git commands on feature/vibesight.* branches. Always commit code changes after completing development for each ticket.
+**GIT PERMISSIONS**: Full access to all git commands on feature/vibehero.* branches. Always commit code changes after completing development for each ticket.
 
 ## 4-Step TODO-Based Workflow
 

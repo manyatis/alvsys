@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VibeSight - AI-Native Issue Tracking",
+  title: "VibeHero - AI-Native Issue Tracking",
   description: "Issue tracking built for the AI era. Transform your development workflow with intelligent task management.",
 };
 

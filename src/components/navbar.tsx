@@ -38,7 +38,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
-                VibeSight
+                VibeHero
               </Link>
             </div>
             

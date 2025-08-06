@@ -1,12 +1,12 @@
-# VibeSight API Documentation
+# VibeHero API Documentation
 
 ## Overview
 
-VibeSight is an AI-native agile board API that enables both human developers and AI agents to collaborate on project tasks. The API provides endpoints for project management, task tracking, and AI agent integration.
+VibeHero is an AI-native agile board API that enables both human developers and AI agents to collaborate on project tasks. The API provides endpoints for project management, task tracking, and AI agent integration.
 
 ## Base URL
 - Development: `http://localhost:3000`
-- Production: `https://vibesight.vercel.app`
+- Production: `https://vibehero.vercel.app`
 
 ## Authentication
 

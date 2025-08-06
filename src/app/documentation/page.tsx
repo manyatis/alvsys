@@ -53,13 +53,13 @@ export default function Documentation() {
                 
                 <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="text-lg text-slate-600 dark:text-slate-300">
-                    The VibeSight API provides programmatic access to our AI-native issue tracking platform. 
+                    The VibeHero API provides programmatic access to our AI-native issue tracking platform. 
                     Build integrations, automate workflows, and let AI agents interact with your development process.
                   </p>
 
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Base URL</h3>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono">
-                    https://api.vibesight.com/api
+                    https://api.vibehero.com/api
                   </div>
 
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Rate Limits</h3>
@@ -87,7 +87,7 @@ export default function Documentation() {
                 
                 <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="text-lg text-slate-600 dark:text-slate-300">
-                    VibeSight uses session-based authentication for web applications and API keys for programmatic access.
+                    VibeHero uses session-based authentication for web applications and API keys for programmatic access.
                   </p>
 
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Session Authentication</h3>
@@ -320,7 +320,7 @@ export default function Documentation() {
     "user": {
       "id": "ai-agent",
       "name": "Claude",
-      "email": "claude@vibesight.com"
+      "email": "claude@vibehero.com"
     }
   },
   {
@@ -527,13 +527,13 @@ export default function Documentation() {
                     <pre className="text-slate-700 dark:text-slate-300">{`[
   {
     "id": "clx123abc456",
-    "name": "VibeSight Platform",
+    "name": "VibeHero Platform",
     "description": "AI-native issue tracking",
     "ownerId": "clx456def789",
     "organizationId": "clx789org001",
     "organization": {
       "id": "clx789org001",
-      "name": "VibeSight Inc"
+      "name": "VibeHero Inc"
     },
     "createdAt": "2024-01-15T09:00:00.000Z",
     "updatedAt": "2024-01-15T09:00:00.000Z"
@@ -620,7 +620,7 @@ export default function Documentation() {
                     <pre className="text-slate-700 dark:text-slate-300">{`[
   {
     "id": "clx789org001",
-    "name": "VibeSight Inc",
+    "name": "VibeHero Inc",
     "description": "AI-native development tools",
     "ownerId": "clx456def789",
     "createdAt": "2024-01-15T08:00:00.000Z",
@@ -700,7 +700,7 @@ export default function Documentation() {
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2 mt-4">Example Response</h4>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "systemPrompt": "You are an AI agent working on VibeSight...",
+  "systemPrompt": "You are an AI agent working on VibeHero...",
   "workflowInstructions": "Complete 6-step workflow process...",
   "apiDocumentation": {
     "baseUrl": "/api/ai/cards",
@@ -708,7 +708,7 @@ export default function Documentation() {
   },
   "projectContext": {
     "id": "clx123abc456",
-    "name": "VibeSight Platform",
+    "name": "VibeHero Platform",
     "description": "AI-native agile board"
   },
   "nextSteps": "Start by calling next_ready action..."
@@ -762,7 +762,7 @@ export default function Documentation() {
       ],
       "project": {
         "id": "clx123abc456",
-        "name": "VibeSight Platform"
+        "name": "VibeHero Platform"
       },
       "branchName": "feature/implement-user-authentication-clx789de"
     }
@@ -861,7 +861,7 @@ export default function Documentation() {
     ],
     "project": {
       "id": "clx123abc456",
-      "name": "VibeSight Platform"
+      "name": "VibeHero Platform"
     }
   }
 }`}</pre>
@@ -952,7 +952,7 @@ export default function Documentation() {
                 
                 <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="text-lg text-slate-600 dark:text-slate-300">
-                    VibeSight uses conventional HTTP response codes to indicate the success or failure of API requests.
+                    VibeHero uses conventional HTTP response codes to indicate the success or failure of API requests.
                   </p>
 
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">HTTP Status Codes</h3>
