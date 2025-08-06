@@ -65,8 +65,7 @@ export default function LabelSelector({
     onSelectionChange(selectedLabelIds.filter(id => id !== labelId));
   };
 
-  const handleCreateLabel = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreateLabel = async () => {
     if (!newLabelName.trim()) return;
 
     setIsCreating(true);
@@ -173,7 +172,7 @@ export default function LabelSelector({
                   Create new label
                 </button>
               ) : (
-                <form onSubmit={handleCreateLabel} className="space-y-2">
+                <div className="space-y-2">
                   <input
                     type="text"
                     value={newLabelName}
@@ -181,6 +180,13 @@ export default function LabelSelector({
                     placeholder="Label name..."
                     className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
                     autoFocus
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleCreateLabel();
+                      }
+                    }}
                   />
                   
                   {/* Color Picker */}
@@ -189,7 +195,10 @@ export default function LabelSelector({
                       <button
                         key={color}
                         type="button"
-                        onClick={() => setSelectedColor(color)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setSelectedColor(color);
+                        }}
                         className={`w-6 h-6 rounded border-2 ${
                           selectedColor === color 
                             ? 'border-gray-400 dark:border-gray-300' 
@@ -203,7 +212,8 @@ export default function LabelSelector({
                   <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         setShowCreateForm(false);
                         setNewLabelName('');
                       }}
@@ -212,14 +222,19 @@ export default function LabelSelector({
                       Cancel
                     </button>
                     <button
-                      type="submit"
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleCreateLabel();
+                      }}
                       disabled={!newLabelName.trim() || isCreating}
                       className="flex-1 px-2 py-1.5 text-xs text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {isCreating ? 'Creating...' : 'Create'}
                     </button>
                   </div>
-                </form>
+                </div>
               )}
             </div>
           </div>
