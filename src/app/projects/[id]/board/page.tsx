@@ -28,6 +28,7 @@ import {
 import { CardStatus, Card, Comment, Label } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
+import InlineLabelEditor from '@/components/InlineLabelEditor';
 
 interface Project {
   id: string;
@@ -151,6 +152,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const [inlineLabelEditorOpen, setInlineLabelEditorOpen] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -186,7 +188,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
 
         // Fetch cards
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -236,7 +238,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setIsRefreshing(true);
       try {
         // Fetch cards (most likely to change)
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -272,12 +274,20 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => setShowCreateModal(false), 300);
   };
 
+  const openCreateModal = (status?: CardStatus) => {
+    if (status) {
+      setNewCard(prev => ({ ...prev, status }));
+    }
+    setShowCreateModal(true);
+    setTimeout(() => setModalVisible(true), 10);
+  };
+
 
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/cards', {
+      const response = await fetch('/api/issues', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -294,7 +304,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Assign labels to the new card
         if (newCard.labelIds.length > 0) {
           for (const labelId of newCard.labelIds) {
-            await fetch(`/api/cards/${data.id}/labels`, {
+            await fetch(`/api/issues/${data.id}/labels`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -305,7 +315,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
         
         // Refresh cards to get updated data with labels
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -345,7 +355,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const loadComments = async (cardId: string) => {
     setLoadingComments(true);
     try {
-      const response = await fetch(`/api/cards/${cardId}/comments`);
+      const response = await fetch(`/api/issues/${cardId}/comments`);
       if (response.ok) {
         const commentsData = await response.json();
         setComments(commentsData);
@@ -368,7 +378,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/cards/${selectedCard.id}`, {
+      const response = await fetch(`/api/issues/${selectedCard.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -383,7 +393,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Remove labels that are no longer selected
         for (const labelId of currentLabelIds) {
           if (!selectedCardLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
@@ -396,7 +406,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Add new labels
         for (const labelId of selectedCardLabelIds) {
           if (!currentLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -407,7 +417,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
         
         // Refresh cards to get updated data with labels
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -439,7 +449,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/cards/${selectedCard.id}`, {
+      const response = await fetch(`/api/issues/${selectedCard.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -454,7 +464,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Remove labels that are no longer selected
         for (const labelId of currentLabelIds) {
           if (!selectedCardLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
@@ -467,7 +477,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Add new labels
         for (const labelId of selectedCardLabelIds) {
           if (!currentLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -478,7 +488,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
         
         // Refresh cards to get updated data with labels
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -524,7 +534,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsAddingComment(true);
     try {
-      const response = await fetch(`/api/cards/${selectedCard.id}/comments`, {
+      const response = await fetch(`/api/issues/${selectedCard.id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -586,7 +596,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
 
     try {
-      const response = await fetch(`/api/cards/${draggedCard.id}`, {
+      const response = await fetch(`/api/issues/${draggedCard.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -693,7 +703,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         
         if (newStatus && newStatus !== touchedCard.status) {
           try {
-            const response = await fetch(`/api/cards/${touchedCard.id}`, {
+            const response = await fetch(`/api/issues/${touchedCard.id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -895,6 +905,71 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  const handleInlineLabelAdd = async (cardId: string, labelId: string) => {
+    try {
+      const response = await fetch(`/api/issues/${cardId}/labels`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ labelId }),
+      });
+
+      if (response.ok) {
+        // Update the cards state to reflect the new label
+        const updatedCards = cards.map(card => {
+          if (card.id === cardId) {
+            const label = labels.find(l => l.id === labelId);
+            if (label && !card.labels?.some(cl => cl.labelId === labelId)) {
+              return {
+                ...card,
+                labels: [...(card.labels || []), { id: `${cardId}-${labelId}`, cardId, labelId, label }]
+              };
+            }
+          }
+          return card;
+        });
+        setCards(updatedCards);
+      } else {
+        throw new Error('Failed to add label');
+      }
+    } catch (error) {
+      console.error('Error adding label to card:', error);
+      throw error;
+    }
+  };
+
+  const handleInlineLabelRemove = async (cardId: string, labelId: string) => {
+    try {
+      const response = await fetch(`/api/issues/${cardId}/labels`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ labelId }),
+      });
+
+      if (response.ok) {
+        // Update the cards state to remove the label
+        const updatedCards = cards.map(card => {
+          if (card.id === cardId) {
+            return {
+              ...card,
+              labels: card.labels?.filter(cl => cl.labelId !== labelId) || []
+            };
+          }
+          return card;
+        });
+        setCards(updatedCards);
+      } else {
+        throw new Error('Failed to remove label');
+      }
+    } catch (error) {
+      console.error('Error removing label from card:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -927,10 +1002,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           {!sidebarCollapsed ? (
             <>
               <button
-                onClick={() => {
-                  setShowCreateModal(true);
-                  setTimeout(() => setModalVisible(true), 10);
-                }}
+                onClick={() => openCreateModal()}
                 className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
               >
                 <Plus className="h-3 w-3" />
@@ -1356,9 +1428,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           {column.title}
                         </h3>
                       </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">
-                        {columnCards.length}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => openCreateModal(column.status)}
+                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded transition-colors"
+                          title={`Create issue in ${column.title}`}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </button>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">
+                          {columnCards.length}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   
@@ -1372,6 +1453,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     onDragOver={(e) => handleDragOver(e, column.status)}
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, column.status)}
+                    onDoubleClick={() => openCreateModal(column.status)}
                   >
                     {columnCards.map((card) => (
                       <div
@@ -1416,28 +1498,58 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         )}
 
                         {/* Labels */}
-                        {card.labels && card.labels.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            {card.labels.slice(0, 3).map((cardLabel) => (
-                              <span
-                                key={cardLabel.id}
-                                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                style={{ 
-                                  backgroundColor: cardLabel.label.color + '20', 
-                                  color: cardLabel.label.color,
-                                  border: `1px solid ${cardLabel.label.color}40`
-                                }}
-                              >
-                                {cardLabel.label.name}
-                              </span>
-                            ))}
-                            {card.labels.length > 3 && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
-                                +{card.labels.length - 3}
-                              </span>
-                            )}
+                        <div className="flex flex-wrap gap-1 mb-2 items-center">
+                          {card.labels && card.labels.slice(0, 3).map((cardLabel) => (
+                            <button
+                              key={cardLabel.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleInlineLabelRemove(card.id, cardLabel.labelId);
+                              }}
+                              className="group text-xs px-2 py-0.5 rounded-full font-medium hover:opacity-70 transition-opacity"
+                              style={{ 
+                                backgroundColor: cardLabel.label.color + '20', 
+                                color: cardLabel.label.color,
+                                border: `1px solid ${cardLabel.label.color}40`
+                              }}
+                              title={`Remove ${cardLabel.label.name} label`}
+                            >
+                              <span className="group-hover:line-through">{cardLabel.label.name}</span>
+                              <X className="inline ml-1 h-2 w-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
+                          ))}
+                          {card.labels && card.labels.length > 3 && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                              +{card.labels.length - 3}
+                            </span>
+                          )}
+                          <div className="relative">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setInlineLabelEditorOpen(
+                                  inlineLabelEditorOpen === card.id ? null : card.id
+                                );
+                              }}
+                              className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 border border-dashed border-gray-300 dark:border-gray-600 transition-colors"
+                              title="Add label"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                            <InlineLabelEditor
+                              availableLabels={labels}
+                              selectedLabelIds={card.labels?.map(cl => cl.labelId) || []}
+                              onLabelAdd={(labelId) => handleInlineLabelAdd(card.id, labelId)}
+                              onLabelRemove={(labelId) => handleInlineLabelRemove(card.id, labelId)}
+                              onCreateLabel={handleCreateLabel}
+                              isOpen={inlineLabelEditorOpen === card.id}
+                              onToggle={() => setInlineLabelEditorOpen(
+                                inlineLabelEditorOpen === card.id ? null : card.id
+                              )}
+                              onClose={() => setInlineLabelEditorOpen(null)}
+                            />
                           </div>
-                        )}
+                        </div>
                         
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
