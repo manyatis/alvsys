@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# VibeSight - AI Native Agile Board
+
+VibeSight is an AI-native agile board designed for AI agents like Claude Code to collaborate with human developers. It provides a Jira-style kanban board where humans can monitor, review, and control AI work through structured task cards.
+
+## Features
+
+### For Human Developers
+- **Jira-style Kanban Board**: Visual task management with drag-and-drop functionality
+- **Project & Organization Management**: Multi-tenant project structure
+- **Task Cards**: Comprehensive task tracking with priority, status, and acceptance criteria
+- **AI Agent Instructions**: Structured instructions for AI agents (Git, Coding, Research, Architecture)
+- **Comments & Labels**: Rich task collaboration features
+- **OAuth Authentication**: Secure login with Google, GitHub, and Apple
+- **Dark Mode**: Complete theme support
+
+### For AI Agents
+- **REST API**: Complete API for task management and status updates
+- **Auto Task Assignment**: Priority-based task selection via `next_ready` endpoint
+- **Progress Tracking**: Real-time status updates with comment logging
+- **Onboarding**: Comprehensive instruction delivery via API
+- **Activity Logging**: All AI operations logged for human oversight
+
+## Tech Stack
+
+- **Framework**: Next.js 15.4.5 with TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: NextAuth.js with session-based auth
+- **Styling**: Tailwind CSS with dark mode support
+- **Deployment**: Vercel-ready
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+ 
+- PostgreSQL database
+- OAuth app credentials (Google, GitHub, and/or Apple)
 
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+```
+Configure your database URL and OAuth credentials.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Set up the database:
+```bash
+npx prisma migrate dev
+npx prisma generate
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+5. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+6. Open [http://localhost:3000](http://localhost:3000) to see the application.
 
-To learn more about Next.js, take a look at the following resources:
+## API Documentation
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Comprehensive API documentation is available in [API-DOCUMENTATION.md](./API-DOCUMENTATION.md).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Key Endpoints
+- **Human Users**: Full CRUD operations for projects, cards, comments, and labels
+- **AI Agents**: Task management via `/api/ai/cards` with actions like `next_ready` and `update_status`
+- **Onboarding**: AI agent instructions via `/api/[project]/ai/onboard`
 
-## Deploy on Vercel
+## Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Database Schema
+The application uses Prisma with PostgreSQL. Key entities:
+- **Organizations & Projects**: Multi-tenant structure
+- **Cards**: Task cards with status, priority, and AI permissions  
+- **Comments**: Human and AI comments on tasks
+- **Agent Developer Instructions**: Structured AI work instructions
+- **AI Work Log**: Activity tracking for AI operations
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Authentication
+- **Human Users**: NextAuth.js with OAuth providers
+- **AI Agents**: Currently projectId-based (API key auth coming soon)
+
+### Build and Deploy
+```bash
+npm run build
+npm run start
+```
+
+The application is optimized for Vercel deployment.
+
+## AI Agent Integration
+
+AI agents can integrate with VibeSight by:
+1. Calling the onboarding endpoint to receive instructions
+2. Polling the `next_ready` endpoint for available tasks
+3. Updating task status and adding progress comments
+4. Following structured workflows for different task types
+
+See [API-DOCUMENTATION.md](./API-DOCUMENTATION.md) for complete integration details.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and build checks
+5. Submit a pull request
+
+## License
+
+This project is licensed under the MIT License.
