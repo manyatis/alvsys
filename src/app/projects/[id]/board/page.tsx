@@ -28,6 +28,7 @@ import {
 import { CardStatus, Card, Comment, Label } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
+import InlineLabelEditor from '@/components/InlineLabelEditor';
 
 interface Project {
   id: string;
@@ -151,6 +152,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
+  const [inlineLabelEditorOpen, setInlineLabelEditorOpen] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -903,6 +905,71 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  const handleInlineLabelAdd = async (cardId: string, labelId: string) => {
+    try {
+      const response = await fetch(`/api/cards/${cardId}/labels`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ labelId }),
+      });
+
+      if (response.ok) {
+        // Update the cards state to reflect the new label
+        const updatedCards = cards.map(card => {
+          if (card.id === cardId) {
+            const label = labels.find(l => l.id === labelId);
+            if (label && !card.labels?.some(cl => cl.labelId === labelId)) {
+              return {
+                ...card,
+                labels: [...(card.labels || []), { id: `${cardId}-${labelId}`, cardId, labelId, label }]
+              };
+            }
+          }
+          return card;
+        });
+        setCards(updatedCards);
+      } else {
+        throw new Error('Failed to add label');
+      }
+    } catch (error) {
+      console.error('Error adding label to card:', error);
+      throw error;
+    }
+  };
+
+  const handleInlineLabelRemove = async (cardId: string, labelId: string) => {
+    try {
+      const response = await fetch(`/api/cards/${cardId}/labels`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ labelId }),
+      });
+
+      if (response.ok) {
+        // Update the cards state to remove the label
+        const updatedCards = cards.map(card => {
+          if (card.id === cardId) {
+            return {
+              ...card,
+              labels: card.labels?.filter(cl => cl.labelId !== labelId) || []
+            };
+          }
+          return card;
+        });
+        setCards(updatedCards);
+      } else {
+        throw new Error('Failed to remove label');
+      }
+    } catch (error) {
+      console.error('Error removing label from card:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -1431,28 +1498,58 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         )}
 
                         {/* Labels */}
-                        {card.labels && card.labels.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mb-2">
-                            {card.labels.slice(0, 3).map((cardLabel) => (
-                              <span
-                                key={cardLabel.id}
-                                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                                style={{ 
-                                  backgroundColor: cardLabel.label.color + '20', 
-                                  color: cardLabel.label.color,
-                                  border: `1px solid ${cardLabel.label.color}40`
-                                }}
-                              >
-                                {cardLabel.label.name}
-                              </span>
-                            ))}
-                            {card.labels.length > 3 && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
-                                +{card.labels.length - 3}
-                              </span>
-                            )}
+                        <div className="flex flex-wrap gap-1 mb-2 items-center">
+                          {card.labels && card.labels.slice(0, 3).map((cardLabel) => (
+                            <button
+                              key={cardLabel.id}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleInlineLabelRemove(card.id, cardLabel.labelId);
+                              }}
+                              className="group text-xs px-2 py-0.5 rounded-full font-medium hover:opacity-70 transition-opacity"
+                              style={{ 
+                                backgroundColor: cardLabel.label.color + '20', 
+                                color: cardLabel.label.color,
+                                border: `1px solid ${cardLabel.label.color}40`
+                              }}
+                              title={`Remove ${cardLabel.label.name} label`}
+                            >
+                              <span className="group-hover:line-through">{cardLabel.label.name}</span>
+                              <X className="inline ml-1 h-2 w-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </button>
+                          ))}
+                          {card.labels && card.labels.length > 3 && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
+                              +{card.labels.length - 3}
+                            </span>
+                          )}
+                          <div className="relative">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setInlineLabelEditorOpen(
+                                  inlineLabelEditorOpen === card.id ? null : card.id
+                                );
+                              }}
+                              className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 border border-dashed border-gray-300 dark:border-gray-600 transition-colors"
+                              title="Add label"
+                            >
+                              <Plus className="h-3 w-3" />
+                            </button>
+                            <InlineLabelEditor
+                              availableLabels={labels}
+                              selectedLabelIds={card.labels?.map(cl => cl.labelId) || []}
+                              onLabelAdd={(labelId) => handleInlineLabelAdd(card.id, labelId)}
+                              onLabelRemove={(labelId) => handleInlineLabelRemove(card.id, labelId)}
+                              onCreateLabel={handleCreateLabel}
+                              isOpen={inlineLabelEditorOpen === card.id}
+                              onToggle={() => setInlineLabelEditorOpen(
+                                inlineLabelEditorOpen === card.id ? null : card.id
+                              )}
+                              onClose={() => setInlineLabelEditorOpen(null)}
+                            />
                           </div>
-                        )}
+                        </div>
                         
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
