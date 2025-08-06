@@ -188,7 +188,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
 
         // Fetch cards
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -238,7 +238,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setIsRefreshing(true);
       try {
         // Fetch cards (most likely to change)
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -287,7 +287,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     e.preventDefault();
     
     try {
-      const response = await fetch('/api/cards', {
+      const response = await fetch('/api/issues', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -304,7 +304,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Assign labels to the new card
         if (newCard.labelIds.length > 0) {
           for (const labelId of newCard.labelIds) {
-            await fetch(`/api/cards/${data.id}/labels`, {
+            await fetch(`/api/issues/${data.id}/labels`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -315,7 +315,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
         
         // Refresh cards to get updated data with labels
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -355,7 +355,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const loadComments = async (cardId: string) => {
     setLoadingComments(true);
     try {
-      const response = await fetch(`/api/cards/${cardId}/comments`);
+      const response = await fetch(`/api/issues/${cardId}/comments`);
       if (response.ok) {
         const commentsData = await response.json();
         setComments(commentsData);
@@ -378,7 +378,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/cards/${selectedCard.id}`, {
+      const response = await fetch(`/api/issues/${selectedCard.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -393,7 +393,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Remove labels that are no longer selected
         for (const labelId of currentLabelIds) {
           if (!selectedCardLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
@@ -406,7 +406,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Add new labels
         for (const labelId of selectedCardLabelIds) {
           if (!currentLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -417,7 +417,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
         
         // Refresh cards to get updated data with labels
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -449,7 +449,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/cards/${selectedCard.id}`, {
+      const response = await fetch(`/api/issues/${selectedCard.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -464,7 +464,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Remove labels that are no longer selected
         for (const labelId of currentLabelIds) {
           if (!selectedCardLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',
@@ -477,7 +477,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         // Add new labels
         for (const labelId of selectedCardLabelIds) {
           if (!currentLabelIds.includes(labelId)) {
-            await fetch(`/api/cards/${selectedCard.id}/labels`, {
+            await fetch(`/api/issues/${selectedCard.id}/labels`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -488,7 +488,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
         
         // Refresh cards to get updated data with labels
-        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        const cardsRes = await fetch(`/api/issues?projectId=${resolvedParams.id}`);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -534,7 +534,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsAddingComment(true);
     try {
-      const response = await fetch(`/api/cards/${selectedCard.id}/comments`, {
+      const response = await fetch(`/api/issues/${selectedCard.id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -596,7 +596,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
 
     try {
-      const response = await fetch(`/api/cards/${draggedCard.id}`, {
+      const response = await fetch(`/api/issues/${draggedCard.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -703,7 +703,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         
         if (newStatus && newStatus !== touchedCard.status) {
           try {
-            const response = await fetch(`/api/cards/${touchedCard.id}`, {
+            const response = await fetch(`/api/issues/${touchedCard.id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -907,7 +907,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const handleInlineLabelAdd = async (cardId: string, labelId: string) => {
     try {
-      const response = await fetch(`/api/cards/${cardId}/labels`, {
+      const response = await fetch(`/api/issues/${cardId}/labels`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -941,7 +941,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const handleInlineLabelRemove = async (cardId: string, labelId: string) => {
     try {
-      const response = await fetch(`/api/cards/${cardId}/labels`, {
+      const response = await fetch(`/api/issues/${cardId}/labels`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
