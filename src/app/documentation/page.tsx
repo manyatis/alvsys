@@ -1,0 +1,668 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function Documentation() {
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const sections = [
+    { id: 'overview', title: 'Overview' },
+    { id: 'authentication', title: 'Authentication' },
+    { id: 'cards', title: 'Cards API' },
+    { id: 'ai-endpoints', title: 'AI Endpoints' },
+    { id: 'webhooks', title: 'Webhooks' },
+    { id: 'errors', title: 'Error Handling' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+      <div className="container mx-auto px-6 py-8 flex gap-8">
+        {/* Sidebar Navigation */}
+        <div className="w-64 flex-shrink-0">
+          <div className="sticky top-8">
+            <nav className="space-y-2">
+              {sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => setActiveSection(section.id)}
+                  className={`w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                    activeSection === section.id
+                      ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {section.title}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 max-w-4xl">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 p-8">
+            
+            {/* Overview Section */}
+            {activeSection === 'overview' && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">API Overview</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    The VibeSight API provides programmatic access to our AI-native issue tracking platform. 
+                    Build integrations, automate workflows, and let AI agents interact with your development process.
+                  </p>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Base URL</h3>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono">
+                    https://api.vibesight.com/api
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Rate Limits</h3>
+                  <ul className="text-slate-600 dark:text-slate-300">
+                    <li><strong>Free Tier:</strong> 100 requests/hour</li>
+                    <li><strong>Indie Tier:</strong> 1,000 requests/hour</li>
+                    <li><strong>Professional Tier:</strong> 10,000 requests/hour</li>
+                  </ul>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Content Type</h3>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    All API requests should include the following header:
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono">
+                    Content-Type: application/json
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Authentication Section */}
+            {activeSection === 'authentication' && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Authentication</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    VibeSight uses session-based authentication for web applications and API keys for programmatic access.
+                  </p>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Session Authentication</h3>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    For web applications, include the session cookie in your requests:
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm">
+                    Cookie: next-auth.session-token=your-session-token
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">API Key Authentication</h3>
+                  <p className="text-slate-600 dark:text-slate-300">
+                    For server-to-server communication, use API keys in the Authorization header:
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm">
+                    Authorization: Bearer vs_api_your_api_key_here
+                  </div>
+
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6">
+                    <h4 className="font-semibold text-blue-900 dark:text-blue-100">Getting API Keys</h4>
+                    <p className="text-blue-800 dark:text-blue-200 text-sm mt-2">
+                      API keys can be generated from your account settings once logged in. Keep your API keys secure and never commit them to version control.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Cards API Section */}
+            {activeSection === 'cards' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Cards API</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Manage development cards with titles, descriptions, acceptance criteria, and AI agent instructions.
+                  </p>
+                </div>
+
+                {/* GET Cards */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Cards</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve cards for a specific project with optional status filtering.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Query Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> <span className="text-red-500">*</span> - Project ID to fetch cards from</div>
+                      <div><code className="text-purple-600 dark:text-purple-400">status</code> - Filter by status (REFINEMENT, READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)</div>
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Request</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <div className="text-green-600 dark:text-green-400">GET</div>
+                    <div className="text-slate-700 dark:text-slate-300">/api/cards?projectId=clx123abc456&status=READY</div>
+                    <div className="text-slate-500 dark:text-slate-400 mt-2">
+                      Cookie: next-auth.session-token=your-session-token
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2 mt-4">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`[
+  {
+    "id": "clx789def123",
+    "status": "READY",
+    "title": "Implement user authentication",
+    "description": "Add login and registration functionality",
+    "acceptanceCriteria": "Users can register, login, and logout",
+    "isAiAllowedTask": true,
+    "projectId": "clx123abc456",
+    "createdBy": {
+      "id": "clx456ghi789",
+      "name": "John Doe",
+      "email": "john@example.com"
+    },
+    "agentDeveloperInstructions": [
+      {
+        "id": "clx111bbb222",
+        "type": "GIT",
+        "branchName": "feature/user-authentication",
+        "createNewBranch": true,
+        "instructions": "Create new feature branch"
+      }
+    ]
+  }
+]`}</pre>
+                  </div>
+                </div>
+
+                {/* POST Cards */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Card</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Create a new card with agent instructions.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Request Body</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "title": "Build real-time chat feature",
+  "description": "Implement WebSocket messaging",
+  "acceptanceCriteria": "Users can send/receive real-time messages",
+  "projectId": "clx123abc456",
+  "isAiAllowedTask": true,
+  "agentInstructions": [
+    {
+      "type": "GIT",
+      "branchName": "feature/realtime-chat",
+      "createNewBranch": true,
+      "instructions": "Create feature branch for chat"
+    },
+    {
+      "type": "SPIKE",
+      "webResearchPrompt": "Research WebSocket libraries for Next.js",
+      "instructions": "Investigate real-time communication options"
+    },
+    {
+      "type": "CODING",
+      "codeResearchPrompt": "Review existing API patterns",
+      "instructions": "Implement WebSocket server and client"
+    }
+  ]
+}`}</pre>
+                  </div>
+                </div>
+
+                {/* PUT Cards */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      PUT
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Update Card</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Update an existing card&apos;s properties and agent instructions.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example: Update Status</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "status": "IN_PROGRESS"
+}`}</pre>
+                  </div>
+                </div>
+
+                {/* DELETE Cards */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      DELETE
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Delete Card</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Delete a card and all associated agent instructions.
+                  </p>
+
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <p className="text-red-800 dark:text-red-200 text-sm">
+                      ⚠️ This action cannot be undone. The card and all its agent instructions will be permanently deleted.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI Endpoints Section */}
+            {activeSection === 'ai-endpoints' && (
+              <div className="space-y-8">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">AI Agent Endpoints</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Specialized endpoints designed for AI agents to onboard, discover, and interact with development tasks.
+                  </p>
+                </div>
+
+                {/* AI Agent Onboarding */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/[project]/ai/onboard</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">AI Agent Onboarding</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Provides comprehensive onboarding instructions for AI agents joining a project. Returns system prompts, 
+                    workflow instructions, and complete API documentation tailored for the specific project.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Path Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">project</code> <span className="text-red-500">*</span> - Project ID to onboard agent for</div>
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Request</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <div className="text-green-600 dark:text-green-400">GET</div>
+                    <div className="text-slate-700 dark:text-slate-300">/api/clx123abc456/ai/onboard</div>
+                    <div className="text-slate-500 dark:text-slate-400 mt-2">
+                      Authorization: Bearer vs_api_your_api_key_here
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2 mt-4">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "systemPrompt": "You are an AI agent working on VibeSight...",
+  "workflowInstructions": "Complete 6-step workflow process...",
+  "apiDocumentation": {
+    "baseUrl": "/api/ai/cards",
+    "supportedActions": ["next_ready", "update_status", "get_card_details"]
+  },
+  "projectContext": {
+    "id": "clx123abc456",
+    "name": "VibeSight Platform",
+    "description": "AI-native agile board"
+  },
+  "nextSteps": "Start by calling next_ready action..."
+}`}</pre>
+                  </div>
+                </div>
+
+                {/* GET AI Cards */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      GET
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/cards</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Cards</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Retrieve all cards that are AI-enabled and available for processing. Only returns cards with 
+                    <code className="mx-1 text-purple-600 dark:text-purple-400">isAiAllowedTask: true</code> 
+                    and status <code className="mx-1 text-purple-600 dark:text-purple-400">READY</code> or 
+                    <code className="mx-1 text-purple-600 dark:text-purple-400">IN_PROGRESS</code>.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Query Parameters</h4>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
+                    <div className="space-y-2 text-sm">
+                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> - Filter cards by specific project (optional)</div>
+                    </div>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "cards": [
+    {
+      "id": "clx789def123",
+      "title": "Implement user authentication",
+      "description": "Add login and registration functionality",
+      "acceptanceCriteria": "Users can register, login, and logout",
+      "status": "READY",
+      "priority": 1,
+      "projectId": "clx123abc456",
+      "agentInstructions": [
+        {
+          "type": "GIT",
+          "branchName": "feature/user-authentication",
+          "createNewBranch": true,
+          "instructions": "Create new feature branch"
+        }
+      ],
+      "project": {
+        "id": "clx123abc456",
+        "name": "VibeSight Platform"
+      },
+      "branchName": "feature/implement-user-authentication-clx789de"
+    }
+  ],
+  "totalCount": 1
+}`}</pre>
+                  </div>
+                </div>
+
+                {/* POST AI Actions */}
+                <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
+                      POST
+                    </span>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/cards</code>
+                  </div>
+                  
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">AI Actions</h3>
+                  <p className="text-slate-600 dark:text-slate-300 mb-4">
+                    Multi-action endpoint for AI agents to interact with cards. All actions require authentication and log activity.
+                  </p>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: next_ready</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Get the highest priority READY task that is AI-allowed. Returns highest priority card ordered by priority then creation date.
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "action": "next_ready",
+  "projectId": "clx123abc456" // optional
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "card": {
+    "id": "clx789def123",
+    "title": "Implement user authentication",
+    "status": "READY",
+    "priority": 1,
+    "agentInstructions": [...],
+    "branchName": "feature/implement-user-authentication-clx789de"
+  }
+}`}</pre>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: update_status</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Update a card&apos;s status with optional progress comments. Supports all statuses and creates AI comments.
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "action": "update_status",
+  "cardId": "clx789def123",
+  "status": "IN_PROGRESS",
+  "comment": "Started implementing OAuth integration" // optional
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "success": true,
+  "card": {
+    "id": "clx789def123",
+    "status": "IN_PROGRESS",
+    "updatedAt": "2024-01-15T10:30:00.000Z"
+  }
+}`}</pre>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_card_details</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Get comprehensive information about a specific card including all agent instructions.
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "action": "get_card_details",
+  "cardId": "clx789def123"
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "card": {
+    "id": "clx789def123",
+    "title": "Implement user authentication",
+    "description": "Full description...",
+    "acceptanceCriteria": "Detailed criteria...",
+    "status": "READY",
+    "priority": 1,
+    "agentInstructions": [
+      {
+        "type": "GIT",
+        "branchName": "feature/user-auth",
+        "createNewBranch": true,
+        "instructions": "Create feature branch"
+      }
+    ],
+    "project": {
+      "id": "clx123abc456",
+      "name": "VibeSight Platform"
+    }
+  }
+}`}</pre>
+                  </div>
+
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_ready_cards</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
+                    Get all AI-allowed cards that are READY or IN_PROGRESS. Alternative to GET /api/ai/cards.
+                  </p>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "action": "get_ready_cards",
+  "projectId": "clx123abc456" // optional
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "cards": [...], // Same as GET /api/ai/cards
+  "totalCount": 5
+}`}</pre>
+                  </div>
+                </div>
+
+                <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">
+                  <h4 className="font-semibold text-purple-900 dark:text-purple-100">AI Activity Logging</h4>
+                  <p className="text-purple-800 dark:text-purple-200 text-sm mt-2 mb-3">
+                    All AI interactions are automatically logged in the AIWorkLog table for comprehensive audit and debugging capabilities.
+                  </p>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="text-purple-800 dark:text-purple-200">
+                      <span className="font-semibold">Logged Activities:</span>
+                    </div>
+                    <ul className="text-purple-700 dark:text-purple-300 space-y-1 ml-4">
+                      <li>• Agent onboarding requests</li>
+                      <li>• Task retrieval (next_ready, get_ready_cards)</li>
+                      <li>• Status updates with optional comments</li>
+                      <li>• Card detail requests</li>
+                      <li>• All request payloads and response summaries</li>
+                      <li>• Timestamp and endpoint information</li>
+                    </ul>
+                    
+                    <div className="text-purple-800 dark:text-purple-200 mt-3">
+                      <span className="font-semibold">Log Structure:</span> Activity type, request payload, response summary, timestamp
+                    </div>
+                  </div>
+                </div>
+
+                {/* AI Agent Workflow */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 dark:text-blue-100">Recommended AI Agent Workflow</h4>
+                  <div className="text-blue-800 dark:text-blue-200 text-sm mt-3 space-y-2">
+                    <div><span className="font-semibold">1. Onboarding:</span> Call <code>/api/[project]/ai/onboard</code> to receive instructions</div>
+                    <div><span className="font-semibold">2. Task Selection:</span> Use <code>next_ready</code> action to get highest priority task</div>
+                    <div><span className="font-semibold">3. Start Work:</span> Update status to <code>IN_PROGRESS</code> with initial comment</div>
+                    <div><span className="font-semibold">4. Progress Updates:</span> Add comments during work via status updates</div>
+                    <div><span className="font-semibold">5. Completion:</span> Update to <code>READY_FOR_REVIEW</code> when done</div>
+                    <div><span className="font-semibold">6. Blocking:</span> Update to <code>BLOCKED</code> if assistance needed</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Webhooks Section */}
+            {activeSection === 'webhooks' && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Webhooks</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    Get real-time notifications when cards are created, updated, or completed.
+                  </p>
+
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-6">
+                    <h4 className="font-semibold text-yellow-900 dark:text-yellow-100">Coming Soon</h4>
+                    <p className="text-yellow-800 dark:text-yellow-200 text-sm mt-2">
+                      Webhook functionality is currently in development. Subscribe to our updates to be notified when it&apos;s available.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Error Handling Section */}
+            {activeSection === 'errors' && (
+              <div className="space-y-6">
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Error Handling</h2>
+                
+                <div className="prose prose-slate dark:prose-invert max-w-none">
+                  <p className="text-lg text-slate-600 dark:text-slate-300">
+                    VibeSight uses conventional HTTP response codes to indicate the success or failure of API requests.
+                  </p>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">HTTP Status Codes</h3>
+                  
+                  <div className="space-y-4 mt-4">
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded text-sm font-semibold">
+                          200
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">OK</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">The request was successful.</p>
+                    </div>
+
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-sm font-semibold">
+                          201
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Created</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">The resource was created successfully.</p>
+                    </div>
+
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded text-sm font-semibold">
+                          400
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Bad Request</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">The request was invalid or cannot be served.</p>
+                    </div>
+
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded text-sm font-semibold">
+                          401
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Unauthorized</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">Authentication is required and has failed or not been provided.</p>
+                    </div>
+
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded text-sm font-semibold">
+                          403
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Forbidden</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">The request is understood but access is denied.</p>
+                    </div>
+
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded text-sm font-semibold">
+                          404
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Not Found</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">The requested resource could not be found.</p>
+                    </div>
+
+                    <div className="border border-slate-200 dark:border-slate-700 rounded-lg p-4">
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-2 py-1 rounded text-sm font-semibold">
+                          500
+                        </span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Internal Server Error</span>
+                      </div>
+                      <p className="text-slate-600 dark:text-slate-300 text-sm">Something went wrong on the server.</p>
+                    </div>
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Error Response Format</h3>
+                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mt-4">
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "error": "Validation failed",
+  "message": "Title is required",
+  "code": "VALIDATION_ERROR",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}`}</pre>
+                  </div>
+                </div>
+              </div>
+            )}
+
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
