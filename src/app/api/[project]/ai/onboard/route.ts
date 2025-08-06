@@ -204,7 +204,7 @@ Save these instructions to 'vibesight_instructions.md' for future reference.`,
       
       next_steps: [
         "Save these instructions to 'vibesight_instructions.md'",
-        "Create a new git branch: feature/vibesight-" + project.name,
+        "Create a new git branch: feature/vibesight",
         "Update your claude.md file to allow all git commands on the feature/vibesight-" + project.name + " branch",
         "IMPORTANT: Create a todo list steps and continue to add onto it as we go:",
         "  1. Fetch Task - Call 'next_ready' to get highest priority task",
