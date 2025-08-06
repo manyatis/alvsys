@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect, use, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { 
@@ -132,6 +132,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     labelIds: [] as string[],
     priority: 'all'
   });
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -170,25 +171,42 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   }, [status, resolvedParams.id, router]);
 
-  // Handle escape key and close modal
+  // Polling mechanism for real-time data updates
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && showCreateModal) {
-        setModalVisible(false);
-        setTimeout(() => setShowCreateModal(false), 300);
+    const refreshData = async () => {
+      setIsRefreshing(true);
+      try {
+        // Fetch cards (most likely to change)
+        const cardsRes = await fetch(`/api/cards?projectId=${resolvedParams.id}`);
+        if (cardsRes.ok) {
+          const cardsData = await cardsRes.json();
+          setCards(cardsData);
+        }
+
+        // Fetch labels (less frequent updates but still needed)
+        const labelsRes = await fetch(`/api/projects/${resolvedParams.id}/labels`);
+        if (labelsRes.ok) {
+          const labelsData = await labelsRes.json();
+          setLabels(labelsData);
+        }
+      } catch (error) {
+        console.error('Error refreshing board data:', error);
+      } finally {
+        setIsRefreshing(false);
       }
     };
 
-    if (showCreateModal) {
-      document.addEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'hidden';
-    }
+    // Only start polling if authenticated and we have a project ID
+    if (status === 'authenticated' && resolvedParams.id) {
+      // Set up polling every 20 seconds
+      const pollInterval = setInterval(refreshData, 20000);
 
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
-    };
-  }, [showCreateModal]);
+      // Cleanup interval on unmount
+      return () => {
+        clearInterval(pollInterval);
+      };
+    }
+  }, [status, resolvedParams.id]);
 
   const closeModal = () => {
     setModalVisible(false);
@@ -282,7 +300,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const closeDetailModal = () => {
+  const closeDetailModal = useCallback(() => {
     setDetailModalVisible(false);
     setTimeout(() => {
       setShowDetailModal(false);
@@ -290,7 +308,56 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setComments([]);
       setNewComment('');
     }, 300);
-  };
+  }, [setDetailModalVisible, setShowDetailModal, setSelectedCard, setComments, setNewComment]);
+
+  const saveAndCloseModal = useCallback(async () => {
+    if (!selectedCard) return;
+    
+    setIsUpdating(true);
+    try {
+      const response = await fetch(`/api/cards/${selectedCard.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(selectedCard),
+      });
+
+      if (response.ok) {
+        const updatedCard = await response.json();
+        setCards(cards.map(card => card.id === selectedCard.id ? updatedCard : card));
+        closeDetailModal();
+      }
+    } catch (error) {
+      console.error('Error updating card:', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  }, [selectedCard, cards, setCards, setIsUpdating, closeDetailModal]);
+
+  // Handle escape key and close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showCreateModal) {
+          setModalVisible(false);
+          setTimeout(() => setShowCreateModal(false), 300);
+        } else if (showDetailModal) {
+          saveAndCloseModal();
+        }
+      }
+    };
+
+    if (showCreateModal || showDetailModal) {
+      document.addEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [showCreateModal, showDetailModal, saveAndCloseModal]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -384,6 +451,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchedCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setIsTouchDragging(false);
+    
+    // Provide haptic feedback on touch devices
+    if ('vibrate' in navigator) {
+      navigator.vibrate(50);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -400,11 +472,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       // Mark as dragging
       if (!isTouchDragging) {
         setIsTouchDragging(true);
-        // Add visual feedback
+        // Add enhanced visual feedback similar to desktop drag
         const element = e.currentTarget as HTMLElement;
-        element.style.opacity = '0.5';
-        element.style.transform = 'scale(1.05)';
+        element.style.opacity = '0.6';
+        element.style.transform = 'scale(1.02) rotate(2deg)';
+        element.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
         element.style.transition = 'all 0.2s ease';
+        element.style.zIndex = '50';
+        // Prevent text selection during drag
+        element.style.userSelect = 'none';
+        element.style.webkitUserSelect = 'none';
+        element.style.pointerEvents = 'none';
       }
       
       // Prevent scrolling while dragging
@@ -430,7 +508,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (isTouchDragging) {
       const element = e.currentTarget as HTMLElement;
       element.style.opacity = '1';
-      element.style.transform = 'scale(1)';
+      element.style.transform = 'scale(1) rotate(0deg)';
+      element.style.boxShadow = '';
+      element.style.zIndex = '';
+      element.style.userSelect = '';
+      element.style.webkitUserSelect = '';
+      element.style.pointerEvents = '';
+      element.style.transition = 'all 0.2s ease';
     }
     
     const touch = e.changedTouches[0];
@@ -461,9 +545,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               setCards(cards.map(card => 
                 card.id === touchedCard.id ? updatedCard : card
               ));
+              
+              // Provide success haptic feedback
+              if ('vibrate' in navigator) {
+                navigator.vibrate([100, 50, 100]);
+              }
             }
           } catch (error) {
             console.error('Error updating card status:', error);
+            // Provide error haptic feedback
+            if ('vibrate' in navigator) {
+              navigator.vibrate([200, 100, 200, 100, 200]);
+            }
           }
         }
       }
@@ -992,6 +1085,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               </p>
             </div>
             <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-2 md:ml-4">
+              {isRefreshing && (
+                <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                  <span className="hidden md:inline">Syncing...</span>
+                </div>
+              )}
               <button className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
                 Share
               </button>
@@ -1054,9 +1153,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         onTouchStart={(e) => handleTouchStart(e, card)}
                         onTouchMove={handleTouchMove}
                         onTouchEnd={handleTouchEnd}
-                        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-move group touch-none ${
+                        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-move group touch-none select-none ${
                           draggedCard?.id === card.id || touchedCard?.id === card.id ? 'opacity-50' : ''
                         }`}
+                        style={{
+                          userSelect: 'none',
+                          WebkitUserSelect: 'none',
+                          MozUserSelect: 'none',
+                          msUserSelect: 'none',
+                          WebkitTouchCallout: 'none',
+                          WebkitTapHighlightColor: 'transparent'
+                        }}
                       >
                         <div className="flex items-start justify-between mb-1">
                           <h4 className="text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
@@ -1306,7 +1413,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           >
             <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
           </div>
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={closeDetailModal}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={saveAndCloseModal}>
             <div 
               className={`bg-white dark:bg-gray-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
                 detailModalVisible 
@@ -1320,7 +1427,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Issue</h2>
                 <button
                   type="button"
-                  onClick={closeDetailModal}
+                  onClick={saveAndCloseModal}
                   className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
                 >
                   <X className="h-5 w-5" />
