@@ -140,7 +140,7 @@ Get all organizations accessible to the authenticated user.
 
 ### Card Management (Human Users)
 
-#### `GET /api/cards`
+#### `GET /api/issues`
 Get all cards for a project with optional status filter.
 
 **Authentication:** Required (Human users only)
@@ -194,7 +194,7 @@ Get all cards for a project with optional status filter.
 ]
 ```
 
-#### `POST /api/cards`
+#### `POST /api/issues`
 Create a new card.
 
 **Authentication:** Required (Human users only)
@@ -222,25 +222,25 @@ Create a new card.
 }
 ```
 
-**Response:** Same as GET /api/cards single card object
+**Response:** Same as GET /api/issues single card object
 
-#### `GET /api/cards/[id]`
+#### `GET /api/issues/[id]`
 Get details for a specific card.
 
 **Authentication:** Required (Human users only)
 
-**Response:** Same as GET /api/cards single card object
+**Response:** Same as GET /api/issues single card object
 
-#### `PUT /api/cards/[id]`
+#### `PUT /api/issues/[id]`
 Update an existing card.
 
 **Authentication:** Required (Human users only)
 
-**Body:** Same fields as POST /api/cards (all optional except where noted)
+**Body:** Same fields as POST /api/issues (all optional except where noted)
 
-**Response:** Same as GET /api/cards single card object
+**Response:** Same as GET /api/issues single card object
 
-#### `DELETE /api/cards/[id]`
+#### `DELETE /api/issues/[id]`
 Delete a card.
 
 **Authentication:** Required (Human users only)
@@ -254,7 +254,7 @@ Delete a card.
 
 ### Card Comments
 
-#### `GET /api/cards/[id]/comments`
+#### `GET /api/issues/[id]/comments`
 Get all comments for a specific card.
 
 **Authentication:** Required (Human users only)
@@ -280,7 +280,7 @@ Get all comments for a specific card.
 ]
 ```
 
-#### `POST /api/cards/[id]/comments`
+#### `POST /api/issues/[id]/comments`
 Add a comment to a card.
 
 **Authentication:** Required (Human users only)
@@ -329,7 +329,7 @@ Create a new label for a project.
 
 **Response:** Single label object (same structure as GET response)
 
-#### `POST /api/cards/[id]/labels`
+#### `POST /api/issues/[id]/labels`
 Assign a label to a card.
 
 **Authentication:** Required (Human users only)
@@ -355,7 +355,7 @@ Assign a label to a card.
 }
 ```
 
-#### `DELETE /api/cards/[id]/labels?labelId=[labelId]`
+#### `DELETE /api/issues/[id]/labels?labelId=[labelId]`
 Remove a label from a card.
 
 **Authentication:** Required (Human users only)
@@ -400,7 +400,7 @@ Get comprehensive AI agent onboarding instructions and API documentation.
 }
 ```
 
-#### `POST /api/ai/cards`
+#### `POST /api/ai/issues`
 Multi-action endpoint for AI agents to interact with cards.
 
 **Authentication:** None (uses projectId for access control)
@@ -551,7 +551,7 @@ Update the status of a card and optionally add a comment.
 }
 ```
 
-#### `GET /api/ai/cards?projectId=[projectId]`
+#### `GET /api/ai/issues?projectId=[projectId]`
 Alternative endpoint to get AI-ready cards (supports both READY and IN_PROGRESS).
 
 **Authentication:** None (uses projectId for access control)

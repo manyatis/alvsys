@@ -100,7 +100,7 @@ export async function GET(
 
         continuous_loop: [
           "After processing all fetched tasks, continue the endless loop:",
-          "• Use POST /api/ai/cards with action='next_ready' to get next task",
+          "• Use POST /api/ai/issues with action='next_ready' to get next task",
           "• This ensures you catch any newly added tasks",
           "• Maintain the cycle: fetch task → work → fetch task → work",
           "• If you encounter internal server errors, retry up to 3 times",
@@ -113,7 +113,7 @@ export async function GET(
         
         update_status: {
           method: "POST",
-          endpoint: "/api/ai/cards",
+          endpoint: "/api/ai/issues",
           body: {
             action: "update_status",
             projectId: projectId,
@@ -125,7 +125,7 @@ export async function GET(
         
         next_ready: {
           method: "POST", 
-          endpoint: "/api/ai/cards",
+          endpoint: "/api/ai/issues",
           body: {
             action: "next_ready",
             projectId: projectId

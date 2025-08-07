@@ -133,7 +133,7 @@ export default function Documentation() {
                     <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
                       GET
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Issues</h3>
@@ -152,7 +152,7 @@ export default function Documentation() {
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Request</h4>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                     <div className="text-green-600 dark:text-green-400">GET</div>
-                    <div className="text-slate-700 dark:text-slate-300">/api/cards?projectId=clx123abc456&status=READY</div>
+                    <div className="text-slate-700 dark:text-slate-300">/api/issues?projectId=clx123abc456&status=READY</div>
                     <div className="text-slate-500 dark:text-slate-400 mt-2">
                       Cookie: next-auth.session-token=your-session-token
                     </div>
@@ -194,7 +194,7 @@ export default function Documentation() {
                     <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
                       POST
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Create Issue</h3>
@@ -238,7 +238,7 @@ export default function Documentation() {
                     <span className="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 px-3 py-1 rounded-full text-sm font-semibold">
                       PUT
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues/[id]</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Update Issue</h3>
@@ -260,7 +260,7 @@ export default function Documentation() {
                     <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
                       DELETE
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues/[id]</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Delete Issue</h3>
@@ -294,7 +294,7 @@ export default function Documentation() {
                     <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
                       GET
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/comments</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues/[id]/comments</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get Comments</h3>
@@ -344,7 +344,7 @@ export default function Documentation() {
                     <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
                       POST
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/comments</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues/[id]/comments</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Add Comment</h3>
@@ -366,7 +366,7 @@ export default function Documentation() {
   "content": "Added OAuth integration with Google and GitHub providers",
   "createdAt": "2024-01-15T12:00:00.000Z",
   "isAiComment": false,
-  "cardId": "clx789def123",
+  "issueId": "clx789def123",
   "userId": "clx456def789"
 }`}</pre>
                   </div>
@@ -457,7 +457,7 @@ export default function Documentation() {
                     <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
                       POST
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/labels</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues/[id]/labels</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Assign Label to Issue</h3>
@@ -479,7 +479,7 @@ export default function Documentation() {
                     <span className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-sm font-semibold">
                       DELETE
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/cards/[id]/labels?labelId=[labelId]</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/issues/[id]/labels?labelId=[labelId]</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Remove Label from Issue</h3>
@@ -703,8 +703,8 @@ export default function Documentation() {
   "systemPrompt": "You are an AI agent working on VibeHero...",
   "workflowInstructions": "Complete 6-step workflow process...",
   "apiDocumentation": {
-    "baseUrl": "/api/ai/cards",
-    "supportedActions": ["next_ready", "update_status", "get_card_details"]
+    "baseUrl": "/api/ai/issues",
+    "supportedActions": ["next_ready", "update_status", "get_issue_details"]
   },
   "projectContext": {
     "id": "clx123abc456",
@@ -722,7 +722,7 @@ export default function Documentation() {
                     <span className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-sm font-semibold">
                       GET
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/cards</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/issues</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Issues</h3>
@@ -736,14 +736,14 @@ export default function Documentation() {
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Query Parameters</h4>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
                     <div className="space-y-2 text-sm">
-                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> - Filter cards by specific project (optional)</div>
+                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> - Filter issues by specific project (optional)</div>
                     </div>
                   </div>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "cards": [
+  "issues": [
     {
       "id": "clx789def123",
       "title": "Implement user authentication",
@@ -778,17 +778,17 @@ export default function Documentation() {
                     <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-semibold">
                       POST
                     </span>
-                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/cards</code>
+                    <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/issues</code>
                   </div>
                   
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">AI Actions</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Multi-action endpoint for AI agents to interact with cards. All actions require authentication and log activity.
+                    Multi-action endpoint for AI agents to interact with issues. All actions require authentication and log activity.
                   </p>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: next_ready</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Get the highest priority READY task that is AI-allowed. Returns highest priority card ordered by priority then creation date.
+                    Get the highest priority READY task that is AI-allowed. Returns highest priority issue ordered by priority then creation date.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
@@ -798,7 +798,7 @@ export default function Documentation() {
 }`}</pre>
                     <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "card": {
+  "issue": {
     "id": "clx789def123",
     "title": "Implement user authentication",
     "status": "READY",
@@ -811,20 +811,20 @@ export default function Documentation() {
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: update_status</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Update a card&apos;s status with optional progress comments. Supports all statuses and creates AI comments.
+                    Update an issue&apos;s status with optional progress comments. Supports all statuses and creates AI comments.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
   "action": "update_status",
-  "cardId": "clx789def123",
+  "issueId": "clx789def123",
   "status": "IN_PROGRESS",
   "comment": "Started implementing OAuth integration" // optional
 }`}</pre>
                     <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
   "success": true,
-  "card": {
+  "issue": {
     "id": "clx789def123",
     "status": "IN_PROGRESS",
     "updatedAt": "2024-01-15T10:30:00.000Z"
@@ -832,19 +832,19 @@ export default function Documentation() {
 }`}</pre>
                   </div>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_card_details</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_issue_details</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Get comprehensive information about a specific card including all agent instructions.
+                    Get comprehensive information about a specific issue including all agent instructions.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "action": "get_card_details",
-  "cardId": "clx789def123"
+  "action": "get_issue_details",
+  "issueId": "clx789def123"
 }`}</pre>
                     <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "card": {
+  "issue": {
     "id": "clx789def123",
     "title": "Implement user authentication",
     "description": "Full description...",
@@ -867,19 +867,19 @@ export default function Documentation() {
 }`}</pre>
                   </div>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_ready_cards</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_ready_issues</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Get all AI-allowed cards that are READY or IN_PROGRESS. Alternative to GET /api/ai/cards.
+                    Get all AI-allowed issues that are READY or IN_PROGRESS. Alternative to GET /api/ai/issues.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "action": "get_ready_cards",
+  "action": "get_ready_issues",
   "projectId": "clx123abc456" // optional
 }`}</pre>
                     <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "cards": [...], // Same as GET /api/ai/cards
+  "issues": [...], // Same as GET /api/ai/issues
   "totalCount": 5
 }`}</pre>
                   </div>
@@ -897,9 +897,9 @@ export default function Documentation() {
                     </div>
                     <ul className="text-purple-700 dark:text-purple-300 space-y-1 ml-4">
                       <li>• Agent onboarding requests</li>
-                      <li>• Task retrieval (next_ready, get_ready_cards)</li>
+                      <li>• Task retrieval (next_ready, get_ready_issues)</li>
                       <li>• Status updates with optional comments</li>
-                      <li>• Card detail requests</li>
+                      <li>• Issue detail requests</li>
                       <li>• All request payloads and response summaries</li>
                       <li>• Timestamp and endpoint information</li>
                     </ul>
@@ -932,7 +932,7 @@ export default function Documentation() {
                 
                 <div className="prose prose-slate dark:prose-invert max-w-none">
                   <p className="text-lg text-slate-600 dark:text-slate-300">
-                    Get real-time notifications when cards are created, updated, or completed.
+                    Get real-time notifications when issues are created, updated, or completed.
                   </p>
 
                   <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-6">
