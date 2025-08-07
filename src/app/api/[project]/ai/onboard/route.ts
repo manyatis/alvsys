@@ -70,11 +70,13 @@ Full git access on feature/vibehero.* branches - commit after each task completi
           endpoint: "/api/ai/cards",
           body: { 
             action: "update_status", 
-            projectId: projectId, 
-            cardId: "<card_id>", 
-            status: "IN_PROGRESS|BLOCKED|READY_FOR_REVIEW", 
-            comment: "Progress description" 
-          }
+            projectId: projectId,  // REQUIRED - must match this project ID
+            cardId: "<card_id>",   // REQUIRED - from the card you're updating
+            status: "IN_PROGRESS|BLOCKED|READY_FOR_REVIEW",  // REQUIRED - exact string
+            comment: "Progress description"  // OPTIONAL - but recommended
+          },
+          required_fields: ["action", "projectId", "cardId", "status"],
+          note: "All three fields (projectId, cardId, status) are required or request will fail with 400 error"
         }
       },
 
@@ -88,6 +90,7 @@ Full git access on feature/vibehero.* branches - commit after each task completi
       best_practices: [
         "Continue fetching tasks continuously - retry internal server errors up to 3 times",
         "Only stop after 3 consecutive internal server errors or when explicitly told",
+        "Always include ALL required fields when calling update_status: projectId, cardId, and status",
         "Always comment on status changes to keep humans informed",
         "Read agentDeveloperInstructions for specific task guidance", 
         "Priority 1 = highest, work on lowest numbers first",
