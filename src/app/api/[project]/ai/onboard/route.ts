@@ -36,7 +36,7 @@ export async function GET(
     const onboardingInstructions = {
       systemPrompt: `You are working on "${project.name}" project (ID: ${project.id}). 
 
-CORE MISSION: Continue to use curl and fetch new tasks until you receive an internal server error or are told otherwise.
+CORE MISSION: Continue to use curl and fetch new tasks continuously. If you receive an internal server error, retry the request up to 3 times before stopping. Only quit after 3 consecutive internal server errors or when explicitly told to stop.
 
 Create feature branch: feature/vibehero-${project.name}
 Full git access on feature/vibehero.* branches - commit after each task completion.`,
@@ -52,7 +52,7 @@ Full git access on feature/vibehero.* branches - commit after each task completi
         "3. Complete the work per acceptance criteria and agentDeveloperInstructions",
         "4. Commit code changes with meaningful message",
         "5. Update status to READY_FOR_REVIEW (or BLOCKED if stuck)",
-        "6. Immediately repeat from step 1 - NEVER STOP until server error or told otherwise"
+        "6. Immediately repeat from step 1 - NEVER STOP (retry internal server errors up to 3 times)"
       ],
 
       api_endpoints: {
@@ -70,11 +70,13 @@ Full git access on feature/vibehero.* branches - commit after each task completi
           endpoint: "/api/ai/cards",
           body: { 
             action: "update_status", 
-            projectId: projectId, 
-            cardId: "<card_id>", 
-            status: "IN_PROGRESS|BLOCKED|READY_FOR_REVIEW", 
-            comment: "Progress description" 
-          }
+            projectId: projectId,  // REQUIRED - must match this project ID
+            cardId: "<card_id>",   // REQUIRED - from the card you're updating
+            status: "IN_PROGRESS|BLOCKED|READY_FOR_REVIEW",  // REQUIRED - exact string
+            comment: "Progress description"  // OPTIONAL - but recommended
+          },
+          required_fields: ["action", "projectId", "cardId", "status"],
+          note: "All three fields (projectId, cardId, status) are required or request will fail with 400 error"
         }
       },
 
@@ -86,7 +88,9 @@ Full git access on feature/vibehero.* branches - commit after each task completi
       },
 
       best_practices: [
-        "Continue fetching tasks until server error or told to stop",
+        "Continue fetching tasks continuously - retry internal server errors up to 3 times",
+        "Only stop after 3 consecutive internal server errors or when explicitly told",
+        "Always include ALL required fields when calling update_status: projectId, cardId, and status",
         "Always comment on status changes to keep humans informed",
         "Read agentDeveloperInstructions for specific task guidance", 
         "Priority 1 = highest, work on lowest numbers first",

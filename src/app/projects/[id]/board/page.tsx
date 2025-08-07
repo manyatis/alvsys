@@ -123,6 +123,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [touchedCard, setTouchedCard] = useState<Card | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const [touchHoldTimer, setTouchHoldTimer] = useState<NodeJS.Timeout | null>(null);
+  const [canStartDragging, setCanStartDragging] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -625,8 +627,32 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchedCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setIsTouchDragging(false);
+    setCanStartDragging(false);
     
-    // Provide haptic feedback on touch devices
+    // Clear any existing timer
+    if (touchHoldTimer) {
+      clearTimeout(touchHoldTimer);
+    }
+    
+    // Set a 2-second timer for enabling drag
+    const timer = setTimeout(() => {
+      setCanStartDragging(true);
+      // Provide haptic feedback when drag is enabled
+      if ('vibrate' in navigator) {
+        navigator.vibrate([100, 50, 100]); // Double vibration to indicate drag ready
+      }
+      // Add visual feedback to indicate drag is ready
+      const element = e.currentTarget as HTMLElement;
+      if (element) {
+        element.style.transition = 'all 0.3s ease';
+        element.style.transform = 'scale(1.05)';
+        element.style.boxShadow = '0 4px 15px 0 rgba(139, 92, 246, 0.4)';
+      }
+    }, 2000);
+    
+    setTouchHoldTimer(timer);
+    
+    // Provide initial haptic feedback on touch
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
     }
@@ -643,34 +669,49 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     const deltaY = Math.abs(touch.clientY - touchStartPos.y);
     
     if (deltaX > moveThreshold || deltaY > moveThreshold) {
-      // Mark as dragging
-      if (!isTouchDragging) {
-        setIsTouchDragging(true);
-        // Add enhanced visual feedback similar to desktop drag
+      // Clear the timer if user moves before 2 seconds
+      if (touchHoldTimer && !canStartDragging) {
+        clearTimeout(touchHoldTimer);
+        setTouchHoldTimer(null);
+        // Reset visual feedback if drag wasn't enabled yet
         const element = e.currentTarget as HTMLElement;
-        element.style.opacity = '0.6';
-        element.style.transform = 'scale(1.02) rotate(2deg)';
-        element.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
-        element.style.transition = 'all 0.2s ease';
-        element.style.zIndex = '50';
-        // Prevent text selection during drag
-        element.style.userSelect = 'none';
-        element.style.webkitUserSelect = 'none';
-        element.style.pointerEvents = 'none';
+        if (element) {
+          element.style.transform = 'scale(1)';
+          element.style.boxShadow = '';
+        }
       }
       
-      // Prevent scrolling while dragging
-      e.preventDefault();
-      
-      // Find which column we're over
-      const element = document.elementFromPoint(touch.clientX, touch.clientY);
-      const columnElement = element?.closest('[data-column-status]');
-      
-      if (columnElement) {
-        const status = columnElement.getAttribute('data-column-status') as CardStatus;
-        setDragOverColumn(status);
-      } else {
-        setDragOverColumn(null);
+      // Only allow dragging if the 2-second hold is complete
+      if (canStartDragging) {
+        // Mark as dragging
+        if (!isTouchDragging) {
+          setIsTouchDragging(true);
+          // Add enhanced visual feedback similar to desktop drag
+          const element = e.currentTarget as HTMLElement;
+          element.style.opacity = '0.6';
+          element.style.transform = 'scale(1.02) rotate(2deg)';
+          element.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
+          element.style.transition = 'all 0.2s ease';
+          element.style.zIndex = '50';
+          // Prevent text selection during drag
+          element.style.userSelect = 'none';
+          element.style.webkitUserSelect = 'none';
+          element.style.pointerEvents = 'none';
+        }
+        
+        // Prevent scrolling while dragging
+        e.preventDefault();
+        
+        // Find which column we're over
+        const element = document.elementFromPoint(touch.clientX, touch.clientY);
+        const columnElement = element?.closest('[data-column-status]');
+        
+        if (columnElement) {
+          const status = columnElement.getAttribute('data-column-status') as CardStatus;
+          setDragOverColumn(status);
+        } else {
+          setDragOverColumn(null);
+        }
       }
     }
   };
@@ -678,9 +719,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const handleTouchEnd = async (e: React.TouchEvent) => {
     if (!touchedCard) return;
     
-    // Reset visual feedback if we were dragging
-    if (isTouchDragging) {
-      const element = e.currentTarget as HTMLElement;
+    // Clear the hold timer
+    if (touchHoldTimer) {
+      clearTimeout(touchHoldTimer);
+      setTouchHoldTimer(null);
+    }
+    
+    // Reset visual feedback
+    const element = e.currentTarget as HTMLElement;
+    if (element) {
       element.style.opacity = '1';
       element.style.transform = 'scale(1) rotate(0deg)';
       element.style.boxShadow = '';
@@ -744,6 +791,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchStartPos(null);
     setDragOverColumn(null);
     setIsTouchDragging(false);
+    setCanStartDragging(false);
   };
 
   const getCardsByStatus = (status: CardStatus) => {

@@ -85,7 +85,8 @@ export async function GET(
           "• Work through tasks by priority (1 = highest priority)",
           "• For each task: update to IN_PROGRESS → complete work → update to READY_FOR_REVIEW",
           "• After completing all fetched tasks, use 'next_ready' to continue the loop",
-          "• NEVER STOP - maintain endless fetch task → work → fetch task cycle"
+          "• NEVER STOP - maintain endless fetch task → work → fetch task cycle",
+          "• Retry internal server errors up to 3 times before stopping"
         ],
 
         task_management: [
@@ -101,7 +102,9 @@ export async function GET(
           "After processing all fetched tasks, continue the endless loop:",
           "• Use POST /api/ai/cards with action='next_ready' to get next task",
           "• This ensures you catch any newly added tasks",
-          "• Maintain the cycle: fetch task → work → fetch task → work"
+          "• Maintain the cycle: fetch task → work → fetch task → work",
+          "• If you encounter internal server errors, retry up to 3 times",
+          "• Only stop after 3 consecutive failures or explicit instruction"
         ]
       },
       
