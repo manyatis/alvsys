@@ -46,7 +46,7 @@ def get_onboard_instructions(project_id):
 def get_next_ready_task(project_id):
     """Check for the next available READY task"""
     try:
-        url = f"{VIBEHERO_BASE_URL}/api/ai/cards"
+        url = f"{VIBEHERO_BASE_URL}/api/ai/issues"
         payload = {
             "action": "next_ready",
             "projectId": project_id
