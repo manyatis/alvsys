@@ -29,6 +29,21 @@ import { CardStatus, Card, Comment, Label } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
 import InlineLabelEditor from '@/components/InlineLabelEditor';
+import ProjectSelector from '@/components/ProjectSelector';
+import KanbanColumn from '@/components/board/KanbanColumn';
+import CommentsSection from '@/components/board/CommentsSection';
+import { 
+  getCardsByStatus, 
+  getPriorityColor, 
+  getInitials, 
+  getUniqueAssignees, 
+  hasActiveFilters, 
+  formatCommentDate, 
+  copyOnboardLink,
+  createClearFilters,
+  FilterState,
+  OrganizationMember
+} from '@/utils/board-utils';
 
 interface Project {
   id: string;
@@ -39,12 +54,6 @@ interface Project {
   };
 }
 
-interface OrganizationMember {
-  id: string;
-  name?: string;
-  email?: string;
-  image?: string;
-}
 
 const statusColumns: { 
   status: CardStatus; 
@@ -138,6 +147,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     acceptanceCriteria: '',
     status: CardStatus.REFINEMENT,
     priority: 3,
+    effortPoints: 5,
     isAiAllowedTask: true,
     assigneeId: null as string | null,
     labelIds: [] as string[],
@@ -146,16 +156,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [selectedCardLabelIds, setSelectedCardLabelIds] = useState<string[]>([]);
   const [selectedCardAssigneeId, setSelectedCardAssigneeId] = useState<string | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<FilterState>({
     search: '',
     assigneeId: '',
     aiAllowed: 'all',
-    labelIds: [] as string[],
+    labelIds: [],
     priority: 'all'
   });
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [inlineLabelEditorOpen, setInlineLabelEditorOpen] = useState<string | null>(null);
+  const [isCreatingIssue, setIsCreatingIssue] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -283,6 +294,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         acceptanceCriteria: '',
         status: CardStatus.REFINEMENT,
         priority: 3,
+        effortPoints: 5,
         isAiAllowedTask: true,
         assigneeId: null,
         labelIds: [],
@@ -302,6 +314,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const handleCreateCard = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (isCreatingIssue) return;
+    
+    setIsCreatingIssue(true);
     try {
       const response = await fetch('/api/issues', {
         method: 'POST',
@@ -345,6 +360,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             acceptanceCriteria: '',
             status: CardStatus.REFINEMENT,
             priority: 3,
+            effortPoints: 5,
             isAiAllowedTask: true,
             assigneeId: null,
             labelIds: newCard.labelIds, // Retain labels
@@ -357,6 +373,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             acceptanceCriteria: '',
             status: CardStatus.REFINEMENT,
             priority: 3,
+            effortPoints: 5,
             isAiAllowedTask: true,
             assigneeId: null,
             labelIds: [],
@@ -365,6 +382,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       }
     } catch (error) {
       console.error('Error creating card:', error);
+    } finally {
+      setIsCreatingIssue(false);
     }
   };
 
@@ -822,136 +841,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setCanStartDragging(false);
   };
 
-  const getCardsByStatus = (status: CardStatus) => {
-    return cards
-      .filter(card => {
-        // Filter by status
-        if (card.status !== status) return false;
-        
-        // Filter by search text
-        if (filters.search && !card.title.toLowerCase().includes(filters.search.toLowerCase()) && 
-            !card.description?.toLowerCase().includes(filters.search.toLowerCase())) {
-          return false;
-        }
-        
-        // Filter by assignee (currently filtering by creator)
-        if (filters.assigneeId && card.createdBy?.id !== filters.assigneeId) {
-          return false;
-        }
-        
-        // Filter by AI allowed
-        if (filters.aiAllowed === 'ai-only' && !card.isAiAllowedTask) return false;
-        if (filters.aiAllowed === 'human-only' && card.isAiAllowedTask) return false;
-        
-        // Filter by priority
-        if (filters.priority !== 'all' && card.priority.toString() !== filters.priority) {
-          return false;
-        }
-        
-        // Filter by labels
-        if (filters.labelIds.length > 0) {
-          const cardLabelIds = card.labels?.map(cl => cl.labelId) || [];
-          const hasMatchingLabel = filters.labelIds.some(labelId => cardLabelIds.includes(labelId));
-          if (!hasMatchingLabel) return false;
-        }
-        
-        return true;
-      })
-      .sort((a, b) => {
-        // Sort by priority first (1 is highest priority)
-        const priorityDiff = a.priority - b.priority;
-        if (priorityDiff !== 0) {
-          return priorityDiff;
-        }
-        
-        // If priorities are equal, sort by updated timestamp (most recent first)
-        const aUpdated = new Date(a.updatedAt).getTime();
-        const bUpdated = new Date(b.updatedAt).getTime();
-        const updatedDiff = bUpdated - aUpdated;
-        if (updatedDiff !== 0) {
-          return updatedDiff;
-        }
-        
-        // If both priority and updated are equal, sort by created timestamp (most recent first)
-        const aCreated = new Date(a.createdAt).getTime();
-        const bCreated = new Date(b.createdAt).getTime();
-        return bCreated - aCreated;
-      });
-  };
 
-  const getPriorityColor = (priority: number) => {
-    if (priority === 1) return 'bg-red-100 text-red-600 border-red-200';
-    if (priority === 2) return 'bg-orange-100 text-orange-600 border-orange-200';
-    return 'bg-gray-100 text-gray-600 border-gray-200';
-  };
 
-  const getInitials = (email: string | null, name: string | null) => {
-    if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase();
-    if (email) return email.split('@')[0].slice(0, 2).toUpperCase();
-    return 'U';
-  };
+  const clearFilters = createClearFilters(setFilters);
+  const uniqueAssignees = getUniqueAssignees(cards);
+  const activeFilters = hasActiveFilters(filters);
 
-  const clearFilters = () => {
-    setFilters({
-      search: '',
-      assigneeId: '',
-      aiAllowed: 'all',
-      labelIds: [],
-      priority: 'all'
-    });
-  };
 
-  const getUniqueAssignees = () => {
-    const assignees = new Map();
-    cards.forEach(card => {
-      if (card.createdBy) {
-        assignees.set(card.createdBy.id, card.createdBy);
-      }
-    });
-    return Array.from(assignees.values());
-  };
-
-  const hasActiveFilters = () => {
-    return filters.search !== '' || 
-           filters.assigneeId !== '' || 
-           filters.aiAllowed !== 'all' || 
-           filters.labelIds.length > 0 ||
-           filters.priority !== 'all';
-  };
-
-  const formatCommentDate = (date: Date | string) => {
-    const commentDate = new Date(date);
-    const now = new Date();
-    const diffMs = now.getTime() - commentDate.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return commentDate.toLocaleDateString();
-  };
-
-  const copyOnboardLink = async () => {
-    const onboardUrl = `https://vibehero.io/api/${resolvedParams.id}/ai/onboard`;
-    try {
-      await navigator.clipboard.writeText(onboardUrl);
+  const handleCopyOnboardLink = () => {
+    copyOnboardLink(resolvedParams.id, () => {
       setCopyFeedback(true);
       setTimeout(() => setCopyFeedback(false), 2000);
-    } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
-      // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = onboardUrl;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      setCopyFeedback(true);
-      setTimeout(() => setCopyFeedback(false), 2000);
-    }
+    });
   };
 
   const handleCreateLabel = async (name: string, color: string) => {
@@ -1058,7 +959,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Left Sidebar */}
       <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-screen z-10 ${
-        sidebarCollapsed ? 'w-8 md:w-10' : 'w-44 md:w-48'
+        sidebarCollapsed ? 'w-8 md:w-10' : 'w-32 sm:w-44 md:w-48'
       }`}>
         <div className="p-2 md:p-3 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
@@ -1273,10 +1174,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   setShowCreateModal(true);
                   setTimeout(() => setModalVisible(true), 10);
                 }}
-                className="w-full p-1.5 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                className="w-full p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 title="Create Issue"
               >
-                <Plus className="h-3 w-3" />
+                <Plus className="h-4 w-4" />
               </button>
               
               <button
@@ -1460,12 +1361,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-4 py-2">
           <div className="flex items-center justify-between max-w-full">
             <div className="flex-1 min-w-0">
-              <h1 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">
-                {project?.name}
-              </h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                Software project • {project?.organization.name}
-              </p>
+              {project && (
+                <ProjectSelector 
+                  currentProject={project} 
+                  currentProjectId={resolvedParams.id}
+                />
+              )}
             </div>
             <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-2 md:ml-4">
               {isRefreshing && (
@@ -1474,9 +1375,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   <span className="hidden md:inline">Syncing...</span>
                 </div>
               )}
-              <button className="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">
-                Share
-              </button>
               <button className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400">
                 <MoreVertical className="h-3 w-3" />
               </button>
@@ -1485,205 +1383,37 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
+        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
           <div className="flex gap-2 md:gap-3 h-full overflow-x-auto pb-4">
             {statusColumns.map((column) => {
-              const Icon = column.icon;
-              const columnCards = getCardsByStatus(column.status);
+              const columnCards = getCardsByStatus(cards, column.status, filters);
               
               return (
-                <div
+                <KanbanColumn
                   key={column.status}
-                  className="w-56 md:w-64 min-w-56 md:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
-                >
-                  <div className={`px-2 md:px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-xl md:rounded-t-2xl`}>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Icon className={`h-3 w-3 ${column.textColor}`} />
-                        <h3 className={`text-xs md:text-sm font-medium ${column.textColor} dark:text-white`}>
-                          {column.title}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => openCreateModal(column.status)}
-                          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded transition-colors"
-                          title={`Create issue in ${column.title}`}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </button>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded-full">
-                          {columnCards.length}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div 
-                    className={`p-2 space-y-2 flex-1 overflow-y-auto transition-colors duration-200 ${
-                      dragOverColumn === column.status 
-                        ? 'bg-purple-50/50 dark:bg-purple-900/10' 
-                        : ''
-                    }`}
-                    data-column-status={column.status}
-                    onDragOver={(e) => handleDragOver(e, column.status)}
-                    onDragLeave={handleDragLeave}
-                    onDrop={(e) => handleDrop(e, column.status)}
-                    onDoubleClick={() => openCreateModal(column.status)}
-                  >
-                    {columnCards.map((card) => (
-                      <div
-                        key={card.id}
-                        draggable
-                        onClick={() => {
-                          // Prevent click if we're dragging
-                          if (!isTouchDragging && !draggedCard) {
-                            handleCardClick(card);
-                          }
-                        }}
-                        onDragStart={(e) => handleDragStart(e, card)}
-                        onDragEnd={handleDragEnd}
-                        onTouchStart={(e) => handleTouchStart(e, card)}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                        className={`bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-2 shadow-sm hover:shadow-md transition-all duration-200 cursor-move group touch-none select-none ${
-                          draggedCard?.id === card.id || touchedCard?.id === card.id ? 'opacity-50' : ''
-                        }`}
-                        style={{
-                          userSelect: 'none',
-                          WebkitUserSelect: 'none',
-                          MozUserSelect: 'none',
-                          msUserSelect: 'none',
-                          WebkitTouchCallout: 'none',
-                          WebkitTapHighlightColor: 'transparent'
-                        }}
-                      >
-                        <div className="flex items-start justify-between mb-1">
-                          <h4 className="text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                            {card.title}
-                          </h4>
-                          <button className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity">
-                            <MoreVertical className="h-3 w-3" />
-                          </button>
-                        </div>
-                        
-                        {card.description && (
-                          <p className="text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">
-                            {card.description}
-                          </p>
-                        )}
-
-                        {/* Labels */}
-                        <div className="flex flex-wrap gap-1 mb-2 items-center">
-                          {card.labels && card.labels.slice(0, 3).map((cardLabel) => (
-                            <button
-                              key={cardLabel.id}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleInlineLabelRemove(card.id, cardLabel.labelId);
-                              }}
-                              className="group text-xs px-2 py-0.5 rounded-full font-medium hover:opacity-70 transition-opacity"
-                              style={{ 
-                                backgroundColor: cardLabel.label.color + '20', 
-                                color: cardLabel.label.color,
-                                border: `1px solid ${cardLabel.label.color}40`
-                              }}
-                              title={`Remove ${cardLabel.label.name} label`}
-                            >
-                              <span className="group-hover:line-through">{cardLabel.label.name}</span>
-                              <X className="inline ml-1 h-2 w-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </button>
-                          ))}
-                          {card.labels && card.labels.length > 3 && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 border border-gray-200">
-                              +{card.labels.length - 3}
-                            </span>
-                          )}
-                          <div className="relative">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setInlineLabelEditorOpen(
-                                  inlineLabelEditorOpen === card.id ? null : card.id
-                                );
-                              }}
-                              className="text-xs px-1.5 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 border border-dashed border-gray-300 dark:border-gray-600 transition-colors"
-                              title="Add label"
-                            >
-                              <Plus className="h-3 w-3" />
-                            </button>
-                            <InlineLabelEditor
-                              availableLabels={labels}
-                              selectedLabelIds={card.labels?.map(cl => cl.labelId) || []}
-                              onLabelAdd={(labelId) => handleInlineLabelAdd(card.id, labelId)}
-                              onLabelRemove={(labelId) => handleInlineLabelRemove(card.id, labelId)}
-                              onCreateLabel={handleCreateLabel}
-                              isOpen={inlineLabelEditorOpen === card.id}
-                              onToggle={() => setInlineLabelEditorOpen(
-                                inlineLabelEditorOpen === card.id ? null : card.id
-                              )}
-                              onClose={() => setInlineLabelEditorOpen(null)}
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs px-1.5 py-0.5 rounded-full border ${getPriorityColor(card.priority)}`}>
-                              P{card.priority}
-                            </span>
-                            {card.isAiAllowedTask && (
-                              <span className="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded-full border border-purple-200">
-                                AI
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {/* Assignee */}
-                            {card.assigneeId === 'agent' ? (
-                              <div 
-                                className="w-5 h-5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded-full flex items-center justify-center"
-                                title="Assigned to AI Agent"
-                              >
-                                <Bot className="h-3 w-3" />
-                              </div>
-                            ) : card.assignee ? (
-                              <div 
-                                className="w-5 h-5 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 rounded-full flex items-center justify-center text-xs font-medium"
-                                title={`Assigned to ${card.assignee.name || card.assignee.email || 'Unknown'}`}
-                              >
-                                {getInitials(card.assignee.email || null, card.assignee.name || null)}
-                              </div>
-                            ) : (
-                              <div 
-                                className="w-5 h-5 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 rounded-full flex items-center justify-center text-xs font-medium border border-dashed border-gray-300 dark:border-gray-600"
-                                title="Unassigned"
-                              >
-                                ?
-                              </div>
-                            )}
-                            
-                            {/* Creator (smaller) */}
-                            <div 
-                              className="w-4 h-4 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 rounded-full flex items-center justify-center text-xs font-medium border border-white dark:border-gray-800"
-                              title={`Created by ${card.createdBy?.name || card.createdBy?.email || 'Unknown'}`}
-                            >
-                              {getInitials(card.createdBy?.email || null, card.createdBy?.name || null)}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    
-                    {columnCards.length === 0 && (
-                      <div className="text-center py-4 text-gray-400 dark:text-gray-500">
-                        <Clock className="h-6 w-6 mx-auto mb-1 opacity-50" />
-                        <p className="text-xs">No issues</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
+                  column={column}
+                  cards={columnCards}
+                  onCreateIssue={openCreateModal}
+                  onCardClick={(card) => setSelectedCard(card)}
+                  dragOverColumn={dragOverColumn}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  draggedCard={draggedCard}
+                  touchedCard={touchedCard}
+                  isTouchDragging={isTouchDragging}
+                  labels={labels}
+                  inlineLabelEditorOpen={inlineLabelEditorOpen}
+                  onToggleLabelEditor={setInlineLabelEditorOpen}
+                  onLabelAdd={handleLabelAdd}
+                  onLabelRemove={handleLabelRemove}
+                  onCreateLabel={handleCreateLabel}
+                  onCardDragStart={handleDragStart}
+                  onCardDragEnd={handleDragEnd}
+                  onCardTouchStart={handleTouchStart}
+                  onCardTouchMove={handleTouchMove}
+                  onCardTouchEnd={handleTouchEnd}
+                />);
             })}
           </div>
         </div>
@@ -1750,7 +1480,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Status
@@ -1790,6 +1520,29 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         <option value={3}>Medium</option>
                         <option value={4}>Low</option>
                         <option value={5}>Lowest</option>
+                      </select>
+                      <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Effort Points
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={newCard.effortPoints}
+                        onChange={(e) => setNewCard({ ...newCard, effortPoints: parseInt(e.target.value) })}
+                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <option value={1}>1 point</option>
+                        <option value={3}>3 points</option>
+                        <option value={5}>5 points</option>
+                        <option value={8}>8 points</option>
                       </select>
                       <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                         <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1871,9 +1624,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+                  disabled={isCreatingIssue}
+                  className="flex-1 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm flex items-center justify-center gap-2"
                 >
-                  Create Issue
+                  {isCreatingIssue && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {isCreatingIssue ? 'Creating...' : 'Create Issue'}
                 </button>
               </div>
             </form>
@@ -1928,7 +1683,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Status
@@ -1968,6 +1723,29 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                       <option value={3}>Medium</option>
                       <option value={4}>Low</option>
                       <option value={5}>Lowest</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Effort Points
+                  </label>
+                  <div className="relative">
+                    <select
+                      value={selectedCard.effortPoints}
+                      onChange={(e) => setSelectedCard({ ...selectedCard, effortPoints: parseInt(e.target.value) })}
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      <option value={1}>1 point</option>
+                      <option value={3}>3 points</option>
+                      <option value={5}>5 points</option>
+                      <option value={8}>8 points</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                       <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

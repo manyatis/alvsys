@@ -77,6 +77,7 @@ export interface Card {
   description?: string
   acceptanceCriteria?: string
   priority: number
+  effortPoints: number
   isAiAllowedTask: boolean
   agentDeveloperInstructions: AgentDeveloperInstruction[]
   comments?: Comment[]
@@ -107,6 +108,8 @@ export interface CreateCardRequest {
   acceptanceCriteria?: string
   projectId: string
   assigneeId?: string
+  priority?: number
+  effortPoints?: number
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
@@ -127,6 +130,7 @@ export interface UpdateCardRequest {
   acceptanceCriteria?: string
   status?: CardStatus
   priority?: number
+  effortPoints?: number
   assigneeId?: string
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
