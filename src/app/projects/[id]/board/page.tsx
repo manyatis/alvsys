@@ -142,6 +142,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     assigneeId: null as string | null,
     labelIds: [] as string[],
   });
+  const [createAnother, setCreateAnother] = useState(false);
   const [selectedCardLabelIds, setSelectedCardLabelIds] = useState<string[]>([]);
   const [selectedCardAssigneeId, setSelectedCardAssigneeId] = useState<string | null>(null);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -273,7 +274,20 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const closeModal = () => {
     setModalVisible(false);
-    setTimeout(() => setShowCreateModal(false), 300);
+    setTimeout(() => {
+      setShowCreateModal(false);
+      setCreateAnother(false);
+      setNewCard({
+        title: '',
+        description: '',
+        acceptanceCriteria: '',
+        status: CardStatus.REFINEMENT,
+        priority: 3,
+        isAiAllowedTask: true,
+        assigneeId: null,
+        labelIds: [],
+      });
+    }, 300);
   };
 
   const openCreateModal = (status?: CardStatus) => {
@@ -323,17 +337,31 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           setCards(cardsData);
         }
         
-        setShowCreateModal(false);
-        setNewCard({
-          title: '',
-          description: '',
-          acceptanceCriteria: '',
-          status: CardStatus.REFINEMENT,
-          priority: 3,
-          isAiAllowedTask: true,
-          assigneeId: null,
-          labelIds: [],
-        });
+        if (createAnother) {
+          // Keep modal open and retain labels
+          setNewCard({
+            title: '',
+            description: '',
+            acceptanceCriteria: '',
+            status: CardStatus.REFINEMENT,
+            priority: 3,
+            isAiAllowedTask: true,
+            assigneeId: null,
+            labelIds: newCard.labelIds, // Retain labels
+          });
+        } else {
+          setShowCreateModal(false);
+          setNewCard({
+            title: '',
+            description: '',
+            acceptanceCriteria: '',
+            status: CardStatus.REFINEMENT,
+            priority: 3,
+            isAiAllowedTask: true,
+            assigneeId: null,
+            labelIds: [],
+          });
+        }
       }
     } catch (error) {
       console.error('Error creating card:', error);
@@ -1817,6 +1845,19 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                       className="sr-only peer"
                     />
                     <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2 p-3">
+                  <input
+                    type="checkbox"
+                    id="createAnother"
+                    checked={createAnother}
+                    onChange={(e) => setCreateAnother(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  />
+                  <label htmlFor="createAnother" className="text-sm text-gray-700 dark:text-gray-300">
+                    Create another issue after this one
                   </label>
                 </div>
 
