@@ -153,7 +153,7 @@ check_api_health() {
 
 # Get next ready task from VibeSight API
 get_next_task() {
-    local api_url="$BASE_URL/api/ai/cards"
+    local api_url="$BASE_URL/api/ai/issues"
     local params="action=next_ready&projectId=$PROJECT_ID"
     
     curl -s --max-time 30 --fail "$api_url?$params" 2>/dev/null || echo "ERROR"

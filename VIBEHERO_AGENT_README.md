@@ -37,7 +37,7 @@ To connect this with your AI agent:
 4. **Update task status** using the VibeHero API:
    ```python
    # Update to IN_PROGRESS
-   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/cards", json={
+   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/issues", json={
        "action": "update_status",
        "cardId": task["id"],
        "status": "IN_PROGRESS", 
@@ -46,7 +46,7 @@ To connect this with your AI agent:
    })
    
    # Later, update to READY_FOR_REVIEW
-   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/cards", json={
+   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/issues", json={
        "action": "update_status", 
        "cardId": task["id"],
        "status": "READY_FOR_REVIEW",

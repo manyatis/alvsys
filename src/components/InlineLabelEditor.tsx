@@ -109,7 +109,7 @@ export default function InlineLabelEditor({
                 >
                   <div className="flex items-center justify-center w-4 h-4 border border-gray-300 dark:border-gray-600 rounded">
                     {isUpdating === label.id ? (
-                      <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3 h-3 border-2 border-purple-600 border-t-transparent rounded-full animate-spin" />
                     ) : selectedLabelIds.includes(label.id) ? (
                       <Check className="h-3 w-3 text-blue-600" />
                     ) : null}

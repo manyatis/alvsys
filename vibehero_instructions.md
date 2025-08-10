@@ -22,10 +22,10 @@ Full access to all git commands on feature/vibehero.* branches. Always commit co
 ## API Endpoints
 **Base URL:** https://vibehero.io
 
-### Cards API
-- **Next Ready Task**: POST /api/ai/cards (action='next_ready')
-- **Get Card Details**: POST /api/ai/cards (action='get_card_details')
-- **Update Status**: POST /api/ai/cards (action='update_status')
+### Issues API
+- **Next Ready Task**: POST /api/ai/issues (action='next_ready')
+- **Get Card Details**: POST /api/ai/issues (action='get_card_details')
+- **Update Status**: POST /api/ai/issues (action='update_status')
 
 ### Card Statuses
 - REFINEMENT: Needs more details

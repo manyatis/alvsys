@@ -47,7 +47,7 @@ Full git access on feature/vibehero.* branches - commit after each task completi
       },
       
       workflow: [
-        "1. POST /api/ai/cards with action='next_ready' to get highest priority task",
+        "1. POST /api/ai/issues with action='next_ready' to get highest priority task",
         "2. Update status to IN_PROGRESS with comment about your approach", 
         "3. Complete the work per acceptance criteria and agentDeveloperInstructions",
         "4. Commit code changes with meaningful message",
@@ -60,14 +60,14 @@ Full git access on feature/vibehero.* branches - commit after each task completi
         
         next_ready: {
           method: "POST",
-          endpoint: "/api/ai/cards", 
+          endpoint: "/api/ai/issues", 
           body: { action: "next_ready", projectId: projectId },
           response: "Card object or null if no tasks"
         },
         
         update_status: {
           method: "POST", 
-          endpoint: "/api/ai/cards",
+          endpoint: "/api/ai/issues",
           body: { 
             action: "update_status", 
             projectId: projectId,  // REQUIRED - must match this project ID

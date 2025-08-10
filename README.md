@@ -68,7 +68,7 @@ Comprehensive API documentation is available in [API-DOCUMENTATION.md](./API-DOC
 
 ### Key Endpoints
 - **Human Users**: Full CRUD operations for projects, cards, comments, and labels
-- **AI Agents**: Task management via `/api/ai/cards` with actions like `next_ready` and `update_status`
+- **AI Agents**: Task management via `/api/ai/issues` with actions like `next_ready` and `update_status`
 - **Onboarding**: AI agent instructions via `/api/[project]/ai/onboard`
 
 ## Development

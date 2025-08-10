@@ -11,7 +11,7 @@ const prisma = globalForPrisma.prisma ?? new PrismaClient()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
-// POST /api/ai/cards - AI endpoint to get available cards for processing
+// POST /api/ai/issues - AI endpoint to get available issues for processing
 export async function POST(request: NextRequest) {
   try {
     // TODO: Add AI agent authentication here
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
         await prisma.aIWorkLog.create({
           data: {
             activity: 'get_ready_cards',
-            endpoint: '/api/ai/cards',
+            endpoint: '/api/ai/issues',
             payload: { projectId },
             response: { count: readyCards.length },
           },
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
         await prisma.aIWorkLog.create({
           data: {
             activity: 'update_card_status',
-            endpoint: '/api/ai/cards',
+            endpoint: '/api/ai/issues',
             payload: { cardId, status, comment },
             response: { cardId: updatedCard.id, newStatus: updatedCard.status },
           },
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
             await prisma.aIWorkLog.create({
               data: {
                 activity: 'auto_fetch_next_ready_card',
-                endpoint: '/api/ai/cards',
+                endpoint: '/api/ai/issues',
                 payload: { afterCardId: cardId, projectId },
                 response: { nextCardId: autoNextCard.id, nextCardTitle: autoNextCard.title },
               },
@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
         await prisma.aIWorkLog.create({
           data: {
             activity: 'get_card_details',
-            endpoint: '/api/ai/cards',
+            endpoint: '/api/ai/issues',
             payload: { cardId },
             response: { cardId: card.id, title: card.title },
           },
@@ -259,7 +259,7 @@ export async function POST(request: NextRequest) {
         await prisma.aIWorkLog.create({
           data: {
             activity: 'get_next_ready_card',
-            endpoint: '/api/ai/cards',
+            endpoint: '/api/ai/issues',
             payload: { projectId },
             response: { cardId: nextCard.id, title: nextCard.title },
           },
@@ -290,13 +290,13 @@ export async function POST(request: NextRequest) {
         )
     }
   } catch (error) {
-    console.error('Error in AI cards endpoint:', error)
+    console.error('Error in AI issues endpoint:', error)
     
     // Log AI error
     await prisma.aIWorkLog.create({
       data: {
         activity: 'error',
-        endpoint: '/api/ai/cards',
+        endpoint: '/api/ai/issues',
         payload: await request.json().catch(() => ({})),
         response: { error: error instanceof Error ? error.message : 'Unknown error' },
       },
@@ -308,7 +308,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/ai/cards - Get AI-ready cards (alternative endpoint)
+// GET /api/ai/issues - Get AI-ready issues (alternative endpoint)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
@@ -327,7 +327,7 @@ export async function GET(request: NextRequest) {
     await prisma.aIWorkLog.create({
       data: {
         activity: 'get_ready_cards_via_get',
-        endpoint: '/api/ai/cards',
+        endpoint: '/api/ai/issues',
         payload: { projectId },
         response: { count: readyCards.length },
       },
@@ -348,7 +348,7 @@ export async function GET(request: NextRequest) {
       })),
     })
   } catch (error) {
-    console.error('Error in AI cards GET endpoint:', error)
+    console.error('Error in AI issues GET endpoint:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   } finally {
     await prisma.$disconnect()

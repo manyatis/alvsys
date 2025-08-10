@@ -45,7 +45,7 @@ async function testEndpoint() {
 
     console.log('Payload:', JSON.stringify(payload, null, 2));
 
-    const response = await fetch('http://localhost:3000/api/ai/cards', {
+    const response = await fetch('http://localhost:3000/api/ai/issues', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ async function testEndpoint() {
       status: 'IN_PROGRESS'
     };
 
-    const invalidResponse = await fetch('http://localhost:3000/api/ai/cards', {
+    const invalidResponse = await fetch('http://localhost:3000/api/ai/issues', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

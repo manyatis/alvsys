@@ -27,8 +27,35 @@ export default function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Handle scrolling to pricing section when coming from hash URL
+  useEffect(() => {
+    if (window.location.hash === '#pricing') {
+      const timer = setTimeout(() => {
+        const pricingSection = document.getElementById('pricing');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100); // Small delay to ensure page is loaded
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const getUserDisplayName = (email: string) => {
     return email.split('@')[0];
+  };
+
+  const handlePricingClick = () => {
+    // Check if we're on the home page
+    if (window.location.pathname === '/') {
+      // Scroll to pricing section
+      const pricingSection = document.getElementById('pricing');
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Navigate to home page with pricing hash
+      router.push('/#pricing');
+    }
   };
 
   return (
@@ -61,7 +88,10 @@ export default function Navbar() {
               <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
                 Features
               </button>
-              <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+              <button 
+                onClick={handlePricingClick}
+                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+              >
                 Pricing
               </button>
               <Link 
@@ -226,7 +256,13 @@ export default function Navbar() {
             <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
               Features
             </button>
-            <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
+            <button 
+              onClick={() => {
+                handlePricingClick();
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+            >
               Pricing
             </button>
             <Link 
