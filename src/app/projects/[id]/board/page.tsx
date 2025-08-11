@@ -243,30 +243,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   }, [selectedCard?.isAiAllowedTask, selectedCardAssigneeId]);
 
-  // Safari-specific touch event handling for better drag support
-  useEffect(() => {
-    // Detect if we're on Safari
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    
-    if (!isSafari) return;
-    
-    const preventTouchScroll = (e: TouchEvent) => {
-      // Only prevent scrolling when we have a touched card
-      if (touchedCard) {
-        e.preventDefault();
-      }
-    };
-    
-    // Add non-passive touch event listeners for Safari
-    document.addEventListener('touchstart', preventTouchScroll, { passive: false });
-    document.addEventListener('touchmove', preventTouchScroll, { passive: false });
-    
-    return () => {
-      document.removeEventListener('touchstart', preventTouchScroll);
-      document.removeEventListener('touchmove', preventTouchScroll);
-    };
-  }, [touchedCard]);
-
   // Polling mechanism for real-time data updates
   useEffect(() => {
     const refreshData = async () => {
@@ -691,51 +667,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
   const handleTouchStart = (e: React.TouchEvent, card: Card) => {
-    // Prevent scrolling immediately for Safari compatibility
-    e.preventDefault();
-    
     const touch = e.touches[0];
     setTouchedCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setIsTouchDragging(false);
-    setCanStartDragging(false);
-    
-    // Clear any existing timer
-    if (touchHoldTimer) {
-      clearTimeout(touchHoldTimer);
-    }
-    
-    // Set a 500ms timer for enabling drag (shorter hold duration)
-    const timer = setTimeout(() => {
-      setCanStartDragging(true);
-      // Provide haptic feedback when drag is enabled
-      if ('vibrate' in navigator) {
-        navigator.vibrate([100, 50, 100]); // Double vibration to indicate drag ready
-      }
-      // Add visual feedback to indicate drag is ready
-      const element = e.currentTarget as HTMLElement;
-      if (element) {
-        element.style.transition = 'all 0.3s ease';
-        element.style.transform = 'scale(1.05)';
-        element.style.boxShadow = '0 4px 15px 0 rgba(139, 92, 246, 0.4)';
-      }
-    }, 500);
-    
-    setTouchHoldTimer(timer);
-    
-    // Provide initial haptic feedback on touch
-    if ('vibrate' in navigator) {
-      navigator.vibrate(50);
-    }
+    setCanStartDragging(true); // Enable dragging immediately
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!touchedCard || !touchStartPos) return;
     
-    // Always prevent scrolling if we have a touched card to improve drag experience
-    if (touchedCard) {
-      e.preventDefault();
-    }
+    e.preventDefault(); // Prevent scrolling
     
     const touch = e.touches[0];
     const moveThreshold = 10; // pixels
@@ -745,58 +687,35 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     const deltaY = Math.abs(touch.clientY - touchStartPos.y);
     
     if (deltaX > moveThreshold || deltaY > moveThreshold) {
-      // Clear the timer if user moves before 2 seconds
-      if (touchHoldTimer && !canStartDragging) {
-        clearTimeout(touchHoldTimer);
-        setTouchHoldTimer(null);
-        // Reset visual feedback if drag wasn't enabled yet
+      // Mark as dragging
+      if (!isTouchDragging) {
+        setIsTouchDragging(true);
+        // Add visual feedback
         const element = e.currentTarget as HTMLElement;
         if (element) {
-          element.style.transform = 'scale(1)';
-          element.style.boxShadow = '';
-        }
-      }
-      
-      // Only allow dragging if the hold is complete
-      if (canStartDragging) {
-        // Mark as dragging
-        if (!isTouchDragging) {
-          setIsTouchDragging(true);
-          // Add enhanced visual feedback similar to desktop drag
-          const element = e.currentTarget as HTMLElement;
           element.style.opacity = '0.6';
           element.style.transform = 'scale(1.02) rotate(2deg)';
           element.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
           element.style.transition = 'all 0.2s ease';
           element.style.zIndex = '50';
-          // Prevent text selection during drag
-          element.style.userSelect = 'none';
-          element.style.webkitUserSelect = 'none';
-          element.style.pointerEvents = 'none';
         }
-        
-        // Find which column we're over
-        const element = document.elementFromPoint(touch.clientX, touch.clientY);
-        const columnElement = element?.closest('[data-column-status]');
-        
-        if (columnElement) {
-          const status = columnElement.getAttribute('data-column-status') as CardStatus;
-          setDragOverColumn(status);
-        } else {
-          setDragOverColumn(null);
-        }
+      }
+      
+      // Find which column we're over
+      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+      const columnElement = element?.closest('[data-column-status]');
+      
+      if (columnElement) {
+        const status = columnElement.getAttribute('data-column-status') as CardStatus;
+        setDragOverColumn(status);
+      } else {
+        setDragOverColumn(null);
       }
     }
   };
 
   const handleTouchEnd = async (e: React.TouchEvent) => {
     if (!touchedCard) return;
-    
-    // Clear the hold timer
-    if (touchHoldTimer) {
-      clearTimeout(touchHoldTimer);
-      setTouchHoldTimer(null);
-    }
     
     // Reset visual feedback
     const element = e.currentTarget as HTMLElement;
@@ -805,9 +724,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       element.style.transform = 'scale(1) rotate(0deg)';
       element.style.boxShadow = '';
       element.style.zIndex = '';
-      element.style.userSelect = '';
-      element.style.webkitUserSelect = '';
-      element.style.pointerEvents = '';
       element.style.transition = 'all 0.2s ease';
     }
     
