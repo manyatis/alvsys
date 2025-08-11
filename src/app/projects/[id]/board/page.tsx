@@ -243,6 +243,30 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   }, [selectedCard?.isAiAllowedTask, selectedCardAssigneeId]);
 
+  // Safari-specific touch event handling for better drag support
+  useEffect(() => {
+    // Detect if we're on Safari
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
+    if (!isSafari) return;
+    
+    const preventTouchScroll = (e: TouchEvent) => {
+      // Only prevent scrolling when we have a touched card
+      if (touchedCard) {
+        e.preventDefault();
+      }
+    };
+    
+    // Add non-passive touch event listeners for Safari
+    document.addEventListener('touchstart', preventTouchScroll, { passive: false });
+    document.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    
+    return () => {
+      document.removeEventListener('touchstart', preventTouchScroll);
+      document.removeEventListener('touchmove', preventTouchScroll);
+    };
+  }, [touchedCard]);
+
   // Polling mechanism for real-time data updates
   useEffect(() => {
     const refreshData = async () => {
@@ -667,6 +691,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
   const handleTouchStart = (e: React.TouchEvent, card: Card) => {
+    // Prevent scrolling immediately for Safari compatibility
+    e.preventDefault();
+    
     const touch = e.touches[0];
     setTouchedCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
