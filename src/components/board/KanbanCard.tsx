@@ -45,33 +45,55 @@ export default function KanbanCard({
     <div
       key={card.id}
       data-card-id={card.id}
-      draggable
+      draggable={true}
       onDragStart={(e) => onDragStart(e, card)}
       onDragEnd={onDragEnd}
       onTouchStart={(e) => onTouchStart(e, card)}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
-      className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-pointer hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none ${
+      className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-pointer hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none kanban-card ${
         isDragged 
-          ? 'opacity-50 transform rotate-2 shadow-lg z-50' 
+          ? 'opacity-50 shadow-lg z-50' 
           : isTouched 
-            ? 'opacity-70 transform scale-105 shadow-md z-40' 
+            ? 'opacity-70 shadow-md z-40 touch-dragging' 
             : ''
       }`}
       style={{
+        WebkitUserSelect: 'none',
+        MozUserSelect: 'none',
+        msUserSelect: 'none',
+        userSelect: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitTapHighlightColor: 'transparent',
         transform: isDragged 
           ? 'rotate(3deg) scale(1.02)' 
           : isTouched 
             ? 'scale(1.02)' 
             : undefined
       }}
-      onClick={() => onClick(card)}
+      onClick={(e) => {
+        // Prevent click during drag operations
+        if (isDragged || isTouched) {
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        onClick(card);
+      }}
     >
       <div className="flex justify-between items-start">
         <h4 className="text-sm md:text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
           {card.title}
         </h4>
-        <button className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity">
+        <button 
+          className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          // Prevent drag from starting on button
+          draggable={false}
+        >
           <MoreVertical className="h-3 w-3" />
         </button>
       </div>

@@ -97,9 +97,20 @@ export default function KanbanColumn({
             ? 'bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-300 dark:border-blue-600'
             : ''
         }`}
+        data-column-status={column.status}
         onDragOver={(e) => onDragOver(e, column.status)}
         onDragLeave={onDragLeave}
         onDrop={(e) => onDrop(e, column.status)}
+        onDragEnter={(e) => {
+          // Prevent default to allow drop
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        // Additional attributes for better browser support
+        style={{
+          minHeight: '8rem',
+          position: 'relative'
+        }}
       >
         {cards.map((card) => (
           <KanbanCard

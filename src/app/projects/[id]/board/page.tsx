@@ -573,6 +573,21 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     };
   }, [showCreateModal, showDetailModal, saveAndCloseModal]);
 
+  // Cleanup effect for drag states
+  useEffect(() => {
+    return () => {
+      // Cleanup on component unmount
+      document.body.classList.remove('no-scroll');
+    };
+  }, []);
+
+  // Cleanup drag states on unexpected changes
+  useEffect(() => {
+    if (!isDragging && !touchStartCard) {
+      document.body.classList.remove('no-scroll');
+    }
+  }, [isDragging, touchStartCard]);
+
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -610,8 +625,39 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const handleDragStart = (e: React.DragEvent, card: Card) => {
     setDraggedCard(card);
     e.dataTransfer.effectAllowed = 'move';
-    // Add a subtle visual effect to the dragged card
-    (e.currentTarget as HTMLElement).style.opacity = '0.5';
+    
+    // Set drag data for better cross-browser support
+    e.dataTransfer.setData('text/plain', card.id);
+    e.dataTransfer.setData('application/json', JSON.stringify(card));
+    
+    // Create a custom drag image for consistent appearance across browsers
+    const dragElement = e.currentTarget as HTMLElement;
+    const rect = dragElement.getBoundingClientRect();
+    
+    // Clone the element for drag image
+    const dragImage = dragElement.cloneNode(true) as HTMLElement;
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-1000px';
+    dragImage.style.width = rect.width + 'px';
+    dragImage.style.opacity = '0.8';
+    dragImage.style.transform = 'rotate(2deg)';
+    dragImage.style.pointerEvents = 'none';
+    document.body.appendChild(dragImage);
+    
+    // Set the drag image with offset
+    if (e.dataTransfer.setDragImage) {
+      e.dataTransfer.setDragImage(dragImage, rect.width / 2, rect.height / 2);
+    }
+    
+    // Clean up drag image after a short delay
+    setTimeout(() => {
+      if (document.body.contains(dragImage)) {
+        document.body.removeChild(dragImage);
+      }
+    }, 0);
+    
+    // Add visual effect to original card
+    dragElement.style.opacity = '0.5';
   };
 
   const handleDragEnd = (e: React.DragEvent) => {
@@ -622,33 +668,62 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const handleDragOver = (e: React.DragEvent, columnStatus: CardStatus) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.stopPropagation();
+    
+    // Set drop effect with fallback for different browsers
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
+    }
+    
     setDragOverColumn(columnStatus);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
     // Only clear if we're leaving the column entirely
-    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+    const relatedTarget = e.relatedTarget as Node;
+    if (!e.currentTarget.contains(relatedTarget)) {
       setDragOverColumn(null);
     }
   };
 
   const handleDrop = async (e: React.DragEvent, columnStatus: CardStatus) => {
     e.preventDefault();
+    e.stopPropagation();
     setDragOverColumn(null);
     
-    if (!draggedCard || draggedCard.status === columnStatus) {
+    // Get card data from drag transfer or fall back to state
+    let cardToMove = draggedCard;
+    
+    // Try to get card data from dataTransfer for better reliability
+    if (e.dataTransfer) {
+      try {
+        const cardId = e.dataTransfer.getData('text/plain');
+        const cardJson = e.dataTransfer.getData('application/json');
+        
+        if (cardJson) {
+          cardToMove = JSON.parse(cardJson);
+        } else if (cardId) {
+          cardToMove = cards.find(card => card.id === cardId) || draggedCard;
+        }
+      } catch (error) {
+        // Fall back to draggedCard state
+        console.warn('Failed to parse drag data, using fallback:', error);
+      }
+    }
+    
+    if (!cardToMove || cardToMove.status === columnStatus) {
+      setDraggedCard(null);
       return;
     }
 
     try {
-      const response = await fetch(`/api/issues/${draggedCard.id}`, {
+      const response = await fetch(`/api/issues/${cardToMove.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...draggedCard,
+          ...cardToMove,
           status: columnStatus,
         }),
       });
@@ -656,7 +731,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       if (response.ok) {
         const updatedCard = await response.json();
         setCards(cards.map(card => 
-          card.id === draggedCard.id ? updatedCard : card
+          card.id === cardToMove.id ? updatedCard : card
         ));
       }
     } catch (error) {
@@ -668,17 +743,22 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   // Touch drag handlers
   const handleTouchStart = (e: React.TouchEvent, card: Card) => {
+    // Prevent conflicts with native drag on touch devices
+    e.stopPropagation();
+    
     const touch = e.touches[0];
     setTouchStartCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDragStartTime(Date.now());
     setIsDragging(false);
+    
+    // Disable native drag when touch starts
+    const target = e.currentTarget as HTMLElement;
+    target.setAttribute('draggable', 'false');
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!touchStartCard || !touchStartPos || !dragStartTime) return;
-
-    e.preventDefault(); // Prevent scrolling
 
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.x);
@@ -689,14 +769,26 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (holdTime > 300 && (deltaX > 10 || deltaY > 10) && !isDragging) {
       setIsDragging(true);
       
-      // Haptic feedback
-      if ('vibrate' in navigator) {
-        navigator.vibrate(50);
+      // Prevent scrolling when dragging starts
+      e.preventDefault();
+      
+      // Add no-scroll class to body to prevent background scrolling
+      document.body.classList.add('no-scroll');
+      
+      // Haptic feedback with fallback
+      if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+        try {
+          navigator.vibrate(50);
+        } catch (error) {
+          // Vibrate not supported or failed
+        }
       }
     }
 
-    // If dragging, find which column we're over
+    // If dragging, prevent scrolling and find which column we're over
     if (isDragging) {
+      e.preventDefault();
+      
       const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
       const column = elementBelow?.closest('[data-column-status]');
       if (column) {
@@ -708,7 +800,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const handleTouchEnd = async () => {
+  const handleTouchEnd = async (e: React.TouchEvent) => {
+    const target = e.currentTarget as HTMLElement;
+    
+    // Re-enable native drag
+    target.setAttribute('draggable', 'true');
+    
     if (!touchStartCard) return;
 
     // If we were dragging and have a target column, update the card
@@ -726,25 +823,42 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             card.id === touchStartCard.id ? updatedCard : card
           ));
           
-          // Success haptic feedback
-          if ('vibrate' in navigator) {
-            navigator.vibrate([100, 50, 100]);
+          // Success haptic feedback with fallback
+          if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+            try {
+              navigator.vibrate([100, 50, 100]);
+            } catch (error) {
+              // Vibrate not supported or failed
+            }
           }
         }
       } catch (error) {
         console.error('Error updating card:', error);
+        // Error haptic feedback
+        if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+          try {
+            navigator.vibrate([200, 100, 200]);
+          } catch (error) {
+            // Vibrate not supported or failed
+          }
+        }
       }
     } else if (!isDragging) {
-      // If not dragging, treat as a click
-      handleCardClick(touchStartCard);
+      // If not dragging, treat as a click after a small delay to prevent conflicts
+      setTimeout(() => {
+        handleCardClick(touchStartCard);
+      }, 10);
     }
 
-    // Reset all touch states
+    // Reset all touch states and remove no-scroll class
     setTouchStartCard(null);
     setTouchStartPos(null);
     setIsDragging(false);
     setDragStartTime(null);
     setDragOverColumn(null);
+    
+    // Remove no-scroll class from body
+    document.body.classList.remove('no-scroll');
   };
 
 
@@ -873,7 +987,51 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <>
+      {/* Cross-browser drag and drop styles */}
+      <style jsx global>{`
+        .dragging * {
+          -webkit-user-select: none !important;
+          -moz-user-select: none !important;
+          -ms-user-select: none !important;
+          user-select: none !important;
+          -webkit-touch-callout: none !important;
+          -webkit-tap-highlight-color: transparent !important;
+        }
+        
+        [draggable="true"] {
+          cursor: grab;
+          cursor: -webkit-grab;
+          cursor: -moz-grab;
+        }
+        
+        [draggable="true"]:active {
+          cursor: grabbing;
+          cursor: -webkit-grabbing;
+          cursor: -moz-grabbing;
+        }
+        
+        .kanban-card {
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          -webkit-user-drag: auto;
+        }
+        
+        .touch-dragging {
+          transform: scale(1.02) rotate(2deg) !important;
+          opacity: 0.8 !important;
+          z-index: 1000 !important;
+          transition: transform 0.1s ease, opacity 0.1s ease !important;
+        }
+        
+        .no-scroll {
+          overflow: hidden !important;
+          position: fixed;
+          width: 100%;
+          height: 100%;
+        }
+      `}</style>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
       {/* Left Sidebar */}
       <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-screen z-10 ${
         sidebarCollapsed ? 'w-8 md:w-10' : 'w-32 sm:w-44 md:w-48'
@@ -1306,8 +1464,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
-          <div className="flex gap-2 md:gap-3 h-full overflow-x-auto pb-4">
+        <div className={`flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 ${isDragging ? 'dragging' : ''}`}>
+          <div className="flex gap-2 md:gap-3 h-full overflow-x-auto pb-4 drag-container">
             {statusColumns.map((column) => {
               const columnCards = getCardsByStatus(cards, column.status, filters);
               
@@ -1845,6 +2003,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </>
       )}
 
-    </div>
+      </div>
+    </>
   );
 }
