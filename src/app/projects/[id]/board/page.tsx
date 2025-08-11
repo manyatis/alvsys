@@ -131,6 +131,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartTime, setDragStartTime] = useState<number | null>(null);
+  const [moveMode, setMoveMode] = useState(false);
+  const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -578,15 +580,22 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     return () => {
       // Cleanup on component unmount
       document.body.classList.remove('no-scroll');
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+      }
     };
-  }, []);
+  }, [holdTimer]);
 
   // Cleanup drag states on unexpected changes
   useEffect(() => {
-    if (!isDragging && !touchStartCard) {
+    if (!isDragging && !touchStartCard && !moveMode) {
       document.body.classList.remove('no-scroll');
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        setHoldTimer(null);
+      }
     }
-  }, [isDragging, touchStartCard]);
+  }, [isDragging, touchStartCard, moveMode, holdTimer]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -751,10 +760,31 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setDragStartTime(Date.now());
     setIsDragging(false);
+    setMoveMode(false);
     
     // Disable native drag when touch starts
     const target = e.currentTarget as HTMLElement;
     target.setAttribute('draggable', 'false');
+    
+    // Set up hold timer for move mode (500ms hold)
+    const timer = setTimeout(() => {
+      setMoveMode(true);
+      setIsDragging(true);
+      
+      // Prevent scrolling when in move mode
+      document.body.classList.add('no-scroll');
+      
+      // Haptic feedback
+      if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+        try {
+          navigator.vibrate(100);
+        } catch {
+          // Vibrate not supported or failed
+        }
+      }
+    }, 500);
+    
+    setHoldTimer(timer);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -763,30 +793,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.y);
-    const holdTime = Date.now() - dragStartTime;
 
-    // Start dragging after holding for 300ms and moving 10px
-    if (holdTime > 300 && (deltaX > 10 || deltaY > 10) && !isDragging) {
-      setIsDragging(true);
-      
-      // Prevent scrolling when dragging starts
-      e.preventDefault();
-      
-      // Add no-scroll class to body to prevent background scrolling
-      document.body.classList.add('no-scroll');
-      
-      // Haptic feedback with fallback
-      if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
-        try {
-          navigator.vibrate(50);
-        } catch (error) {
-          // Vibrate not supported or failed
-        }
+    // If we moved significantly before hold timer completed, cancel move mode
+    if (!moveMode && (deltaX > 10 || deltaY > 10)) {
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        setHoldTimer(null);
       }
+      return;
     }
 
-    // If dragging, prevent scrolling and find which column we're over
-    if (isDragging) {
+    // If in move mode, handle drag logic
+    if (moveMode && isDragging) {
       e.preventDefault();
       
       const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -806,10 +824,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     // Re-enable native drag
     target.setAttribute('draggable', 'true');
     
+    // Clear hold timer if still active
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      setHoldTimer(null);
+    }
+    
     if (!touchStartCard) return;
 
-    // If we were dragging and have a target column, update the card
-    if (isDragging && dragOverColumn && dragOverColumn !== touchStartCard.status) {
+    // If we were in move mode and have a target column, update the card
+    if (moveMode && isDragging && dragOverColumn && dragOverColumn !== touchStartCard.status) {
       try {
         const response = await fetch(`/api/issues/${touchStartCard.id}`, {
           method: 'PUT',
@@ -823,31 +847,31 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             card.id === touchStartCard.id ? updatedCard : card
           ));
           
-          // Success haptic feedback with fallback
+          // Success haptic feedback
           if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
             try {
               navigator.vibrate([100, 50, 100]);
-            } catch (error) {
+            } catch {
               // Vibrate not supported or failed
             }
           }
         }
-      } catch (error) {
-        console.error('Error updating card:', error);
+      } catch (updateError) {
+        console.error('Error updating card:', updateError);
         // Error haptic feedback
         if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
           try {
             navigator.vibrate([200, 100, 200]);
-          } catch (error) {
+          } catch {
             // Vibrate not supported or failed
           }
         }
       }
-    } else if (!isDragging) {
-      // If not dragging, treat as a click after a small delay to prevent conflicts
+    } else if (!moveMode && !isDragging) {
+      // If not in move mode, treat as a click
       setTimeout(() => {
         handleCardClick(touchStartCard);
-      }, 10);
+      }, 50);
     }
 
     // Reset all touch states and remove no-scroll class
@@ -856,6 +880,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setIsDragging(false);
     setDragStartTime(null);
     setDragOverColumn(null);
+    setMoveMode(false);
+    setHoldTimer(null);
     
     // Remove no-scroll class from body
     document.body.classList.remove('no-scroll');
@@ -865,16 +891,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
 
   const clearFilters = createClearFilters(setFilters);
-  const uniqueAssignees = getUniqueAssignees(cards);
-  const activeFilters = hasActiveFilters(filters);
-
-
-  const handleCopyOnboardLink = () => {
-    copyOnboardLink(resolvedParams.id, () => {
-      setCopyFeedback(true);
-      setTimeout(() => setCopyFeedback(false), 2000);
-    });
-  };
 
   const handleCreateLabel = async (name: string, color: string) => {
     try {
@@ -903,70 +919,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  const handleInlineLabelAdd = async (cardId: string, labelId: string) => {
-    try {
-      const response = await fetch(`/api/issues/${cardId}/labels`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ labelId }),
-      });
-
-      if (response.ok) {
-        // Update the cards state to reflect the new label
-        const updatedCards = cards.map(card => {
-          if (card.id === cardId) {
-            const label = labels.find(l => l.id === labelId);
-            if (label && !card.labels?.some(cl => cl.labelId === labelId)) {
-              return {
-                ...card,
-                labels: [...(card.labels || []), { id: `${cardId}-${labelId}`, cardId, labelId, label }]
-              };
-            }
-          }
-          return card;
-        });
-        setCards(updatedCards);
-      } else {
-        throw new Error('Failed to add label');
-      }
-    } catch (error) {
-      console.error('Error adding label to card:', error);
-      throw error;
-    }
-  };
-
-  const handleInlineLabelRemove = async (cardId: string, labelId: string) => {
-    try {
-      const response = await fetch(`/api/issues/${cardId}/labels`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ labelId }),
-      });
-
-      if (response.ok) {
-        // Update the cards state to remove the label
-        const updatedCards = cards.map(card => {
-          if (card.id === cardId) {
-            return {
-              ...card,
-              labels: card.labels?.filter(cl => cl.labelId !== labelId) || []
-            };
-          }
-          return card;
-        });
-        setCards(updatedCards);
-      } else {
-        throw new Error('Failed to remove label');
-      }
-    } catch (error) {
-      console.error('Error removing label from card:', error);
-      throw error;
-    }
-  };
 
   const handleLabelAdd = async (cardId: string, labelId: string) => {
     // Implementation for adding label to card
@@ -1029,6 +981,24 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           position: fixed;
           width: 100%;
           height: 100%;
+        }
+        
+        .move-mode {
+          background: #f8fafc !important;
+        }
+        
+        .dark .move-mode {
+          background: #0f172a !important;
+        }
+        
+        .move-mode .kanban-card {
+          pointer-events: none;
+        }
+        
+        .move-mode .kanban-card.touch-dragging {
+          pointer-events: auto;
+          position: relative;
+          z-index: 1000;
         }
       `}</style>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
@@ -1464,7 +1434,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         </div>
 
         {/* Board */}
-        <div className={`flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 ${isDragging ? 'dragging' : ''}`}>
+        <div className={`flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 ${isDragging ? 'dragging' : ''} ${moveMode ? 'move-mode' : ''}`}>
           <div className="flex gap-2 md:gap-3 h-full overflow-x-auto pb-4 drag-container">
             {statusColumns.map((column) => {
               const columnCards = getCardsByStatus(cards, column.status, filters);
@@ -1483,6 +1453,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   draggedCard={draggedCard}
                   touchStartCard={touchStartCard}
                   isDragging={isDragging}
+                  moveMode={moveMode}
                   onCardTouchStart={handleTouchStart}
                   onCardTouchMove={handleTouchMove}
                   onCardTouchEnd={handleTouchEnd}
