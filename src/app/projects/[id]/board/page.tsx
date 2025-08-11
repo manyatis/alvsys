@@ -667,6 +667,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
   const handleTouchStart = (e: React.TouchEvent, card: Card) => {
+    console.log('🟢 TouchStart:', card.title);
     const touch = e.touches[0];
     setTouchedCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
@@ -676,12 +677,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     // Store reference to the touched element for styling
     const element = e.currentTarget as HTMLElement;
     (element as any).__draggedElement = true;
+    console.log('🟢 TouchStart complete - canStartDragging:', true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchedCard || !touchStartPos) return;
+    if (!touchedCard || !touchStartPos) {
+      console.log('❌ TouchMove - missing touchedCard or touchStartPos');
+      return;
+    }
     
     e.preventDefault(); // Prevent scrolling
+    console.log('🟡 TouchMove - preventing scroll');
     
     const touch = e.touches[0];
     const moveThreshold = 10; // pixels
@@ -689,19 +695,24 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     // Check if we've moved enough to consider it a drag
     const deltaX = Math.abs(touch.clientX - touchStartPos.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+    console.log('🟡 TouchMove - delta:', { deltaX, deltaY, threshold: moveThreshold });
     
     if (deltaX > moveThreshold || deltaY > moveThreshold) {
       // Mark as dragging
       if (!isTouchDragging) {
+        console.log('🔥 Starting touch drag!');
         setIsTouchDragging(true);
         // Find the dragged element by looking for our marker
         const draggedElement = document.querySelector('[data-card-id="' + touchedCard.id + '"]') as HTMLElement;
         if (draggedElement) {
+          console.log('🔥 Found dragged element, applying styles');
           draggedElement.style.opacity = '0.6';
           draggedElement.style.transform = 'scale(1.02) rotate(2deg)';
           draggedElement.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
           draggedElement.style.transition = 'all 0.2s ease';
           draggedElement.style.zIndex = '50';
+        } else {
+          console.log('❌ Could not find dragged element with id:', touchedCard.id);
         }
       }
       
@@ -711,19 +722,28 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       
       if (columnElement) {
         const status = columnElement.getAttribute('data-column-status') as CardStatus;
+        console.log('🎯 Over column:', status);
         setDragOverColumn(status);
       } else {
+        console.log('⚪ Not over any column');
         setDragOverColumn(null);
       }
     }
   };
 
   const handleTouchEnd = async (e: React.TouchEvent) => {
-    if (!touchedCard) return;
+    console.log('🔴 TouchEnd called');
+    if (!touchedCard) {
+      console.log('❌ TouchEnd - no touchedCard');
+      return;
+    }
+    
+    console.log('🔴 TouchEnd - touchedCard:', touchedCard.title, 'isTouchDragging:', isTouchDragging, 'dragOverColumn:', dragOverColumn);
     
     // Reset visual feedback using card ID to find the element
     const draggedElement = document.querySelector('[data-card-id="' + touchedCard.id + '"]') as HTMLElement;
     if (draggedElement) {
+      console.log('🔴 Resetting visual styles');
       draggedElement.style.opacity = '1';
       draggedElement.style.transform = 'scale(1) rotate(0deg)';
       draggedElement.style.boxShadow = '';
@@ -736,13 +756,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     // If we were dragging, handle the drop
     if (isTouchDragging && dragOverColumn) {
+      console.log('🎯 Processing drop - isTouchDragging:', isTouchDragging, 'dragOverColumn:', dragOverColumn);
       const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
       const columnElement = elementBelow?.closest('[data-column-status]');
       
       if (columnElement) {
         const newStatus = columnElement.getAttribute('data-column-status') as CardStatus;
+        console.log('🎯 Found drop target column:', newStatus, 'current status:', touchedCard.status);
         
         if (newStatus && newStatus !== touchedCard.status) {
+          console.log('📡 Making API call to update card status from', touchedCard.status, 'to', newStatus);
           try {
             const response = await fetch(`/api/issues/${touchedCard.id}`, {
               method: 'PUT',
@@ -756,6 +779,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             });
 
             if (response.ok) {
+              console.log('✅ API call successful');
               const updatedCard = await response.json();
               setCards(cards.map(card => 
                 card.id === touchedCard.id ? updatedCard : card
@@ -773,13 +797,21 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               navigator.vibrate([200, 100, 200, 100, 200]);
             }
           }
+        } else {
+          console.log('⚠️ Same status - no update needed');
         }
+      } else {
+        console.log('❌ No column element found at drop point');
       }
     } else if (!isTouchDragging) {
+      console.log('👆 Not dragging - treating as click');
       // If we weren't dragging, treat it as a click
       handleCardClick(touchedCard);
+    } else {
+      console.log('❌ TouchEnd conditions not met - isTouchDragging:', isTouchDragging, 'dragOverColumn:', dragOverColumn);
     }
     
+    console.log('🧹 TouchEnd cleanup');
     // Clean up
     setTouchedCard(null);
     setTouchStartPos(null);
