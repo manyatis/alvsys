@@ -11,6 +11,7 @@ interface KanbanCardProps {
   onClick: (card: Card) => void;
   onDragStart: (e: React.DragEvent<HTMLDivElement>, card: Card) => void;
   onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
+  onMouseDown?: (e: React.MouseEvent<HTMLDivElement>, card: Card) => void;
   isDragged: boolean;
   isTouched: boolean;
   onTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
@@ -29,6 +30,7 @@ export default function KanbanCard({
   onClick,
   onDragStart,
   onDragEnd,
+  onMouseDown,
   isDragged,
   isTouched,
   onTouchStart,
@@ -48,6 +50,7 @@ export default function KanbanCard({
       draggable={true}
       onDragStart={(e) => onDragStart(e, card)}
       onDragEnd={onDragEnd}
+      onMouseDown={onMouseDown ? (e) => onMouseDown(e, card) : undefined}
       onTouchStart={(e) => onTouchStart(e, card)}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
