@@ -433,41 +433,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Live Board Link */}
-            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 max-w-2xl mx-auto">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                See Our Live Development Board
-              </h3>
-              <p className="text-gray-800 mb-6 leading-relaxed">
-                Watch real AI agents working on VibeHero features in real-time. 
-                See the structured approach that built the platform you&apos;re using right now.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <a
-                  href="/projects/cme0a0fir000ol304w0cvo38m/board"
-                  className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-colors shadow-lg"
-                >
-                  🔴 View Live Board
-                </a>
-                <a
-                  href="/example-workflow"
-                  className="px-6 py-3 bg-white/20 backdrop-blur-sm text-gray-900 font-semibold rounded-xl hover:bg-white/30 transition-colors border border-gray-800/20"
-                >
-                  📖 See How We Did It
-                </a>
-              </div>
-            </div>
 
-            {/* Bottom Message */}
-            <div className="mt-12 text-center">
-              <p className="text-xl text-blue-100 italic">
-                &quot;If VibeHero can build VibeHero, imagine what it can do for your project.&quot;
-              </p>
-              <div className="mt-4 text-blue-200">
-                — The VibeHero Team
-              </div>
-            </div>
-          </div>
         </div>
       </section>
 
