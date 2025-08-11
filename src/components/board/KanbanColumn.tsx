@@ -26,6 +26,7 @@ interface KanbanColumnProps {
   draggedCard: Card | null;
   touchStartCard: Card | null;
   isDragging: boolean;
+  moveMode: boolean;
   onCardTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
   onCardTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void;
   onCardTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void;
@@ -51,6 +52,7 @@ export default function KanbanColumn({
   draggedCard,
   touchStartCard,
   isDragging,
+  moveMode,
   onCardTouchStart,
   onCardTouchMove,
   onCardTouchEnd,
@@ -92,14 +94,27 @@ export default function KanbanColumn({
       
       {/* Cards Container */}
       <div
-        className={`flex-1 p-2 md:p-3 overflow-y-auto min-h-32 ${
-          dragOverColumn === column.status && !isDragging
-            ? 'bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-300 dark:border-blue-600'
+        className={`flex-1 p-2 md:p-3 overflow-y-auto min-h-32 transition-all duration-200 ${
+          (dragOverColumn === column.status && isDragging) || (moveMode && dragOverColumn === column.status)
+            ? 'bg-blue-100 dark:bg-blue-900/20 border-2 border-dashed border-blue-400 dark:border-blue-500'
+            : moveMode
+            ? 'bg-blue-50 dark:bg-blue-900/10 border-2 border-solid border-blue-300 dark:border-blue-600'
             : ''
         }`}
+        data-column-status={column.status}
         onDragOver={(e) => onDragOver(e, column.status)}
         onDragLeave={onDragLeave}
         onDrop={(e) => onDrop(e, column.status)}
+        onDragEnter={(e) => {
+          // Prevent default to allow drop
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+        // Additional attributes for better browser support
+        style={{
+          minHeight: '8rem',
+          position: 'relative'
+        }}
       >
         {cards.map((card) => (
           <KanbanCard
