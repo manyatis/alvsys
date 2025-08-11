@@ -22,8 +22,7 @@ import {
   Send,
   MessageCircle,
   Copy,
-  Check,
-  Bot
+  Check
 } from 'lucide-react';
 import { CardStatus, Card, Comment, Label } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
@@ -129,8 +128,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [touchedCard, setTouchedCard] = useState<Card | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
-  const [touchHoldTimer, setTouchHoldTimer] = useState<NodeJS.Timeout | null>(null);
-  const [canStartDragging, setCanStartDragging] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -672,12 +669,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchedCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setIsTouchDragging(false);
-    setCanStartDragging(true); // Enable dragging immediately
     
     // Store reference to the touched element for styling
     const element = e.currentTarget as HTMLElement;
-    (element as any).__draggedElement = true;
-    console.log('🟢 TouchStart complete - canStartDragging:', true);
+    (element as unknown as { __draggedElement: boolean }).__draggedElement = true;
+    console.log('🟢 TouchStart complete');
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -749,7 +745,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       draggedElement.style.boxShadow = '';
       draggedElement.style.zIndex = '';
       draggedElement.style.transition = 'all 0.2s ease';
-      delete (draggedElement as any).__draggedElement;
+      delete (draggedElement as unknown as { __draggedElement?: boolean }).__draggedElement;
     }
     
     const touch = e.changedTouches[0];
@@ -817,7 +813,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchStartPos(null);
     setDragOverColumn(null);
     setIsTouchDragging(false);
-    setCanStartDragging(false);
   };
 
 

@@ -1,15 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import LoginModal from '@/components/login-modal';
 import Navbar from '@/components/navbar';
 
 export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const { data: session } = useSession();
-  const router = useRouter();
 
   return (
     <div className="min-h-screen">
