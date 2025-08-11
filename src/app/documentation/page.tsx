@@ -704,7 +704,7 @@ export default function Documentation() {
   "workflowInstructions": "Complete 6-step workflow process...",
   "apiDocumentation": {
     "baseUrl": "/api/ai/issues",
-    "supportedActions": ["next_ready", "update_status", "get_issue_details"]
+    "supportedActions": ["next_ready", "update_status", "get_card_details"]
   },
   "projectContext": {
     "id": "clx123abc456",
@@ -725,25 +725,24 @@ export default function Documentation() {
                     <code className="text-lg font-mono text-slate-900 dark:text-white">/api/ai/issues</code>
                   </div>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Issues</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">Get AI-Ready Cards</h3>
                   <p className="text-slate-600 dark:text-slate-300 mb-4">
-                    Retrieve all issues that are AI-enabled and available for processing. Only returns issues with 
+                    Retrieve all cards that are AI-enabled and available for processing. Only returns cards with 
                     <code className="mx-1 text-purple-600 dark:text-purple-400">isAiAllowedTask: true</code> 
-                    and status <code className="mx-1 text-purple-600 dark:text-purple-400">READY</code> or 
-                    <code className="mx-1 text-purple-600 dark:text-purple-400">IN_PROGRESS</code>.
+                    and status <code className="mx-1 text-purple-600 dark:text-purple-400">READY</code>.
                   </p>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Query Parameters</h4>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 mb-4">
                     <div className="space-y-2 text-sm">
-                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> - Filter issues by specific project (optional)</div>
+                      <div><code className="text-purple-600 dark:text-purple-400">projectId</code> - Filter cards by specific project (required)</div>
                     </div>
                   </div>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Example Response</h4>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "issues": [
+  "cards": [
     {
       "id": "clx789def123",
       "title": "Implement user authentication",
@@ -788,69 +787,104 @@ export default function Documentation() {
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: next_ready</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Get the highest priority READY task that is AI-allowed. Returns highest priority issue ordered by priority then creation date.
+                    Get the highest priority READY task that is AI-allowed. Returns highest priority card ordered by priority then creation date.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
   "action": "next_ready",
-  "projectId": "clx123abc456" // optional
+  "projectId": "clx123abc456" // required
 }`}</pre>
-                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response (with task):</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "issue": {
+  "card": {
     "id": "clx789def123",
     "title": "Implement user authentication",
+    "description": "Add login functionality",
+    "acceptanceCriteria": "Users can register, login, logout",
     "status": "READY",
     "priority": 1,
+    "projectId": "clx123abc456",
+    "isAiAllowedTask": true,
     "agentInstructions": [...],
-    "branchName": "feature/implement-user-authentication-clx789de"
+    "project": { "id": "clx123abc456", "name": "VibeHero" },
+    "createdBy": { "id": "user123", "name": "Mike", "email": "mike@example.com" },
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
   }
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response (no tasks available):</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "message": "No ready tasks available. Continue polling for new tasks every 1 minute. Do not stop - keep checking for new work.",
+  "card": null,
+  "instruction": "Wait 60 seconds, then call next_ready API again. Repeat indefinitely until tasks become available."
 }`}</pre>
                   </div>
 
                   <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: update_status</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Update an issue&apos;s status with optional progress comments. Supports all statuses and creates AI comments.
+                    Update a card&apos;s status with optional progress comments. Supports all statuses and creates AI comments.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
   "action": "update_status",
-  "issueId": "clx789def123",
-  "status": "IN_PROGRESS",
+  "projectId": "clx123abc456", // required
+  "cardId": "clx789def123", // required
+  "status": "IN_PROGRESS", // required: READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED
   "comment": "Started implementing OAuth integration" // optional
 }`}</pre>
-                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response (with next task):</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "success": true,
-  "issue": {
+  "message": "Card status updated successfully",
+  "card": {
     "id": "clx789def123",
-    "status": "IN_PROGRESS",
-    "updatedAt": "2024-01-15T10:30:00.000Z"
+    "status": "IN_PROGRESS", 
+    "title": "Implement user authentication"
+  },
+  "nextCard": {
+    "id": "clx456ghi789",
+    "title": "Add user profiles",
+    "description": "Create profile management",
+    "status": "READY",
+    "priority": 2,
+    // ... full card object
   }
+}`}</pre>
+                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response (no more tasks):</div>
+                    <pre className="text-slate-700 dark:text-slate-300">{`{
+  "message": "Card status updated successfully. No more ready tasks available. Continue polling for new tasks every 1 minute.",
+  "card": {
+    "id": "clx789def123", 
+    "status": "READY_FOR_REVIEW",
+    "title": "Implement user authentication"
+  },
+  "instruction": "Wait 60 seconds, then call next_ready API again. Do not stop - keep checking for new work."
 }`}</pre>
                   </div>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_issue_details</h4>
+                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_card_details</h4>
                   <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Get comprehensive information about a specific issue including all agent instructions.
+                    Get comprehensive information about a specific card including all agent instructions.
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto mb-4">
                     <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "action": "get_issue_details",
-  "issueId": "clx789def123"
+  "action": "get_card_details",
+  "projectId": "clx123abc456", // required
+  "cardId": "clx789def123" // required
 }`}</pre>
                     <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
                     <pre className="text-slate-700 dark:text-slate-300">{`{
-  "issue": {
+  "card": {
     "id": "clx789def123",
     "title": "Implement user authentication",
-    "description": "Full description...",
-    "acceptanceCriteria": "Detailed criteria...",
+    "description": "Add login and registration functionality",
+    "acceptanceCriteria": "Users can register, login, and logout",
     "status": "READY",
     "priority": 1,
+    "projectId": "clx123abc456",
+    "isAiAllowedTask": true,
     "agentInstructions": [
       {
         "type": "GIT",
@@ -860,29 +894,20 @@ export default function Documentation() {
       }
     ],
     "project": {
-      "id": "clx123abc456",
+      "id": "clx123abc456", 
       "name": "VibeHero Platform"
-    }
+    },
+    "createdBy": {
+      "id": "user123",
+      "name": "Mike Maniatis",
+      "email": "mike@example.com"
+    },
+    "createdAt": "2024-01-15T10:00:00.000Z",
+    "updatedAt": "2024-01-15T10:00:00.000Z"
   }
 }`}</pre>
                   </div>
 
-                  <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Action: get_ready_issues</h4>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm mb-2">
-                    Get all AI-allowed issues that are READY or IN_PROGRESS. Alternative to GET /api/ai/issues.
-                  </p>
-                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
-                    <div className="text-slate-500 dark:text-slate-400 mb-2">Request:</div>
-                    <pre className="text-slate-700 dark:text-slate-300">{`{
-  "action": "get_ready_issues",
-  "projectId": "clx123abc456" // optional
-}`}</pre>
-                    <div className="text-slate-500 dark:text-slate-400 mb-2 mt-3">Response:</div>
-                    <pre className="text-slate-700 dark:text-slate-300">{`{
-  "issues": [...], // Same as GET /api/ai/issues
-  "totalCount": 5
-}`}</pre>
-                  </div>
                 </div>
 
                 <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4">

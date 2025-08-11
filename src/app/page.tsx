@@ -1,23 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 import Navbar from '@/components/navbar';
 
 export default function Home() {
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
-
-  const getUserDisplayName = (email: string) => {
-    return email.split('@')[0];
-  };
 
   return (
     <div className="min-h-screen">
@@ -37,17 +29,25 @@ export default function Home() {
               AI-Powered Development
             </div>
             
-            <h1 className="text-5xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
-              Issue Tracking Built for the{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                AI Era
+            <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
+              Bring Structure to{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
+                Vibe Coding
               </span>
             </h1>
             
-            <p className="text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Set up your backlog anywhere, anytime. Turn on AI agents and let them get to work 
-              while you&apos;re away from your computer. Come back to completed tasks and progress updates.
+            <p className="text-base md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Transform chaotic &quot;vibe coding&quot; into structured, asynchronous development. 
+              Create organized backlogs, enable AI agents, and watch work happen automatically 
+              while you sleep, travel, or focus on strategy.
             </p>
+            
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-12 max-w-4xl mx-auto">
+              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span className="font-semibold text-purple-700 dark:text-purple-400">Stop the chaos:</span> No more scattered ideas, forgotten tasks, or waiting around for AI responses. 
+                VibeHero brings real software engineering practices to AI-assisted development.
+              </p>
+            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
@@ -72,14 +72,145 @@ export default function Home() {
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              Designed for Modern Development
+              See Your Board in Action
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-              Create tasks from anywhere, activate AI agents, and watch work happen automatically
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8">
+              Experience the power of structured, AI-native project management
             </p>
+            
+            {/* Board Preview */}
+            <div className="max-w-5xl mx-auto mb-12">
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-6">
+                {/* Board Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-slate-900 dark:text-white">My Awesome Project</h3>
+                  <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    AI agents active
+                  </div>
+                </div>
+                
+                {/* Kanban Columns */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
+                  {/* Refinement */}
+                  <div className="bg-slate-50 dark:bg-slate-700 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                      <span className="text-xs font-medium text-slate-600 dark:text-slate-300">Refinement</span>
+                      <span className="text-xs bg-slate-200 dark:bg-slate-600 px-1.5 py-0.5 rounded-full">3</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm">
+                        <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">User Authentication</div>
+                        <div className="text-slate-500 dark:text-slate-400">P2 • 🤖 AI Ready</div>
+                      </div>
+                      <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm">
+                        <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">Database Schema</div>
+                        <div className="text-slate-500 dark:text-slate-400">P3 • 👤 Human</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Ready */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Ready</span>
+                      <span className="text-xs bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded-full">2</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm border-l-2 border-blue-500">
+                        <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">Login API Endpoint</div>
+                        <div className="text-slate-500 dark:text-slate-400">P1 • 🤖 AI Ready</div>
+                      </div>
+                      <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm">
+                        <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">Error Handling</div>
+                        <div className="text-slate-500 dark:text-slate-400">P2 • 🤖 AI Ready</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* In Progress */}
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+                      <span className="text-xs font-medium text-yellow-700 dark:text-yellow-300">In Progress</span>
+                      <span className="text-xs bg-yellow-200 dark:bg-yellow-800 px-1.5 py-0.5 rounded-full">1</span>
+                    </div>
+                    <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm border-l-2 border-yellow-500">
+                      <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">User Dashboard</div>
+                      <div className="text-slate-500 dark:text-slate-400 mb-2">P1 • 🤖 Claude AI</div>
+                      <div className="text-xs text-green-600 dark:text-green-400">
+                        ✓ Created components<br/>
+                        🔄 Adding API integration...
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Review */}
+                  <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <span className="text-xs font-medium text-purple-700 dark:text-purple-300">Review</span>
+                      <span className="text-xs bg-purple-200 dark:bg-purple-800 px-1.5 py-0.5 rounded-full">2</span>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm border-l-2 border-purple-500">
+                        <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">Settings Page</div>
+                        <div className="text-slate-500 dark:text-slate-400">P2 • 🤖 Complete</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Done */}
+                  <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-xs font-medium text-green-700 dark:text-green-300">Done</span>
+                      <span className="text-xs bg-green-200 dark:bg-green-800 px-1.5 py-0.5 rounded-full">5</span>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="bg-white dark:bg-slate-800 p-1.5 rounded text-xs shadow-sm">
+                        <div className="font-medium text-slate-800 dark:text-slate-200">Landing Page</div>
+                      </div>
+                      <div className="bg-white dark:bg-slate-800 p-1.5 rounded text-xs shadow-sm">
+                        <div className="font-medium text-slate-800 dark:text-slate-200">Nav Component</div>
+                      </div>
+                      <div className="text-xs text-slate-400 text-center pt-1">+3 more</div>
+                    </div>
+                  </div>
+                  
+                  {/* Blocked */}
+                  <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <span className="text-xs font-medium text-red-700 dark:text-red-300">Blocked</span>
+                      <span className="text-xs bg-red-200 dark:bg-red-800 px-1.5 py-0.5 rounded-full">1</span>
+                    </div>
+                    <div className="bg-white dark:bg-slate-800 p-2 rounded-lg text-xs shadow-sm border-l-2 border-red-500">
+                      <div className="font-medium text-slate-800 dark:text-slate-200 mb-1">Payment Integration</div>
+                      <div className="text-slate-500 dark:text-slate-400 mb-1">P3 • 👤 Human</div>
+                      <div className="text-xs text-red-600 dark:text-red-400">
+                        ⚠ Need API keys
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Board Footer */}
+                <div className="mt-6 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                  <div>Last updated: 2 minutes ago</div>
+                  <div className="flex items-center gap-4">
+                    <span>👤 3 humans</span>
+                    <span>🤖 2 AI agents</span>
+                    <span>⚡ 12 tasks completed this week</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
               <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
                 <svg className="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -87,11 +218,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Mobile Backlog Management
+                Structured Task Creation
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Create and organize tasks from your phone while commuting. Set priorities, 
-                write acceptance criteria, and enable AI automation with a few taps.
+                Transform scattered ideas into well-defined user stories with clear acceptance criteria. 
+                Create organized backlogs from anywhere - mobile, desktop, or on-the-go.
               </p>
             </div>
             
@@ -102,11 +233,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Autonomous AI Execution
+                Asynchronous AI Workflow
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                AI agents automatically pick up ready tasks, implement features, and update status. 
-                Get work done 24/7 without being at your computer.
+                No more prompting AI for every single task. Agents automatically pick up work, 
+                follow your requirements, and deliver results while you&apos;re away. True async development.
               </p>
             </div>
             
@@ -117,11 +248,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Progress Monitoring
+                Real Engineering Practices
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Return to detailed progress updates, completed features, and clear status reports. 
-                Full visibility into what happened while you were away.
+                Bring agile methodologies to AI development. Proper prioritization, status tracking, 
+                code review processes, and full audit trails for professional-grade development.
               </p>
             </div>
           </div>
@@ -134,8 +265,12 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <div>
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                Why Teams Choose Our Platform
+                From Chaos to Structure
               </h2>
+              <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
+                Stop the endless cycle of prompting AI agents and losing track of work. 
+                VibeHero brings professional development practices to the AI era.
+              </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
@@ -147,11 +282,11 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Set and Forget Workflow
+                      Queue Work, Walk Away
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Create your backlog from anywhere - commuting, traveling, or during meetings. 
-                      AI agents work while you sleep, delivering results by morning.
+                      Line up a week&apos;s worth of structured tasks, enable AI agents, and let them work 
+                      asynchronously. No more babysitting AI or losing context between sessions.
                     </p>
                   </div>
                 </div>
@@ -166,11 +301,11 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Intelligent API Endpoints
+                      Professional Development Process
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Purpose-built APIs for AI agents to receive instructions, update progress, 
-                      and collaborate seamlessly.
+                      Replace chaotic &quot;vibe coding&quot; with proper user stories, acceptance criteria, 
+                      priority management, and code review workflows that scale.
                     </p>
                   </div>
                 </div>
@@ -185,11 +320,11 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Complete Visibility
+                      Full Traceability & Control
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Track every AI action, maintain audit logs, and keep full control 
-                      over your development process.
+                      Every AI action is logged, every decision is traceable, and you maintain 
+                      complete control over your codebase with human review gates.
                     </p>
                   </div>
                 </div>
@@ -228,6 +363,114 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Meta Section - Built with VibeHero */}
+      <section className="py-24 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 dark:from-purple-800 dark:via-blue-800 dark:to-indigo-900 relative overflow-hidden">
+        {/* Background decorations */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        
+        <div className="container mx-auto px-6 relative">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+              </span>
+              Eating Our Own Dog Food
+            </div>
+            
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+              VibeHero Was Built{" "}
+              <span className="text-yellow-300">
+                Using VibeHero
+              </span>
+            </h2>
+            
+            <p className="text-xl lg:text-2xl text-blue-100 mb-12 leading-relaxed max-w-3xl mx-auto">
+              Every feature you see, every page you&apos;re reading, every API endpoint was developed 
+              using our own platform. We practice what we preach.
+            </p>
+
+            {/* Proof Points */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                <div className="text-3xl font-bold text-yellow-300 mb-2">247</div>
+                <div className="text-lg text-white font-semibold mb-2">Tasks Completed</div>
+                <div className="text-blue-200 text-sm">By AI agents while building VibeHero</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                <div className="text-3xl font-bold text-yellow-300 mb-2">72%</div>
+                <div className="text-lg text-white font-semibold mb-2">AI Automation</div>
+                <div className="text-blue-200 text-sm">Of development tasks handled by AI</div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
+                <div className="text-3xl font-bold text-yellow-300 mb-2">3x</div>
+                <div className="text-lg text-white font-semibold mb-2">Faster Delivery</div>
+                <div className="text-blue-200 text-sm">Compared to traditional development</div>
+              </div>
+            </div>
+
+            {/* The Story */}
+            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-8 text-left max-w-3xl mx-auto mb-12">
+              <h3 className="text-2xl font-bold text-white mb-6 text-center">The Story</h3>
+              <div className="space-y-4 text-blue-100 leading-relaxed">
+                <p>
+                  <strong className="text-white">The Challenge:</strong> We were tired of the chaotic &quot;vibe coding&quot; approach - 
+                  scattered ideas, constant AI prompting, and lost context between sessions. 
+                  We needed structure without losing the creative flow.
+                </p>
+                <p>
+                  <strong className="text-white">The Solution:</strong> We built VibeHero to solve our own problems. 
+                  Every user story, every bug fix, every new feature was managed through our own platform.
+                  AI agents worked asynchronously while we slept, creating the very tool you&apos;re using now.
+                </p>
+                <p>
+                  <strong className="text-white">The Result:</strong> A development process that scales. 
+                  We went from chaotic late-night coding sessions to structured, predictable progress. 
+                  Our AI agents became reliable team members, not just occasional helpers.
+                </p>
+              </div>
+            </div>
+
+            {/* Live Board Link */}
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-2xl p-6 max-w-2xl mx-auto">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                See Our Live Development Board
+              </h3>
+              <p className="text-gray-800 mb-6 leading-relaxed">
+                Watch real AI agents working on VibeHero features in real-time. 
+                See the structured approach that built the platform you&apos;re using right now.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <a
+                  href="/projects/cme0a0fir000ol304w0cvo38m/board"
+                  className="px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white font-semibold rounded-xl transition-colors shadow-lg"
+                >
+                  🔴 View Live Board
+                </a>
+                <a
+                  href="/example-workflow"
+                  className="px-6 py-3 bg-white/20 backdrop-blur-sm text-gray-900 font-semibold rounded-xl hover:bg-white/30 transition-colors border border-gray-800/20"
+                >
+                  📖 See How We Did It
+                </a>
+              </div>
+            </div>
+
+            {/* Bottom Message */}
+            <div className="mt-12 text-center">
+              <p className="text-xl text-blue-100 italic">
+                &quot;If VibeHero can build VibeHero, imagine what it can do for your project.&quot;
+              </p>
+              <div className="mt-4 text-blue-200">
+                — The VibeHero Team
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
       <section id="pricing" className="py-24 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-6">
@@ -240,7 +483,7 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
             {/* Free Tier */}
             <div className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
               <div className="mb-8">
@@ -263,7 +506,7 @@ export default function Home() {
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-slate-600 dark:text-slate-300">5 AI tasks per day</span>
+                  <span className="text-slate-600 dark:text-slate-300">8 AI tasks per day</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

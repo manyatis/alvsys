@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# VibeHero Git Post-Commit Hook
+# Automatically adds commit information as comments to related issues
+# 
+# Usage: Place this file in .git/hooks/post-commit and make it executable
+# chmod +x .git/hooks/post-commit
+
+# Configuration - Set these environment variables or update directly
+VIBEHERO_API_URL="${VIBEHERO_API_URL:-https://vibehero.io}"
+VIBEHERO_PROJECT_ID="${VIBEHERO_PROJECT_ID}"
+
+# Check if required environment variables are set
+if [ -z "$VIBEHERO_PROJECT_ID" ]; then
+    echo "Warning: VIBEHERO_PROJECT_ID not set. Skipping VibeHero commit integration."
+    exit 0
+fi
+
+# Get commit information
+COMMIT_HASH=$(git rev-parse HEAD)
+COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+COMMIT_AUTHOR=$(git log -1 --pretty="%an <%ae>")
+COMMIT_DATE=$(git log -1 --pretty=%ci)
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+
+# Get changed files
+CHANGED_FILES=$(git diff-tree --no-commit-id --name-only -r $COMMIT_HASH)
+
+# Extract issue/card IDs from commit message
+# Supports formats like: VH-123, #123, card-123, issue-123
+ISSUE_IDS=$(echo "$COMMIT_MESSAGE" | grep -oE '(VH-[0-9]+|#[0-9]+|card-[a-z0-9]+|issue-[a-z0-9]+|[a-z0-9]{21})' | sort -u)
+
+if [ -z "$ISSUE_IDS" ]; then
+    echo "No issue IDs found in commit message. Skipping VibeHero integration."
+    exit 0
+fi
+
+# Function to add commit comment to VibeHero issue
+add_commit_comment() {
+    local issue_id="$1"
+    
+    # Clean up issue ID (remove prefixes)
+    clean_issue_id=$(echo "$issue_id" | sed 's/^VH-//;s/^#//;s/^card-//;s/^issue-//')
+    
+    # Create comment content
+    local comment_content="**Git Commit Added**
+
+**Commit:** \`$COMMIT_HASH\`
+**Author:** $COMMIT_AUTHOR
+**Date:** $COMMIT_DATE
+**Branch:** $BRANCH_NAME
+
+**Message:**
+\`\`\`
+$COMMIT_MESSAGE
+\`\`\`
+
+**Changed Files:**
+\`\`\`
+$CHANGED_FILES
+\`\`\`
+
+[View commit in repository](${REPOSITORY_URL:-#}/commit/$COMMIT_HASH)"
+
+    # Make API call to add comment
+    curl -s -X POST "$VIBEHERO_API_URL/api/issues/$clean_issue_id/comments" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"comment\": \"$comment_content\",
+            \"isAiComment\": false,
+            \"projectId\": \"$VIBEHERO_PROJECT_ID\"
+        }" > /dev/null 2>&1
+
+    local exit_code=$?
+    if [ $exit_code -eq 0 ]; then
+        echo "✓ Added commit comment to issue: $issue_id"
+    else
+        echo "✗ Failed to add commit comment to issue: $issue_id"
+    fi
+}
+
+# Process each issue ID found in the commit message
+echo "Processing commit: $COMMIT_HASH"
+echo "Found issue IDs: $ISSUE_IDS"
+
+for issue_id in $ISSUE_IDS; do
+    add_commit_comment "$issue_id"
+done
+
+echo "VibeHero commit integration completed."

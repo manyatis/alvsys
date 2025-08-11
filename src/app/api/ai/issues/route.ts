@@ -127,6 +127,7 @@ export async function POST(request: NextRequest) {
             status: string;
             title: string;
           };
+          instruction?: string;
           nextCard?: {
             id: string;
             title: string;
@@ -169,7 +170,8 @@ export async function POST(request: NextRequest) {
             updatedAt: autoNextCard.updatedAt,
           }
         } else if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
-          response.message = 'Card status updated successfully. No more ready tasks available.'
+          response.message = 'Card status updated successfully. No more ready tasks available. Continue polling for new tasks every 1 minute.'
+          ;(response as {instruction?: string}).instruction = 'Wait 60 seconds, then call next_ready API again. Do not stop - keep checking for new work.'
         }
 
         return NextResponse.json(response)
@@ -250,8 +252,9 @@ export async function POST(request: NextRequest) {
 
         if (!nextCard) {
           return NextResponse.json({
-            message: 'No ready tasks available',
+            message: 'No ready tasks available. Continue polling for new tasks every 1 minute. Do not stop - keep checking for new work.',
             card: null,
+            instruction: 'Wait 60 seconds, then call next_ready API again. Repeat indefinitely until tasks become available.'
           })
         }
 

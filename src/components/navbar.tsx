@@ -81,7 +81,7 @@ export default function Navbar() {
                     setIsLoginModalOpen(true);
                   }
                 }}
-                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
               >
                 Projects
               </Link>
@@ -90,13 +90,13 @@ export default function Navbar() {
               </button>
               <button 
                 onClick={handlePricingClick}
-                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
               >
                 Pricing
               </button>
               <Link 
                 href="/documentation"
-                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
               >
                 API
               </Link>
@@ -119,15 +119,24 @@ export default function Navbar() {
                   isGuideOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
                 }`}>
                   <div className="py-2 px-2 space-y-1">
-                    <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                    <Link 
+                      href="/product-guide"
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                    >
                       Product Guide
-                    </button>
-                    <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                    </Link>
+                    <Link 
+                      href="/best-practices"
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                    >
                       Best Practices
-                    </button>
-                    <button className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500">
+                    </Link>
+                    <Link 
+                      href="/example-workflow"
+                      className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                    >
                       Example Workflow
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -163,7 +172,7 @@ export default function Navbar() {
                   onMouseLeave={() => setIsUserMenuOpen(false)}
                 >
                   <button 
-                    className="flex items-center gap-2 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                    className="flex items-center gap-2 px-3 md:px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500 min-h-[44px]"
                   >
                     <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                       {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
@@ -249,7 +258,7 @@ export default function Navbar() {
                 }
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Projects
             </Link>
@@ -261,13 +270,13 @@ export default function Navbar() {
                 handlePricingClick();
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Pricing
             </button>
             <Link 
               href="/documentation"
-              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               API
@@ -289,15 +298,27 @@ export default function Navbar() {
               <div className={`pl-4 space-y-1 transition-all duration-300 ${
                 isGuideOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
               }`}>
-                <button className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                <Link 
+                  href="/product-guide"
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Product Guide
-                </button>
-                <button className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                </Link>
+                <Link 
+                  href="/best-practices"
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Best Practices
-                </button>
-                <button className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300">
+                </Link>
+                <Link 
+                  href="/example-workflow"
+                  className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
                   Example Workflow
-                </button>
+                </Link>
               </div>
             </div>
             

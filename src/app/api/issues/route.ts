@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
       acceptanceCriteria,
       projectId,
       priority = 3,
+      effortPoints = 5,
       isAiAllowedTask = true,
       agentInstructions = [],
     } = body
@@ -131,6 +132,7 @@ export async function POST(request: NextRequest) {
         acceptanceCriteria,
         projectId,
         priority,
+        effortPoints,
         createdById: user.id,
         isAiAllowedTask,
         agentDeveloperInstructions: {

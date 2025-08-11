@@ -87,6 +87,7 @@ model Card {
   acceptanceCriteria      String?
   isAiAllowedTask         Boolean               @default(true)
   priority                Int                   @default(3)
+  effortPoints            Int                   @default(5)
   agentDeveloperInstructions AgentDeveloperInstruction[]
   comments                Comment[]
   labels                  CardLabel[]

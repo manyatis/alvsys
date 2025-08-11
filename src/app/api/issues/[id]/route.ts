@@ -70,6 +70,7 @@ export async function PUT(
       acceptanceCriteria,
       status,
       priority,
+      effortPoints,
       isAiAllowedTask,
       agentInstructions,
     } = body
@@ -114,6 +115,7 @@ export async function PUT(
     if (acceptanceCriteria !== undefined) updateData.acceptanceCriteria = acceptanceCriteria
     if (status !== undefined) updateData.status = status
     if (priority !== undefined) updateData.priority = priority
+    if (effortPoints !== undefined) updateData.effortPoints = effortPoints
     if (isAiAllowedTask !== undefined) updateData.isAiAllowedTask = isAiAllowedTask
 
     // Handle agent instructions update

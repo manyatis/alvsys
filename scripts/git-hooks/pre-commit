@@ -1,0 +1,105 @@
+#!/bin/bash
+
+# VibeHero Git Pre-Commit Hook
+# Validates commit messages and prepares for issue integration
+# 
+# Usage: Place this file in .git/hooks/pre-commit and make it executable
+# chmod +x .git/hooks/pre-commit
+
+# Configuration
+VIBEHERO_API_URL="${VIBEHERO_API_URL:-https://vibehero.io}"
+VIBEHERO_PROJECT_ID="${VIBEHERO_PROJECT_ID}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo "🔍 VibeHero Pre-commit validation..."
+
+# Get the commit message from the commit message file
+COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+
+# Check if we're in the middle of a commit (commit message exists)
+if [ ! -f "$COMMIT_MSG_FILE" ]; then
+    exit 0
+fi
+
+COMMIT_MESSAGE=$(cat "$COMMIT_MSG_FILE" 2>/dev/null || echo "")
+
+# If commit message is empty, we can't validate yet
+if [ -z "$COMMIT_MESSAGE" ]; then
+    exit 0
+fi
+
+# Function to check if issue exists and is valid
+validate_issue_id() {
+    local issue_id="$1"
+    
+    if [ -z "$VIBEHERO_PROJECT_ID" ]; then
+        return 0  # Skip validation if no project ID
+    fi
+    
+    # Clean up issue ID
+    clean_issue_id=$(echo "$issue_id" | sed 's/^VH-//;s/^#//;s/^card-//;s/^issue-//')
+    
+    # Check if issue exists
+    response=$(curl -s "$VIBEHERO_API_URL/api/issues/$clean_issue_id" 2>/dev/null)
+    
+    if echo "$response" | grep -q "\"id\""; then
+        echo -e "${GREEN}✓${NC} Valid issue reference: $issue_id"
+        return 0
+    else
+        echo -e "${RED}✗${NC} Invalid issue reference: $issue_id"
+        return 1
+    fi
+}
+
+# Extract issue IDs from commit message
+ISSUE_IDS=$(echo "$COMMIT_MESSAGE" | grep -oE '(VH-[0-9]+|#[0-9]+|card-[a-z0-9]+|issue-[a-z0-9]+|[a-z0-9]{21})' | sort -u)
+
+# Check commit message format
+if [ -z "$ISSUE_IDS" ]; then
+    echo -e "${YELLOW}⚠${NC} No issue references found in commit message."
+    echo "Consider including an issue reference like: VH-123, #123, or issue-abc123"
+    echo ""
+    echo "Current commit message:"
+    echo "----------------------------------------"
+    echo "$COMMIT_MESSAGE"
+    echo "----------------------------------------"
+    echo ""
+    echo "Proceeding without issue validation..."
+else
+    echo "Found issue references: $ISSUE_IDS"
+    
+    # Validate each issue ID if project ID is configured
+    if [ -n "$VIBEHERO_PROJECT_ID" ]; then
+        echo "Validating issue references..."
+        validation_failed=0
+        
+        for issue_id in $ISSUE_IDS; do
+            if ! validate_issue_id "$issue_id"; then
+                validation_failed=1
+            fi
+        done
+        
+        if [ $validation_failed -eq 1 ]; then
+            echo ""
+            echo -e "${RED}❌ Commit validation failed!${NC}"
+            echo "One or more issue references are invalid."
+            echo "Please check your issue IDs and try again."
+            exit 1
+        fi
+    fi
+    
+    echo -e "${GREEN}✅ All issue references validated successfully!${NC}"
+fi
+
+# Check for conventional commit format (optional)
+if echo "$COMMIT_MESSAGE" | grep -qE '^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .+'; then
+    echo -e "${GREEN}✓${NC} Conventional commit format detected"
+fi
+
+echo "Pre-commit validation completed."
+exit 0
