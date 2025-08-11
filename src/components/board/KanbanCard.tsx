@@ -9,14 +9,6 @@ import InlineLabelEditor from '@/components/InlineLabelEditor';
 interface KanbanCardProps {
   card: Card;
   onClick: (card: Card) => void;
-  onDragStart: (e: React.DragEvent<HTMLDivElement>, card: Card) => void;
-  onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
-  onMouseDown?: (e: React.MouseEvent<HTMLDivElement>, card: Card) => void;
-  isDragged: boolean;
-  isTouched: boolean;
-  onTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
-  onTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void;
-  onTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void;
   labels: Label[];
   inlineLabelEditorOpen: string | null;
   onToggleLabelEditor: (cardId: string) => void;
@@ -28,14 +20,6 @@ interface KanbanCardProps {
 export default function KanbanCard({
   card,
   onClick,
-  onDragStart,
-  onDragEnd,
-  onMouseDown,
-  isDragged,
-  isTouched,
-  onTouchStart,
-  onTouchMove,
-  onTouchEnd,
   labels,
   inlineLabelEditorOpen,
   onToggleLabelEditor,
@@ -46,43 +30,8 @@ export default function KanbanCard({
   return (
     <div
       key={card.id}
-      data-card-id={card.id}
-      draggable={true}
-      onDragStart={(e) => onDragStart(e, card)}
-      onDragEnd={onDragEnd}
-      onMouseDown={onMouseDown ? (e) => onMouseDown(e, card) : undefined}
-      onTouchStart={(e) => onTouchStart(e, card)}
-      onTouchMove={onTouchMove}
-      onTouchEnd={onTouchEnd}
-      className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-pointer hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none kanban-card ${
-        isDragged 
-          ? 'opacity-50 shadow-lg z-50' 
-          : isTouched 
-            ? 'opacity-70 shadow-md z-40 touch-dragging' 
-            : ''
-      }`}
-      style={{
-        WebkitUserSelect: 'none',
-        MozUserSelect: 'none',
-        msUserSelect: 'none',
-        userSelect: 'none',
-        WebkitTouchCallout: 'none',
-        WebkitTapHighlightColor: 'transparent',
-        transform: isDragged 
-          ? 'rotate(3deg) scale(1.02)' 
-          : isTouched 
-            ? 'scale(1.02)' 
-            : undefined
-      }}
-      onClick={(e) => {
-        // Prevent click during drag operations
-        if (isDragged || isTouched) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        onClick(card);
-      }}
+      className="group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-pointer hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200"
+      onClick={() => onClick(card)}
     >
       <div className="flex justify-between items-start">
         <h4 className="text-sm md:text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
@@ -94,8 +43,6 @@ export default function KanbanCard({
             e.preventDefault();
             e.stopPropagation();
           }}
-          // Prevent drag from starting on button
-          draggable={false}
         >
           <MoreVertical className="h-3 w-3" />
         </button>
