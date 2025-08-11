@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use, useCallback } from 'react';
+import { useState, useEffect, use, useCallback, useRef } from 'react';
 import { 
   Clock, 
   AlertCircle, 
@@ -157,6 +157,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   });
   const [copyFeedback, setCopyFeedback] = useState(false);
   const [inlineLabelEditorOpen, setInlineLabelEditorOpen] = useState<string | null>(null);
+  
+  // Drag and drop state
+  const [draggedCard, setDraggedCard] = useState<Card | null>(null);
+  const [dragOverColumn, setDragOverColumn] = useState<CardStatus | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const boardRef = useRef<HTMLDivElement>(null);
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [ghostElement, setGhostElement] = useState<HTMLElement | null>(null);
+  const [scrollDirection, setScrollDirection] = useState<'left' | 'right' | null>(null);
 
 
   // Auto-assign "Agent" when AI allowed task is enabled for new cards
@@ -337,6 +347,247 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     console.log('Removing label', labelId, 'from card', cardId);
   };
 
+  // Drag and drop handlers
+  const handleDragStart = (card: Card) => {
+    setDraggedCard(card);
+    setIsDragging(true);
+    document.body.classList.add('dragging');
+  };
+
+  const handleDragEnd = useCallback(() => {
+    setDraggedCard(null);
+    setDragOverColumn(null);
+    setIsDragging(false);
+    document.body.classList.remove('dragging');
+    
+    // Clear any scroll intervals
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+  }, []);
+
+  const handleDrop = useCallback(async (targetStatus: CardStatus) => {
+    if (!draggedCard || draggedCard.status === targetStatus) {
+      handleDragEnd();
+      return;
+    }
+
+    try {
+      // Update the card status via API
+      const draggedCardLabelIds = draggedCard.labels?.map(cl => cl.labelId) || [];
+      await updateCard({ ...draggedCard, status: targetStatus }, draggedCardLabelIds, draggedCard.assigneeId || null);
+      
+      // Refresh the cards to reflect the change
+      await refreshCards();
+    } catch (error) {
+      console.error('Error updating card status:', error);
+    } finally {
+      handleDragEnd();
+    }
+  }, [draggedCard, updateCard, refreshCards, handleDragEnd]);
+
+  const handleDragOver = (status: CardStatus) => {
+    setDragOverColumn(status);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverColumn(null);
+  };
+
+  // Edge scrolling for desktop
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDragging || !boardRef.current) return;
+
+    const board = boardRef.current;
+    const rect = board.getBoundingClientRect();
+    const scrollSpeed = 5;
+    const edgeSize = 100;
+
+    // Check if near edges
+    const nearLeftEdge = e.clientX - rect.left < edgeSize;
+    const nearRightEdge = rect.right - e.clientX < edgeSize;
+
+    // Clear existing interval
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+
+    // Set up scrolling
+    if (nearLeftEdge || nearRightEdge) {
+      scrollIntervalRef.current = setInterval(() => {
+        if (nearLeftEdge) {
+          board.scrollLeft -= scrollSpeed;
+        } else if (nearRightEdge) {
+          board.scrollLeft += scrollSpeed;
+        }
+      }, 10);
+    }
+  }, [isDragging]);
+
+  // Set up mouse move listener for edge scrolling
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        if (scrollIntervalRef.current) {
+          clearInterval(scrollIntervalRef.current);
+        }
+      };
+    }
+  }, [isDragging, handleMouseMove]);
+
+  // Touch handlers for mobile
+  const handleTouchStart = (card: Card, element: HTMLElement, touch: React.Touch) => {
+    setDraggedCard(card);
+    setIsDragging(true);
+    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+    
+    // Create ghost element
+    const ghost = element.cloneNode(true) as HTMLElement;
+    ghost.style.position = 'fixed';
+    ghost.style.left = `${touch.clientX}px`;
+    ghost.style.top = `${touch.clientY}px`;
+    ghost.style.width = `${element.offsetWidth}px`;
+    ghost.style.zIndex = '9999';
+    ghost.style.opacity = '0.9';
+    ghost.style.pointerEvents = 'none';
+    ghost.style.transform = 'translate(-50%, -50%) rotate(2deg) scale(1.05)';
+    ghost.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+    ghost.style.transition = 'none';
+    document.body.appendChild(ghost);
+    setGhostElement(ghost);
+    
+    // Disable default touch scrolling
+    document.body.style.overflow = 'hidden';
+    document.body.style.touchAction = 'none';
+    
+    // Add haptic feedback if available
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10);
+    }
+  };
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!isDragging || !ghostElement || !boardRef.current) return;
+    
+    e.preventDefault();
+    const touch = e.touches[0];
+    
+    // Update ghost element position
+    ghostElement.style.left = `${touch.clientX}px`;
+    ghostElement.style.top = `${touch.clientY}px`;
+    
+    // Find which column we're over
+    const columns = boardRef.current.querySelectorAll('[data-column-status]');
+    let foundColumn = false;
+    columns.forEach((col) => {
+      const rect = col.getBoundingClientRect();
+      if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
+          touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
+        const status = col.getAttribute('data-column-status') as CardStatus;
+        setDragOverColumn(status);
+        foundColumn = true;
+      }
+    });
+    
+    if (!foundColumn) {
+      setDragOverColumn(null);
+    }
+    
+    // Handle edge scrolling
+    const scrollContainer = boardRef.current;
+    const scrollSpeed = 10;
+    const edgeSize = 60;
+    
+    // Get viewport dimensions
+    const viewportWidth = window.innerWidth;
+    const nearLeftEdge = touch.clientX < edgeSize;
+    const nearRightEdge = touch.clientX > viewportWidth - edgeSize;
+    
+    // Clear existing scroll interval
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+    
+    // Set up scrolling if near edges
+    if (nearLeftEdge || nearRightEdge) {
+      const direction = nearLeftEdge ? 'left' : 'right';
+      setScrollDirection(direction);
+      
+      scrollIntervalRef.current = setInterval(() => {
+        if (!boardRef.current) return;
+        
+        const currentScrollLeft = scrollContainer.scrollLeft;
+        const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        
+        if (nearLeftEdge && currentScrollLeft > 0) {
+          scrollContainer.scrollLeft = Math.max(0, currentScrollLeft - scrollSpeed);
+        } else if (nearRightEdge && currentScrollLeft < maxScrollLeft) {
+          scrollContainer.scrollLeft = Math.min(maxScrollLeft, currentScrollLeft + scrollSpeed);
+        }
+      }, 20);
+    } else {
+      setScrollDirection(null);
+    }
+  }, [isDragging, ghostElement]);
+
+  const cleanupTouch = useCallback(() => {
+    if (ghostElement) {
+      ghostElement.remove();
+      setGhostElement(null);
+    }
+    
+    setDraggedCard(null);
+    setDragOverColumn(null);
+    setIsDragging(false);
+    setTouchStartPos(null);
+    setScrollDirection(null);
+    
+    // Re-enable scrolling
+    document.body.style.overflow = '';
+    document.body.style.touchAction = '';
+    
+    if (scrollIntervalRef.current) {
+      clearInterval(scrollIntervalRef.current);
+      scrollIntervalRef.current = null;
+    }
+  }, [ghostElement]);
+
+  const handleTouchEnd = useCallback(async (e: TouchEvent) => {
+    if (!isDragging || !dragOverColumn || !draggedCard) {
+      cleanupTouch();
+      return;
+    }
+    
+    e.preventDefault();
+    
+    // Perform the drop
+    if (draggedCard.status !== dragOverColumn) {
+      await handleDrop(dragOverColumn);
+    }
+    
+    cleanupTouch();
+  }, [isDragging, dragOverColumn, draggedCard, handleDrop, cleanupTouch]);
+
+  // Set up touch event listeners
+  useEffect(() => {
+    if (isDragging && touchStartPos) {
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd, { passive: false });
+      document.addEventListener('touchcancel', cleanupTouch);
+      
+      return () => {
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
+        document.removeEventListener('touchcancel', cleanupTouch);
+      };
+    }
+  }, [isDragging, touchStartPos, handleTouchMove, handleTouchEnd, cleanupTouch]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -374,8 +625,19 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           />
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900">
-          <div className="flex gap-2 md:gap-3 h-full pb-4 overflow-x-auto overflow-y-hidden">
+        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 relative">
+          {/* Scroll Indicators */}
+          {scrollDirection === 'left' && (
+            <div className="fixed left-0 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded-r z-50 animate-pulse">
+              ←
+            </div>
+          )}
+          {scrollDirection === 'right' && (
+            <div className="fixed right-0 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded-l z-50 animate-pulse">
+              →
+            </div>
+          )}
+          <div ref={boardRef} className="flex gap-2 md:gap-3 h-full pb-4 overflow-x-auto overflow-y-hidden">
             {statusColumns.map((column) => {
               const columnCards = getCardsByStatus(cards, column.status, filters);
               
@@ -392,6 +654,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   onLabelAdd={handleLabelAdd}
                   onLabelRemove={handleLabelRemove}
                   onCreateLabel={handleCreateLabel}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  isDraggedOver={dragOverColumn === column.status}
+                  draggedCard={draggedCard}
+                  onTouchStart={handleTouchStart}
                 />);
             })}
           </div>
