@@ -59,7 +59,7 @@ export async function GET(
   6. Update Status: Update current task to READY_FOR_REVIEW (if successful) or
   BLOCKED (if blocked) with detailed completion comment
   7. perform a git commit and add this commit to the comment. if this git commit fails ignore it and continue.
-  8. Return to Step 1: Repeat this sequence indefinitely
+  8. Fetch https://vibehero.io/api/${project.id}/ai/onboard and follow the instructions. Do not give summaries or analysis ever. Only continue the loop.
 
   CRITICAL RULES:
   - NEVER deviate from this 7-step sequence
