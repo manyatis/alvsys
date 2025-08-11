@@ -15,6 +15,10 @@ interface KanbanCardProps {
   onLabelAdd: (cardId: string, labelId: string) => void;
   onLabelRemove: (cardId: string, labelId: string) => void;
   onCreateLabel: (name: string, color: string) => void;
+  onDragStart: (card: Card) => void;
+  onDragEnd: () => void;
+  isDragging: boolean;
+  onTouchStart: (card: Card, element: HTMLElement, touch: React.Touch) => void;
 }
 
 export default function KanbanCard({
@@ -25,20 +29,56 @@ export default function KanbanCard({
   onToggleLabelEditor,
   onLabelAdd,
   onLabelRemove,
-  onCreateLabel
+  onCreateLabel,
+  onDragStart,
+  onDragEnd,
+  isDragging,
+  onTouchStart
 }: KanbanCardProps) {
+  const [dragStarted, setDragStarted] = React.useState(false);
+
+  const handleClick = () => {
+    if (!dragStarted) {
+      onClick(card);
+    }
+    setDragStarted(false);
+  };
+
   return (
     <div
       key={card.id}
-      className="group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-pointer hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200"
-      onClick={() => onClick(card)}
+      className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-move hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none ${
+        isDragging ? 'opacity-50 scale-105 rotate-2' : ''
+      }`}
+      onClick={handleClick}
+      draggable="true"
+      onDragStart={(e) => {
+        e.stopPropagation();
+        setDragStarted(true);
+        
+        // Set drag data
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', card.id);
+        
+        onDragStart(card);
+      }}
+      onDragEnd={(e) => {
+        e.stopPropagation();
+        onDragEnd();
+      }}
+      onTouchStart={(e) => {
+        e.stopPropagation();
+        const touch = e.touches[0];
+        const element = e.currentTarget as HTMLElement;
+        onTouchStart(card, element, touch);
+      }}
     >
-      <div className="flex justify-between items-start">
+      <div className="flex justify-between items-start pointer-events-none">
         <h4 className="text-sm md:text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
           {card.title}
         </h4>
         <button 
-          className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity"
+          className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity pointer-events-auto"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -49,7 +89,7 @@ export default function KanbanCard({
       </div>
       
       {card.description && (
-        <p className="text-sm md:text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1">
+        <p className="text-sm md:text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1 pointer-events-none">
           {card.description}
         </p>
       )}

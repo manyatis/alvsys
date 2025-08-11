@@ -25,6 +25,14 @@ interface KanbanColumnProps {
   onLabelAdd: (cardId: string, labelId: string) => void;
   onLabelRemove: (cardId: string, labelId: string) => void;
   onCreateLabel: (name: string, color: string) => void;
+  onDragStart: (card: Card) => void;
+  onDragEnd: () => void;
+  onDrop: (status: CardStatus) => void;
+  onDragOver: (status: CardStatus) => void;
+  onDragLeave: () => void;
+  isDraggedOver: boolean;
+  draggedCard: Card | null;
+  onTouchStart: (card: Card, element: HTMLElement, touch: React.Touch) => void;
 }
 
 export default function KanbanColumn({
@@ -37,14 +45,36 @@ export default function KanbanColumn({
   onToggleLabelEditor,
   onLabelAdd,
   onLabelRemove,
-  onCreateLabel
+  onCreateLabel,
+  onDragStart,
+  onDragEnd,
+  onDrop,
+  onDragOver,
+  onDragLeave,
+  isDraggedOver,
+  draggedCard,
+  onTouchStart
 }: KanbanColumnProps) {
   const Icon = column.icon;
 
   return (
     <div
       key={column.status}
-      className="w-48 sm:w-56 md:w-64 min-w-48 sm:min-w-56 md:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm h-full flex flex-col"
+      data-column-status={column.status}
+      className={`w-48 sm:w-56 md:w-64 min-w-48 sm:min-w-56 md:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border shadow-sm h-full flex flex-col transition-all duration-200 ${
+        isDraggedOver 
+          ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-gray-700' 
+          : 'border-gray-200 dark:border-gray-700'
+      }`}
+      onDragOver={(e) => {
+        e.preventDefault();
+        onDragOver(column.status);
+      }}
+      onDragLeave={onDragLeave}
+      onDrop={(e) => {
+        e.preventDefault();
+        onDrop(column.status);
+      }}
     >
       <div className={`px-2 md:px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-xl md:rounded-t-2xl`}>
         <div className="flex items-center justify-between">
@@ -68,19 +98,25 @@ export default function KanbanColumn({
       
       {/* Cards Container */}
       <div className="flex-1 p-2 md:p-3 overflow-y-auto min-h-32">
-        {cards.map((card) => (
-          <KanbanCard
-            key={card.id}
-            card={card}
-            onClick={onCardClick}
-            labels={labels}
-            inlineLabelEditorOpen={inlineLabelEditorOpen}
-            onToggleLabelEditor={onToggleLabelEditor}
-            onLabelAdd={onLabelAdd}
-            onLabelRemove={onLabelRemove}
-            onCreateLabel={onCreateLabel}
-          />
-        ))}
+        {cards.map((card) => {
+          return (
+            <KanbanCard
+              key={card.id}
+              card={card}
+              onClick={onCardClick}
+              labels={labels}
+              inlineLabelEditorOpen={inlineLabelEditorOpen}
+              onToggleLabelEditor={onToggleLabelEditor}
+              onLabelAdd={onLabelAdd}
+              onLabelRemove={onLabelRemove}
+              onCreateLabel={onCreateLabel}
+              onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
+              isDragging={draggedCard?.id === card.id}
+              onTouchStart={onTouchStart}
+            />
+          );
+        })}
         
         {cards.length === 0 && (
           <div className="text-center py-8">
