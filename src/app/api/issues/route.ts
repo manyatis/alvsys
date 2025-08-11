@@ -92,6 +92,7 @@ export async function POST(request: NextRequest) {
       effortPoints = 5,
       isAiAllowedTask = true,
       agentInstructions = [],
+      status,
     } = body
 
     if (!title || !projectId) {
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
         effortPoints,
         createdById: user.id,
         isAiAllowedTask,
+        status,
         agentDeveloperInstructions: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           create: agentInstructions.map((instruction: any) => ({

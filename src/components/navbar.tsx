@@ -126,12 +126,6 @@ export default function Navbar() {
                       Product Guide
                     </Link>
                     <Link 
-                      href="/best-practices"
-                      className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
-                    >
-                      Best Practices
-                    </Link>
-                    <Link 
                       href="/example-workflow"
                       className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
                     >
@@ -304,13 +298,6 @@ export default function Navbar() {
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Product Guide
-                </Link>
-                <Link 
-                  href="/best-practices"
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Best Practices
                 </Link>
                 <Link 
                   href="/example-workflow"
