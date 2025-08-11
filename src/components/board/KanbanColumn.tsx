@@ -24,8 +24,11 @@ interface KanbanColumnProps {
   onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (e: React.DragEvent<HTMLDivElement>, status: CardStatus) => void;
   draggedCard: Card | null;
-  touchedCard: Card | null;
-  isTouchDragging: boolean;
+  touchStartCard: Card | null;
+  isDragging: boolean;
+  onCardTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
+  onCardTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void;
+  onCardTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void;
   labels: Label[];
   inlineLabelEditorOpen: string | null;
   onToggleLabelEditor: (cardId: string) => void;
@@ -34,9 +37,6 @@ interface KanbanColumnProps {
   onCreateLabel: (name: string, color: string) => void;
   onCardDragStart: (e: React.DragEvent<HTMLDivElement>, card: Card) => void;
   onCardDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
-  onCardTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
-  onCardTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void;
-  onCardTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void;
 }
 
 export default function KanbanColumn({
@@ -49,8 +49,11 @@ export default function KanbanColumn({
   onDragLeave,
   onDrop,
   draggedCard,
-  touchedCard,
-  isTouchDragging,
+  touchStartCard,
+  isDragging,
+  onCardTouchStart,
+  onCardTouchMove,
+  onCardTouchEnd,
   labels,
   inlineLabelEditorOpen,
   onToggleLabelEditor,
@@ -58,10 +61,7 @@ export default function KanbanColumn({
   onLabelRemove,
   onCreateLabel,
   onCardDragStart,
-  onCardDragEnd,
-  onCardTouchStart,
-  onCardTouchMove,
-  onCardTouchEnd
+  onCardDragEnd
 }: KanbanColumnProps) {
   const Icon = column.icon;
 
@@ -93,7 +93,7 @@ export default function KanbanColumn({
       {/* Cards Container */}
       <div
         className={`flex-1 p-2 md:p-3 overflow-y-auto min-h-32 ${
-          dragOverColumn === column.status && !isTouchDragging
+          dragOverColumn === column.status && !isDragging
             ? 'bg-blue-50 dark:bg-blue-900/10 border-2 border-dashed border-blue-300 dark:border-blue-600'
             : ''
         }`}
@@ -108,11 +108,11 @@ export default function KanbanColumn({
             onClick={onCardClick}
             onDragStart={onCardDragStart}
             onDragEnd={onCardDragEnd}
+            isDragged={draggedCard?.id === card.id}
+            isTouched={touchStartCard?.id === card.id && isDragging}
             onTouchStart={onCardTouchStart}
             onTouchMove={onCardTouchMove}
             onTouchEnd={onCardTouchEnd}
-            isDragged={draggedCard?.id === card.id}
-            isTouched={touchedCard?.id === card.id}
             labels={labels}
             inlineLabelEditorOpen={inlineLabelEditorOpen}
             onToggleLabelEditor={onToggleLabelEditor}

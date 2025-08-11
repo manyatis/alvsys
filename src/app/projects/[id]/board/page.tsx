@@ -125,9 +125,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<CardStatus | null>(null);
-  const [touchedCard, setTouchedCard] = useState<Card | null>(null);
+  
+  // Touch drag states
+  const [touchStartCard, setTouchStartCard] = useState<Card | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStartTime, setDragStartTime] = useState<number | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -383,7 +386,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const handleCardClick = async (card: Card) => {
     // Don't open modal if we just finished dragging
-    if (touchedCard || draggedCard) return;
+    if (draggedCard) return;
     
     setSelectedCard(card);
     setSelectedCardLabelIds(card.labels?.map(cl => cl.labelId) || []);
@@ -663,69 +666,87 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  // Touch drag handlers
   const handleTouchStart = (e: React.TouchEvent, card: Card) => {
     const touch = e.touches[0];
-    setTouchedCard(card);
+    setTouchStartCard(card);
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
-    setIsTouchDragging(false);
+    setDragStartTime(Date.now());
+    setIsDragging(false);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchedCard || !touchStartPos) return;
-    
-    // Always prevent default to stop scrolling
-    e.preventDefault();
-    
+    if (!touchStartCard || !touchStartPos || !dragStartTime) return;
+
+    e.preventDefault(); // Prevent scrolling
+
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.y);
-    
-    // Start dragging if moved more than 5px
-    if ((deltaX > 5 || deltaY > 5) && !isTouchDragging) {
-      setIsTouchDragging(true);
+    const holdTime = Date.now() - dragStartTime;
+
+    // Start dragging after holding for 300ms and moving 10px
+    if (holdTime > 300 && (deltaX > 10 || deltaY > 10) && !isDragging) {
+      setIsDragging(true);
+      
+      // Haptic feedback
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
     }
-    
-    // If we're dragging, find what column we're over
-    if (isTouchDragging) {
+
+    // If dragging, find which column we're over
+    if (isDragging) {
       const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
       const column = elementBelow?.closest('[data-column-status]');
-      const status = column?.getAttribute('data-column-status') as CardStatus;
-      setDragOverColumn(status || null);
+      if (column) {
+        const status = column.getAttribute('data-column-status') as CardStatus;
+        setDragOverColumn(status);
+      } else {
+        setDragOverColumn(null);
+      }
     }
   };
 
-  const handleTouchEnd = async (e: React.TouchEvent) => {
-    if (!touchedCard) return;
-    
-    // If we were dragging and have a target column
-    if (isTouchDragging && dragOverColumn && dragOverColumn !== touchedCard.status) {
+  const handleTouchEnd = async () => {
+    if (!touchStartCard) return;
+
+    // If we were dragging and have a target column, update the card
+    if (isDragging && dragOverColumn && dragOverColumn !== touchStartCard.status) {
       try {
-        const response = await fetch(`/api/issues/${touchedCard.id}`, {
+        const response = await fetch(`/api/issues/${touchStartCard.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...touchedCard, status: dragOverColumn })
+          body: JSON.stringify({ ...touchStartCard, status: dragOverColumn })
         });
-        
+
         if (response.ok) {
           const updatedCard = await response.json();
           setCards(cards.map(card => 
-            card.id === touchedCard.id ? updatedCard : card
+            card.id === touchStartCard.id ? updatedCard : card
           ));
+          
+          // Success haptic feedback
+          if ('vibrate' in navigator) {
+            navigator.vibrate([100, 50, 100]);
+          }
         }
       } catch (error) {
         console.error('Error updating card:', error);
       }
-    } else if (!isTouchDragging) {
-      // Not dragging = click
-      handleCardClick(touchedCard);
+    } else if (!isDragging) {
+      // If not dragging, treat as a click
+      handleCardClick(touchStartCard);
     }
-    
-    // Reset everything
-    setTouchedCard(null);
+
+    // Reset all touch states
+    setTouchStartCard(null);
     setTouchStartPos(null);
+    setIsDragging(false);
+    setDragStartTime(null);
     setDragOverColumn(null);
-    setIsTouchDragging(false);
   };
+
 
 
 
@@ -1302,8 +1323,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   draggedCard={draggedCard}
-                  touchedCard={touchedCard}
-                  isTouchDragging={isTouchDragging}
+                  touchStartCard={touchStartCard}
+                  isDragging={isDragging}
+                  onCardTouchStart={handleTouchStart}
+                  onCardTouchMove={handleTouchMove}
+                  onCardTouchEnd={handleTouchEnd}
                   labels={labels}
                   inlineLabelEditorOpen={inlineLabelEditorOpen}
                   onToggleLabelEditor={setInlineLabelEditorOpen}
@@ -1312,9 +1336,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   onCreateLabel={handleCreateLabel}
                   onCardDragStart={handleDragStart}
                   onCardDragEnd={handleDragEnd}
-                  onCardTouchStart={handleTouchStart}
-                  onCardTouchMove={handleTouchMove}
-                  onCardTouchEnd={handleTouchEnd}
                 />);
             })}
           </div>
