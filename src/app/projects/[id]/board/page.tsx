@@ -1184,7 +1184,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   setShowCreateModal(true);
                   setTimeout(() => setModalVisible(true), 10);
                 }}
-                className="w-full p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                className="w-full p-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                 title="Create Issue"
               >
                 <Plus className="h-4 w-4" />
@@ -1407,7 +1407,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                   column={column}
                   cards={columnCards}
                   onCreateIssue={openCreateModal}
-                  onCardClick={(card) => setSelectedCard(card)}
+                  onCardClick={handleCardClick}
                   dragOverColumn={dragOverColumn}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}

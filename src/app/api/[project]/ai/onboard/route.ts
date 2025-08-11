@@ -58,7 +58,8 @@ export async function GET(
   5. Validate Build: Run "npm run build" to ensure code builds successfully. If there are build errors, you MUST fix them before marking the task as complete. Focus on TypeScript errors and React linting errors first. Only after the build passes successfully, attempt to commit any code changes with git commit -am "Complete task [cardId]". If commit fails, ignore the error and continue.
   6. Update Status: Update current task to READY_FOR_REVIEW (if successful) or
   BLOCKED (if blocked) with detailed completion comment
-  7. Return to Step 1: Repeat this sequence indefinitely
+  7. perform a git commit and add this commit to the comment. if this git commit fails ignore it and continue.
+  8. Return to Step 1: Repeat this sequence indefinitely
 
   CRITICAL RULES:
   - NEVER deviate from this 7-step sequence
