@@ -19,26 +19,12 @@ interface KanbanColumnProps {
   cards: Card[];
   onCreateIssue: (status: CardStatus) => void;
   onCardClick: (card: Card) => void;
-  dragOverColumn: CardStatus | null;
-  onDragOver: (e: React.DragEvent<HTMLDivElement>, status: CardStatus) => void;
-  onDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
-  onDrop: (e: React.DragEvent<HTMLDivElement>, status: CardStatus) => void;
-  draggedCard: Card | null;
-  touchStartCard: Card | null;
-  isDragging: boolean;
-  moveMode: boolean;
-  onCardTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
-  onCardTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void;
-  onCardTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void;
   labels: Label[];
   inlineLabelEditorOpen: string | null;
   onToggleLabelEditor: (cardId: string) => void;
   onLabelAdd: (cardId: string, labelId: string) => void;
   onLabelRemove: (cardId: string, labelId: string) => void;
   onCreateLabel: (name: string, color: string) => void;
-  onCardDragStart: (e: React.DragEvent<HTMLDivElement>, card: Card) => void;
-  onCardDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
-  onCardMouseDown?: (e: React.MouseEvent<HTMLDivElement>, card: Card) => void;
 }
 
 export default function KanbanColumn({
@@ -46,26 +32,12 @@ export default function KanbanColumn({
   cards,
   onCreateIssue,
   onCardClick,
-  dragOverColumn,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-  draggedCard,
-  touchStartCard,
-  isDragging,
-  moveMode,
-  onCardTouchStart,
-  onCardTouchMove,
-  onCardTouchEnd,
   labels,
   inlineLabelEditorOpen,
   onToggleLabelEditor,
   onLabelAdd,
   onLabelRemove,
-  onCreateLabel,
-  onCardDragStart,
-  onCardDragEnd,
-  onCardMouseDown
+  onCreateLabel
 }: KanbanColumnProps) {
   const Icon = column.icon;
 
@@ -95,42 +67,12 @@ export default function KanbanColumn({
       </div>
       
       {/* Cards Container */}
-      <div
-        className={`flex-1 p-2 md:p-3 overflow-y-auto min-h-32 transition-all duration-200 ${
-          (dragOverColumn === column.status && isDragging) || (moveMode && dragOverColumn === column.status)
-            ? 'bg-blue-100 dark:bg-blue-900/20 border-2 border-dashed border-blue-400 dark:border-blue-500'
-            : moveMode
-            ? 'bg-blue-50 dark:bg-blue-900/10 border-2 border-solid border-blue-300 dark:border-blue-600'
-            : ''
-        }`}
-        data-column-status={column.status}
-        onDragOver={(e) => onDragOver(e, column.status)}
-        onDragLeave={onDragLeave}
-        onDrop={(e) => onDrop(e, column.status)}
-        onDragEnter={(e) => {
-          // Prevent default to allow drop
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-        // Additional attributes for better browser support
-        style={{
-          minHeight: '8rem',
-          position: 'relative'
-        }}
-      >
+      <div className="flex-1 p-2 md:p-3 overflow-y-auto min-h-32">
         {cards.map((card) => (
           <KanbanCard
             key={card.id}
             card={card}
             onClick={onCardClick}
-            onDragStart={onCardDragStart}
-            onDragEnd={onCardDragEnd}
-            onMouseDown={onCardMouseDown}
-            isDragged={draggedCard?.id === card.id}
-            isTouched={touchStartCard?.id === card.id && isDragging}
-            onTouchStart={onCardTouchStart}
-            onTouchMove={onCardTouchMove}
-            onTouchEnd={onCardTouchEnd}
             labels={labels}
             inlineLabelEditorOpen={inlineLabelEditorOpen}
             onToggleLabelEditor={onToggleLabelEditor}
