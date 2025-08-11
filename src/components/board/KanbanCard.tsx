@@ -11,11 +11,11 @@ interface KanbanCardProps {
   onClick: (card: Card) => void;
   onDragStart: (e: React.DragEvent<HTMLDivElement>, card: Card) => void;
   onDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
+  isDragged: boolean;
+  isTouched: boolean;
   onTouchStart: (e: React.TouchEvent<HTMLDivElement>, card: Card) => void;
   onTouchMove: (e: React.TouchEvent<HTMLDivElement>) => void;
   onTouchEnd: (e: React.TouchEvent<HTMLDivElement>) => void;
-  isDragged: boolean;
-  isTouched: boolean;
   labels: Label[];
   inlineLabelEditorOpen: string | null;
   onToggleLabelEditor: (cardId: string) => void;
@@ -29,11 +29,11 @@ export default function KanbanCard({
   onClick,
   onDragStart,
   onDragEnd,
+  isDragged,
+  isTouched,
   onTouchStart,
   onTouchMove,
   onTouchEnd,
-  isDragged,
-  isTouched,
   labels,
   inlineLabelEditorOpen,
   onToggleLabelEditor,
