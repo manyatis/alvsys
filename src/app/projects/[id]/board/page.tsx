@@ -653,17 +653,31 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     e.preventDefault();
     e.stopPropagation();
     
-    // Enter move mode for desktop drag
+    // Set up initial mouse state for hold timer
     setDraggedCard(card);
-    setMoveMode(true);
-    setIsDragging(true);
+    setTouchStartPos({ x: e.clientX, y: e.clientY });
+    setDragStartTime(Date.now());
+    setIsDragging(false);
+    setMoveMode(false);
+    setHasMoved(false);
     
-    // Add visual feedback to the card
-    const dragElement = e.currentTarget as HTMLElement;
-    dragElement.classList.add('touch-dragging');
+    // Set up hold timer for move mode (300ms hold, same as touch)
+    const timer = setTimeout(() => {
+      // Only enter move mode if there hasn't been significant movement
+      if (!hasMoved) {
+        setMoveMode(true);
+        setIsDragging(true);
+        
+        // Add visual feedback to the card
+        const dragElement = e.currentTarget as HTMLElement;
+        dragElement.classList.add('touch-dragging');
+        
+        // Disable default scrolling and text selection
+        document.body.classList.add('no-scroll');
+      }
+    }, 300);
     
-    // Disable default scrolling and text selection
-    document.body.classList.add('no-scroll');
+    setHoldTimer(timer);
   };
 
   const handleDragStart = (e: React.DragEvent, card: Card) => {
@@ -746,6 +760,33 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   // Unified mouse move handler for desktop drag operations
   const handleMouseMove = (e: MouseEvent) => {
+    // Handle movement tracking during hold period (before drag mode)
+    if (!moveMode && draggedCard && touchStartPos && !isDragging) {
+      const deltaX = Math.abs(e.clientX - touchStartPos.x);
+      const deltaY = Math.abs(e.clientY - touchStartPos.y);
+      const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+      // Mark as moved if there's significant movement
+      if (totalMovement > 5) {
+        setHasMoved(true);
+      }
+
+      // If we moved significantly before hold timer completed, cancel move mode
+      if (totalMovement > 15) {
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+          setHoldTimer(null);
+        }
+        // Reset states
+        setDraggedCard(null);
+        setTouchStartPos(null);
+        setDragStartTime(null);
+        setHasMoved(false);
+        return;
+      }
+      return;
+    }
+    
     if (!moveMode || !isDragging || !draggedCard) return;
     
     setMousePos({ x: e.clientX, y: e.clientY });
@@ -781,6 +822,22 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   // Mouse up handler for desktop
   const handleMouseUp = async (e: MouseEvent) => {
+    // Handle mouse up during hold period (before drag mode) - just clean up
+    if (!moveMode && draggedCard && !isDragging) {
+      // Clear hold timer if it exists
+      if (holdTimer) {
+        clearTimeout(holdTimer);
+        setHoldTimer(null);
+      }
+      
+      // Reset states
+      setDraggedCard(null);
+      setTouchStartPos(null);
+      setDragStartTime(null);
+      setHasMoved(false);
+      return;
+    }
+    
     if (!moveMode || !isDragging || !draggedCard) return;
     
     // If we have a target column, update the card
