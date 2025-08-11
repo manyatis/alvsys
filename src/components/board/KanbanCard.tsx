@@ -44,6 +44,7 @@ export default function KanbanCard({
   return (
     <div
       key={card.id}
+      data-card-id={card.id}
       draggable
       onDragStart={(e) => onDragStart(e, card)}
       onDragEnd={onDragEnd}

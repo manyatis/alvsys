@@ -672,6 +672,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchStartPos({ x: touch.clientX, y: touch.clientY });
     setIsTouchDragging(false);
     setCanStartDragging(true); // Enable dragging immediately
+    
+    // Store reference to the touched element for styling
+    const element = e.currentTarget as HTMLElement;
+    (element as any).__draggedElement = true;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -690,14 +694,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       // Mark as dragging
       if (!isTouchDragging) {
         setIsTouchDragging(true);
-        // Add visual feedback
-        const element = e.currentTarget as HTMLElement;
-        if (element) {
-          element.style.opacity = '0.6';
-          element.style.transform = 'scale(1.02) rotate(2deg)';
-          element.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
-          element.style.transition = 'all 0.2s ease';
-          element.style.zIndex = '50';
+        // Find the dragged element by looking for our marker
+        const draggedElement = document.querySelector('[data-card-id="' + touchedCard.id + '"]') as HTMLElement;
+        if (draggedElement) {
+          draggedElement.style.opacity = '0.6';
+          draggedElement.style.transform = 'scale(1.02) rotate(2deg)';
+          draggedElement.style.boxShadow = '0 8px 25px 0 rgba(0, 0, 0, 0.15)';
+          draggedElement.style.transition = 'all 0.2s ease';
+          draggedElement.style.zIndex = '50';
         }
       }
       
@@ -717,14 +721,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const handleTouchEnd = async (e: React.TouchEvent) => {
     if (!touchedCard) return;
     
-    // Reset visual feedback
-    const element = e.currentTarget as HTMLElement;
-    if (element) {
-      element.style.opacity = '1';
-      element.style.transform = 'scale(1) rotate(0deg)';
-      element.style.boxShadow = '';
-      element.style.zIndex = '';
-      element.style.transition = 'all 0.2s ease';
+    // Reset visual feedback using card ID to find the element
+    const draggedElement = document.querySelector('[data-card-id="' + touchedCard.id + '"]') as HTMLElement;
+    if (draggedElement) {
+      draggedElement.style.opacity = '1';
+      draggedElement.style.transform = 'scale(1) rotate(0deg)';
+      draggedElement.style.boxShadow = '';
+      draggedElement.style.zIndex = '';
+      draggedElement.style.transition = 'all 0.2s ease';
+      delete (draggedElement as any).__draggedElement;
     }
     
     const touch = e.changedTouches[0];
