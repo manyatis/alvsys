@@ -133,6 +133,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [dragStartTime, setDragStartTime] = useState<number | null>(null);
   const [moveMode, setMoveMode] = useState(false);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
+  const [initialScrollPosition, setInitialScrollPosition] = useState<number>(0);
+  const [hasMoved, setHasMoved] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -761,28 +763,38 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setDragStartTime(Date.now());
     setIsDragging(false);
     setMoveMode(false);
+    setHasMoved(false);
+    
+    // Store initial scroll position to preserve it during move mode
+    const dragContainer = document.querySelector('.drag-container');
+    if (dragContainer) {
+      setInitialScrollPosition(dragContainer.scrollLeft);
+    }
     
     // Disable native drag when touch starts
     const target = e.currentTarget as HTMLElement;
     target.setAttribute('draggable', 'false');
     
-    // Set up hold timer for move mode (500ms hold)
+    // Set up hold timer for move mode (300ms hold, reduced from 500ms)
     const timer = setTimeout(() => {
-      setMoveMode(true);
-      setIsDragging(true);
-      
-      // Prevent scrolling when in move mode
-      document.body.classList.add('no-scroll');
-      
-      // Haptic feedback
-      if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
-        try {
-          navigator.vibrate(100);
-        } catch {
-          // Vibrate not supported or failed
+      // Only enter move mode if there hasn't been significant movement
+      if (!hasMoved) {
+        setMoveMode(true);
+        setIsDragging(true);
+        
+        // Prevent scrolling when in move mode but preserve scroll position
+        document.body.classList.add('no-scroll');
+        
+        // Haptic feedback
+        if ('vibrate' in navigator && typeof navigator.vibrate === 'function') {
+          try {
+            navigator.vibrate(100);
+          } catch {
+            // Vibrate not supported or failed
+          }
         }
       }
-    }, 500);
+    }, 300); // Reduced from 500ms to 300ms for better responsiveness
     
     setHoldTimer(timer);
   };
@@ -793,9 +805,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     const touch = e.touches[0];
     const deltaX = Math.abs(touch.clientX - touchStartPos.x);
     const deltaY = Math.abs(touch.clientY - touchStartPos.y);
+    const totalMovement = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    // Mark as moved if there's significant movement (reduced threshold)
+    if (totalMovement > 5) {
+      setHasMoved(true);
+    }
 
     // If we moved significantly before hold timer completed, cancel move mode
-    if (!moveMode && (deltaX > 10 || deltaY > 10)) {
+    if (!moveMode && totalMovement > 15) {
       if (holdTimer) {
         clearTimeout(holdTimer);
         setHoldTimer(null);
@@ -806,6 +824,18 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     // If in move mode, handle drag logic
     if (moveMode && isDragging) {
       e.preventDefault();
+      
+      // Allow horizontal scrolling while dragging
+      const dragContainer = document.querySelector('.drag-container');
+      if (dragContainer) {
+        const horizontalMovement = touch.clientX - touchStartPos.x;
+        
+        // If there's significant horizontal movement, scroll the container
+        if (Math.abs(horizontalMovement) > 20) {
+          const scrollSpeed = horizontalMovement > 0 ? -2 : 2;
+          dragContainer.scrollLeft += scrollSpeed;
+        }
+      }
       
       const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
       const column = elementBelow?.closest('[data-column-status]');
@@ -882,6 +912,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setDragOverColumn(null);
     setMoveMode(false);
     setHoldTimer(null);
+    setHasMoved(false);
     
     // Remove no-scroll class from body
     document.body.classList.remove('no-scroll');
@@ -999,6 +1030,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           pointer-events: auto;
           position: relative;
           z-index: 1000;
+        }
+        
+        .drag-container {
+          scroll-behavior: smooth;
+          -webkit-overflow-scrolling: touch;
         }
       `}</style>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
