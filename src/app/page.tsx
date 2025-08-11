@@ -1,23 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 import Navbar from '@/components/navbar';
 
 export default function Home() {
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
-
-  const getUserDisplayName = (email: string) => {
-    return email.split('@')[0];
-  };
 
   return (
     <div className="min-h-screen">
@@ -245,7 +237,7 @@ export default function Home() {
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
                 No more prompting AI for every single task. Agents automatically pick up work, 
-                follow your requirements, and deliver results while you're away. True async development.
+                follow your requirements, and deliver results while you&apos;re away. True async development.
               </p>
             </div>
             
@@ -293,7 +285,7 @@ export default function Home() {
                       Queue Work, Walk Away
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Line up a week's worth of structured tasks, enable AI agents, and let them work 
+                      Line up a week&apos;s worth of structured tasks, enable AI agents, and let them work 
                       asynchronously. No more babysitting AI or losing context between sessions.
                     </p>
                   </div>
@@ -312,7 +304,7 @@ export default function Home() {
                       Professional Development Process
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Replace chaotic "vibe coding" with proper user stories, acceptance criteria, 
+                      Replace chaotic &quot;vibe coding&quot; with proper user stories, acceptance criteria, 
                       priority management, and code review workflows that scale.
                     </p>
                   </div>
@@ -374,7 +366,7 @@ export default function Home() {
       {/* Meta Section - Built with VibeHero */}
       <section className="py-24 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 dark:from-purple-800 dark:via-blue-800 dark:to-indigo-900 relative overflow-hidden">
         {/* Background decorations */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
         
         <div className="container mx-auto px-6 relative">
           <div className="max-w-4xl mx-auto text-center">
@@ -394,7 +386,7 @@ export default function Home() {
             </h2>
             
             <p className="text-xl lg:text-2xl text-blue-100 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Every feature you see, every page you're reading, every API endpoint was developed 
+              Every feature you see, every page you&apos;re reading, every API endpoint was developed 
               using our own platform. We practice what we preach.
             </p>
 
@@ -424,14 +416,14 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-white mb-6 text-center">The Story</h3>
               <div className="space-y-4 text-blue-100 leading-relaxed">
                 <p>
-                  <strong className="text-white">The Challenge:</strong> We were tired of the chaotic "vibe coding" approach - 
+                  <strong className="text-white">The Challenge:</strong> We were tired of the chaotic &quot;vibe coding&quot; approach - 
                   scattered ideas, constant AI prompting, and lost context between sessions. 
                   We needed structure without losing the creative flow.
                 </p>
                 <p>
                   <strong className="text-white">The Solution:</strong> We built VibeHero to solve our own problems. 
                   Every user story, every bug fix, every new feature was managed through our own platform.
-                  AI agents worked asynchronously while we slept, creating the very tool you're using now.
+                  AI agents worked asynchronously while we slept, creating the very tool you&apos;re using now.
                 </p>
                 <p>
                   <strong className="text-white">The Result:</strong> A development process that scales. 
@@ -448,7 +440,7 @@ export default function Home() {
               </h3>
               <p className="text-gray-800 mb-6 leading-relaxed">
                 Watch real AI agents working on VibeHero features in real-time. 
-                See the structured approach that built the platform you're using right now.
+                See the structured approach that built the platform you&apos;re using right now.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
@@ -469,7 +461,7 @@ export default function Home() {
             {/* Bottom Message */}
             <div className="mt-12 text-center">
               <p className="text-xl text-blue-100 italic">
-                "If VibeHero can build VibeHero, imagine what it can do for your project."
+                &quot;If VibeHero can build VibeHero, imagine what it can do for your project.&quot;
               </p>
               <div className="mt-4 text-blue-200">
                 — The VibeHero Team

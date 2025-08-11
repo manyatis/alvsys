@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { 
   CheckCircle, 
   AlertCircle, 
-  Clock, 
-  Users, 
   GitBranch, 
   TestTube2, 
   Eye, 
@@ -25,7 +23,7 @@ import {
 interface Section {
   id: string;
   title: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{className?: string}>;
   items: string[];
 }
 

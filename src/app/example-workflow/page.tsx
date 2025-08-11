@@ -4,29 +4,23 @@ import { useState } from 'react';
 import { 
   Play,
   Plus,
-  Settings,
   Copy,
   CheckCircle,
-  Clock,
   RefreshCw,
-  MessageSquare,
   ArrowRight,
   Zap,
-  Users,
   FileText,
-  GitBranch,
   Eye,
   Target,
   Bot,
-  UserCheck,
-  ChevronRight
+  UserCheck
 } from 'lucide-react';
 
 interface WorkflowStep {
   id: number;
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{className?: string}>;
   screenshot: string;
   details: string[];
   tips?: string[];

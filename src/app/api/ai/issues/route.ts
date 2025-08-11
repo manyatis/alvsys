@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
           }
         } else if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
           response.message = 'Card status updated successfully. No more ready tasks available. Continue polling for new tasks every 1 minute.'
-          ;(response as any).instruction = 'Wait 60 seconds, then call next_ready API again. Do not stop - keep checking for new work.'
+          ;(response as {instruction?: string}).instruction = 'Wait 60 seconds, then call next_ready API again. Do not stop - keep checking for new work.'
         }
 
         return NextResponse.json(response)

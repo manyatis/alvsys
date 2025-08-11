@@ -1,4 +1,4 @@
-import { Card, CardStatus, Label } from '@/types/card';
+import { Card, CardStatus } from '@/types/card';
 
 export interface FilterState {
   search: string;

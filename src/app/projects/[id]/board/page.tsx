@@ -28,13 +28,10 @@ import {
 import { CardStatus, Card, Comment, Label } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
-import InlineLabelEditor from '@/components/InlineLabelEditor';
 import ProjectSelector from '@/components/ProjectSelector';
 import KanbanColumn from '@/components/board/KanbanColumn';
-import CommentsSection from '@/components/board/CommentsSection';
 import { 
   getCardsByStatus, 
-  getPriorityColor, 
   getInitials, 
   getUniqueAssignees, 
   hasActiveFilters, 
@@ -947,6 +944,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   };
 
+  const handleLabelAdd = async (cardId: string, labelId: string) => {
+    // Implementation for adding label to card
+    console.log('Adding label', labelId, 'to card', cardId);
+  };
+
+  const handleLabelRemove = async (cardId: string, labelId: string) => {
+    // Implementation for removing label from card
+    console.log('Removing label', labelId, 'from card', cardId);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -987,7 +994,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               </button>
               
               <button
-                onClick={copyOnboardLink}
+                onClick={() => copyOnboardLink(resolvedParams.id, () => {
+                  setCopyFeedback(true);
+                  setTimeout(() => setCopyFeedback(false), 2000);
+                })}
                 className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 {copyFeedback ? (
@@ -1002,14 +1012,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 <button 
                   onClick={() => setShowFilterMenu(!showFilterMenu)}
                   className={`w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs rounded-lg transition-colors ${
-                    hasActiveFilters() 
+                    hasActiveFilters(filters) 
                       ? 'text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30' 
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   <Filter className="h-3 w-3" />
                   Filter
-                  {hasActiveFilters() && (
+                  {hasActiveFilters(filters) && (
                     <span className="ml-auto bg-blue-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                       !
                     </span>
@@ -1025,7 +1035,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     <div className="absolute left-0 top-full mt-1 w-64 md:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-3 md:p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
-                        {hasActiveFilters() && (
+                        {hasActiveFilters(filters) && (
                           <button
                             onClick={clearFilters}
                             className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
@@ -1079,7 +1089,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
                         >
                           <option value="">All creators</option>
-                          {getUniqueAssignees().map((assignee) => (
+                          {getUniqueAssignees(cards).map((assignee) => (
                             <option key={assignee.id} value={assignee.id}>
                               {assignee.name || assignee.email}
                             </option>
@@ -1094,7 +1104,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         </label>
                         <select
                           value={filters.aiAllowed}
-                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value }))}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value as 'all' | 'ai-only' | 'human-only' }))}
                           className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
                         >
                           <option value="all">All issues</option>
@@ -1181,7 +1191,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
               </button>
               
               <button
-                onClick={copyOnboardLink}
+                onClick={() => copyOnboardLink(resolvedParams.id, () => {
+                  setCopyFeedback(true);
+                  setTimeout(() => setCopyFeedback(false), 2000);
+                })}
                 className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 title={copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
               >
@@ -1196,14 +1209,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                 <button 
                   onClick={() => setShowFilterMenu(!showFilterMenu)}
                   className={`w-full p-1.5 rounded-lg transition-colors relative ${
-                    hasActiveFilters() 
+                    hasActiveFilters(filters) 
                       ? 'text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30' 
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                   title="Filter"
                 >
                   <Filter className="h-3 w-3" />
-                  {hasActiveFilters() && (
+                  {hasActiveFilters(filters) && (
                     <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center">
                       !
                     </span>
@@ -1219,7 +1232,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                     <div className="absolute left-full top-0 ml-2 w-64 md:w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-40 p-3 md:p-4">
                       <div className="flex items-center justify-between mb-3">
                         <h3 className="text-sm font-medium text-gray-900 dark:text-white">Filters</h3>
-                        {hasActiveFilters() && (
+                        {hasActiveFilters(filters) && (
                           <button
                             onClick={clearFilters}
                             className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
@@ -1273,7 +1286,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                           className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
                         >
                           <option value="">All creators</option>
-                          {getUniqueAssignees().map((assignee) => (
+                          {getUniqueAssignees(cards).map((assignee) => (
                             <option key={assignee.id} value={assignee.id}>
                               {assignee.name || assignee.email}
                             </option>
@@ -1288,7 +1301,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
                         </label>
                         <select
                           value={filters.aiAllowed}
-                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value }))}
+                          onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value as 'all' | 'ai-only' | 'human-only' }))}
                           className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
                         >
                           <option value="all">All issues</option>

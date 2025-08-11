@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Plus, Check, ChevronDown } from 'lucide-react';
+import { Plus, Check } from 'lucide-react';
 import { Label } from '@/types/card';
 
 interface InlineLabelEditorProps {
@@ -30,7 +30,6 @@ export default function InlineLabelEditor({
   onLabelRemove,
   onCreateLabel,
   isOpen,
-  onToggle,
   onClose
 }: InlineLabelEditorProps) {
   const [showCreateForm, setShowCreateForm] = useState(false);

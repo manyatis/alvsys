@@ -41,7 +41,7 @@ export async function GET(
   MANDATORY EXECUTION LOOP:
   After completing each task, follow this exact sequence without deviation:
 
-  1. Commit Changes: Attempt to commit any code changes with git commit -am "Complete task [cardId]". If commit fails, ignore the error and continue.
+  1. Validate Build: Run "npm run build" to ensure code builds successfully. If there are build errors, you MUST fix them before marking the task as complete. Focus on TypeScript errors and React linting errors first. Only after the build passes successfully, attempt to commit any code changes with git commit -am "Complete task [cardId]". If commit fails, ignore the error and continue.
   2. Update Status: Update current task to READY_FOR_REVIEW (if successful) or
   BLOCKED (if blocked) with detailed completion comment
   3. Wait: Wait exactly 20 seconds

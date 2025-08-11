@@ -6,18 +6,12 @@ import {
   Zap,
   Users,
   Clock,
-  Target,
-  ArrowRight,
   CheckCircle,
   XCircle,
   Lightbulb,
-  GitBranch,
-  MessageSquare,
-  BarChart3,
   Shield,
   Workflow,
   Bot,
-  UserCheck,
   Puzzle,
   Timer,
   TrendingUp,
@@ -31,14 +25,14 @@ import {
 interface ProblemSolution {
   problem: string;
   solution: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{className?: string}>;
   benefits: string[];
 }
 
 interface Feature {
   title: string;
   description: string;
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{className?: string}>;
   details: string[];
 }
 
@@ -194,7 +188,7 @@ export default function ProductGuidePage() {
             The Problems We Solve
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-300">
-            Modern development faces unique challenges that traditional tools weren't designed to handle
+            Modern development faces unique challenges that traditional tools weren&apos;t designed to handle
           </p>
         </div>
 

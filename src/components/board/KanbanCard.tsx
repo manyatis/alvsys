@@ -119,11 +119,13 @@ export default function KanbanCard({
 
         {inlineLabelEditorOpen === card.id && (
           <InlineLabelEditor
-            labels={labels}
+            availableLabels={labels}
             selectedLabelIds={card.labels?.map(cl => cl.labelId) || []}
-            onLabelAdd={(labelId) => onLabelAdd(card.id, labelId)}
-            onLabelRemove={(labelId) => onLabelRemove(card.id, labelId)}
-            onCreateLabel={onCreateLabel}
+            onLabelAdd={async (labelId) => onLabelAdd(card.id, labelId)}
+            onLabelRemove={async (labelId) => onLabelRemove(card.id, labelId)}
+            onCreateLabel={async (name, color) => onCreateLabel(name, color)}
+            isOpen={true}
+            onToggle={() => {}}
             onClose={() => onToggleLabelEditor('')}
           />
         )}
@@ -156,7 +158,7 @@ export default function KanbanCard({
           {card.createdBy && (
             <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <div className="w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                {getInitials(card.createdBy.email, card.createdBy.name)}
+                {getInitials(card.createdBy.email || null, card.createdBy.name || null)}
               </div>
               <span className="hidden sm:inline truncate max-w-16">
                 {card.createdBy.name || card.createdBy.email}
