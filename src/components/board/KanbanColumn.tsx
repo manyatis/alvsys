@@ -38,6 +38,7 @@ interface KanbanColumnProps {
   onCreateLabel: (name: string, color: string) => void;
   onCardDragStart: (e: React.DragEvent<HTMLDivElement>, card: Card) => void;
   onCardDragEnd: (e: React.DragEvent<HTMLDivElement>) => void;
+  onCardMouseDown?: (e: React.MouseEvent<HTMLDivElement>, card: Card) => void;
 }
 
 export default function KanbanColumn({
@@ -63,7 +64,8 @@ export default function KanbanColumn({
   onLabelRemove,
   onCreateLabel,
   onCardDragStart,
-  onCardDragEnd
+  onCardDragEnd,
+  onCardMouseDown
 }: KanbanColumnProps) {
   const Icon = column.icon;
 
@@ -123,6 +125,7 @@ export default function KanbanColumn({
             onClick={onCardClick}
             onDragStart={onCardDragStart}
             onDragEnd={onCardDragEnd}
+            onMouseDown={onCardMouseDown}
             isDragged={draggedCard?.id === card.id}
             isTouched={touchStartCard?.id === card.id && isDragging}
             onTouchStart={onCardTouchStart}
