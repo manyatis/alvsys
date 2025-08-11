@@ -678,7 +678,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       clearTimeout(touchHoldTimer);
     }
     
-    // Set a 2-second timer for enabling drag
+    // Set a 500ms timer for enabling drag (shorter hold duration)
     const timer = setTimeout(() => {
       setCanStartDragging(true);
       // Provide haptic feedback when drag is enabled
@@ -692,7 +692,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         element.style.transform = 'scale(1.05)';
         element.style.boxShadow = '0 4px 15px 0 rgba(139, 92, 246, 0.4)';
       }
-    }, 2000);
+    }, 500);
     
     setTouchHoldTimer(timer);
     
@@ -704,6 +704,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!touchedCard || !touchStartPos) return;
+    
+    // Always prevent scrolling if we have a touched card to improve drag experience
+    if (touchedCard) {
+      e.preventDefault();
+    }
     
     const touch = e.touches[0];
     const moveThreshold = 10; // pixels
@@ -725,7 +730,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         }
       }
       
-      // Only allow dragging if the 2-second hold is complete
+      // Only allow dragging if the hold is complete
       if (canStartDragging) {
         // Mark as dragging
         if (!isTouchDragging) {
@@ -742,9 +747,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           element.style.webkitUserSelect = 'none';
           element.style.pointerEvents = 'none';
         }
-        
-        // Prevent scrolling while dragging
-        e.preventDefault();
         
         // Find which column we're over
         const element = document.elementFromPoint(touch.clientX, touch.clientY);
