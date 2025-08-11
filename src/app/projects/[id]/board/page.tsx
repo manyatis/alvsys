@@ -133,7 +133,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [dragStartTime, setDragStartTime] = useState<number | null>(null);
   const [moveMode, setMoveMode] = useState(false);
   const [holdTimer, setHoldTimer] = useState<NodeJS.Timeout | null>(null);
-  const [initialScrollPosition, setInitialScrollPosition] = useState<number>(0);
   const [hasMoved, setHasMoved] = useState(false);
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
@@ -765,10 +764,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setMoveMode(false);
     setHasMoved(false);
     
-    // Store initial scroll position to preserve it during move mode
+    // Store initial scroll position and touch position
     const dragContainer = document.querySelector('.drag-container');
     if (dragContainer) {
-      setInitialScrollPosition(dragContainer.scrollLeft);
+      // Scroll position is now handled during drag move
     }
     
     // Disable native drag when touch starts
@@ -828,12 +827,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       // Allow horizontal scrolling while dragging
       const dragContainer = document.querySelector('.drag-container');
       if (dragContainer) {
-        const horizontalMovement = touch.clientX - touchStartPos.x;
+        // Check if touch is near edges for auto-scroll
+        const containerRect = dragContainer.getBoundingClientRect();
+        const edgeThreshold = 50; // pixels from edge to trigger scroll
         
-        // If there's significant horizontal movement, scroll the container
-        if (Math.abs(horizontalMovement) > 20) {
-          const scrollSpeed = horizontalMovement > 0 ? -2 : 2;
-          dragContainer.scrollLeft += scrollSpeed;
+        if (touch.clientX < containerRect.left + edgeThreshold) {
+          // Near left edge - scroll left
+          dragContainer.scrollLeft -= 10;
+        } else if (touch.clientX > containerRect.right - edgeThreshold) {
+          // Near right edge - scroll right
+          dragContainer.scrollLeft += 10;
         }
       }
       
@@ -897,11 +900,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           }
         }
       }
-    } else if (!moveMode && !isDragging) {
-      // If not in move mode, treat as a click
-      setTimeout(() => {
-        handleCardClick(touchStartCard);
-      }, 50);
+    } else if (!moveMode && !isDragging && !hasMoved) {
+      // Only treat as click if there was minimal movement
+      // This prevents accidental edits while scrolling
+      // Mobile users will use the edit button instead
     }
 
     // Reset all touch states and remove no-scroll class

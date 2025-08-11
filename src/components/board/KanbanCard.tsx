@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MoreVertical, Bot } from 'lucide-react';
+import { MoreVertical, Bot, Edit2 } from 'lucide-react';
 import { Card, Label } from '@/types/card';
 import { getPriorityColor, getInitials } from '@/utils/board-utils';
 import InlineLabelEditor from '@/components/InlineLabelEditor';
@@ -85,17 +85,33 @@ export default function KanbanCard({
         <h4 className="text-sm md:text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
           {card.title}
         </h4>
-        <button 
-          className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          // Prevent drag from starting on button
-          draggable={false}
-        >
-          <MoreVertical className="h-3 w-3" />
-        </button>
+        <div className="flex items-center gap-1">
+          {/* Mobile edit button - always visible on small screens */}
+          <button 
+            className="block md:hidden text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-colors p-1"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClick(card);
+            }}
+            // Prevent drag from starting on button
+            draggable={false}
+            aria-label="Edit card"
+          >
+            <Edit2 className="h-3.5 w-3.5" />
+          </button>
+          <button 
+            className="opacity-0 group-hover:opacity-100 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 transition-opacity"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            // Prevent drag from starting on button
+            draggable={false}
+          >
+            <MoreVertical className="h-3 w-3" />
+          </button>
+        </div>
       </div>
       
       {card.description && (
