@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { PrismaClient } from '@/generated/prisma'
 import { CardService } from '@/services/card-service'
 import { CardStatus } from '@/types/card'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+//if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // POST /api/ai/issues - AI endpoint to get available issues for processing
 export async function POST(request: NextRequest) {
