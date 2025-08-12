@@ -578,7 +578,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     // Define edge zones (45% of board width or minimum 250px for touch)
     const boardWidth = boardRect.width;
-    const edgeZone = Math.max(250, boardWidth * 0.45);
+    const edgeZone = Math.max(100, boardWidth * 0.20);
     const leftEdge = boardRect.left + edgeZone;
     const rightEdge = boardRect.right - edgeZone;
     
