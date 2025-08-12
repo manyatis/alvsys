@@ -583,13 +583,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     const rightEdge = boardRect.right - edgeZone;
     
     // Check if touch is in edge zones and scroll accordingly
-    const scrollSpeed = 10; // Pixels per frame for touch
+    const scrollSpeed = 3; // Slower for touch (was 10)
     
     if (touchX < leftEdge && touchX > boardRect.left) {
       // Scroll left
       const distance = leftEdge - touchX;
       const intensity = Math.min(distance / edgeZone, 1);
-      const scrollAmount = scrollSpeed * intensity * 2;
+      const scrollAmount = scrollSpeed * intensity * 1.5; // Reduced multiplier for smoother scrolling
       
       board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
       setScrollDirection('left');
@@ -597,7 +597,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       // Scroll right
       const distance = touchX - rightEdge;
       const intensity = Math.min(distance / edgeZone, 1);
-      const scrollAmount = scrollSpeed * intensity * 2;
+      const scrollAmount = scrollSpeed * intensity * 1.5; // Reduced multiplier for smoother scrolling
       const maxScrollLeft = board.scrollWidth - board.clientWidth;
       
       board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
@@ -677,13 +677,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         const rightEdge = boardRect.right - edgeZone;
         
         // Check if touch is in edge zones and scroll accordingly
-        const scrollSpeed = 20; // Pixels per frame for touch (increased for faster scrolling)
+        const scrollSpeed = 4; // Slower for touch (was 20)
         
         if (currentTouchX < leftEdge && currentTouchX > boardRect.left) {
           // Scroll left
           const distance = leftEdge - currentTouchX;
           const intensity = Math.min(distance / edgeZone, 1);
-          const scrollAmount = scrollSpeed * intensity * 3;
+          const scrollAmount = scrollSpeed * intensity * 2; // Reduced multiplier
           
           board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
           setScrollDirection('left');
@@ -691,7 +691,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           // Scroll right
           const distance = currentTouchX - rightEdge;
           const intensity = Math.min(distance / edgeZone, 1);
-          const scrollAmount = scrollSpeed * intensity * 3;
+          const scrollAmount = scrollSpeed * intensity * 2; // Reduced multiplier
           const maxScrollLeft = board.scrollWidth - board.clientWidth;
           
           board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
@@ -699,7 +699,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         } else {
           setScrollDirection(null);
         }
-      }, 16); // ~60fps
+      }, 24); // ~42fps for smoother touch scrolling (was 16/60fps)
       
       document.addEventListener('touchmove', enhancedTouchMove, { passive: false });
       document.addEventListener('touchend', handleTouchEnd, { passive: false });
