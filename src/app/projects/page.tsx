@@ -18,6 +18,21 @@ interface Project {
   createdAt: string;
 }
 
+interface UsageStatus {
+  tier: 'FREE' | 'INDIE' | 'PROFESSIONAL';
+  usage: {
+    canCreateCard: boolean;
+    canCreateProject: boolean;
+    dailyCardsUsed: number;
+    dailyCardsLimit: number;
+    projectsUsed: number;
+    projectsLimit: number;
+    resetTime: Date;
+  };
+  isAtCardLimit: boolean;
+  isAtProjectLimit: boolean;
+}
+
 export default function ProjectsPage() {
   const { status } = useSession();
   const router = useRouter();
@@ -32,6 +47,7 @@ export default function ProjectsPage() {
   });
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [creating, setCreating] = useState(false);
+  const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
 
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
@@ -40,6 +56,7 @@ export default function ProjectsPage() {
     } else if (status === 'authenticated') {
       fetchProjects();
       fetchOrganizations();
+      fetchUsageStatus();
     }
   }, [status, router]);
 
@@ -69,6 +86,18 @@ export default function ProjectsPage() {
     }
   };
 
+  const fetchUsageStatus = async () => {
+    try {
+      const response = await fetch('/api/user/usage');
+      if (response.ok) {
+        const data = await response.json();
+        setUsageStatus(data);
+      }
+    } catch (error) {
+      console.error('Error fetching usage status:', error);
+    }
+  };
+
   const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
@@ -91,7 +120,11 @@ export default function ProjectsPage() {
         router.push(`/projects/${data.project.id}/board`);
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to create project');
+        if (response.status === 429) {
+          alert(`${error.error}\nYou have ${error.usageLimit.used}/${error.usageLimit.limit} projects.`);
+        } else {
+          alert(error.error || 'Failed to create project');
+        }
       }
     } catch (error) {
       console.error('Error creating project:', error);
@@ -113,16 +146,31 @@ export default function ProjectsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            My Projects
-          </h1>
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <Plus className="h-5 w-5" />
-            New Project
-          </button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              My Projects
+            </h1>
+            {usageStatus && (
+              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                {usageStatus.tier} Plan • {usageStatus.usage.projectsUsed}/{usageStatus.usage.projectsLimit} projects • {usageStatus.usage.dailyCardsUsed}/{usageStatus.usage.dailyCardsLimit} daily cards
+              </div>
+            )}
+          </div>
+          <div>
+            {usageStatus?.isAtProjectLimit && (
+              <div className="mb-2 text-sm text-red-600 dark:text-red-400">
+                Project limit reached ({usageStatus.usage.projectsUsed}/{usageStatus.usage.projectsLimit})
+              </div>
+            )}
+            <button
+              onClick={() => setShowCreateModal(true)}
+              disabled={usageStatus?.isAtProjectLimit}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              <Plus className="h-5 w-5" />
+              New Project
+            </button>
+          </div>
         </div>
 
         {projects.length === 0 ? (
@@ -136,7 +184,8 @@ export default function ProjectsPage() {
             </p>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              disabled={usageStatus?.isAtProjectLimit}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Plus className="h-5 w-5" />
               Create Project

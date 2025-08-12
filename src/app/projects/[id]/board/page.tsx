@@ -19,6 +19,7 @@ import {
   getCardsByStatus, 
   FilterState
 } from '@/utils/board-utils';
+import { useUsageStatus } from '@/hooks/useUsageStatus';
 
 interface NewCard {
   title: string;
@@ -126,6 +127,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     resetComments,
   } = useComments();
   
+  // Usage status
+  const { usageStatus } = useUsageStatus();
+  
   // Local state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -210,6 +214,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
   const openCreateModal = (status?: CardStatus) => {
+    // Check usage limits before opening modal
+    if (usageStatus?.isAtCardLimit) {
+      alert(`Daily card limit reached (${usageStatus.usage.dailyCardsUsed}/${usageStatus.usage.dailyCardsLimit}). Limit resets daily.`);
+      return;
+    }
+    
     if (status) {
       setNewCard(prev => ({ ...prev, status }));
     }
@@ -689,6 +699,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           onCreateIssue={() => openCreateModal()}
           labels={labels}
           cards={cards}
+          usageStatus={usageStatus}
         />
 
         {/* Main Content */}

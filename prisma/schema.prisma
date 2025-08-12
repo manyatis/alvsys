@@ -137,6 +137,7 @@ model User {
   accounts                 Account[]
   sessions                 Session[]
   userKeys                 UserKey[]
+  usageTracking            UserUsageTracking?
   createdAt                DateTime                 @default(now())
   updatedAt                DateTime                 @updatedAt
 }
@@ -256,4 +257,15 @@ model UserKey {
   lastUsed  DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model UserUsageTracking {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyCardsCreated     Int      @default(0)
+  dailyProjectsCreated  Int      @default(0)
+  lastResetDate         DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
