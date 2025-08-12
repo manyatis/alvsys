@@ -461,31 +461,30 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         if (!boardRef.current) return;
         
         const board = boardRef.current;
-        const boardRect = board.getBoundingClientRect();
         const currentMouseX = currentMouseRef.current.x;
         
-        // Define edge zones (50% of board width or minimum 200px)
-        const boardWidth = boardRect.width;
-        const edgeZone = Math.max(200, boardWidth * 0.5); // 50% of board width or 200px minimum
-        const leftEdge = boardRect.left + edgeZone;
-        const rightEdge = boardRect.right - edgeZone;
+        // Define edge zones relative to viewport/screen edges
+        const viewportWidth = window.innerWidth;
+        const edgeZone = Math.min(100, viewportWidth * 0.15); // 15% of viewport width or maximum 100px
+        const leftScreenEdge = edgeZone;
+        const rightScreenEdge = viewportWidth - edgeZone;
         
         // Check if mouse is in edge zones
-        const scrollSpeed = 3;
+        const scrollSpeed = 5; // Faster for desktop
         
-        if (currentMouseX < leftEdge && currentMouseX > boardRect.left) {
-          // Scroll left
-          const distance = leftEdge - currentMouseX;
+        if (currentMouseX < leftScreenEdge) {
+          // Scroll left - closer to edge = faster scroll
+          const distance = leftScreenEdge - currentMouseX;
           const intensity = Math.min(distance / edgeZone, 1);
-          const scrollAmount = scrollSpeed * intensity * 3;
+          const scrollAmount = scrollSpeed * intensity * 2;
           
           board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
           setScrollDirection('left');
-        } else if (currentMouseX > rightEdge && currentMouseX < boardRect.right) {
-          // Scroll right
-          const distance = currentMouseX - rightEdge;
+        } else if (currentMouseX > rightScreenEdge) {
+          // Scroll right - closer to edge = faster scroll
+          const distance = currentMouseX - rightScreenEdge;
           const intensity = Math.min(distance / edgeZone, 1);
-          const scrollAmount = scrollSpeed * intensity * 3;
+          const scrollAmount = scrollSpeed * intensity * 2;
           const maxScrollLeft = board.scrollWidth - board.clientWidth;
           
           board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
@@ -642,30 +641,29 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         if (!boardRef.current) return;
         
         const board = boardRef.current;
-        const boardRect = board.getBoundingClientRect();
         
-        // Define edge zones (15% of board width or minimum 100px for touch)
-        const boardWidth = boardRect.width;
-        const edgeZone = Math.max(100, boardWidth * 0.15); // 15% of board width or 100px minimum for touch
-        const leftEdge = boardRect.left + edgeZone;
-        const rightEdge = boardRect.right - edgeZone;
+        // Define edge zones relative to viewport/screen edges
+        const viewportWidth = window.innerWidth;
+        const edgeZone = Math.min(50, viewportWidth * 0.1); // 10% of viewport width or maximum 50px
+        const leftScreenEdge = edgeZone;
+        const rightScreenEdge = viewportWidth - edgeZone;
         
         // Check if touch is in edge zones and scroll accordingly
         const scrollSpeed = 2; // Much slower for touch to reduce sensitivity
         
-        if (currentTouchX < leftEdge && currentTouchX > boardRect.left) {
-          // Scroll left
-          const distance = leftEdge - currentTouchX;
+        if (currentTouchX < leftScreenEdge) {
+          // Scroll left - closer to edge = faster scroll
+          const distance = leftScreenEdge - currentTouchX;
           const intensity = Math.min(distance / edgeZone, 1);
-          const scrollAmount = scrollSpeed * intensity; // No multiplier for smoother control
+          const scrollAmount = scrollSpeed * intensity;
           
           board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
           setScrollDirection('left');
-        } else if (currentTouchX > rightEdge && currentTouchX < boardRect.right) {
-          // Scroll right
-          const distance = currentTouchX - rightEdge;
+        } else if (currentTouchX > rightScreenEdge) {
+          // Scroll right - closer to edge = faster scroll
+          const distance = currentTouchX - rightScreenEdge;
           const intensity = Math.min(distance / edgeZone, 1);
-          const scrollAmount = scrollSpeed * intensity; // No multiplier for smoother control
+          const scrollAmount = scrollSpeed * intensity;
           const maxScrollLeft = board.scrollWidth - board.clientWidth;
           
           board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
