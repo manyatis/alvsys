@@ -92,6 +92,7 @@ export default function ProductGuidePage() {
       description: "Built specifically for human-AI collaboration from day one",
       icon: Zap,
       details: [
+        "Secure API key authentication for agent access",
         "AI onboarding API provides context and instructions",
         "Automated task assignment based on priority",
         "Real-time status synchronization across all agents",
@@ -155,6 +156,21 @@ export default function ProductGuidePage() {
                 VibeHero transforms how development teams work by providing structure, 
                 automation, and seamless human-AI collaboration in a single platform.
               </p>
+            </div>
+            <div className="bg-amber-100/20 backdrop-blur-sm rounded-2xl p-6 mb-8 border border-amber-200/30">
+              <h3 className="text-lg font-bold text-amber-100 mb-3 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Prerequisites for AI Agent Integration
+              </h3>
+              <p className="text-amber-100/90 leading-relaxed mb-3">
+                Before starting with AI agents, you&apos;ll need to set up authentication:
+              </p>
+              <ul className="text-amber-100/90 leading-relaxed space-y-1 text-left max-w-2xl mx-auto">
+                <li>• Generate an API key from your account settings</li>
+                <li>• Create an &quot;api_key.txt&quot; file in your project root directory</li>
+                <li>• Add the API key to this file (starting with &quot;vhk_&quot;)</li>
+                <li>• Ensure &quot;api_key.txt&quot; is in your .gitignore for security</li>
+              </ul>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a

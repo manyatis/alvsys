@@ -317,34 +317,39 @@ export default function Navbar() {
             </div>
             
             {/* Mobile Auth Section */}
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
               {status === 'loading' ? (
-                <div className="flex items-center justify-center px-4 py-3">
+                <div className="flex items-center justify-center px-4 py-6">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
                 </div>
               ) : session ? (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-4 px-4 py-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                    <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white text-base font-semibold">
                       {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
                     </div>
-                    <span className="text-slate-600 dark:text-slate-300 font-medium">
-                      {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-slate-700 dark:text-slate-200 font-medium text-base block truncate">
+                        {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
+                      </span>
+                      <span className="text-slate-500 dark:text-slate-400 text-sm truncate block">
+                        {session.user?.email}
+                      </span>
+                    </div>
                   </div>
                   <button 
                     onClick={() => {
                       router.push('/account');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                    className="block w-full text-left px-4 py-4 text-base text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300 min-h-[48px] flex items-center"
                   >
                     Account Settings
                   </button>
                   <Link 
                     href="/projects"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                    className="block w-full text-left px-4 py-4 text-base text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300 min-h-[48px] flex items-center"
                   >
                     Projects
                   </Link>
@@ -353,7 +358,7 @@ export default function Navbar() {
                       router.push('/projects');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                    className="block w-full text-left px-4 py-4 text-base text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300 min-h-[48px] flex items-center"
                   >
                     Dashboard
                   </button>
@@ -362,13 +367,13 @@ export default function Navbar() {
                       router.push('/organization');
                       setIsMobileMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
+                    className="block w-full text-left px-4 py-4 text-base text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300 min-h-[48px] flex items-center"
                   >
                     Organization Settings
                   </button>
                   <button 
                     onClick={() => signOut()}
-                    className="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-300"
+                    className="block w-full text-left px-4 py-4 text-base text-red-600 dark:text-red-400 hover:text-white hover:bg-red-600 rounded-lg transition-all duration-300 min-h-[48px] flex items-center"
                   >
                     Logout
                   </button>
@@ -376,7 +381,7 @@ export default function Navbar() {
               ) : (
                 <button 
                   onClick={() => setIsLoginModalOpen(true)}
-                  className="block w-full text-left px-4 py-3 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300"
+                  className="block w-full text-left px-6 py-4 text-blue-600 dark:text-blue-400 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-300 min-h-[48px] flex items-center text-base"
                 >
                   Sign In
                 </button>
