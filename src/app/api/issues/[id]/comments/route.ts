@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401);
     }
 
     const resolvedParams = await params;
@@ -38,14 +38,6 @@ export async function GET(
     }
 
     // Check if user has access to this issue
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
     const hasAccess = issue.project.ownerId === user.id || 
                      issue.project.users.some(pu => pu.userId === user.id);
 
@@ -86,9 +78,10 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401);
     }
 
     const resolvedParams = await params;
@@ -120,13 +113,7 @@ export async function POST(
       return NextResponse.json({ error: 'Issue not found' }, { status: 404 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // User is already validated above, no need to fetch again
 
     const hasAccess = issue.project.ownerId === user.id || 
                      issue.project.users.some(pu => pu.userId === user.id);
