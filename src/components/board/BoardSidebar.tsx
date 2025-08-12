@@ -62,7 +62,7 @@ export default function BoardSidebar({
   usageStatus,
 }: BoardSidebarProps) {
   return (
-    <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-screen z-10 ${
+    <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-full z-10 ${
       sidebarCollapsed ? 'w-8 md:w-10' : 'w-32 sm:w-44 md:w-48'
     }`}>
       <div className="p-2 md:p-3 border-b border-gray-200 dark:border-gray-700">
