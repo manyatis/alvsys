@@ -90,7 +90,7 @@ export default function InlineLabelEditor({
     <div className="relative" ref={dropdownRef}>
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-[9999] max-h-64 overflow-y-auto">
           {/* Available Labels */}
           <div className="p-2">
             {availableLabels.length === 0 ? (
