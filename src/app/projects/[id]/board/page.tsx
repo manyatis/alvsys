@@ -167,6 +167,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [ghostElement, setGhostElement] = useState<HTMLElement | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'left' | 'right' | null>(null);
+  const currentMouseRef = useRef({ x: 0, y: 0 });
+
 
 
   // Auto-assign "Agent" when AI allowed task is enabled for new cards
@@ -337,27 +339,21 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
 
-  const handleLabelAdd = async (cardId: string, labelId: string) => {
-    // Implementation for adding label to card
-    console.log('Adding label', labelId, 'to card', cardId);
+  const handleLabelAdd = async (_cardId: string, _labelId: string) => {
+    // TODO: Implementation for adding label to card
   };
 
-  const handleLabelRemove = async (cardId: string, labelId: string) => {
-    // Implementation for removing label from card
-    console.log('Removing label', labelId, 'from card', cardId);
+  const handleLabelRemove = async (_cardId: string, _labelId: string) => {
+    // TODO: Implementation for removing label from card
   };
 
-  // Drag and drop handlers
-  const handleDragStart = (card: Card) => {
-    setDraggedCard(card);
-    setIsDragging(true);
-    document.body.classList.add('dragging');
-  };
+
 
   const handleDragEnd = useCallback(() => {
     setDraggedCard(null);
     setDragOverColumn(null);
     setIsDragging(false);
+    setScrollDirection(null);
     document.body.classList.remove('dragging');
     
     // Clear any scroll intervals
@@ -387,6 +383,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }
   }, [draggedCard, updateCard, refreshCards, handleDragEnd]);
 
+
+  // Drag and drop handlers
+  const handleDragStart = (card: Card) => {
+    setDraggedCard(card);
+    setIsDragging(true);
+    document.body.classList.add('dragging');
+  };
+
   const handleDragOver = (status: CardStatus) => {
     setDragOverColumn(status);
   };
@@ -395,49 +399,115 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setDragOverColumn(null);
   };
 
-  // Edge scrolling for desktop
-  const handleMouseMove = useCallback((e: MouseEvent) => {
+
+  // Handle wheel events during drag for additional scrolling
+  const handleWheel = useCallback((e: WheelEvent) => {
     if (!isDragging || !boardRef.current) return;
-
+    
+    e.preventDefault();
     const board = boardRef.current;
-    const rect = board.getBoundingClientRect();
-    const scrollSpeed = 5;
-    const edgeSize = 100;
-
-    // Check if near edges
-    const nearLeftEdge = e.clientX - rect.left < edgeSize;
-    const nearRightEdge = rect.right - e.clientX < edgeSize;
-
-    // Clear existing interval
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
+    const scrollAmount = e.deltaX !== 0 ? e.deltaX : e.deltaY;
+    
+    const currentScrollLeft = board.scrollLeft;
+    const maxScrollLeft = board.scrollWidth - board.clientWidth;
+    const newScrollLeft = currentScrollLeft + scrollAmount;
+    
+    board.scrollLeft = Math.max(0, Math.min(maxScrollLeft, newScrollLeft));
+    
+    // Show scroll direction indicator
+    if (scrollAmount > 0) {
+      setScrollDirection('right');
+    } else if (scrollAmount < 0) {
+      setScrollDirection('left');
     }
-
-    // Set up scrolling
-    if (nearLeftEdge || nearRightEdge) {
-      scrollIntervalRef.current = setInterval(() => {
-        if (nearLeftEdge) {
-          board.scrollLeft -= scrollSpeed;
-        } else if (nearRightEdge) {
-          board.scrollLeft += scrollSpeed;
-        }
-      }, 10);
-    }
+    
+    setTimeout(() => setScrollDirection(null), 100);
   }, [isDragging]);
 
-  // Set up mouse move listener for edge scrolling
+  // Global mouse tracking for all browsers
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      currentMouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    const handleGlobalDragOver = (e: DragEvent) => {
+      e.preventDefault();
+      currentMouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    const handlePointerMove = (e: PointerEvent) => {
+      currentMouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    
+    // Always track mouse position with multiple event types
+    document.addEventListener('mousemove', handleGlobalMouseMove);
+    document.addEventListener('dragover', handleGlobalDragOver);
+    document.addEventListener('pointermove', handlePointerMove);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('dragover', handleGlobalDragOver);
+      document.removeEventListener('pointermove', handlePointerMove);
+    };
+  }, []);
+
+
+  // Set up drag scrolling
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
+      
+      // Set up continuous scrolling loop that uses the global mouse position
+      scrollIntervalRef.current = setInterval(() => {
+        if (!boardRef.current) return;
+        
+        const board = boardRef.current;
+        const boardRect = board.getBoundingClientRect();
+        const currentMouseX = currentMouseRef.current.x;
+        
+        // Define edge zones (50% of board width or minimum 200px)
+        const boardWidth = boardRect.width;
+        const edgeZone = Math.max(200, boardWidth * 0.5); // 50% of board width or 200px minimum
+        const leftEdge = boardRect.left + edgeZone;
+        const rightEdge = boardRect.right - edgeZone;
+        
+        // Check if mouse is in edge zones
+        const scrollSpeed = 3;
+        
+        if (currentMouseX < leftEdge && currentMouseX > boardRect.left) {
+          // Scroll left
+          const distance = leftEdge - currentMouseX;
+          const intensity = Math.min(distance / edgeZone, 1);
+          const scrollAmount = scrollSpeed * intensity * 3;
+          
+          board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
+          setScrollDirection('left');
+        } else if (currentMouseX > rightEdge && currentMouseX < boardRect.right) {
+          // Scroll right
+          const distance = currentMouseX - rightEdge;
+          const intensity = Math.min(distance / edgeZone, 1);
+          const scrollAmount = scrollSpeed * intensity * 3;
+          const maxScrollLeft = board.scrollWidth - board.clientWidth;
+          
+          board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
+          setScrollDirection('right');
+        } else {
+          setScrollDirection(null);
+        }
+      }, 16); // ~60fps
+      
+      // Add wheel support for additional scrolling
+      document.addEventListener('wheel', handleWheel, { passive: false });
+      
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('wheel', handleWheel);
         if (scrollIntervalRef.current) {
           clearInterval(scrollIntervalRef.current);
+          scrollIntervalRef.current = null;
         }
+        setScrollDirection(null);
       };
     }
-  }, [isDragging, handleMouseMove]);
+  }, [isDragging, handleWheel]);
 
   // Touch handlers for mobile
   const handleTouchStart = (card: Card, element: HTMLElement, touch: React.Touch) => {
@@ -460,9 +530,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     document.body.appendChild(ghost);
     setGhostElement(ghost);
     
-    // Disable default touch scrolling
-    document.body.style.overflow = 'hidden';
-    document.body.style.touchAction = 'none';
+    // Allow horizontal scrolling but prevent vertical on the board
+    document.body.style.touchAction = 'pan-x';
     
     // Add haptic feedback if available
     if ('vibrate' in navigator) {
@@ -473,8 +542,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging || !ghostElement || !boardRef.current) return;
     
-    e.preventDefault();
+    // Only prevent default for vertical scrolling, allow horizontal
+    if (Math.abs(e.touches[0].clientY - (touchStartPos?.y || 0)) < Math.abs(e.touches[0].clientX - (touchStartPos?.x || 0))) {
+      e.preventDefault();
+    }
+    
     const touch = e.touches[0];
+    const currentTouchPos = { x: touch.clientX, y: touch.clientY };
     
     // Update ghost element position
     ghostElement.style.left = `${touch.clientX}px`;
@@ -497,43 +571,42 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setDragOverColumn(null);
     }
     
-    // Handle edge scrolling
-    const scrollContainer = boardRef.current;
-    const scrollSpeed = 10;
-    const edgeSize = 60;
+    // Edge-based scrolling for mobile
+    const board = boardRef.current;
+    const boardRect = board.getBoundingClientRect();
+    const touchX = currentTouchPos.x;
     
-    // Get viewport dimensions
-    const viewportWidth = window.innerWidth;
-    const nearLeftEdge = touch.clientX < edgeSize;
-    const nearRightEdge = touch.clientX > viewportWidth - edgeSize;
+    // Define edge zones (45% of board width or minimum 250px for touch)
+    const boardWidth = boardRect.width;
+    const edgeZone = Math.max(250, boardWidth * 0.45);
+    const leftEdge = boardRect.left + edgeZone;
+    const rightEdge = boardRect.right - edgeZone;
     
-    // Clear existing scroll interval
-    if (scrollIntervalRef.current) {
-      clearInterval(scrollIntervalRef.current);
-      scrollIntervalRef.current = null;
-    }
+    // Check if touch is in edge zones and scroll accordingly
+    const scrollSpeed = 10; // Pixels per frame for touch
     
-    // Set up scrolling if near edges
-    if (nearLeftEdge || nearRightEdge) {
-      const direction = nearLeftEdge ? 'left' : 'right';
-      setScrollDirection(direction);
+    if (touchX < leftEdge && touchX > boardRect.left) {
+      // Scroll left
+      const distance = leftEdge - touchX;
+      const intensity = Math.min(distance / edgeZone, 1);
+      const scrollAmount = scrollSpeed * intensity * 2;
       
-      scrollIntervalRef.current = setInterval(() => {
-        if (!boardRef.current) return;
-        
-        const currentScrollLeft = scrollContainer.scrollLeft;
-        const maxScrollLeft = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-        
-        if (nearLeftEdge && currentScrollLeft > 0) {
-          scrollContainer.scrollLeft = Math.max(0, currentScrollLeft - scrollSpeed);
-        } else if (nearRightEdge && currentScrollLeft < maxScrollLeft) {
-          scrollContainer.scrollLeft = Math.min(maxScrollLeft, currentScrollLeft + scrollSpeed);
-        }
-      }, 20);
+      board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
+      setScrollDirection('left');
+    } else if (touchX > rightEdge && touchX < boardRect.right) {
+      // Scroll right
+      const distance = touchX - rightEdge;
+      const intensity = Math.min(distance / edgeZone, 1);
+      const scrollAmount = scrollSpeed * intensity * 2;
+      const maxScrollLeft = board.scrollWidth - board.clientWidth;
+      
+      board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
+      setScrollDirection('right');
     } else {
       setScrollDirection(null);
     }
-  }, [isDragging, ghostElement]);
+    
+  }, [isDragging, ghostElement, touchStartPos]);
 
   const cleanupTouch = useCallback(() => {
     if (ghostElement) {
@@ -547,8 +620,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTouchStartPos(null);
     setScrollDirection(null);
     
-    // Re-enable scrolling
-    document.body.style.overflow = '';
+    // Re-enable normal scrolling
     document.body.style.touchAction = '';
     
     if (scrollIntervalRef.current) {
@@ -576,14 +648,71 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   // Set up touch event listeners
   useEffect(() => {
     if (isDragging && touchStartPos) {
-      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      let currentTouchX = touchStartPos.x;
+      
+      // Track touch position for edge-based scrolling
+      const updateTouchPosition = (e: TouchEvent) => {
+        if (e.touches[0]) {
+          currentTouchX = e.touches[0].clientX;
+        }
+      };
+      
+      // Enhanced touch move handler
+      const enhancedTouchMove = (e: TouchEvent) => {
+        updateTouchPosition(e);
+        handleTouchMove(e);
+      };
+      
+      // Set up continuous scrolling loop for touch
+      scrollIntervalRef.current = setInterval(() => {
+        if (!boardRef.current) return;
+        
+        const board = boardRef.current;
+        const boardRect = board.getBoundingClientRect();
+        
+        // Define edge zones (50% of board width or minimum 250px for touch)
+        const boardWidth = boardRect.width;
+        const edgeZone = Math.max(250, boardWidth * 0.45); // 45% of board width or 250px minimum for touch
+        const leftEdge = boardRect.left + edgeZone;
+        const rightEdge = boardRect.right - edgeZone;
+        
+        // Check if touch is in edge zones and scroll accordingly
+        const scrollSpeed = 20; // Pixels per frame for touch (increased for faster scrolling)
+        
+        if (currentTouchX < leftEdge && currentTouchX > boardRect.left) {
+          // Scroll left
+          const distance = leftEdge - currentTouchX;
+          const intensity = Math.min(distance / edgeZone, 1);
+          const scrollAmount = scrollSpeed * intensity * 3;
+          
+          board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
+          setScrollDirection('left');
+        } else if (currentTouchX > rightEdge && currentTouchX < boardRect.right) {
+          // Scroll right
+          const distance = currentTouchX - rightEdge;
+          const intensity = Math.min(distance / edgeZone, 1);
+          const scrollAmount = scrollSpeed * intensity * 3;
+          const maxScrollLeft = board.scrollWidth - board.clientWidth;
+          
+          board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
+          setScrollDirection('right');
+        } else {
+          setScrollDirection(null);
+        }
+      }, 16); // ~60fps
+      
+      document.addEventListener('touchmove', enhancedTouchMove, { passive: false });
       document.addEventListener('touchend', handleTouchEnd, { passive: false });
       document.addEventListener('touchcancel', cleanupTouch);
       
       return () => {
-        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchmove', enhancedTouchMove);
         document.removeEventListener('touchend', handleTouchEnd);
         document.removeEventListener('touchcancel', cleanupTouch);
+        if (scrollIntervalRef.current) {
+          clearInterval(scrollIntervalRef.current);
+          scrollIntervalRef.current = null;
+        }
       };
     }
   }, [isDragging, touchStartPos, handleTouchMove, handleTouchEnd, cleanupTouch]);
@@ -598,7 +727,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex w-full max-w-full">
         {/* Left Sidebar */}
         <BoardSidebar
           sidebarCollapsed={sidebarCollapsed}
@@ -616,7 +745,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           {/* Header */}
           <BoardHeader
             project={project}
@@ -625,19 +754,20 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           />
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 relative">
+        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
           {/* Scroll Indicators */}
           {scrollDirection === 'left' && (
-            <div className="fixed left-0 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded-r z-50 animate-pulse">
-              ←
+            <div className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-2 rounded-r-lg z-50 animate-pulse shadow-lg">
+              <span className="text-lg">← Scrolling</span>
             </div>
           )}
           {scrollDirection === 'right' && (
-            <div className="fixed right-0 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-2 py-1 rounded-l z-50 animate-pulse">
-              →
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-2 rounded-l-lg z-50 animate-pulse shadow-lg">
+              <span className="text-lg">Scrolling →</span>
             </div>
           )}
-          <div ref={boardRef} className="flex gap-2 md:gap-3 h-full pb-4 overflow-x-auto overflow-y-hidden">
+          
+          <div ref={boardRef} className="flex gap-2 md:gap-3 h-full pb-4 overflow-x-auto overflow-y-hidden relative w-full" style={{ touchAction: 'pan-x' }}>
             {statusColumns.map((column) => {
               const columnCards = getCardsByStatus(cards, column.status, filters);
               
