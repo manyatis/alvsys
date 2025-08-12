@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { PrismaClient } from '@/generated/prisma'
 import { authOptions } from '@/lib/auth'
+import { UsageService } from '@/services/usage-service'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -124,6 +125,20 @@ export async function POST(request: NextRequest) {
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 })
+    }
+
+    // Check usage limits before creating card
+    const canCreateCard = await UsageService.incrementCardUsage(user.id)
+    if (!canCreateCard) {
+      const usageStatus = await UsageService.getUserUsageStatus(user.id)
+      return NextResponse.json({ 
+        error: 'Daily card limit reached', 
+        usageLimit: {
+          used: usageStatus.dailyCardsUsed,
+          limit: usageStatus.dailyCardsLimit,
+          resetTime: usageStatus.resetTime,
+        }
+      }, { status: 429 })
     }
 
     const issue = await prisma.card.create({

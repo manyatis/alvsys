@@ -36,7 +36,20 @@ export default function KanbanCard({
   onTouchStart
 }: KanbanCardProps) {
   const [dragStarted, setDragStarted] = React.useState(false);
+  const [isDragEnabled, setIsDragEnabled] = React.useState(false);
+  const [isHolding, setIsHolding] = React.useState(false);
+  const dragDelayRef = React.useRef<NodeJS.Timeout | null>(null);
+  const holdStartRef = React.useRef<number>(0);
 
+
+  // Cleanup timer on unmount
+  React.useEffect(() => {
+    return () => {
+      if (dragDelayRef.current) {
+        clearTimeout(dragDelayRef.current);
+      }
+    };
+  }, []);
 
   const handleClick = () => {
     if (!dragStarted) {
@@ -45,15 +58,53 @@ export default function KanbanCard({
     setDragStarted(false);
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return; // Only left mouse button
+    
+    holdStartRef.current = Date.now();
+    setIsHolding(true);
+    setIsDragEnabled(false);
+    
+    dragDelayRef.current = setTimeout(() => {
+      setIsDragEnabled(true);
+      setIsHolding(false);
+    }, 300); // 300ms delay
+  };
+
+  const handleMouseUp = () => {
+    if (dragDelayRef.current) {
+      clearTimeout(dragDelayRef.current);
+    }
+    setIsHolding(false);
+    setIsDragEnabled(false);
+  };
+
+  const handleMouseLeave = () => {
+    if (dragDelayRef.current) {
+      clearTimeout(dragDelayRef.current);
+    }
+    setIsHolding(false);
+    setIsDragEnabled(false);
+  };
+
   return (
     <div
       key={card.id}
       className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-move hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none ${
         isDragging ? 'opacity-50 scale-105 rotate-2' : ''
+      } ${inlineLabelEditorOpen === card.id ? 'z-[9999] relative' : ''} ${
+        isHolding ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 scale-[0.98]' : ''
       }`}
       onClick={handleClick}
-      draggable="true"
+      draggable={isDragEnabled}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseLeave}
       onDragStart={(e) => {
+        if (!isDragEnabled) {
+          e.preventDefault();
+          return;
+        }
         e.stopPropagation();
         setDragStarted(true);
         
@@ -96,7 +147,7 @@ export default function KanbanCard({
       )}
 
       {/* Labels */}
-      <div className="flex flex-wrap gap-1 mb-2 items-center">
+      <div className="flex flex-wrap gap-1 mb-2 items-center relative">
         {card.labels && card.labels.slice(0, 3).map((cardLabel) => (
           <button
             key={cardLabel.id}

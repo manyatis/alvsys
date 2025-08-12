@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { UsageService } from '@/services/usage-service';
 
 // GET /api/projects - Get user's projects
 export async function GET() {
@@ -88,6 +89,19 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    // Check usage limits before creating project
+    const canCreateProject = await UsageService.canCreateProject(user.id);
+    if (!canCreateProject) {
+      const usageStatus = await UsageService.getUserUsageStatus(user.id);
+      return NextResponse.json({ 
+        error: 'Project limit reached', 
+        usageLimit: {
+          used: usageStatus.projectsUsed,
+          limit: usageStatus.projectsLimit,
+        }
+      }, { status: 429 });
     }
 
     let orgId = organizationId;

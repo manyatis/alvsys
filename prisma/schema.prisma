@@ -136,6 +136,8 @@ model User {
   comments                 Comment[]
   accounts                 Account[]
   sessions                 Session[]
+  userKeys                 UserKey[]
+  usageTracking            UserUsageTracking?
   createdAt                DateTime                 @default(now())
   updatedAt                DateTime                 @updatedAt
 }
@@ -242,4 +244,28 @@ model CardLabel {
   label   Label  @relation(fields: [labelId], references: [id], onDelete: Cascade)
 
   @@unique([cardId, labelId]) // Prevent duplicate label assignments
+}
+
+model UserKey {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  keyHash   String   @unique // Store hashed version of the key for security
+  keyPrefix String   // Store first 8 chars for display purposes (e.g., "vhk_abcd...")
+  name      String?  // Optional name for the key
+  isActive  Boolean  @default(true)
+  lastUsed  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserUsageTracking {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dailyCardsCreated     Int      @default(0)
+  dailyProjectsCreated  Int      @default(0)
+  lastResetDate         DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }

@@ -19,6 +19,7 @@ import {
   getCardsByStatus, 
   FilterState
 } from '@/utils/board-utils';
+import { useUsageStatus } from '@/hooks/useUsageStatus';
 
 interface NewCard {
   title: string;
@@ -126,6 +127,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     resetComments,
   } = useComments();
   
+  // Usage status
+  const { usageStatus } = useUsageStatus();
+  
   // Local state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -210,6 +214,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
   const openCreateModal = (status?: CardStatus) => {
+    // Check usage limits before opening modal
+    if (usageStatus?.isAtCardLimit) {
+      alert(`Daily card limit reached (${usageStatus.usage.dailyCardsUsed}/${usageStatus.usage.dailyCardsLimit}). Limit resets daily.`);
+      return;
+    }
+    
     if (status) {
       setNewCard(prev => ({ ...prev, status }));
     }
@@ -666,7 +676,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="h-[calc(100vh-80px)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 pt-20">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
       </div>
     );
@@ -674,7 +684,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex w-full max-w-full">
+      <div className="h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 flex w-full max-w-full pt-20">
         {/* Left Sidebar */}
         <BoardSidebar
           sidebarCollapsed={sidebarCollapsed}
@@ -689,6 +699,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           onCreateIssue={() => openCreateModal()}
           labels={labels}
           cards={cards}
+          usageStatus={usageStatus}
         />
 
         {/* Main Content */}
@@ -701,7 +712,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           />
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 h-[calc(100vh-140px)] bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+        <div className="flex-1 p-2 md:p-4 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
           {/* Scroll Indicators */}
           {scrollDirection === 'left' && (
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-2 rounded-r-lg z-50 animate-pulse shadow-lg">
