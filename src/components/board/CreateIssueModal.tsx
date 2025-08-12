@@ -70,10 +70,10 @@ export default function CreateIssueModal({
       >
         <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
       </div>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 pointer-events-none overflow-y-auto">
         <div
           style={{ pointerEvents: 'auto' }} 
-          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:w-96 max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 mx-4 ${
+          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[95vh] sm:max-h-[90vh] shadow-2xl transform transition-all duration-300 my-2 sm:my-4 flex flex-col ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-4'
@@ -93,7 +93,8 @@ export default function CreateIssueModal({
             </button>
           </div>
           
-          <form onSubmit={onCreate} className="space-y-4">
+          <div className="flex-1 overflow-y-auto">
+            <form onSubmit={onCreate} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Summary *
@@ -116,12 +117,12 @@ export default function CreateIssueModal({
                 value={newCard.description}
                 onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
-                rows={2}
+                rows={3}
                 placeholder="Add a description..."
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Status
@@ -202,7 +203,7 @@ export default function CreateIssueModal({
                 value={newCard.acceptanceCriteria}
                 onChange={(e) => setNewCard({ ...newCard, acceptanceCriteria: e.target.value })}
                 className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
-                rows={2}
+                rows={3}
                 placeholder="Define what done means..."
               />
             </div>
@@ -273,6 +274,7 @@ export default function CreateIssueModal({
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </>
