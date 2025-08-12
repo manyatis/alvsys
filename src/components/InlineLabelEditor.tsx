@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Plus, Check } from 'lucide-react';
 import { Label } from '@/types/card';
 
@@ -37,7 +38,9 @@ export default function InlineLabelEditor({
   const [selectedColor, setSelectedColor] = useState(PRESET_COLORS[0]);
   const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState<string | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -57,6 +60,19 @@ export default function InlineLabelEditor({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isOpen, onClose]);
+
+  // Calculate dropdown position when opened
+  useEffect(() => {
+    if (isOpen && triggerRef.current) {
+      const rect = triggerRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX
+      });
+    } else {
+      setDropdownPosition(null);
+    }
+  }, [isOpen]);
 
   const handleLabelToggle = async (labelId: string) => {
     setIsUpdating(labelId);
@@ -86,11 +102,18 @@ export default function InlineLabelEditor({
     }
   };
 
-  return (
-    <div className="relative" ref={dropdownRef}>
-      {/* Dropdown */}
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-[9999] max-h-64 overflow-y-auto">
+  const renderDropdown = () => {
+    if (!isOpen || !dropdownPosition) return null;
+
+    return createPortal(
+      <div 
+        ref={dropdownRef}
+        className="fixed w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-[10000] max-h-64 overflow-y-auto"
+        style={{
+          top: dropdownPosition.top,
+          left: dropdownPosition.left
+        }}
+      >
           {/* Available Labels */}
           <div className="p-2">
             {availableLabels.length === 0 ? (
@@ -205,8 +228,14 @@ export default function InlineLabelEditor({
               )}
             </div>
           </div>
-        </div>
-      )}
+      </div>,
+      document.body
+    );
+  };
+
+  return (
+    <div className="relative" ref={triggerRef}>
+      {renderDropdown()}
     </div>
   );
 }

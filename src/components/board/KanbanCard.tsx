@@ -50,7 +50,7 @@ export default function KanbanCard({
       key={card.id}
       className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-move hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none ${
         isDragging ? 'opacity-50 scale-105 rotate-2' : ''
-      }`}
+      } ${inlineLabelEditorOpen === card.id ? 'z-[9999] relative' : ''}`}
       onClick={handleClick}
       draggable="true"
       onDragStart={(e) => {
@@ -96,7 +96,7 @@ export default function KanbanCard({
       )}
 
       {/* Labels */}
-      <div className="flex flex-wrap gap-1 mb-2 items-center">
+      <div className="flex flex-wrap gap-1 mb-2 items-center relative">
         {card.labels && card.labels.slice(0, 3).map((cardLabel) => (
           <button
             key={cardLabel.id}
