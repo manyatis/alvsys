@@ -72,6 +72,26 @@ export default function ExampleWorkflowPage() {
     },
     {
       id: 3,
+      title: 'Set Up API Key (Required)',
+      description: 'Create and configure your API key file for AI agent authentication',
+      icon: Copy,
+      screenshot: '/screenshots/api-key-setup.png',
+      details: [
+        'Navigate to your account settings to generate a new API key',
+        'Create a file named "api_key.txt" in your project\'s root directory',
+        'Copy your generated API key (starting with "vhk_") into this file',
+        'Ensure the api_key.txt file is added to your .gitignore to keep it secure',
+        'This API key authenticates AI agents to access your project data',
+        'The key is required for all AI agent operations and task management'
+      ],
+      tips: [
+        'Never commit your API key to version control - keep it in .gitignore',
+        'Store your API key securely and regenerate if compromised',
+        'Each project has its own unique API key for security isolation'
+      ]
+    },
+    {
+      id: 4,
       title: 'Copy the AI Onboard Link',
       description: 'Get your project\'s AI agent onboarding URL to connect automated agents',
       icon: Copy,
@@ -90,7 +110,7 @@ export default function ExampleWorkflowPage() {
       ]
     },
     {
-      id: 4,
+      id: 5,
       title: 'Give Link to Your AI Agent',
       description: 'Connect your AI assistant to start automated development work',
       icon: Bot,
@@ -110,7 +130,7 @@ export default function ExampleWorkflowPage() {
       ]
     },
     {
-      id: 5,
+      id: 6,
       title: 'Watch Status Updates',
       description: 'Monitor real-time progress as tasks move through your board',
       icon: RefreshCw,
@@ -130,7 +150,7 @@ export default function ExampleWorkflowPage() {
       ]
     },
     {
-      id: 6,
+      id: 7,
       title: 'Review and Provide Feedback',
       description: 'Review completed work and guide next steps through comments',
       icon: Eye,
@@ -150,7 +170,7 @@ export default function ExampleWorkflowPage() {
       ]
     },
     {
-      id: 7,
+      id: 8,
       title: 'Iterate and Improve',
       description: 'Continue the cycle of development, review, and refinement',
       icon: Target,
