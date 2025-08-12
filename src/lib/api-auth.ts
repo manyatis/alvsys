@@ -128,3 +128,72 @@ export function createApiErrorResponse(message: string, status: number = 401) {
     }
   );
 }
+
+/**
+ * Hybrid authentication that supports both API key and session-based auth
+ * Tries API key first, then falls back to session auth
+ */
+export async function validateHybridAuth(request: NextRequest): Promise<ApiUser | null> {
+  // First try API key authentication
+  const apiUser = await validateApiKey(request);
+  if (apiUser) {
+    return apiUser;
+  }
+
+  // Fall back to session authentication
+  const { getServerSession } = await import('next-auth/next');
+  const { authOptions } = await import('@/lib/auth');
+  
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    return null;
+  }
+
+  // Convert session user to ApiUser format
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      organizationId: true,
+    }
+  });
+
+  return user;
+}
+
+/**
+ * Hybrid authentication with project access validation
+ */
+export async function validateHybridAuthForProject(
+  request: NextRequest,
+  projectId: string
+): Promise<ApiUser | null> {
+  const user = await validateHybridAuth(request);
+  
+  if (!user) {
+    return null;
+  }
+
+  // Check if user has access to the project
+  const project = await prisma.project.findFirst({
+    where: {
+      id: projectId,
+      OR: [
+        { ownerId: user.id }, // User owns the project
+        { 
+          users: {
+            some: { userId: user.id } // User is a member of the project
+          }
+        }
+      ]
+    }
+  });
+
+  if (!project) {
+    return null;
+  }
+
+  return user;
+}

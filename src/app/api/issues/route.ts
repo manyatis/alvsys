@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
 import { PrismaClient } from '@/generated/prisma'
-import { authOptions } from '@/lib/auth'
 import { UsageService } from '@/services/usage-service'
+import { validateHybridAuthForProject, createApiErrorResponse } from '@/lib/api-auth'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -15,18 +14,20 @@ const prisma = globalForPrisma.prisma ?? new PrismaClient()
 // GET /api/issues - Get all issues for a project with optional status filter
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('projectId')
-    const status = searchParams.get('status')
 
     if (!projectId) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
     }
+
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuthForProject(request, projectId)
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401)
+    }
+
+    const status = searchParams.get('status')
 
     // Build the where clause
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -78,11 +79,6 @@ export async function GET(request: NextRequest) {
 // POST /api/issues - Create a new issue
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await request.json()
     const {
       title,
@@ -103,28 +99,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get user by email
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    })
-
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuthForProject(request, projectId)
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Verify user has access to project
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
-        ],
-      },
-    })
-
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 })
+      return createApiErrorResponse('Unauthorized', 401)
     }
 
     // Check usage limits before creating card

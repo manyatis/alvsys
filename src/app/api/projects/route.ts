@@ -1,20 +1,19 @@
 import { NextResponse, NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { UsageService } from '@/services/usage-service';
+import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth';
 
 // GET /api/projects - Get user's projects
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401);
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+    const userWithProjects = await prisma.user.findUnique({
+      where: { email: user.email! },
       include: {
         ownedProjects: {
           include: {
@@ -39,14 +38,14 @@ export async function GET() {
       }
     });
 
-    if (!user) {
+    if (!userWithProjects) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Combine owned projects and projects user is a member of
     const allProjects = [
-      ...user.ownedProjects,
-      ...user.projects.map(p => p.project)
+      ...userWithProjects.ownedProjects,
+      ...userWithProjects.projects.map(p => p.project)
     ];
 
     // Remove duplicates
@@ -66,10 +65,10 @@ export async function GET() {
 // POST /api/projects - Create new project (and optionally organization)
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401);
     }
 
     const body = await request.json();
@@ -83,13 +82,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Either organization name or ID is required' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    // User is already validated above
 
     // Check usage limits before creating project
     const canCreateProject = await UsageService.canCreateProject(user.id);

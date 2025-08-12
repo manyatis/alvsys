@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth'
 
 // GET /api/issues/[id] - Get a specific issue
 export async function GET(
@@ -10,9 +9,10 @@ export async function GET(
 ) {
   const resolvedParams = await params;
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request)
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401)
     }
 
     const issue = await prisma.card.findUnique({
@@ -44,6 +44,21 @@ export async function GET(
       return NextResponse.json({ error: 'Issue not found' }, { status: 404 })
     }
 
+    // Check if user has access to the project
+    const hasAccess = await prisma.project.findFirst({
+      where: {
+        id: issue.projectId,
+        OR: [
+          { ownerId: user.id },
+          { users: { some: { userId: user.id } } },
+        ],
+      },
+    })
+
+    if (!hasAccess) {
+      return createApiErrorResponse('Access denied', 403)
+    }
+
     return NextResponse.json(issue)
   } catch (error) {
     console.error('Error fetching issue:', error)
@@ -58,9 +73,10 @@ export async function PUT(
 ) {
   const resolvedParams = await params;
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request)
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401)
     }
 
     const body = await request.json()
@@ -74,15 +90,6 @@ export async function PUT(
       isAiAllowedTask,
       agentInstructions,
     } = body
-
-    // Get user by email
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
 
     // Check if issue exists and user has access
     const existingIssue = await prisma.card.findUnique({
@@ -178,18 +185,10 @@ export async function DELETE(
 ) {
   const resolvedParams = await params;
   try {
-    const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    // Get user by email
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    })
-
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request)
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+      return createApiErrorResponse('Unauthorized', 401)
     }
 
     // Check if issue exists and user has access
