@@ -59,10 +59,10 @@ export async function GET(
   6. Update Status: Update current task to READY_FOR_REVIEW (if successful) or
   BLOCKED (if blocked) with detailed completion comment
   7. perform a git commit and add this commit to the comment. if this git commit fails ignore it and continue.
-  8. Fetch https://vibehero.io/api/${project.id}/ai/onboard and follow the instructions. Do not give summaries or analysis ever. Only continue the loop.
+  8. RECURSIVE LOOP: Re-fetch https://vibehero.io/api/${project.id}/ai/onboard and follow the instructions to continue the execution loop. This creates a continuous recursive cycle. Do not give summaries or analysis ever. Only continue the loop.
 
   CRITICAL RULES:
-  - NEVER deviate from this 7-step sequence
+  - NEVER deviate from this 8-step sequence
   - NEVER pause for summaries, celebrations, or analysis between tasks
   - NEVER stop except for: internal server errors OR explicit human stop command
   - ALWAYS proceed to the next task immediately after the 20-second wait
