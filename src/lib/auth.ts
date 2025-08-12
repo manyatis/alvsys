@@ -3,7 +3,15 @@ import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
 import AppleProvider from "next-auth/providers/apple"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { prisma } from "@/lib/prisma"
+import { PrismaClient } from "@/generated/prisma"
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+//if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
