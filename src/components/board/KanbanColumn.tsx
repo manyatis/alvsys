@@ -61,7 +61,7 @@ export default function KanbanColumn({
     <div
       key={column.status}
       data-column-status={column.status}
-      className={`w-48 sm:w-56 md:w-64 min-w-48 sm:min-w-56 md:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border shadow-sm h-full flex flex-col transition-all duration-200 ${
+      className={`w-40 sm:w-48 md:w-56 lg:w-64 min-w-40 sm:min-w-48 md:min-w-56 lg:min-w-64 flex-shrink-0 bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl border shadow-sm h-full flex flex-col transition-all duration-200 ${
         isDraggedOver 
           ? 'border-blue-500 dark:border-blue-400 bg-blue-50 dark:bg-gray-700' 
           : 'border-gray-200 dark:border-gray-700'
@@ -76,14 +76,14 @@ export default function KanbanColumn({
         onDrop(column.status);
       }}
     >
-      <div className={`px-2 md:px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-xl md:rounded-t-2xl`}>
+      <div className={`px-1.5 sm:px-2 md:px-3 py-2 border-b border-gray-200 dark:border-gray-700 ${column.bgColor} flex-shrink-0 rounded-t-xl md:rounded-t-2xl`}>
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Icon className="h-3.5 w-3.5 text-gray-600 dark:text-gray-300" />
-            <span className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-200">
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-gray-600 dark:text-gray-300" />
+            <span className="text-xs font-medium text-gray-700 dark:text-gray-200 truncate">
               {column.title}
             </span>
-            <span className={`px-1.5 py-0.5 text-xs font-medium rounded-full bg-white dark:bg-gray-700 ${column.textColor} dark:text-gray-300`}>
+            <span className={`px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded-full bg-white dark:bg-gray-700 ${column.textColor} dark:text-gray-300 flex-shrink-0`}>
               {cards.length}
             </span>
           </div>
@@ -98,7 +98,7 @@ export default function KanbanColumn({
       
       {/* Cards Container */}
       <div 
-        className="flex-1 p-2 md:p-3 overflow-y-auto min-h-32"
+        className="flex-1 p-1.5 sm:p-2 md:p-3 overflow-y-auto min-h-32"
         onDoubleClick={() => onCreateIssue(column.status)}
       >
         {cards.map((card) => {

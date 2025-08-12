@@ -87,7 +87,7 @@ export default function KanbanCard({
   return (
     <div
       key={card.id}
-      className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-2 md:p-3 mb-2 cursor-move hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none ${
+      className={`group bg-white dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 p-1.5 sm:p-2 md:p-3 mb-2 cursor-move hover:shadow-sm dark:hover:bg-gray-600 transition-all duration-200 select-none max-w-full ${
         isDragging ? 'opacity-50 scale-105 rotate-2' : ''
       } ${inlineLabelEditorOpen === card.id ? 'z-[9999] relative' : ''} ${
         isHolding ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 scale-[0.98]' : ''
@@ -123,7 +123,7 @@ export default function KanbanCard({
       }}
     >
       <div className="flex justify-between items-start pointer-events-none">
-        <h4 className="text-sm md:text-xs font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+        <h4 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400">
           {card.title}
         </h4>
         <button 
@@ -138,13 +138,13 @@ export default function KanbanCard({
       </div>
       
       {card.description && (
-        <p className="text-sm md:text-xs text-gray-600 dark:text-gray-400 mb-2 line-clamp-1 pointer-events-none">
+        <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1.5 sm:mb-2 line-clamp-1 pointer-events-none">
           {card.description}
         </p>
       )}
 
       {/* Labels */}
-      <div className="flex flex-wrap gap-1 mb-2 items-center relative">
+      <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-1.5 sm:mb-2 items-center relative">
         {card.labels && card.labels.slice(0, 3).map((cardLabel) => (
           <button
             key={cardLabel.id}
@@ -152,7 +152,7 @@ export default function KanbanCard({
               e.stopPropagation();
               onToggleLabelEditor(card.id);
             }}
-            className="px-1.5 py-0.5 text-xs rounded-full text-white font-medium hover:opacity-80 transition-opacity"
+            className="px-1 sm:px-1.5 py-0.5 text-xs rounded-full text-white font-medium hover:opacity-80 transition-opacity"
             style={{ backgroundColor: cardLabel.label.color }}
           >
             {cardLabel.label.name}
@@ -164,7 +164,7 @@ export default function KanbanCard({
               e.stopPropagation();
               onToggleLabelEditor(card.id);
             }}
-            className="px-1.5 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
+            className="px-1 sm:px-1.5 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 font-medium hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors"
           >
             +{card.labels.length - 3}
           </button>
@@ -195,20 +195,20 @@ export default function KanbanCard({
 
       {/* Bottom row - Priority, Effort, AI Badge, Assignee */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1 sm:gap-1.5">
           {/* Priority badge */}
-          <span className={`px-1.5 py-0.5 text-xs font-medium rounded border ${getPriorityColor(card.priority)}`}>
+          <span className={`px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded border ${getPriorityColor(card.priority)}`}>
             P{card.priority}
           </span>
           
           {/* Effort Points badge */}
-          <span className="px-1.5 py-0.5 text-xs font-medium rounded border bg-blue-100 text-blue-600 border-blue-200">
+          <span className="px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded border bg-blue-100 text-blue-600 border-blue-200">
             {card.effortPoints}pt
           </span>
           
           {/* AI Allowed Task badge */}
           {card.isAiAllowedTask && (
-            <div className="flex items-center gap-1 px-1.5 py-0.5 text-xs font-medium rounded border bg-purple-100 text-purple-600 border-purple-200">
+            <div className="flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded border bg-purple-100 text-purple-600 border-purple-200">
               <Bot className="h-2.5 w-2.5" />
               <span className="hidden sm:inline">AI</span>
             </div>
@@ -216,13 +216,13 @@ export default function KanbanCard({
         </div>
         
         {/* Assignee (currently showing creator) */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
           {card.createdBy && (
-            <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-              <div className="w-4 h-4 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+            <div className="flex items-center gap-0.5 sm:gap-1 text-xs text-gray-500 dark:text-gray-400">
+              <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                 {getInitials(card.createdBy.email || null, card.createdBy.name || null)}
               </div>
-              <span className="hidden sm:inline truncate max-w-16">
+              <span className="hidden md:inline truncate max-w-12 sm:max-w-16">
                 {card.createdBy.name || card.createdBy.email}
               </span>
             </div>
