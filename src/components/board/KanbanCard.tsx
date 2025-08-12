@@ -36,7 +36,6 @@ export default function KanbanCard({
   onTouchStart
 }: KanbanCardProps) {
   const [dragStarted, setDragStarted] = React.useState(false);
-  const [isDragEnabled, setIsDragEnabled] = React.useState(false);
   const [isHolding, setIsHolding] = React.useState(false);
   const dragDelayRef = React.useRef<NodeJS.Timeout | null>(null);
   const holdStartRef = React.useRef<number>(0);
@@ -63,10 +62,8 @@ export default function KanbanCard({
     
     holdStartRef.current = Date.now();
     setIsHolding(true);
-    setIsDragEnabled(false);
     
     dragDelayRef.current = setTimeout(() => {
-      setIsDragEnabled(true);
       setIsHolding(false);
     }, 300); // 300ms delay
   };
@@ -75,16 +72,16 @@ export default function KanbanCard({
     if (dragDelayRef.current) {
       clearTimeout(dragDelayRef.current);
     }
+    holdStartRef.current = 0;
     setIsHolding(false);
-    setIsDragEnabled(false);
   };
 
   const handleMouseLeave = () => {
     if (dragDelayRef.current) {
       clearTimeout(dragDelayRef.current);
     }
+    holdStartRef.current = 0;
     setIsHolding(false);
-    setIsDragEnabled(false);
   };
 
   return (
@@ -96,17 +93,21 @@ export default function KanbanCard({
         isHolding ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600 scale-[0.98]' : ''
       }`}
       onClick={handleClick}
-      draggable={isDragEnabled}
+      draggable="true"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
       onDragStart={(e) => {
-        if (!isDragEnabled) {
+        // Check if enough time has passed since mouse down
+        const timeSinceMouseDown = Date.now() - holdStartRef.current;
+        if (holdStartRef.current === 0 || timeSinceMouseDown < 300) {
           e.preventDefault();
           return;
         }
+        
         e.stopPropagation();
         setDragStarted(true);
+        setIsHolding(false);
         
         // Set drag data
         e.dataTransfer.effectAllowed = 'move';
@@ -116,6 +117,8 @@ export default function KanbanCard({
       }}
       onDragEnd={(e) => {
         e.stopPropagation();
+        holdStartRef.current = 0;
+        setIsHolding(false);
         onDragEnd();
       }}
       onTouchStart={(e) => {
