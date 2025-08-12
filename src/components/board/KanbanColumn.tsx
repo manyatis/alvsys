@@ -98,8 +98,9 @@ export default function KanbanColumn({
       
       {/* Cards Container */}
       <div 
-        className="flex-1 p-1.5 sm:p-2 md:p-3 overflow-y-auto min-h-32"
+        className="flex-1 p-1.5 sm:p-2 md:p-3 overflow-y-auto min-h-32 relative group hover:bg-gray-50/50 dark:hover:bg-gray-700/30 transition-colors cursor-pointer"
         onDoubleClick={() => onCreateIssue(column.status)}
+        title="Double-click to create new issue"
       >
         {cards.map((card) => {
           return (
@@ -123,7 +124,8 @@ export default function KanbanColumn({
         
         {cards.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">No cards</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">No cards</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">Double-click to create new issue</p>
             <button
               onClick={() => onCreateIssue(column.status)}
               className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"

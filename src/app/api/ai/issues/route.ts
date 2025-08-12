@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { PrismaClient } from '@/generated/prisma'
+import { prisma } from '@/lib/prisma'
 import { CardService } from '@/services/card-service'
 import { CardStatus } from '@/types/card'
 import { validateApiKeyForProject, createApiErrorResponse } from '@/lib/api-auth'
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-const prisma = globalForPrisma.prisma ?? new PrismaClient()
-
-//if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
 // POST /api/ai/issues - AI endpoint to get available issues for processing
 export async function POST(request: NextRequest) {
@@ -319,8 +311,6 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
@@ -372,7 +362,5 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error in AI issues GET endpoint:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  } finally {
-    await prisma.$disconnect()
   }
 }
