@@ -159,7 +159,15 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          ...newCard,
+          title: newCard.title,
+          description: newCard.description,
+          acceptanceCriteria: newCard.acceptanceCriteria,
+          status: newCard.status,
+          priority: newCard.priority,
+          effortPoints: newCard.effortPoints,
+          isAiAllowedTask: newCard.isAiAllowedTask,
+          assigneeId: newCard.assigneeId || null,
+          labelIds: newCard.labelIds,
           projectId,
         }),
       });

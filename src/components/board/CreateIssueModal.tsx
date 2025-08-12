@@ -70,14 +70,14 @@ export default function CreateIssueModal({
       >
         <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
       </div>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <div 
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+        <div
+          style={{ pointerEvents: 'auto' }} 
           className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:w-96 max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-300 mx-4 ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-4'
           }`}
-          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">

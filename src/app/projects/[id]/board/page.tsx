@@ -684,7 +684,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           copyFeedback={copyFeedback}
           setCopyFeedback={setCopyFeedback}
           projectId={resolvedParams.id}
-          onCreateIssue={openCreateModal}
+          onCreateIssue={() => openCreateModal()}
           labels={labels}
           cards={cards}
         />
