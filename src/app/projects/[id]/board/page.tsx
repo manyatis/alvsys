@@ -571,41 +571,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setDragOverColumn(null);
     }
     
-    // Edge-based scrolling for mobile
-    const board = boardRef.current;
-    const boardRect = board.getBoundingClientRect();
-    const touchX = currentTouchPos.x;
-    
-    // Define edge zones (45% of board width or minimum 250px for touch)
-    const boardWidth = boardRect.width;
-    const edgeZone = Math.max(100, boardWidth * 0.20);
-    const leftEdge = boardRect.left + edgeZone;
-    const rightEdge = boardRect.right - edgeZone;
-    
-    // Check if touch is in edge zones and scroll accordingly
-    const scrollSpeed = 3; // Slower for touch (was 10)
-    
-    if (touchX < leftEdge && touchX > boardRect.left) {
-      // Scroll left
-      const distance = leftEdge - touchX;
-      const intensity = Math.min(distance / edgeZone, 1);
-      const scrollAmount = scrollSpeed * intensity * 1.5; // Reduced multiplier for smoother scrolling
-      
-      board.scrollLeft = Math.max(0, board.scrollLeft - scrollAmount);
-      setScrollDirection('left');
-    } else if (touchX > rightEdge && touchX < boardRect.right) {
-      // Scroll right
-      const distance = touchX - rightEdge;
-      const intensity = Math.min(distance / edgeZone, 1);
-      const scrollAmount = scrollSpeed * intensity * 1.5; // Reduced multiplier for smoother scrolling
-      const maxScrollLeft = board.scrollWidth - board.clientWidth;
-      
-      board.scrollLeft = Math.min(maxScrollLeft, board.scrollLeft + scrollAmount);
-      setScrollDirection('right');
-    } else {
-      setScrollDirection(null);
-    }
-    
   }, [isDragging, ghostElement, touchStartPos]);
 
   const cleanupTouch = useCallback(() => {
@@ -652,6 +617,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   useEffect(() => {
     if (isDragging && touchStartPos) {
       let currentTouchX = touchStartPos.x;
+      
+      // Clear any existing interval first to prevent duplicates
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
       
       // Track touch position for edge-based scrolling
       const updateTouchPosition = (e: TouchEvent) => {
@@ -716,7 +687,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           clearInterval(scrollIntervalRef.current);
           scrollIntervalRef.current = null;
         }
+        setScrollDirection(null);
       };
+    } else {
+      // Clean up when not dragging
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
+      setScrollDirection(null);
     }
   }, [isDragging, touchStartPos, handleTouchMove, handleTouchEnd, cleanupTouch]);
 
