@@ -98,13 +98,7 @@ export default function KanbanCard({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
       onDragStart={(e) => {
-        // Check if enough time has passed since mouse down
-        const timeSinceMouseDown = Date.now() - holdStartRef.current;
-        if (holdStartRef.current === 0 || timeSinceMouseDown < 300) {
-          e.preventDefault();
-          return;
-        }
-        
+        // No delay for desktop drag
         e.stopPropagation();
         setDragStarted(true);
         setIsHolding(false);

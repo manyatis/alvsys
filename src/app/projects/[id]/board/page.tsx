@@ -523,32 +523,35 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   // Touch handlers for mobile
   const handleTouchStart = (card: Card, element: HTMLElement, touch: React.Touch) => {
-    setDraggedCard(card);
-    setIsDragging(true);
-    setTouchStartPos({ x: touch.clientX, y: touch.clientY });
-    
-    // Create ghost element
-    const ghost = element.cloneNode(true) as HTMLElement;
-    ghost.style.position = 'fixed';
-    ghost.style.left = `${touch.clientX}px`;
-    ghost.style.top = `${touch.clientY}px`;
-    ghost.style.width = `${element.offsetWidth}px`;
-    ghost.style.zIndex = '9999';
-    ghost.style.opacity = '0.9';
-    ghost.style.pointerEvents = 'none';
-    ghost.style.transform = 'translate(-50%, -50%) rotate(2deg) scale(1.05)';
-    ghost.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
-    ghost.style.transition = 'none';
-    document.body.appendChild(ghost);
-    setGhostElement(ghost);
-    
-    // Allow horizontal scrolling but prevent vertical on the board
-    document.body.style.touchAction = 'pan-x';
-    
-    // Add haptic feedback if available
-    if ('vibrate' in navigator) {
-      navigator.vibrate(10);
-    }
+    // Add 200ms delay for touch devices to prevent accidental drags
+    setTimeout(() => {
+      setDraggedCard(card);
+      setIsDragging(true);
+      setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+      
+      // Create ghost element
+      const ghost = element.cloneNode(true) as HTMLElement;
+      ghost.style.position = 'fixed';
+      ghost.style.left = `${touch.clientX}px`;
+      ghost.style.top = `${touch.clientY}px`;
+      ghost.style.width = `${element.offsetWidth}px`;
+      ghost.style.zIndex = '9999';
+      ghost.style.opacity = '0.9';
+      ghost.style.pointerEvents = 'none';
+      ghost.style.transform = 'translate(-50%, -50%) rotate(2deg) scale(1.05)';
+      ghost.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+      ghost.style.transition = 'none';
+      document.body.appendChild(ghost);
+      setGhostElement(ghost);
+      
+      // Allow horizontal scrolling but prevent vertical on the board
+      document.body.style.touchAction = 'pan-x';
+      
+      // Add haptic feedback if available
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+    }, 200);
   };
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
