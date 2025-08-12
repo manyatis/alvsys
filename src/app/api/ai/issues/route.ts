@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@/generated/prisma'
 import { CardService } from '@/services/card-service'
 import { CardStatus } from '@/types/card'
+import { validateApiKeyForProject, createApiErrorResponse } from '@/lib/api-auth'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -14,9 +15,21 @@ const prisma = globalForPrisma.prisma ?? new PrismaClient()
 // POST /api/ai/issues - AI endpoint to get available issues for processing
 export async function POST(request: NextRequest) {
   try {
-    // TODO: Add AI agent authentication here
     const body = await request.json()
     const { action, cardId, status, projectId, comment } = body
+
+    if (!projectId) {
+      return NextResponse.json(
+        { error: 'projectId is required' },
+        { status: 400 }
+      )
+    }
+
+    // Validate API key and project access
+    const user = await validateApiKeyForProject(request, projectId)
+    if (!user) {
+      return createApiErrorResponse('Invalid API key or insufficient permissions', 401)
+    }
 
     switch (action) {
       case 'get_ready_cards':
@@ -322,6 +335,12 @@ export async function GET(request: NextRequest) {
         { error: 'projectId query parameter is required' },
         { status: 400 }
       )
+    }
+
+    // Validate API key and project access
+    const user = await validateApiKeyForProject(request, projectId)
+    if (!user) {
+      return createApiErrorResponse('Invalid API key or insufficient permissions', 401)
     }
 
     const readyCards = await CardService.getAiReadyCards(projectId)
