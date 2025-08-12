@@ -339,12 +339,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
 
-  const handleLabelAdd = async (_cardId: string, _labelId: string) => {
+  const handleLabelAdd = async (cardId: string, labelId: string) => {
     // TODO: Implementation for adding label to card
+    console.log('Add label:', { cardId, labelId });
   };
 
-  const handleLabelRemove = async (_cardId: string, _labelId: string) => {
+  const handleLabelRemove = async (cardId: string, labelId: string) => {
     // TODO: Implementation for removing label from card
+    console.log('Remove label:', { cardId, labelId });
   };
 
 
