@@ -35,7 +35,7 @@ export async function GET(
 
     const onboardingInstructions = `You are working on the VibeHero project with projectId: ${project.id}
 
-  Your task is to continuously fetch and complete tasks from the VibeHero API
+  Your task is to continuously fetch (via post) and complete tasks from the VibeHero API
   following this exact execution sequence:
 
   MANDATORY EXECUTION LOOP:
@@ -43,7 +43,7 @@ export async function GET(
 
 
   1. Wait: Wait exactly 20 seconds
-  2. Fetch Next Task: IMMEDIATELY call the next_ready API:
+  2. Fetch (post) Next Task: IMMEDIATELY call the next_ready API:
   curl -X POST https://vibehero.io/api/ai/issues \\
   -H 'Content-Type: application/json' \\
   -d '{"action": "next_ready", "projectId": "${project.id}"}'
