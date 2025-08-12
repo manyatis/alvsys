@@ -97,7 +97,10 @@ export default function KanbanColumn({
       </div>
       
       {/* Cards Container */}
-      <div className="flex-1 p-2 md:p-3 overflow-y-auto min-h-32">
+      <div 
+        className="flex-1 p-2 md:p-3 overflow-y-auto min-h-32"
+        onDoubleClick={() => onCreateIssue(column.status)}
+      >
         {cards.map((card) => {
           return (
             <KanbanCard

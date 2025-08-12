@@ -218,7 +218,7 @@ export default function Features() {
     <div className="min-h-screen">
       <Navbar />
       
-      <div className="pt-16">
+      <div className="pt-20">
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900 py-16">
           <div className="container mx-auto px-6">

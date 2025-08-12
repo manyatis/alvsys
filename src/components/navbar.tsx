@@ -63,7 +63,7 @@ export default function Navbar() {
       {/* Sticky Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <div className="flex-shrink-0">
               <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
@@ -85,9 +85,12 @@ export default function Navbar() {
               >
                 Projects
               </Link>
-              <button className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
+              <Link 
+                href="/features"
+                className="px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+              >
                 Features
-              </button>
+              </Link>
               <button 
                 onClick={handlePricingClick}
                 className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
@@ -256,9 +259,13 @@ export default function Navbar() {
             >
               Projects
             </Link>
-            <button className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300">
+            <Link 
+              href="/features"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
+            >
               Features
-            </button>
+            </Link>
             <button 
               onClick={() => {
                 handlePricingClick();

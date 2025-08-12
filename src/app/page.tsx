@@ -12,7 +12,7 @@ export default function Home() {
       <Navbar />
       
       {/* Add padding top to account for fixed navbar */}
-      <div className="pt-16">
+      <div className="pt-20">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
         <div className="container mx-auto px-6 py-24 lg:py-32">

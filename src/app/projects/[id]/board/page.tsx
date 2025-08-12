@@ -339,12 +339,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
 
-  const handleLabelAdd = async (_cardId: string, _labelId: string) => {
+  const handleLabelAdd = async (cardId: string, labelId: string) => {
     // TODO: Implementation for adding label to card
+    console.log('Add label:', { cardId, labelId });
   };
 
-  const handleLabelRemove = async (_cardId: string, _labelId: string) => {
+  const handleLabelRemove = async (cardId: string, labelId: string) => {
     // TODO: Implementation for removing label from card
+    console.log('Remove label:', { cardId, labelId });
   };
 
 
@@ -699,7 +701,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           />
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 min-h-[calc(100vh-120px)] md:h-[calc(100vh-120px)] bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+        <div className="flex-1 p-2 md:p-4 h-[calc(100vh-140px)] bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
           {/* Scroll Indicators */}
           {scrollDirection === 'left' && (
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-2 rounded-r-lg z-50 animate-pulse shadow-lg">
