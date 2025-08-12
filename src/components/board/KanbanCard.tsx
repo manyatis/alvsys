@@ -37,6 +37,7 @@ export default function KanbanCard({
 }: KanbanCardProps) {
   const [dragStarted, setDragStarted] = React.useState(false);
 
+
   const handleClick = () => {
     if (!dragStarted) {
       onClick(card);
