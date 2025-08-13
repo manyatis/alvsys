@@ -399,7 +399,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
               </span>
-              Eating Our Own Dog Food
+              Built with VibeHero
             </div>
             
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
@@ -415,13 +415,7 @@ export default function Home() {
             </p>
 
             {/* Proof Points */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-300 mb-2">247</div>
-                <div className="text-lg text-white font-semibold mb-2">Tasks Completed</div>
-                <div className="text-blue-200 text-sm">By AI agents while building VibeHero</div>
-              </div>
-              
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 max-w-2xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-3xl font-bold text-yellow-300 mb-2">72%</div>
                 <div className="text-lg text-white font-semibold mb-2">AI Automation</div>
@@ -440,14 +434,14 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-white mb-6 text-center">The Story</h3>
               <div className="space-y-4 text-blue-100 leading-relaxed">
                 <p>
-                  <strong className="text-white">The Challenge:</strong> We were tired of the chaotic &quot;vibe coding&quot; approach - 
-                  scattered ideas, constant AI prompting, and lost context between sessions. 
-                  We needed structure without losing the creative flow.
+                  <strong className="text-white">The Inspiration:</strong> We wanted to work on our software even when not at the computer. 
+                  Waiting in line at the grocery store and have ideas to vibe code later? No problem - 
+                  create tasks and get them ready, then come home, turn on the agent and let it chew through the backlog.
                 </p>
                 <p>
-                  <strong className="text-white">The Solution:</strong> We built VibeHero to solve our own problems. 
-                  Every user story, every bug fix, every new feature was managed through our own platform.
-                  AI agents worked asynchronously while we slept, creating the very tool you&apos;re using now.
+                  <strong className="text-white">The Vision:</strong> We wanted to bring structure to the vibe coding process 
+                  while recognizing that not all tasks can be automated. So we built an AI-native task management board 
+                  designed for both humans and robots to work together seamlessly.
                 </p>
                 <p>
                   <strong className="text-white">The Result:</strong> A development process that scales. 
