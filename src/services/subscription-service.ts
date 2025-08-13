@@ -13,7 +13,7 @@ const DEFAULT_TIER_CONFIGS: SubscriptionTierData[] = [
   {
     tier: SubscriptionTierType.FREE,
     projectLimit: 1,
-    dailyCardProcessLimit: 15,
+    dailyCardProcessLimit: 20,
   },
   {
     tier: SubscriptionTierType.INDIE,

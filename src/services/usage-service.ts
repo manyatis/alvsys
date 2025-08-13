@@ -20,7 +20,7 @@ export interface UsageStatus {
 // Define usage limits per subscription tier
 const TIER_LIMITS: Record<SubscriptionTierType, UsageLimits> = {
   FREE: {
-    maxDailyCards: 15,
+    maxDailyCards: 20,
     maxProjects: 1,
   },
   INDIE: {
