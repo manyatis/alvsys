@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import LoginModal from '@/components/login-modal';
 import Navbar from '@/components/navbar';
+import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
 
 export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -362,31 +363,11 @@ export default function Home() {
             </div>
             
             <div className="relative">
-              <div className="aspect-square bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-2xl p-8">
-                <div className="h-full bg-white dark:bg-slate-800 rounded-xl shadow-xl p-6 space-y-4">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-full"></div>
-                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-5/6"></div>
-                  </div>
-                  
-                  <div className="pt-4 space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-blue-500 rounded"></div>
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2"></div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-500 rounded"></div>
-                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
-                    </div>
-                  </div>
-                </div>
+              {/* Live Animated Demo */}
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+                <AnimatedBoardDemo 
+                  autoPlay={true}
+                />
               </div>
             </div>
           </div>
