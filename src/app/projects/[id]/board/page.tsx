@@ -98,6 +98,7 @@ const statusColumns: {
 export default function ProjectBoardPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [showOnlyActiveSprint, setShowOnlyActiveSprint] = useState(true);
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
   
   // Use custom hooks
   const {
@@ -146,7 +147,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSprintModal, setShowSprintModal] = useState(false);
-  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
   const [sprintModalVisible, setSprintModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
