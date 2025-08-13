@@ -83,7 +83,7 @@ The application uses Prisma with PostgreSQL. Key entities:
 
 ### Authentication
 - **Human Users**: NextAuth.js with OAuth providers
-- **AI Agents**: Currently projectId-based (API key auth coming soon)
+- **AI Agents**: Bearer token authentication with API keys (format: `vhk_[48 hex characters]`)
 
 ### Build and Deploy
 ```bash

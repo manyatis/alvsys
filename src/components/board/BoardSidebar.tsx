@@ -7,8 +7,6 @@ import {
   ChevronRight, 
   Filter, 
   Search, 
-  Settings, 
-  Users, 
   Copy, 
   Check,
   Archive 
@@ -159,22 +157,15 @@ export default function BoardSidebar({
               )}
             </div>
             
-            <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+            <button 
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
               <Search className="h-3 w-3" />
               Search
             </button>
             
-            <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-              <Users className="h-3 w-3" />
-              Assignees
-            </button>
             
-            <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-4">
-              <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-                <Settings className="h-3 w-3" />
-                Board Settings
-              </button>
-            </div>
           </>
         ) : (
           <>
@@ -245,6 +236,7 @@ export default function BoardSidebar({
             </div>
             
             <button 
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
               className="w-full p-1 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               title="Search"
             >

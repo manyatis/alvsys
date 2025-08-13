@@ -35,13 +35,39 @@ export default function Home() {
             <p className="text-base md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Transform chaotic &quot;vibe coding&quot; into structured, asynchronous development. 
               Create organized backlogs, enable AI agents, and watch work happen automatically 
-              while you sleep, travel, or focus on strategy.
+              while you sleep, travel, or focus on strategy. <strong className="text-blue-600 dark:text-blue-400">Maximize your token limits</strong> with efficient task queueing.
             </p>
             
-            <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-12 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
               <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
                 <span className="font-semibold text-purple-700 dark:text-purple-400">Stop the chaos:</span> No more scattered ideas, forgotten tasks, or waiting around for AI responses. 
                 VibeHero brings real software engineering practices to AI-assisted development.
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span className="font-semibold text-green-700 dark:text-green-400">Optimize Your AI Usage</span>
+              </div>
+              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
+                <strong>Get the most from your token limits.</strong> Queue up exactly what you need done and let AI agents work efficiently through prioritized tasks. 
+                No more wasted tokens on incomplete prompts or context switching.
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 mb-12 max-w-4xl mx-auto border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="font-semibold text-green-700 dark:text-green-400">Total Privacy Guaranteed</span>
+              </div>
+              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
+                We only facilitate project management - we have <strong>no access to your code, data, or repositories</strong>. 
+                VibeHero provides a secure management layer for your AI agents while ensuring complete privacy of your development work.
               </p>
             </div>
             
@@ -282,7 +308,7 @@ export default function Home() {
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
                       Line up a week&apos;s worth of structured tasks, enable AI agents, and let them work 
-                      asynchronously. No more babysitting AI or losing context between sessions.
+                      asynchronously. <strong className="text-blue-600 dark:text-blue-400">Use your token limits efficiently</strong> - no more babysitting AI or losing context between sessions.
                     </p>
                   </div>
                 </div>
@@ -468,7 +494,7 @@ export default function Home() {
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-slate-600 dark:text-slate-300">15 AI tasks per day</span>
+                  <span className="text-slate-600 dark:text-slate-300">20 AI tasks per day</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -592,7 +618,7 @@ export default function Home() {
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
             Join developers who create backlogs on the go and wake up to completed features. 
-            Never let distance from your computer slow down development again.
+            <strong className="text-yellow-300">Make every token count</strong> with organized, efficient task queues that maximize your AI investment.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">

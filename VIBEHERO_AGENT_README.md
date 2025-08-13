@@ -4,20 +4,28 @@ A simple Python script that connects AI agents with VibeHero project management.
 
 ## 🚀 Quick Start
 
-### 1. Copy the Script
-Copy `vibehero-agent.py` to your local machine.
+### 1. Get Your API Key
+1. Contact your VibeHero administrator for an API key
+2. API keys follow the format: `vhk_[48 hex characters]`
+3. Store your API key securely
 
 ### 2. Find Your Project ID
 1. Go to your VibeHero project in the browser
 2. Look at the URL: `https://vibehero.io/projects/YOUR_PROJECT_ID/board`
 3. Copy the project ID from the URL
 
-### 3. Run the Script
-```bash
-python3 vibehero-agent.py YOUR_PROJECT_ID
+### 3. Set Up Authentication
+Ensure your script includes the API key in all requests:
+```python
+headers = {"Authorization": f"Bearer {your_api_key}"}
 ```
 
-Replace `YOUR_PROJECT_ID` with your actual project ID.
+### 4. Run the Script
+```bash
+python3 vibehero-agent.py YOUR_PROJECT_ID YOUR_API_KEY
+```
+
+Replace `YOUR_PROJECT_ID` and `YOUR_API_KEY` with your actual values.
 
 ## 📋 What It Does
 
@@ -36,23 +44,28 @@ To connect this with your AI agent:
 3. **Send to your AI agent** (Claude API, OpenAI API, etc.)
 4. **Update task status** using the VibeHero API:
    ```python
-   # Update to IN_PROGRESS
-   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/issues", json={
-       "action": "update_status",
-       "cardId": task["id"],
-       "status": "IN_PROGRESS", 
-       "projectId": project_id,
-       "comment": "Starting work on task"
-   })
+   # Update to IN_PROGRESS (with authentication)
+   headers = {"Authorization": f"Bearer {your_api_key}"}
+   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/issues", 
+       headers=headers,
+       json={
+           "action": "update_status",
+           "cardId": task["id"],
+           "status": "IN_PROGRESS", 
+           "projectId": project_id,
+           "comment": "Starting work on task"
+       })
    
    # Later, update to READY_FOR_REVIEW
-   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/issues", json={
-       "action": "update_status", 
-       "cardId": task["id"],
-       "status": "READY_FOR_REVIEW",
-       "projectId": project_id,
-       "comment": "Task completed"
-   })
+   requests.post(f"{VIBEHERO_BASE_URL}/api/ai/issues",
+       headers=headers,
+       json={
+           "action": "update_status", 
+           "cardId": task["id"],
+           "status": "READY_FOR_REVIEW",
+           "projectId": project_id,
+           "comment": "Task completed"
+       })
    ```
 
 ## ⚙️ Configuration
@@ -86,13 +99,16 @@ You can modify these settings in the script:
 
 ## 🔒 Security Notes
 
-- The script only reads task information and project details
-- No sensitive data is stored or transmitted beyond what VibeHero already provides
-- All communication is over HTTPS
+- **API Key Protection**: Store your API key securely and never commit it to version control
+- **HTTPS Communication**: All communication is encrypted over HTTPS
+- **Limited Scope**: API keys are project-specific and only provide access to authorized tasks
+- **Bearer Token**: Always include the API key as a Bearer token in the Authorization header
 
 ## 🐛 Troubleshooting
 
-**"Could not connect to project"**: Check that your project ID is correct and the project exists.
+**"Could not connect to project"**: Check that your project ID and API key are correct.
+
+**"Authentication failed"**: Verify your API key is valid and follows the format `vhk_[48 hex characters]`.
 
 **"No tasks available"**: This is normal - the script will keep monitoring for new tasks.
 

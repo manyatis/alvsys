@@ -31,8 +31,8 @@ export const getCardsByStatus = (
         return false;
       }
       
-      // Filter by assignee (currently filtering by creator)
-      if (filters.assigneeId && card.createdBy?.id !== filters.assigneeId) {
+      // Filter by assignee
+      if (filters.assigneeId && card.assigneeId !== filters.assigneeId) {
         return false;
       }
       
@@ -91,8 +91,8 @@ export const getInitials = (email: string | null, name: string | null) => {
 export const getUniqueAssignees = (cards: Card[]): OrganizationMember[] => {
   const assignees = new Map();
   cards.forEach(card => {
-    if (card.createdBy) {
-      assignees.set(card.createdBy.id, card.createdBy);
+    if (card.assignee) {
+      assignees.set(card.assignee.id, card.assignee);
     }
   });
   return Array.from(assignees.values());
