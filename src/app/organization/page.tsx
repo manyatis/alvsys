@@ -17,12 +17,25 @@ interface OrganizationMember {
   image: string;
 }
 
+interface PendingInvitation {
+  id: string;
+  email: string;
+  role: string;
+  createdAt: string;
+  expiresAt: string;
+  inviter: {
+    name: string;
+    email: string;
+  };
+}
+
 export default function OrganizationSettings() {
   const { status } = useSession();
   const router = useRouter();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>('');
   const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [newMemberEmail, setNewMemberEmail] = useState('');
   const [loading, setLoading] = useState(true);
   const [memberLoading, setMemberLoading] = useState(false);
@@ -68,6 +81,7 @@ export default function OrganizationSettings() {
       if (response.ok) {
         const data = await response.json();
         setMembers(data.members);
+        setPendingInvitations(data.pendingInvitations || []);
       } else {
         setError('Failed to load organization members');
       }
@@ -103,7 +117,8 @@ export default function OrganizationSettings() {
       });
 
       if (response.ok) {
-        setSuccessMessage('Invitation sent successfully!');
+        const data = await response.json();
+        setSuccessMessage(`Invitation sent successfully! Share this link with ${newMemberEmail}: ${window.location.origin}${data.invitation.invitationLink}`);
         setNewMemberEmail('');
         // Refresh members list
         fetchMembers(selectedOrg);
@@ -244,6 +259,37 @@ export default function OrganizationSettings() {
               <p className="text-slate-600 dark:text-slate-400 py-8 text-center">
                 No members found. Invite team members to collaborate on projects.
               </p>
+            )}
+
+            {/* Pending Invitations */}
+            {pendingInvitations.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-3">
+                  Pending Invitations
+                </h3>
+                <div className="space-y-3">
+                  {pendingInvitations.map((invitation) => (
+                    <div key={invitation.id} className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <div className="w-10 h-10 bg-amber-600 rounded-full flex items-center justify-center text-white font-medium">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-900 dark:text-white">
+                          {invitation.email}
+                        </p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          Invited by {invitation.inviter.name || invitation.inviter.email} • Expires {new Date(invitation.expiresAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <span className="text-xs px-2 py-1 bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 rounded-full">
+                        Pending
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>

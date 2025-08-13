@@ -56,8 +56,8 @@ export async function PUT(
       where: { id: sprintId },
       data: {
         name,
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
+        ...(startDate && { startDate: new Date(startDate) }),
+        ...(endDate && { endDate: new Date(endDate) }),
         isActive,
       },
     });

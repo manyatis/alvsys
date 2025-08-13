@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        projects: {
+        projectAccess: {
           include: {
             project: {
               include: {
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     // Combine owned projects and projects user is a member of
     const allProjects = [
       ...userWithProjects.ownedProjects,
-      ...userWithProjects.projects.map(p => p.project)
+      ...userWithProjects.projectAccess.map(p => p.project)
     ];
 
     // Remove duplicates

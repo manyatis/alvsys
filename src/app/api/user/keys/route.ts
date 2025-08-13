@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
 import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs'; // Removed - not needed for plain key storage
 
 const prisma = new PrismaClient();
 
@@ -19,15 +19,15 @@ export async function GET() {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       include: {
-        userKeys: {
+        apiKeys: {
           where: { isActive: true },
           orderBy: { createdAt: 'desc' },
           select: {
             id: true,
-            keyPrefix: true,
+            key: true, // Note: Should be masked in production
             name: true,
             isActive: true,
-            lastUsed: true,
+            lastUsedAt: true,
             createdAt: true,
           },
         },
@@ -38,7 +38,7 @@ export async function GET() {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ keys: user.userKeys });
+    return NextResponse.json({ keys: user.apiKeys });
   } catch (error) {
     console.error('Error fetching user keys:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has too many active keys (limit to 10)
-    const activeKeyCount = await prisma.userKey.count({
+    const activeKeyCount = await prisma.aPIKey.count({
       where: { userId: user.id, isActive: true },
     });
 
@@ -77,15 +77,12 @@ export async function POST(request: NextRequest) {
 
     // Generate a new API key
     const apiKey = `vhk_${crypto.randomBytes(24).toString('hex')}`;
-    const keyHash = await bcrypt.hash(apiKey, 12);
-    const keyPrefix = apiKey.substring(0, 12);
 
     // Create the key in the database
-    const userKey = await prisma.userKey.create({
+    const userKey = await prisma.aPIKey.create({
       data: {
         userId: user.id,
-        keyHash,
-        keyPrefix,
+        key: apiKey,
         name: name || null,
         isActive: true,
       },

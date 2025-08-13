@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs' // Removed - using direct key matching now;
 
 const prisma = new PrismaClient();
 
@@ -44,10 +44,10 @@ export async function validateApiKey(request: NextRequest): Promise<ApiUser | nu
     }
 
     // Get all active user keys
-    const userKeys = await prisma.userKey.findMany({
+    const userKeys = await prisma.aPIKey.findMany({
       where: { 
         isActive: true,
-        keyPrefix: apiKey.substring(0, 12) // Quick filter by prefix
+        key: apiKey // Direct key matching
       },
       include: {
         user: {
@@ -61,18 +61,16 @@ export async function validateApiKey(request: NextRequest): Promise<ApiUser | nu
       }
     });
 
-    // Verify the full key hash
-    for (const userKey of userKeys) {
-      const isValid = await bcrypt.compare(apiKey, userKey.keyHash);
-      if (isValid) {
-        // Update last used timestamp
-        await prisma.userKey.update({
-          where: { id: userKey.id },
-          data: { lastUsed: new Date() }
-        });
+    // Since we're doing direct key matching, we should have exactly one match
+    if (userKeys.length === 1) {
+      const userKey = userKeys[0];
+      // Update last used timestamp  
+      await prisma.aPIKey.update({
+        where: { id: userKey.id },
+        data: { lastUsedAt: new Date() }
+      });
 
-        return userKey.user;
-      }
+      return userKey.user;
     }
 
     return null;

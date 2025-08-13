@@ -56,13 +56,14 @@ export async function GET(request: NextRequest) {
     const issues = await prisma.card.findMany({
       where: whereClause,
       include: {
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        // createdBy removed from schema
+        // createdBy: {
+        //   select: {
+        //     id: true,
+        //     name: true,
+        //     email: true,
+        //   },
+        // },
         assignee: {
           select: {
             id: true,
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
             email: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
         labels: {
           include: {
             label: true
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
       acceptanceCriteria,
       projectId,
       priority = 3,
-      effortPoints = 5,
+      storyPoints = 5,
       isAiAllowedTask = true,
       agentInstructions = [],
       status,
@@ -141,33 +142,34 @@ export async function POST(request: NextRequest) {
         acceptanceCriteria,
         projectId,
         priority,
-        effortPoints,
-        createdById: user.id,
+        storyPoints,
+        // createdById removed from schema - not setting on creation
         isAiAllowedTask,
         status,
         sprintId,
-        agentDeveloperInstructions: {
+        agentInstructions: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           create: agentInstructions.map((instruction: any) => ({
-            type: instruction.type,
+            instructionType: instruction.instructionType,
             branchName: instruction.branchName,
-            createNewBranch: instruction.createNewBranch || false,
+            createBranch: instruction.createBranch || false,
             webResearchPrompt: instruction.webResearchPrompt,
             codeResearchPrompt: instruction.codeResearchPrompt,
-            architecturePrompt: instruction.architecturePrompt,
-            instructions: instruction.instructions,
+            architectureGuidelines: instruction.architectureGuidelines,
+            generalInstructions: instruction.generalInstructions,
           })),
         },
       },
       include: {
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        agentDeveloperInstructions: true,
+        // createdBy removed from schema
+        // createdBy: {
+        //   select: {
+        //     id: true,
+        //     name: true,
+        //     email: true,
+        //   },
+        // },
+        agentInstructions: true,
       },
     })
 

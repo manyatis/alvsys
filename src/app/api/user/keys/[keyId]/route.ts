@@ -29,7 +29,7 @@ export async function PATCH(
     }
 
     // Verify the key belongs to the user
-    const userKey = await prisma.userKey.findFirst({
+    const userKey = await prisma.aPIKey.findFirst({
       where: { 
         id: keyId,
         userId: user.id,
@@ -41,7 +41,7 @@ export async function PATCH(
     }
 
     // Update the key status
-    await prisma.userKey.update({
+    await prisma.aPIKey.update({
       where: { id: keyId },
       data: { isActive: Boolean(isActive) },
     });
@@ -76,7 +76,7 @@ export async function DELETE(
     }
 
     // Verify the key belongs to the user and delete it
-    const deleteResult = await prisma.userKey.deleteMany({
+    const deleteResult = await prisma.aPIKey.deleteMany({
       where: { 
         id: keyId,
         userId: user.id,

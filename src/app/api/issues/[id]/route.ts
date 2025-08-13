@@ -18,7 +18,7 @@ export async function GET(
     const issue = await prisma.card.findUnique({
       where: { id: resolvedParams.id },
       include: {
-        createdBy: {
+        assignee: {
           select: {
             id: true,
             name: true,
@@ -31,7 +31,7 @@ export async function GET(
             name: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
         labels: {
           include: {
             label: true
@@ -86,7 +86,7 @@ export async function PUT(
       acceptanceCriteria,
       status,
       priority,
-      effortPoints,
+      storyPoints,
       isAiAllowedTask,
       agentInstructions,
       sprintId,
@@ -123,26 +123,26 @@ export async function PUT(
     if (acceptanceCriteria !== undefined) updateData.acceptanceCriteria = acceptanceCriteria
     if (status !== undefined) updateData.status = status
     if (priority !== undefined) updateData.priority = priority
-    if (effortPoints !== undefined) updateData.effortPoints = effortPoints
+    if (storyPoints !== undefined) updateData.storyPoints = storyPoints
     if (isAiAllowedTask !== undefined) updateData.isAiAllowedTask = isAiAllowedTask
     if (sprintId !== undefined) updateData.sprintId = sprintId
 
     // Handle agent instructions update
     if (agentInstructions !== undefined) {
       // Delete existing instructions and create new ones
-      await prisma.agentDeveloperInstruction.deleteMany({
+      await prisma.agentDeveloperInstructions.deleteMany({
         where: { cardId: resolvedParams.id },
       })
 
-      updateData.agentDeveloperInstructions = {
+      updateData.agentInstructions = {
         create: agentInstructions.map((instruction: Record<string, unknown>) => ({
-          type: instruction.type,
+          instructionType: instruction.instructionType,
           branchName: instruction.branchName,
-          createNewBranch: instruction.createNewBranch || false,
+          createBranch: instruction.createBranch || false,
           webResearchPrompt: instruction.webResearchPrompt,
           codeResearchPrompt: instruction.codeResearchPrompt,
-          architecturePrompt: instruction.architecturePrompt,
-          instructions: instruction.instructions,
+          architectureGuidelines: instruction.architectureGuidelines,
+          generalInstructions: instruction.generalInstructions,
         })),
       }
     }
@@ -151,7 +151,7 @@ export async function PUT(
       where: { id: resolvedParams.id },
       data: updateData,
       include: {
-        createdBy: {
+        assignee: {
           select: {
             id: true,
             name: true,
@@ -164,7 +164,7 @@ export async function PUT(
             name: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
         labels: {
           include: {
             label: true

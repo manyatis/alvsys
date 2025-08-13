@@ -3,70 +3,77 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/organizations/[id]/members - Get organization members
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const params = await context.params;
+  
   try {
-    const resolvedParams = await params;
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
+    const organizationId = params.id;
+    
     // Verify user has access to this organization
-    const organization = await prisma.organization.findFirst({
-      where: {
-        id: resolvedParams.id,
-        OR: [
-          { id: user.organizationId || undefined },
-          {
-            projects: {
-              some: {
-                OR: [
-                  { ownerId: user.id },
-                  { users: { some: { userId: user.id } } }
-                ]
-              }
-            }
-          }
-        ]
-      }
+    const userOrganization = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { organizationId: true }
     });
 
-    if (!organization) {
-      return NextResponse.json({ error: 'Organization not found or access denied' }, { status: 404 });
+    if (!userOrganization || userOrganization.organizationId !== organizationId) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
-    // Get all members of the organization
+    // Fetch all members of the organization
     const members = await prisma.user.findMany({
+      where: { organizationId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        image: true,
+        createdAt: true
+      },
+      orderBy: { createdAt: 'asc' }
+    });
+
+    // Also fetch pending invitations
+    const pendingInvitations = await prisma.organizationInvitation.findMany({
       where: {
-        organizationId: resolvedParams.id
+        organizationId,
+        acceptedAt: null,
+        expiresAt: {
+          gt: new Date()
+        }
       },
       select: {
         id: true,
-        name: true,
         email: true,
-        image: true
+        role: true,
+        createdAt: true,
+        expiresAt: true,
+        inviter: {
+          select: {
+            name: true,
+            email: true
+          }
+        }
       },
-      orderBy: {
-        name: 'asc'
-      }
+      orderBy: { createdAt: 'desc' }
     });
 
-    return NextResponse.json({ members });
+    return NextResponse.json({ 
+      members,
+      pendingInvitations 
+    });
   } catch (error) {
     console.error('Error fetching organization members:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Internal server error' 
+    }, { status: 500 });
   }
 }
