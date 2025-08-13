@@ -69,7 +69,7 @@ export default function Navbar() {
               <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
                 VibeHero
               </Link>
-              <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 rounded-full border border-green-200 dark:border-green-800/30">
+              <span className="px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800/30">
                 BETA
               </span>
             </div>
