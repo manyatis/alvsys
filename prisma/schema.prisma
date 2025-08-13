@@ -59,6 +59,7 @@ model Project {
   users          ProjectUser[]
   cards          Card[]
   labels         Label[]
+  sprints        Sprint[]
   apiKey         String?        @unique
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -83,6 +84,8 @@ model Card {
   createdBy               User                  @relation("CardCreator", fields: [createdById], references: [id])
   assigneeId              String?
   assignee                User?                 @relation("CardAssignee", fields: [assigneeId], references: [id])
+  sprintId                String?
+  sprint                  Sprint?               @relation(fields: [sprintId], references: [id])
   title                   String
   description             String?
   acceptanceCriteria      String?
@@ -269,4 +272,19 @@ model UserUsageTracking {
   lastResetDate         DateTime @default(now())
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+model Sprint {
+  id          String   @id @default(cuid())
+  name        String
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  startDate   DateTime?
+  endDate     DateTime?
+  isActive    Boolean  @default(false)
+  cards       Card[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([projectId, isActive])
 }

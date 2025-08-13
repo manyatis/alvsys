@@ -4,7 +4,9 @@ import { X, Loader2, Send, MessageCircle } from 'lucide-react';
 import { Card, CardStatus, Label, Comment } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
+import SprintSelector from '@/components/SprintSelector';
 import { OrganizationMember, getInitials, formatCommentDate } from '@/utils/board-utils';
+import { Sprint } from '@/hooks/useSprints';
 
 interface EditIssueModalProps {
   showModal: boolean;
@@ -24,6 +26,7 @@ interface EditIssueModalProps {
   labels: Label[];
   organizationMembers: OrganizationMember[];
   currentUserId: string | null;
+  sprints: Sprint[];
   statusColumns: Array<{
     status: CardStatus;
     title: string;
@@ -56,6 +59,7 @@ export default function EditIssueModal({
   labels,
   organizationMembers,
   currentUserId,
+  sprints,
   statusColumns,
   onClose,
   onUpdate,
@@ -217,14 +221,24 @@ export default function EditIssueModal({
               />
             </div>
 
-            <div>
-              <AssigneeSelector
-                currentUserId={currentUserId || undefined}
-                organizationMembers={organizationMembers}
-                selectedAssigneeId={selectedCardAssigneeId || undefined}
-                onSelectionChange={setSelectedCardAssigneeId}
-                isAiAllowedTask={selectedCard?.isAiAllowedTask || false}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <AssigneeSelector
+                  currentUserId={currentUserId || undefined}
+                  organizationMembers={organizationMembers}
+                  selectedAssigneeId={selectedCardAssigneeId || undefined}
+                  onSelectionChange={setSelectedCardAssigneeId}
+                  isAiAllowedTask={selectedCard?.isAiAllowedTask || false}
+                />
+              </div>
+
+              <div>
+                <SprintSelector
+                  sprints={sprints}
+                  selectedSprintId={selectedCard.sprintId || null}
+                  onSelectionChange={(sprintId) => setSelectedCard({ ...selectedCard, sprintId: sprintId || undefined })}
+                />
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">

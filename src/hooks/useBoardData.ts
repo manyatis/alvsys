@@ -25,9 +25,10 @@ interface NewCard {
   isAiAllowedTask: boolean;
   assigneeId: string | null;
   labelIds: string[];
+  sprintId: string | null;
 }
 
-export function useBoardData(projectId: string) {
+export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = true) {
   const { data: session, status } = useSession();
   const router = useRouter();
   
@@ -68,7 +69,10 @@ export function useBoardData(projectId: string) {
         }
 
         // Fetch cards
-        const cardsRes = await fetch(`/api/issues?projectId=${projectId}`);
+        const cardsUrl = showOnlyActiveSprint 
+          ? `/api/issues?projectId=${projectId}&activeSprint=true`
+          : `/api/issues?projectId=${projectId}`;
+        const cardsRes = await fetch(cardsUrl);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -92,7 +96,7 @@ export function useBoardData(projectId: string) {
     } else if (status === 'authenticated' && projectId) {
       loadData();
     }
-  }, [status, projectId, router, session]);
+  }, [status, projectId, router, session, showOnlyActiveSprint]);
 
   // Polling for real-time updates
   useEffect(() => {
@@ -100,7 +104,10 @@ export function useBoardData(projectId: string) {
       setIsRefreshing(true);
       try {
         // Fetch cards
-        const cardsRes = await fetch(`/api/issues?projectId=${projectId}`);
+        const cardsUrl = showOnlyActiveSprint 
+          ? `/api/issues?projectId=${projectId}&activeSprint=true`
+          : `/api/issues?projectId=${projectId}`;
+        const cardsRes = await fetch(cardsUrl);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
@@ -123,10 +130,13 @@ export function useBoardData(projectId: string) {
       const pollInterval = setInterval(refreshData, 20000);
       return () => clearInterval(pollInterval);
     }
-  }, [status, projectId]);
+  }, [status, projectId, showOnlyActiveSprint]);
 
   const refreshCards = async () => {
-    const cardsRes = await fetch(`/api/issues?projectId=${projectId}`);
+    const cardsUrl = showOnlyActiveSprint 
+      ? `/api/issues?projectId=${projectId}&activeSprint=true`
+      : `/api/issues?projectId=${projectId}`;
+    const cardsRes = await fetch(cardsUrl);
     if (cardsRes.ok) {
       const cardsData = await cardsRes.json();
       setCards(cardsData);
@@ -168,6 +178,7 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
           isAiAllowedTask: newCard.isAiAllowedTask,
           assigneeId: newCard.assigneeId || null,
           labelIds: newCard.labelIds,
+          sprintId: newCard.sprintId,
           projectId,
         }),
       });

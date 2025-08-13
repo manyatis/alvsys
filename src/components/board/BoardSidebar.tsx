@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { 
   Plus, 
   ChevronLeft, 
@@ -9,7 +10,8 @@ import {
   Settings, 
   Users, 
   Copy, 
-  Check 
+  Check,
+  Archive 
 } from 'lucide-react';
 import { FilterState, hasActiveFilters, copyOnboardLink } from '@/utils/board-utils';
 import FilterMenu from './FilterMenu';
@@ -61,6 +63,7 @@ export default function BoardSidebar({
   cards,
   usageStatus,
 }: BoardSidebarProps) {
+  const router = useRouter();
   return (
     <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-full z-10 ${
       sidebarCollapsed ? 'w-8 md:w-10' : 'w-32 sm:w-44 md:w-48'
@@ -97,6 +100,14 @@ export default function BoardSidebar({
                 Create Issue
               </button>
             </div>
+            
+            <button
+              onClick={() => router.push(`/projects/${projectId}/backlog`)}
+              className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <Archive className="h-3 w-3" />
+              Backlog
+            </button>
             
             <button
               onClick={() => copyOnboardLink(projectId, () => {
@@ -173,6 +184,14 @@ export default function BoardSidebar({
               title="Create Issue"
             >
               <Plus className="h-4 w-4" />
+            </button>
+            
+            <button
+              onClick={() => router.push(`/projects/${projectId}/backlog`)}
+              className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title="Backlog"
+            >
+              <Archive className="h-3 w-3" />
             </button>
             
             <button

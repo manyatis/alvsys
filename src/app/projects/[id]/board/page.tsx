@@ -14,12 +14,14 @@ import BoardSidebar from '@/components/board/BoardSidebar';
 import BoardHeader from '@/components/board/BoardHeader';
 import CreateIssueModal from '@/components/board/CreateIssueModal';
 import EditIssueModal from '@/components/board/EditIssueModal';
+import CreateSprintModal from '@/components/board/CreateSprintModal';
 import { useBoardData, useCardOperations, useComments } from '@/hooks/useBoardData';
 import { 
   getCardsByStatus, 
   FilterState
 } from '@/utils/board-utils';
 import { useUsageStatus } from '@/hooks/useUsageStatus';
+import { useSprints } from '@/hooks/useSprints';
 
 interface NewCard {
   title: string;
@@ -31,6 +33,7 @@ interface NewCard {
   isAiAllowedTask: boolean;
   assigneeId: string | null;
   labelIds: string[];
+  sprintId: string | null;
 }
 
 
@@ -94,6 +97,7 @@ const statusColumns: {
 
 export default function ProjectBoardPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
+  const [showOnlyActiveSprint, setShowOnlyActiveSprint] = useState(true);
   
   // Use custom hooks
   const {
@@ -106,7 +110,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     currentUserId,
     isRefreshing,
     refreshCards,
-  } = useBoardData(resolvedParams.id);
+  } = useBoardData(resolvedParams.id, showOnlyActiveSprint);
   
   const {
     createCard,
@@ -130,13 +134,26 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   // Usage status
   const { usageStatus } = useUsageStatus();
   
+  // Sprint management
+  const {
+    sprints,
+    activeSprint,
+    loading: loadingSprints,
+    createSprint,
+    closeSprint,
+    refreshSprints,
+  } = useSprints(resolvedParams.id);
+  
   // Local state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showSprintModal, setShowSprintModal] = useState(false);
+  const [sprintModalVisible, setSprintModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isCreatingSprint, setIsCreatingSprint] = useState(false);
   const [newCard, setNewCard] = useState<NewCard>({
     title: '',
     description: '',
@@ -147,6 +164,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     isAiAllowedTask: true,
     assigneeId: null,
     labelIds: [],
+    sprintId: null,
   });
   const [createAnother, setCreateAnother] = useState(false);
   const [selectedCardLabelIds, setSelectedCardLabelIds] = useState<string[]>([]);
@@ -209,6 +227,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         isAiAllowedTask: true,
         assigneeId: null,
         labelIds: [],
+        sprintId: null,
       });
     }, 300);
   };
@@ -248,6 +267,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           isAiAllowedTask: true,
           assigneeId: null,
           labelIds: newCard.labelIds, // Retain labels
+          sprintId: newCard.sprintId, // Retain sprint
         });
       } else {
         closeModal();
@@ -357,6 +377,45 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const handleLabelRemove = async (cardId: string, labelId: string) => {
     // TODO: Implementation for removing label from card
     console.log('Remove label:', { cardId, labelId });
+  };
+
+  const handleCreateSprint = async (name: string, startDate?: Date, endDate?: Date) => {
+    setIsCreatingSprint(true);
+    try {
+      const success = await createSprint(name, startDate, endDate);
+      if (success) {
+        setSprintModalVisible(false);
+        setTimeout(() => {
+          setShowSprintModal(false);
+        }, 300);
+        await refreshCards();
+      }
+    } catch (error) {
+      console.error('Error creating sprint:', error);
+    } finally {
+      setIsCreatingSprint(false);
+    }
+  };
+
+  const handleCloseAndStartNext = async () => {
+    if (!activeSprint) return;
+    
+    if (confirm('Are you sure you want to close the current sprint and start the next one? Any incomplete cards will be moved to the next sprint.')) {
+      const success = await closeSprint(activeSprint.id);
+      if (success) {
+        await refreshCards();
+      }
+    }
+  };
+
+  const openSprintModal = () => {
+    setShowSprintModal(true);
+    setTimeout(() => setSprintModalVisible(true), 10);
+  };
+
+  const closeSprintModal = () => {
+    setSprintModalVisible(false);
+    setTimeout(() => setShowSprintModal(false), 300);
   };
 
 
@@ -712,6 +771,11 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             project={project}
             currentProjectId={resolvedParams.id}
             isRefreshing={isRefreshing}
+            activeSprint={activeSprint}
+            onCloseAndStartNext={handleCloseAndStartNext}
+            onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
+            showOnlyActiveSprint={showOnlyActiveSprint}
+            onCreateSprint={openSprintModal}
           />
 
         {/* Board */}
@@ -771,6 +835,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         labels={labels}
         organizationMembers={organizationMembers}
         currentUserId={currentUserId}
+        sprints={sprints}
         statusColumns={statusColumns}
         onClose={closeModal}
         onCreate={handleCreateCard}
@@ -796,11 +861,21 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         labels={labels}
         organizationMembers={organizationMembers}
         currentUserId={currentUserId}
+        sprints={sprints}
         statusColumns={statusColumns}
         onClose={saveAndCloseModal}
         onUpdate={handleUpdateCard}
         onAddComment={handleAddComment}
         onCreateLabel={handleCreateLabel}
+      />
+
+      {/* Create Sprint Modal */}
+      <CreateSprintModal
+        showModal={showSprintModal}
+        modalVisible={sprintModalVisible}
+        onClose={closeSprintModal}
+        onCreate={handleCreateSprint}
+        isCreating={isCreatingSprint}
       />
 
       </div>

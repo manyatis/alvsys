@@ -89,6 +89,7 @@ export async function PUT(
       effortPoints,
       isAiAllowedTask,
       agentInstructions,
+      sprintId,
     } = body
 
     // Check if issue exists and user has access
@@ -124,6 +125,7 @@ export async function PUT(
     if (priority !== undefined) updateData.priority = priority
     if (effortPoints !== undefined) updateData.effortPoints = effortPoints
     if (isAiAllowedTask !== undefined) updateData.isAiAllowedTask = isAiAllowedTask
+    if (sprintId !== undefined) updateData.sprintId = sprintId
 
     // Handle agent instructions update
     if (agentInstructions !== undefined) {

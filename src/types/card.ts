@@ -73,6 +73,7 @@ export interface Card {
   projectId: string
   createdById: string
   assigneeId?: string
+  sprintId?: string
   title: string
   description?: string
   acceptanceCriteria?: string
@@ -99,6 +100,11 @@ export interface Card {
   project?: {
     id: string
     name: string
+  }
+  sprint?: {
+    id: string
+    name: string
+    isActive: boolean
   }
 }
 
@@ -132,6 +138,7 @@ export interface UpdateCardRequest {
   priority?: number
   effortPoints?: number
   assigneeId?: string
+  sprintId?: string
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
