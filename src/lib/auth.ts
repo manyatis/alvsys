@@ -4,7 +4,6 @@ import GitHubProvider from "next-auth/providers/github"
 import AppleProvider from "next-auth/providers/apple"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@/generated/prisma"
-import { SubscriptionService, SubscriptionTierType } from "@/services/subscription-service"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -41,20 +40,10 @@ export const authOptions: NextAuthOptions = {
       return session
     },
     async signIn({ user }) {
-      // Check if this is a new user and assign PROFESSIONAL subscription
+      // New users automatically get FREE tier via database defaults
+      // No need to explicitly assign - Prisma schema defaults handle this
       if (user?.id) {
-        try {
-          // Initialize subscription system if needed
-          await SubscriptionService.initializeDefaultTiers()
-          
-          // Assign PROFESSIONAL subscription to the user  
-          await SubscriptionService.assignSubscriptionToUser(user.id, SubscriptionTierType.PROFESSIONAL)
-          
-          console.log(`Assigned PROFESSIONAL subscription to user: ${user.id}`)
-        } catch (error) {
-          console.error('Error assigning subscription to user:', error)
-          // Don't block sign-in if subscription assignment fails
-        }
+        console.log(`User signed in: ${user.id} (will default to FREE tier)`)
       }
       return true
     },

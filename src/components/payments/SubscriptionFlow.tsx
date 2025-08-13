@@ -12,10 +12,11 @@ interface SubscriptionPlan {
   billingPeriod: string;
   features: string[];
   description: string;
+  isActive: boolean;
 }
 
 export default function SubscriptionFlow() {
-  const [, setPlans] = useState<SubscriptionPlan[]>([]);
+  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export default function SubscriptionFlow() {
       }
       
       const data = await response.json();
+      console.log('Fetched plans:', data.plans); // Debug log
       setPlans(data.plans || []);
     } catch (error) {
       console.error('Error fetching plans:', error);
@@ -42,13 +44,12 @@ export default function SubscriptionFlow() {
     }
   };
 
-  const handlePlanSelect = (plan: SubscriptionPlan | { planId: string }) => {
-    // Only allow indie plan for now
-    if (plan.planId !== 'indie') {
-      return; // Do nothing for disabled plans
+  const handlePlanSelect = (plan: SubscriptionPlan) => {
+    // Allow subscription to any active paid plan
+    if (plan.planId === 'free' || !plan.isActive) {
+      return; // Do nothing for free plan or inactive plans
     }
-    // Cast to SubscriptionPlan since we know it's indie
-    setSelectedPlan(plan as SubscriptionPlan);
+    setSelectedPlan(plan);
     setStep('payment');
     setError(null);
   };
@@ -152,7 +153,7 @@ export default function SubscriptionFlow() {
     );
   }
 
-  // Plans Selection Step - Show VibeHero pricing plans
+  // Plans Selection Step - Show VibeHero pricing plans from database
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -165,122 +166,72 @@ export default function SubscriptionFlow() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
-        {/* Free Tier */}
-        <div className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Free</h3>
-            <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-4xl font-bold text-slate-900 dark:text-white">$0</span>
-              <span className="text-slate-600 dark:text-slate-300">/month</span>
+        {plans.map((plan) => {
+          const isPopular = plan.planId === 'indie';
+          const isComingSoon = !plan.isActive;
+          
+          return (
+            <div
+              key={plan.id}
+              className={`relative p-8 rounded-2xl ${
+                isPopular
+                  ? 'bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
+              }`}
+            >
+              {isPopular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                    Most Popular
+                  </span>
+                </div>
+              )}
+              
+              <div className="mb-8">
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{plan.name}</h3>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span className="text-4xl font-bold text-slate-900 dark:text-white">
+                    {formatPrice(plan.priceCents)}
+                  </span>
+                  <span className="text-slate-600 dark:text-slate-300">/{plan.billingPeriod}</span>
+                </div>
+                <p className="text-slate-600 dark:text-slate-300">{plan.description}</p>
+              </div>
+              
+              <ul className="space-y-4 mb-8">
+                {plan.features.map((feature, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <span className="text-slate-600 dark:text-slate-300">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              
+              {plan.planId === 'free' ? (
+                <button 
+                  onClick={() => window.location.href = '/projects'}
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Get Started
+                </button>
+              ) : isComingSoon ? (
+                <button 
+                  className="w-full px-6 py-3 bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg cursor-not-allowed" 
+                  disabled
+                >
+                  Coming Soon
+                </button>
+              ) : (
+                <button 
+                  onClick={() => handlePlanSelect(plan)}
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Subscribe Now
+                </button>
+              )}
             </div>
-            <p className="text-slate-600 dark:text-slate-300">Perfect for getting started</p>
-          </div>
-          
-          <ul className="space-y-4 mb-8">
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">1 Project</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">20 AI tasks per day</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">Basic API access</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">Community support</span>
-            </li>
-          </ul>
-          
-          <button 
-            onClick={() => window.location.href = '/projects'}
-            className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-          >
-            Get Started
-          </button>
-        </div>
-        
-        {/* Indie Tier */}
-        <div className="relative p-8 rounded-2xl bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500">
-          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-            <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-              Most Popular
-            </span>
-          </div>
-          
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Indie</h3>
-            <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-4xl font-bold text-slate-900 dark:text-white">$10</span>
-              <span className="text-slate-600 dark:text-slate-300">/month</span>
-            </div>
-            <p className="text-slate-600 dark:text-slate-300">For independent developers</p>
-          </div>
-          
-          <ul className="space-y-4 mb-8">
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">1 Project</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited AI tasks</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">Priority API access</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">Email support</span>
-            </li>
-          </ul>
-          
-          <button 
-            onClick={() => handlePlanSelect({ planId: 'indie' })}
-            className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-          >
-            Subscribe Now
-          </button>
-        </div>
-        
-        {/* Professional Tier */}
-        <div className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-          <div className="mb-8">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Professional</h3>
-            <div className="flex items-baseline gap-1 mb-4">
-              <span className="text-4xl font-bold text-slate-900 dark:text-white">$99</span>
-              <span className="text-slate-600 dark:text-slate-300">/month</span>
-            </div>
-            <p className="text-slate-600 dark:text-slate-300">For teams and agencies</p>
-          </div>
-          
-          <ul className="space-y-4 mb-8">
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited projects</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited AI tasks</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">Advanced analytics</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <Check className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-              <span className="text-slate-600 dark:text-slate-300">Priority support</span>
-            </li>
-          </ul>
-          
-          <button className="w-full px-6 py-3 bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg cursor-not-allowed" disabled>
-            Coming Soon
-          </button>
-        </div>
+          );
+        })}
       </div>
     </div>
   );
