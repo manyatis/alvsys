@@ -290,25 +290,25 @@ export default function Home() {
                 From Chaos to Structure
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                Stop the endless cycle of prompting AI agents and losing track of work. 
-                VibeHero brings professional development practices to the AI era.
+                Here&apos;s how we use VibeHero to transform chaotic development into structured productivity:
               </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                       </svg>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Queue Work, Walk Away
+                      1. Brain Dump Your Ideas
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Line up a week&apos;s worth of structured tasks, enable AI agents, and let them work 
-                      asynchronously. <strong className="text-blue-600 dark:text-blue-400">Use your token limits efficiently</strong> - no more babysitting AI or losing context between sessions.
+                      <strong className="text-blue-600 dark:text-blue-400">Create issues as they come to mind</strong> - 
+                      during QA testing, while traversing your software, or whenever inspiration strikes. 
+                      Don&apos;t worry about perfection, just capture everything.
                     </p>
                   </div>
                 </div>
@@ -317,17 +317,18 @@ export default function Home() {
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Professional Development Process
+                      2. Deploy Your AI Agent
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Replace chaotic &quot;vibe coding&quot; with proper user stories, acceptance criteria, 
-                      priority management, and code review workflows that scale.
+                      <strong className="text-blue-600 dark:text-blue-400">Launch any CLI agent</strong> (Claude Desktop, 
+                      Cursor, Windsurf, etc), copy-paste the onboard instructions from your project, 
+                      and let it start working through your backlog.
                     </p>
                   </div>
                 </div>
@@ -336,17 +337,18 @@ export default function Home() {
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Full Traceability & Control
+                      3. Review As It Completes
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Every AI action is logged, every decision is traceable, and you maintain 
-                      complete control over your codebase with human review gates.
+                      <strong className="text-blue-600 dark:text-blue-400">Watch your work get done</strong> - 
+                      the AI agent moves cards through the workflow, and you review completed work 
+                      for correctness. Stay in control while working asynchronously.
                     </p>
                   </div>
                 </div>
