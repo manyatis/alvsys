@@ -90,56 +90,6 @@ const DEMO_COLUMNS: ColumnConfig[] = [
   },
 ];
 
-// Terminal commands for different phases
-const TERMINAL_COMMANDS = [
-  { // REFINEMENT -> READY
-    commands: [
-      '$ claude-agent pickup task',
-      'Found task: "Add user authentication"',
-      '$ analyzing requirements...',
-      'Planning OAuth implementation',
-      'Ready to start development ✓'
-    ]
-  },
-  { // READY -> IN_PROGRESS  
-    commands: [
-      '$ git checkout -b auth-feature',
-      'Switched to new branch "auth-feature"',
-      '$ npm install next-auth',
-      'Installing authentication packages...',
-      'Setting up OAuth providers...'
-    ]
-  },
-  { // IN_PROGRESS -> BLOCKED
-    commands: [
-      '$ implementing auth routes...',
-      'Creating login components...',
-      'ERROR: Missing Google OAuth credentials',
-      '$ updating status to BLOCKED',
-      'Waiting for API keys from team'
-    ]
-  },
-  { // BLOCKED -> READY_FOR_REVIEW
-    commands: [
-      '$ received OAuth credentials',
-      'Configuring authentication...',
-      '$ npm run test',
-      'All tests passing ✓',
-      '$ git push origin auth-feature',
-      'Ready for code review'
-    ]
-  },
-  { // READY_FOR_REVIEW -> COMPLETED
-    commands: [
-      '$ code review approved',
-      '$ git checkout main',
-      '$ git merge auth-feature',
-      'Deployment successful ✓',
-      'Task completed successfully'
-    ]
-  }
-];
-
 // Create modal typing content
 const CREATE_MODAL_CONTENT = [
   'Add user authentication',
@@ -151,112 +101,133 @@ const CREATE_MODAL_CONTENT = [
 
 interface AnimatedBoardDemoProps {
   autoPlay?: boolean;
-  speed?: number; // milliseconds between transitions
 }
 
 export default function AnimatedBoardDemo({ 
-  autoPlay = true, 
-  speed = 3000
+  autoPlay = true
 }: AnimatedBoardDemoProps) {
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [currentStatusIndex, setCurrentStatusIndex] = useState(0);
-  const [showTerminal, setShowTerminal] = useState(false);
-  const [terminalText, setTerminalText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [cards, setCards] = useState<Array<{
+    id: number;
+    title: string;
+    description: string;
+    priority: number;
+    storyPoints: number;
+    status: CardStatus;
+    position: number; // 0-4 for the 5 columns
+  }>>([]);
+  const [nextCardId, setNextCardId] = useState(1);
   const [createModalText, setCreateModalText] = useState('');
-  const [isTypingCreate, setIsTypingCreate] = useState(false);
+  const [terminalLines, setTerminalLines] = useState<string[]>([]);
 
-  // Typewriter effect for create modal
-  const typeCreateModal = (text: string) => {
-    setShowCreateModal(true);
-    setIsTypingCreate(true);
-    setCreateModalText('');
-    
-    let currentIndex = 0;
-    const typeInterval = setInterval(() => {
-      if (currentIndex <= text.length) {
-        setCreateModalText(text.slice(0, currentIndex));
-        currentIndex++;
-      } else {
-        clearInterval(typeInterval);
-        setIsTypingCreate(false);
-        
-        // Hide create modal after completion
-        setTimeout(() => {
-          setShowCreateModal(false);
-          setCreateModalText('');
-        }, 1000);
-      }
-    }, 80); // Typing speed for create modal
-  };
-
-  // Typewriter effect for terminal
-  const typeText = (commands: string[]) => {
-    setShowTerminal(true);
-    setIsTyping(true);
-    setTerminalText('');
-    
-    let fullText = '';
-    let currentIndex = 0;
-    
-    // Build full text with line breaks
-    commands.forEach((command, index) => {
-      if (index > 0) fullText += '\n';
-      fullText += command;
-    });
-    
-    const typeInterval = setInterval(() => {
-      if (currentIndex <= fullText.length) {
-        setTerminalText(fullText.slice(0, currentIndex));
-        currentIndex++;
-      } else {
-        clearInterval(typeInterval);
-        setIsTyping(false);
-        
-        // Hide terminal after completion
-        setTimeout(() => {
-          setShowTerminal(false);
-          setTerminalText('');
-        }, 1000);
-      }
-    }, 50); // Typing speed
-  };
-
-  // Single card animation - cycle through cards and their statuses
+  // Continuous create modal typing
   useEffect(() => {
     if (!autoPlay) return;
 
-    const interval = setInterval(() => {
-      // Show create modal at the beginning of each new card
-      if (currentStatusIndex === 0) {
-        const nextCardText = CREATE_MODAL_CONTENT[currentCardIndex % CREATE_MODAL_CONTENT.length];
-        typeCreateModal(nextCardText);
-      }
+    let currentTextIndex = 0;
+    let currentCharIndex = 0;
+    
+    const typeInterval = setInterval(() => {
+      const currentText = CREATE_MODAL_CONTENT[currentTextIndex];
       
-      // Show terminal work before status change (except for first status)
-      if (currentStatusIndex > 0 && currentStatusIndex < DEMO_COLUMNS.length && TERMINAL_COMMANDS[currentStatusIndex - 1]) {
-        typeText(TERMINAL_COMMANDS[currentStatusIndex - 1].commands);
+      if (currentCharIndex <= currentText.length) {
+        setCreateModalText(currentText.slice(0, currentCharIndex));
+        currentCharIndex++;
+      } else {
+        // Pause at end, then move to next text
+        setTimeout(() => {
+          currentTextIndex = (currentTextIndex + 1) % CREATE_MODAL_CONTENT.length;
+          currentCharIndex = 0;
+          setCreateModalText('');
+        }, 2000);
       }
-      
-      // Wait for animations to finish, then update status
-      setTimeout(() => {
-        setCurrentStatusIndex(prev => {
-          const nextStatusIndex = prev + 1;
-          
-          // If we've completed all statuses for current card, move to next card
-          if (nextStatusIndex >= DEMO_COLUMNS.length) {
-            setCurrentCardIndex(prevCard => (prevCard + 1) % DEMO_CARDS.length);
-            return 0; // Reset to first status
-          }
-          
-          return nextStatusIndex;
-        });
-      }, currentStatusIndex === 0 ? 2500 : (currentStatusIndex > 0 ? 3000 : 0)); // Different delays for create vs terminal
-    }, speed);
+    }, 100);
 
-    return () => clearInterval(interval);
-  }, [autoPlay, speed, currentStatusIndex, currentCardIndex]);
+    return () => clearInterval(typeInterval);
+  }, [autoPlay]);
+
+  // Continuous card creation and movement
+  useEffect(() => {
+    if (!autoPlay) return;
+
+    // Create new cards periodically
+    const createInterval = setInterval(() => {
+      const template = DEMO_CARDS[(nextCardId - 1) % DEMO_CARDS.length];
+      const newCard = {
+        id: nextCardId,
+        title: template.title,
+        description: template.description,
+        priority: template.priority,
+        storyPoints: template.storyPoints,
+        status: 'REFINEMENT' as CardStatus,
+        position: 0
+      };
+      
+      setCards(prev => [...prev, newCard]);
+      setNextCardId(prev => prev + 1);
+    }, 4000);
+
+    // Move cards through columns
+    const moveInterval = setInterval(() => {
+      setCards(prev => prev.map(card => {
+        const nextPosition = card.position + 1;
+        if (nextPosition >= 5) {
+          // Remove completed cards
+          return null;
+        }
+        return {
+          ...card,
+          position: nextPosition,
+          status: DEMO_COLUMNS[nextPosition].status
+        };
+      }).filter(Boolean) as typeof prev);
+    }, 2000);
+
+    return () => {
+      clearInterval(createInterval);
+      clearInterval(moveInterval);
+    };
+  }, [autoPlay, nextCardId]);
+
+  // Continuous terminal activity
+  useEffect(() => {
+    if (!autoPlay) return;
+
+    const terminalCommands = [
+      'claude-agent pickup task',
+      'Found task: "Add authentication"',
+      'git checkout -b auth-feature',
+      'npm install next-auth',
+      'Setting up OAuth providers...',
+      'Running tests... ✓',
+      'git push origin auth-feature',
+      'Task moved to review',
+      'Code review approved',
+      'git merge auth-feature',
+      'Deployment successful ✓',
+      'Task completed',
+      '---',
+      'claude-agent pickup task',
+      'Found task: "Create payment integration"',
+      'git checkout -b payments',
+      'npm install stripe',
+      'Setting up webhooks...',
+    ];
+
+    let commandIndex = 0;
+    const terminalInterval = setInterval(() => {
+      const command = terminalCommands[commandIndex % terminalCommands.length];
+      
+      setTerminalLines(prev => {
+        const newLines = [...prev, `$ ${command}`];
+        // Keep only last 8 lines
+        return newLines.slice(-8);
+      });
+      
+      commandIndex++;
+    }, 1500);
+
+    return () => clearInterval(terminalInterval);
+  }, [autoPlay]);
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -288,114 +259,108 @@ export default function AnimatedBoardDemo({
     }
   };
 
-  // Get current card and status
-  const currentCard = DEMO_CARDS[currentCardIndex];
-  const currentStatus = DEMO_COLUMNS[currentStatusIndex];
-
   return (
-    <div className="w-full max-w-sm mx-auto space-y-4">
-      {/* Create Modal Area - Top */}
-      <div className="min-h-[120px]">
-        {showCreateModal && (
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-slate-600">
-              <h3 className="text-sm font-medium text-slate-900 dark:text-white">Create New Issue</h3>
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              </div>
-            </div>
-            
-            {/* Form Content */}
-            <div className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
-                <div className="border border-slate-300 dark:border-slate-600 rounded p-2 bg-white dark:bg-slate-700 min-h-[20px]">
-                  <span className="text-sm text-slate-900 dark:text-white">
-                    {createModalText}
-                    {isTypingCreate && <span className="animate-pulse">|</span>}
-                  </span>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <button className="px-3 py-1 text-xs text-slate-600 dark:text-slate-400">Cancel</button>
-                <button className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
-              </div>
+    <div className="w-full max-w-2xl mx-auto space-y-4">
+      {/* Create Modal Area - Top - Always visible */}
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-slate-600">
+          <h3 className="text-sm font-medium text-slate-900 dark:text-white">Create New Issue</h3>
+          <div className="flex gap-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          </div>
+        </div>
+        
+        {/* Form Content */}
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
+            <div className="border border-slate-300 dark:border-slate-600 rounded p-2 bg-white dark:bg-slate-700 min-h-[20px]">
+              <span className="text-sm text-slate-900 dark:text-white">
+                {createModalText}
+                <span className="animate-pulse">|</span>
+              </span>
             </div>
           </div>
-        )}
+          <div className="flex justify-end gap-2 pt-2">
+            <button className="px-3 py-1 text-xs text-slate-600 dark:text-slate-400">Cancel</button>
+            <button className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+          </div>
+        </div>
       </div>
 
-      {/* Task Card Area - Middle */}
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 min-h-[160px]">
-        {/* Current Status Badge */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <currentStatus.icon className={`w-4 h-4 ${currentStatus.textColor}`} />
-            <span className={`text-xs font-medium ${currentStatus.textColor} px-2 py-1 rounded-full ${currentStatus.bgColor}`}>
-              {currentStatus.title}
-            </span>
-          </div>
-          <Zap className="w-4 h-4 text-blue-500" />
+      {/* Kanban Board Area - Middle - Cards moving left to right */}
+      <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 min-h-[200px]">
+        {/* Column Headers */}
+        <div className="flex gap-2 mb-4">
+          {DEMO_COLUMNS.map((column) => (
+            <div key={column.status} className="flex-1 text-center">
+              <div className="flex items-center justify-center gap-1 mb-2">
+                <column.icon className={`w-3 h-3 ${column.textColor}`} />
+                <span className={`text-xs font-medium ${column.textColor}`}>
+                  {column.title}
+                </span>
+              </div>
+            </div>
+          ))}
         </div>
-
-        {/* Card Content */}
-        <div className="transition-all duration-300">
-          <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-sm">
-            {currentCard.title}
-          </h3>
-          <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
-            {currentCard.description}
-          </p>
-          
-          <div className="flex items-center justify-between">
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(currentCard.priority)}`}>
-              {getPriorityText(currentCard.priority)}
-            </span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              {currentCard.storyPoints} pts
-            </span>
-          </div>
-        </div>
-
-        {/* Progress Dots */}
-        <div className="flex justify-center mt-4 gap-1">
-          {DEMO_COLUMNS.map((column, index) => (
-            <div
-              key={column.status}
-              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-                currentStatusIndex === index
-                  ? column.color
-                  : 'bg-slate-300 dark:bg-slate-600'
-              }`}
-            />
+        
+        {/* Cards Container */}
+        <div className="relative flex gap-2 min-h-[120px]">
+          {DEMO_COLUMNS.map((column, columnIndex) => (
+            <div key={column.status} className={`flex-1 ${column.bgColor} rounded-lg p-2 min-h-[120px]`}>
+              {cards.filter(card => card.position === columnIndex).map(card => (
+                <div
+                  key={card.id}
+                  className="bg-white dark:bg-slate-700 rounded p-2 shadow-sm mb-2 transition-all duration-500 transform hover:scale-105"
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className={`text-xs px-1 py-0.5 rounded font-medium ${getPriorityColor(card.priority)}`}>
+                      {getPriorityText(card.priority)}
+                    </span>
+                    <Zap className="w-3 h-3 text-blue-500" />
+                  </div>
+                  <h4 className="text-xs font-medium text-slate-900 dark:text-white mb-1 truncate">
+                    {card.title}
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                    {card.description}
+                  </p>
+                  <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      {card.storyPoints} pts
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Terminal Area - Bottom */}
-      <div className="min-h-[140px]">
-        {showTerminal && (
-          <div className="bg-black rounded-lg p-4 font-mono text-xs overflow-hidden">
-            {/* Terminal Header */}
-            <div className="flex items-center gap-2 mb-3 border-b border-gray-600 pb-2">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              </div>
-              <span className="text-gray-300 text-xs">AI Agent Terminal</span>
-            </div>
-            
-            {/* Terminal Content */}
-            <div className="text-green-400 whitespace-pre-wrap leading-relaxed max-h-20 overflow-hidden">
-              {terminalText}
-              {isTyping && <span className="animate-pulse">▊</span>}
-            </div>
+      {/* Terminal Area - Bottom - Always active */}
+      <div className="bg-black rounded-lg p-4 font-mono text-xs min-h-[140px]">
+        {/* Terminal Header */}
+        <div className="flex items-center gap-2 mb-3 border-b border-gray-600 pb-2">
+          <div className="flex gap-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           </div>
-        )}
+          <span className="text-gray-300 text-xs">AI Agent Terminal</span>
+        </div>
+        
+        {/* Terminal Content */}
+        <div className="text-green-400 whitespace-pre leading-relaxed">
+          {terminalLines.map((line, index) => (
+            <div key={index} className="opacity-90">
+              {line}
+            </div>
+          ))}
+          <span className="animate-pulse">▊</span>
+        </div>
       </div>
     </div>
   );
