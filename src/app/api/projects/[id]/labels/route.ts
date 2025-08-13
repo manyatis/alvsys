@@ -140,9 +140,9 @@ export async function POST(
     // Check if label already exists in this project
     const existingLabel = await prisma.label.findUnique({
       where: {
-        name_projectId: {
-          name: name.trim(),
-          projectId: projectId
+        projectId_name: {
+          projectId: projectId,
+          name: name.trim()
         }
       }
     });

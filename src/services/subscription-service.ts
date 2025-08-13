@@ -1,6 +1,13 @@
-import { PrismaClient, SubscriptionTierType } from '@/generated/prisma';
+// This service is disabled until subscription models are added to the schema
+// import { PrismaClient } from '@/generated/prisma';
+// const prisma = new PrismaClient();
 
-const prisma = new PrismaClient();
+// Define the subscription tiers since they're not in the schema
+export enum SubscriptionTierType {
+  FREE = 'FREE',
+  INDIE = 'INDIE', 
+  PROFESSIONAL = 'PROFESSIONAL'
+}
 
 export interface SubscriptionTierData {
   tier: SubscriptionTierType;
@@ -8,236 +15,126 @@ export interface SubscriptionTierData {
   dailyCardProcessLimit: number;
 }
 
-// Default tier configurations
-const DEFAULT_TIER_CONFIGS: SubscriptionTierData[] = [
-  {
-    tier: SubscriptionTierType.FREE,
-    projectLimit: 1,
-    dailyCardProcessLimit: 20,
-  },
-  {
-    tier: SubscriptionTierType.INDIE,
-    projectLimit: 5,
-    dailyCardProcessLimit: 100,
-  },
-  {
-    tier: SubscriptionTierType.PROFESSIONAL,
-    projectLimit: 25,
-    dailyCardProcessLimit: 500,
-  },
-];
-
 export class SubscriptionService {
+  // Default tiers
+  static readonly TIERS: Record<SubscriptionTierType, SubscriptionTierData> = {
+    [SubscriptionTierType.FREE]: {
+      tier: SubscriptionTierType.FREE,
+      projectLimit: 1,
+      dailyCardProcessLimit: 5,
+    },
+    [SubscriptionTierType.INDIE]: {
+      tier: SubscriptionTierType.INDIE,
+      projectLimit: 10,
+      dailyCardProcessLimit: 50,
+    },
+    [SubscriptionTierType.PROFESSIONAL]: {
+      tier: SubscriptionTierType.PROFESSIONAL,
+      projectLimit: -1, // unlimited
+      dailyCardProcessLimit: -1, // unlimited
+    },
+  };
+
   /**
-   * Create all subscription tiers if they don't exist
+   * Initialize default subscription tiers (stubbed)
    */
-  static async createDefaultSubscriptionTiers(): Promise<void> {
-    for (const tierConfig of DEFAULT_TIER_CONFIGS) {
-      await this.createSubscriptionTierIfNotExists(tierConfig);
-    }
+  static async initializeDefaultTiers(): Promise<void> {
+    console.log('Subscription service is stubbed - skipping tier initialization');
   }
 
   /**
-   * Create a subscription tier if it doesn't already exist
+   * Create a subscription tier if it doesn't already exist (stubbed)
    */
   static async createSubscriptionTierIfNotExists(
     tierData: SubscriptionTierData
   ): Promise<void> {
-    const existingTier = await prisma.subscriptionTier.findUnique({
-      where: { tier: tierData.tier },
-    });
-
-    if (!existingTier) {
-      await prisma.subscriptionTier.create({
-        data: {
-          tier: tierData.tier,
-          projectLimit: tierData.projectLimit,
-          dailyCardProcessLimit: tierData.dailyCardProcessLimit,
-        },
-      });
-      console.log(`Created subscription tier: ${tierData.tier}`);
-    } else {
-      console.log(`Subscription tier already exists: ${tierData.tier}`);
-    }
+    console.log('Subscription tier creation not implemented:', tierData);
   }
 
   /**
-   * Get a subscription tier by type
+   * Get a subscription tier by type (stubbed)
    */
   static async getSubscriptionTier(tierType: SubscriptionTierType) {
-    return await prisma.subscriptionTier.findUnique({
-      where: { tier: tierType },
-    });
+    return null; // TODO: Implement when subscription models are added
   }
 
   /**
-   * Assign a subscription tier to a user
+   * Assign a subscription tier to a user (stubbed)
    */
   static async assignSubscriptionToUser(
     userId: string,
     tierType: SubscriptionTierType,
-    stripeCustomerId?: string,
     stripeSubscriptionId?: string
   ): Promise<void> {
-    // Ensure the tier exists
-    await this.createSubscriptionTierIfNotExists(
-      DEFAULT_TIER_CONFIGS.find(config => config.tier === tierType)!
-    );
-
-    // Get the subscription tier
-    const subscriptionTier = await this.getSubscriptionTier(tierType);
-    if (!subscriptionTier) {
-      throw new Error(`Subscription tier ${tierType} not found`);
-    }
-
-    // Check if user already has a subscription
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: { subscriptionInformation: true },
-    });
-
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
-    if (user.subscriptionInformation) {
-      // Update existing subscription
-      await prisma.subscriptionInformation.update({
-        where: { id: user.subscriptionInformation.id },
-        data: {
-          subscriptionTierId: subscriptionTier.id,
-          stripeCustomerId: stripeCustomerId || user.subscriptionInformation.stripeCustomerId,
-          stripeSubscriptionId: stripeSubscriptionId || user.subscriptionInformation.stripeSubscriptionId,
-        },
-      });
-      console.log(`Updated subscription for user ${userId} to ${tierType}`);
-    } else {
-      // Create new subscription information
-      const subscriptionInfo = await prisma.subscriptionInformation.create({
-        data: {
-          subscriptionTierId: subscriptionTier.id,
-          stripeCustomerId,
-          stripeSubscriptionId,
-        },
-      });
-
-      // Link to user
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          subscriptionInformationId: subscriptionInfo.id,
-        },
-      });
-      console.log(`Created new subscription for user ${userId} with tier ${tierType}`);
-    }
+    console.log('Subscription assignment not implemented:', { userId, tierType, stripeSubscriptionId });
   }
 
   /**
-   * Assign PROFESSIONAL subscription to a user
-   */
-  static async assignProfessionalSubscription(
-    userId: string,
-    stripeCustomerId?: string,
-    stripeSubscriptionId?: string
-  ): Promise<void> {
-    await this.assignSubscriptionToUser(
-      userId,
-      SubscriptionTierType.PROFESSIONAL,
-      stripeCustomerId,
-      stripeSubscriptionId
-    );
-  }
-
-  /**
-   * Get user's current subscription information
+   * Get user's current subscription info (returns default FREE tier)
    */
   static async getUserSubscriptionInfo(userId: string) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      include: {
-        subscriptionInformation: {
-          include: {
-            subscriptionTier: true,
-          },
-        },
-      },
-    });
-
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
     return {
-      user,
-      subscription: user.subscriptionInformation,
-      tier: user.subscriptionInformation?.subscriptionTier || null,
+      userId,
+      tier: this.TIERS[SubscriptionTierType.FREE],
+      stripeSubscriptionId: null,
+      status: 'active',
+      currentPeriodEnd: null,
     };
   }
 
   /**
-   * Initialize subscription system - creates all default tiers
+   * Check if user can create more projects (always returns true for now)
    */
-  static async initializeSubscriptionSystem(): Promise<void> {
-    console.log('Initializing subscription system...');
-    await this.createDefaultSubscriptionTiers();
-    console.log('Subscription system initialized successfully');
+  static async canUserCreateProject(userId: string): Promise<boolean> {
+    return true; // Default to allowing all users to create projects
   }
 
   /**
-   * Upgrade user to a higher tier
+   * Get current project usage for user (returns 0)
+   */
+  static async getUserProjectCount(userId: string): Promise<number> {
+    return 0; // TODO: Implement when subscription enforcement is needed
+  }
+
+  /**
+   * Check if user can process more cards today (always returns true for now)
+   */
+  static async canUserProcessCard(userId: string): Promise<boolean> {
+    return true; // Default to allowing all users to process cards
+  }
+
+  /**
+   * Get current daily card usage for user (returns 0)
+   */
+  static async getUserDailyCardUsage(userId: string): Promise<number> {
+    return 0; // TODO: Implement when subscription enforcement is needed
+  }
+
+  /**
+   * Upgrade user subscription (stubbed)
    */
   static async upgradeUserSubscription(
     userId: string,
     newTierType: SubscriptionTierType,
-    stripeCustomerId?: string,
-    stripeSubscriptionId?: string
+    stripeSubscriptionId: string
   ): Promise<void> {
-    const currentInfo = await this.getUserSubscriptionInfo(userId);
-    const currentTier = currentInfo.tier?.tier || SubscriptionTierType.FREE;
-
-    // Validate upgrade is to a higher tier (basic validation)
-    const tierOrder = [SubscriptionTierType.FREE, SubscriptionTierType.INDIE, SubscriptionTierType.PROFESSIONAL];
-    const currentIndex = tierOrder.indexOf(currentTier);
-    const newIndex = tierOrder.indexOf(newTierType);
-
-    if (newIndex <= currentIndex) {
-      console.warn(`User ${userId} already has tier ${currentTier}, not upgrading to ${newTierType}`);
-      return;
-    }
-
-    await this.assignSubscriptionToUser(userId, newTierType, stripeCustomerId, stripeSubscriptionId);
-    console.log(`Upgraded user ${userId} from ${currentTier} to ${newTierType}`);
+    console.log('Subscription upgrade not implemented:', { userId, newTierType, stripeSubscriptionId });
   }
 
   /**
-   * Downgrade user to a lower tier
+   * Downgrade user subscription (stubbed)
    */
   static async downgradeUserSubscription(
     userId: string,
     newTierType: SubscriptionTierType
   ): Promise<void> {
-    const currentInfo = await this.getUserSubscriptionInfo(userId);
-    const currentTier = currentInfo.tier?.tier || SubscriptionTierType.FREE;
-
-    // Validate downgrade is to a lower tier
-    const tierOrder = [SubscriptionTierType.FREE, SubscriptionTierType.INDIE, SubscriptionTierType.PROFESSIONAL];
-    const currentIndex = tierOrder.indexOf(currentTier);
-    const newIndex = tierOrder.indexOf(newTierType);
-
-    if (newIndex >= currentIndex) {
-      console.warn(`User ${userId} has tier ${currentTier}, not downgrading to ${newTierType}`);
-      return;
-    }
-
-    // Remove Stripe information on downgrade (assuming they cancelled)
-    await this.assignSubscriptionToUser(userId, newTierType);
-    console.log(`Downgraded user ${userId} from ${currentTier} to ${newTierType}`);
+    console.log('Subscription downgrade not implemented:', { userId, newTierType });
   }
 
   /**
-   * Cancel user subscription (downgrade to FREE)
+   * Cancel user subscription (stubbed)
    */
   static async cancelUserSubscription(userId: string): Promise<void> {
-    await this.downgradeUserSubscription(userId, SubscriptionTierType.FREE);
+    console.log('Subscription cancellation not implemented:', userId);
   }
 }

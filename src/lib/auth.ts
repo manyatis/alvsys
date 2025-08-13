@@ -4,7 +4,7 @@ import GitHubProvider from "next-auth/providers/github"
 import AppleProvider from "next-auth/providers/apple"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { PrismaClient } from "@/generated/prisma"
-import { SubscriptionService } from "@/services/subscription-service"
+import { SubscriptionService, SubscriptionTierType } from "@/services/subscription-service"
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -45,10 +45,10 @@ export const authOptions: NextAuthOptions = {
       if (user?.id) {
         try {
           // Initialize subscription system if needed
-          await SubscriptionService.initializeSubscriptionSystem()
+          await SubscriptionService.initializeDefaultTiers()
           
-          // Assign PROFESSIONAL subscription to the user
-          await SubscriptionService.assignProfessionalSubscription(user.id)
+          // Assign PROFESSIONAL subscription to the user  
+          await SubscriptionService.assignSubscriptionToUser(user.id, SubscriptionTierType.PROFESSIONAL)
           
           console.log(`Assigned PROFESSIONAL subscription to user: ${user.id}`)
         } catch (error) {

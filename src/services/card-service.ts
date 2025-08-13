@@ -40,13 +40,6 @@ export class CardService {
     const cards = await prisma.card.findMany({
       where: whereClause,
       include: {
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
         assignee: {
           select: {
             id: true,
@@ -54,7 +47,7 @@ export class CardService {
             email: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -71,7 +64,7 @@ export class CardService {
     const card = await prisma.card.findUnique({
       where: { id: cardId },
       include: {
-        createdBy: {
+        assignee: {
           select: {
             id: true,
             name: true,
@@ -84,7 +77,7 @@ export class CardService {
             name: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
       },
     })
 
@@ -116,28 +109,21 @@ export class CardService {
         description: request.description,
         acceptanceCriteria: request.acceptanceCriteria,
         projectId: request.projectId,
-        createdById: userId,
+        // assigneeId is optional - not setting on creation
         isAiAllowedTask: request.isAiAllowedTask ?? true,
-        agentDeveloperInstructions: {
+        agentInstructions: {
           create: request.agentInstructions?.map((instruction) => ({
-            type: instruction.type,
+            instructionType: instruction.instructionType,
             branchName: instruction.branchName,
-            createNewBranch: instruction.createNewBranch || false,
+            createBranch: instruction.createBranch || false,
             webResearchPrompt: instruction.webResearchPrompt,
             codeResearchPrompt: instruction.codeResearchPrompt,
-            architecturePrompt: instruction.architecturePrompt,
-            instructions: instruction.instructions,
+            architectureGuidelines: instruction.architectureGuidelines,
+            generalInstructions: instruction.generalInstructions,
           })) || [],
         },
       },
       include: {
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
         assignee: {
           select: {
             id: true,
@@ -145,7 +131,7 @@ export class CardService {
             email: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
       },
     })
 
@@ -191,19 +177,19 @@ export class CardService {
     // Handle agent instructions update
     if (request.agentInstructions !== undefined) {
       // Delete existing instructions and create new ones
-      await prisma.agentDeveloperInstruction.deleteMany({
+      await prisma.agentDeveloperInstructions.deleteMany({
         where: { cardId },
       })
 
-      updateData.agentDeveloperInstructions = {
+      updateData.agentInstructions = {
         create: request.agentInstructions.map((instruction) => ({
-          type: instruction.type,
+          instructionType: instruction.instructionType,
           branchName: instruction.branchName,
-          createNewBranch: instruction.createNewBranch || false,
+          createBranch: instruction.createBranch || false,
           webResearchPrompt: instruction.webResearchPrompt,
           codeResearchPrompt: instruction.codeResearchPrompt,
-          architecturePrompt: instruction.architecturePrompt,
-          instructions: instruction.instructions,
+          architectureGuidelines: instruction.architectureGuidelines,
+          generalInstructions: instruction.generalInstructions,
         })),
       }
     }
@@ -212,7 +198,7 @@ export class CardService {
       where: { id: cardId },
       data: updateData,
       include: {
-        createdBy: {
+        assignee: {
           select: {
             id: true,
             name: true,
@@ -225,7 +211,7 @@ export class CardService {
             name: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
       },
     })
 
@@ -272,7 +258,7 @@ export class CardService {
       where: { id: cardId },
       data: { status },
       include: {
-        createdBy: {
+        assignee: {
           select: {
             id: true,
             name: true,
@@ -285,7 +271,7 @@ export class CardService {
             name: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
       },
     })
 
@@ -310,7 +296,7 @@ export class CardService {
     const cards = await prisma.card.findMany({
       where: whereClause,
       include: {
-        createdBy: {
+        assignee: {
           select: {
             id: true,
             name: true,
@@ -323,7 +309,7 @@ export class CardService {
             name: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
       },
       orderBy: {
         createdAt: 'asc',

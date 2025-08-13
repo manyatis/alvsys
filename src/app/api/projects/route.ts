@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        projects: {
+        projectAccess: {
           include: {
             project: {
               include: {
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     // Combine owned projects and projects user is a member of
     const allProjects = [
       ...userWithProjects.ownedProjects,
-      ...userWithProjects.projects.map(p => p.project)
+      ...userWithProjects.projectAccess.map(p => p.project)
     ];
 
     // Remove duplicates
@@ -83,14 +83,14 @@ export async function POST(request: NextRequest) {
     // User is already validated above
 
     // Check usage limits before creating project
-    const canCreateProject = await UsageService.canCreateProject(user.id);
-    if (!canCreateProject) {
-      const usageStatus = await UsageService.getUserUsageStatus(user.id);
+    const hasReachedProjectLimit = await UsageService.hasReachedProjectLimit(user.id);
+    if (hasReachedProjectLimit) {
+      const usageStats = await UsageService.getUserUsageStats(user.id);
       return NextResponse.json({ 
         error: 'Project limit reached', 
         usageLimit: {
-          used: usageStatus.projectsUsed,
-          limit: usageStatus.projectsLimit,
+          used: usageStats.totalProjectCount,
+          limit: 1, // Default limit for now since service is stubbed
         }
       }, { status: 429 });
     }

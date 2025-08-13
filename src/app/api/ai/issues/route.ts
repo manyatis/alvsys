@@ -29,14 +29,16 @@ export async function POST(request: NextRequest) {
         const readyCards = await CardService.getAiReadyCards(projectId)
         
         // Log AI activity
-        await prisma.aIWorkLog.create({
-          data: {
-            activity: 'get_ready_cards',
-            endpoint: '/api/ai/issues',
-            payload: { projectId },
-            response: { count: readyCards.length },
-          },
-        })
+        // TODO: Fix AIWorkLog usage - requires cardId and userId
+        // await prisma.aIWorkLog.create({
+        //   data: {
+        //     cardId: '', // Need a specific card ID
+        //     userId: user.id,
+        //     action: 'get_ready_cards',
+        //     details: { projectId, count: readyCards.length },
+        //     apiEndpoint: '/api/ai/issues'
+        //   },
+        // })
 
         return NextResponse.json({
           cards: readyCards.map(card => ({
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest) {
             acceptanceCriteria: card.acceptanceCriteria,
             status: card.status,
             projectId: card.projectId,
-            agentInstructions: card.agentDeveloperInstructions,
+            agentInstructions: card.agentInstructions,
             project: card.project,
           })),
         })
@@ -78,6 +80,7 @@ export async function POST(request: NextRequest) {
             data: {
               cardId,
               content: comment,
+              authorId: user.id,
               isAiComment: true,
             },
           })
@@ -91,10 +94,11 @@ export async function POST(request: NextRequest) {
         // Log AI activity
         await prisma.aIWorkLog.create({
           data: {
-            activity: 'update_card_status',
-            endpoint: '/api/ai/issues',
-            payload: { cardId, status, comment },
-            response: { cardId: updatedCard.id, newStatus: updatedCard.status },
+            cardId: cardId,
+            userId: user.id,
+            action: 'update_card_status',
+            details: { status, comment, previousStatus: cardToUpdate.status },
+            apiEndpoint: '/api/ai/issues'
           },
         })
 
@@ -113,8 +117,8 @@ export async function POST(request: NextRequest) {
             ],
             include: {
               project: true,
-              agentDeveloperInstructions: true,
-              createdBy: true,
+              agentInstructions: true,
+              assignee: true,
             },
           })
 
@@ -122,10 +126,11 @@ export async function POST(request: NextRequest) {
           if (autoNextCard) {
             await prisma.aIWorkLog.create({
               data: {
-                activity: 'auto_fetch_next_ready_card',
-                endpoint: '/api/ai/issues',
-                payload: { afterCardId: cardId, projectId },
-                response: { nextCardId: autoNextCard.id, nextCardTitle: autoNextCard.title },
+                cardId: autoNextCard.id,
+                userId: user.id,
+                action: 'auto_fetch_next_ready_card',
+                details: { afterCardId: cardId, projectId, nextCardTitle: autoNextCard.title },
+                apiEndpoint: '/api/ai/issues'
               },
             })
           }
@@ -150,7 +155,7 @@ export async function POST(request: NextRequest) {
             isAiAllowedTask: boolean;
             agentInstructions: unknown[];
             project: unknown;
-            createdBy: unknown;
+            assignee: unknown;
             createdAt: Date;
             updatedAt: Date;
           };
@@ -174,9 +179,9 @@ export async function POST(request: NextRequest) {
             priority: autoNextCard.priority,
             projectId: autoNextCard.projectId,
             isAiAllowedTask: autoNextCard.isAiAllowedTask,
-            agentInstructions: autoNextCard.agentDeveloperInstructions,
+            agentInstructions: autoNextCard.agentInstructions,
             project: autoNextCard.project,
-            createdBy: autoNextCard.createdBy,
+            assignee: autoNextCard.assignee,
             createdAt: autoNextCard.createdAt,
             updatedAt: autoNextCard.updatedAt,
           }
@@ -200,8 +205,8 @@ export async function POST(request: NextRequest) {
           where: { id: cardId, projectId },
           include: {
             project: true,
-            agentDeveloperInstructions: true,
-            createdBy: true,
+            agentInstructions: true,
+            assignee: true,
           }
         })
         if (!card) {
@@ -211,10 +216,11 @@ export async function POST(request: NextRequest) {
         // Log AI activity
         await prisma.aIWorkLog.create({
           data: {
-            activity: 'get_card_details',
-            endpoint: '/api/ai/issues',
-            payload: { cardId },
-            response: { cardId: card.id, title: card.title },
+            cardId: cardId,
+            userId: user.id,
+            action: 'get_card_details',
+            details: { title: card.title },
+            apiEndpoint: '/api/ai/issues'
           },
         })
 
@@ -227,9 +233,9 @@ export async function POST(request: NextRequest) {
             status: card.status,
             projectId: card.projectId,
             isAiAllowedTask: card.isAiAllowedTask,
-            agentInstructions: card.agentDeveloperInstructions,
+            agentInstructions: card.agentInstructions,
             project: card.project,
-            createdBy: card.createdBy,
+            assignee: card.assignee,
             createdAt: card.createdAt,
             updatedAt: card.updatedAt,
           },
@@ -256,8 +262,8 @@ export async function POST(request: NextRequest) {
           ],
           include: {
             project: true,
-            agentDeveloperInstructions: true,
-            createdBy: true,
+            agentInstructions: true,
+            assignee: true,
           },
         })
 
@@ -272,10 +278,11 @@ export async function POST(request: NextRequest) {
         // Log AI activity
         await prisma.aIWorkLog.create({
           data: {
-            activity: 'get_next_ready_card',
-            endpoint: '/api/ai/issues',
-            payload: { projectId },
-            response: { cardId: nextCard.id, title: nextCard.title },
+            cardId: nextCard.id,
+            userId: user.id,
+            action: 'get_next_ready_card',
+            details: { projectId, title: nextCard.title },
+            apiEndpoint: '/api/ai/issues'
           },
         })
 
@@ -289,9 +296,9 @@ export async function POST(request: NextRequest) {
             priority: nextCard.priority,
             projectId: nextCard.projectId,
             isAiAllowedTask: nextCard.isAiAllowedTask,
-            agentInstructions: nextCard.agentDeveloperInstructions,
+            agentInstructions: nextCard.agentInstructions,
             project: nextCard.project,
-            createdBy: nextCard.createdBy,
+            assignee: nextCard.assignee,
             createdAt: nextCard.createdAt,
             updatedAt: nextCard.updatedAt,
           },
@@ -307,14 +314,16 @@ export async function POST(request: NextRequest) {
     console.error('Error in AI issues endpoint:', error)
     
     // Log AI error
-    await prisma.aIWorkLog.create({
-      data: {
-        activity: 'error',
-        endpoint: '/api/ai/issues',
-        payload: await request.json().catch(() => ({})),
-        response: { error: error instanceof Error ? error.message : 'Unknown error' },
-      },
-    })
+    // TODO: Fix AIWorkLog usage - requires cardId
+    // await prisma.aIWorkLog.create({
+    //   data: {
+    //     cardId: '', // Need a specific card ID
+    //     userId: '', // Need user ID from auth
+    //     action: 'error',
+    //     details: { error: error instanceof Error ? error.message : 'Unknown error' },
+    //     apiEndpoint: '/api/ai/issues'
+    //   },
+    // })
 
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -342,14 +351,16 @@ export async function GET(request: NextRequest) {
     const readyCards = await CardService.getAiReadyCards(projectId)
     
     // Log AI activity
-    await prisma.aIWorkLog.create({
-      data: {
-        activity: 'get_ready_cards_via_get',
-        endpoint: '/api/ai/issues',
-        payload: { projectId },
-        response: { count: readyCards.length },
-      },
-    })
+    // TODO: Fix AIWorkLog usage - requires cardId and userId
+    // await prisma.aIWorkLog.create({
+    //   data: {
+    //     cardId: '', // Need a specific card ID
+    //     userId: user.id,
+    //     action: 'get_ready_cards_via_get',
+    //     details: { projectId, count: readyCards.length },
+    //     apiEndpoint: '/api/ai/issues'
+    //   },
+    // })
 
     return NextResponse.json({
       cards: readyCards.map(card => ({
@@ -359,9 +370,9 @@ export async function GET(request: NextRequest) {
         acceptanceCriteria: card.acceptanceCriteria,
         status: card.status,
         projectId: card.projectId,
-        agentInstructions: card.agentDeveloperInstructions,
+        agentInstructions: card.agentInstructions,
         project: card.project,
-        branchName: card.agentDeveloperInstructions.find(i => i.type === 'GIT')?.branchName || 
+        branchName: card.agentInstructions.find(i => i.instructionType === 'GIT')?.branchName || 
                    CardService.generateBranchName(card.title, card.id),
       })),
     })

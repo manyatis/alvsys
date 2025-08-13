@@ -37,16 +37,16 @@ export async function GET(
         acceptanceCriteria: true,
         priority: true,
         status: true,
-        agentDeveloperInstructions: {
+        agentInstructions: {
           select: {
             id: true,
-            type: true,
+            instructionType: true,
             branchName: true,
-            createNewBranch: true,
+            createBranch: true,
             webResearchPrompt: true,
             codeResearchPrompt: true,
-            architecturePrompt: true,
-            instructions: true
+            architectureGuidelines: true,
+            generalInstructions: true
           }
         }
       },
@@ -56,19 +56,8 @@ export async function GET(
       ]
     });
 
-    // Log the activity
-    await prisma.aIWorkLog.create({
-      data: {
-        date: new Date(),
-        activity: 'AI_FETCH_ALL_TASKS',
-        endpoint: 'GET /api/{project}/ai/onboard/fetchAll',
-        payload: {
-          projectId,
-          cardsCount: cards.length,
-          userAgent: request.headers.get('user-agent') || 'unknown'
-        }
-      }
-    });
+    // Note: AIWorkLog requires cardId and userId, which are not available in this context
+    // Logging would need to be done when fetching specific cards
 
     const response = {
       project: {

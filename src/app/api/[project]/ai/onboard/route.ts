@@ -21,17 +21,8 @@ export async function GET(
       );
     }
 
-    await prisma.aIWorkLog.create({
-      data: {
-        date: new Date(),
-        activity: 'AI_AGENT_ONBOARDING',
-        endpoint: 'GET /api/{project}/ai/onboard',
-        payload: {
-          projectId,
-          userAgent: request.headers.get('user-agent') || 'unknown'
-        }
-      }
-    });
+    // Note: AIWorkLog requires cardId and userId, which are not available in this context
+    // Logging would need to be done when fetching specific cards
 
     const onboardingInstructions = `!! AUTONOMOUS AI AGENT MODE - CONTINUOUS EXECUTION !!
 PROJECT: ${project.id} | STATUS: ACTIVE | MODE: INFINITE_LOOP
@@ -55,10 +46,10 @@ STEP 2: FETCH NEXT TASK
 - Take the first card from the "cards" array (highest priority READY task)
 - If no tasks available: go back to STEP 1 (wait and retry)
 - Extract TASK_ID from the returned card for status updates
-
-STEP 3: EXECUTE TASK
 - Update status to IN_PROGRESS with comment using:
   curl -X PUT https://vibehero.io/api/ai/issues/\${TASK_ID} -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"status": "IN_PROGRESS", "comment": "Starting work on task"}'
+
+STEP 3: EXECUTE TASK
 - Complete the implementation
 - Run "npm run build" and fix any errors
 - Git commit changes

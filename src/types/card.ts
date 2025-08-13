@@ -14,22 +14,22 @@ export enum AgentInstructionType {
   ARCHITECTURE = 'ARCHITECTURE',
 }
 
-export interface AgentDeveloperInstruction {
+export interface AgentInstruction {
   id: string
   cardId: string
-  type: AgentInstructionType
+  instructionType: AgentInstructionType
   
   // Git Instructions
   branchName?: string
-  createNewBranch: boolean
+  createBranch: boolean
   
   // Spike/Research Instructions
   webResearchPrompt?: string
   codeResearchPrompt?: string
-  architecturePrompt?: string
+  architectureGuidelines?: string
   
   // General Instructions
-  instructions?: string
+  generalInstructions?: string
   
   createdAt: Date
   updatedAt: Date
@@ -71,27 +71,28 @@ export interface Card {
   id: string
   status: CardStatus
   projectId: string
-  createdById: string
+  // createdById: string - removed as not in schema
   assigneeId?: string
   sprintId?: string
   title: string
   description?: string
   acceptanceCriteria?: string
   priority: number
-  effortPoints: number
+  storyPoints?: number
   isAiAllowedTask: boolean
-  agentDeveloperInstructions: AgentDeveloperInstruction[]
+  agentInstructions: AgentInstruction[]
   comments?: Comment[]
   labels?: CardLabel[]
   createdAt: Date
   updatedAt: Date
   
   // Relations
-  createdBy?: {
+  // createdBy removed - not in schema
+  /*createdBy?: {
     id: string
     name?: string
     email?: string
-  }
+  }*/
   assignee?: {
     id: string
     name?: string
@@ -115,19 +116,19 @@ export interface CreateCardRequest {
   projectId: string
   assigneeId?: string
   priority?: number
-  effortPoints?: number
+  storyPoints?: number
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
 
 export interface CreateAgentInstructionRequest {
-  type: AgentInstructionType
+  instructionType: AgentInstructionType
   branchName?: string
-  createNewBranch?: boolean
+  createBranch?: boolean
   webResearchPrompt?: string
   codeResearchPrompt?: string
-  architecturePrompt?: string
-  instructions?: string
+  architectureGuidelines?: string
+  generalInstructions?: string
 }
 
 export interface UpdateCardRequest {
@@ -136,7 +137,7 @@ export interface UpdateCardRequest {
   acceptanceCriteria?: string
   status?: CardStatus
   priority?: number
-  effortPoints?: number
+  storyPoints?: number
   assigneeId?: string
   sprintId?: string
   isAiAllowedTask?: boolean

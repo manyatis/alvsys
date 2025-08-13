@@ -112,8 +112,8 @@ export async function POST(
       data: {
         name,
         projectId,
-        startDate: startDate ? new Date(startDate) : null,
-        endDate: endDate ? new Date(endDate) : null,
+        startDate: startDate ? new Date(startDate) : new Date(),
+        endDate: endDate ? new Date(endDate) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // Default: 2 weeks from now
         isActive: !activeSprint, // Make active if no other active sprint
       },
     });

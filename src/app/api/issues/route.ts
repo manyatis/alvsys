@@ -56,13 +56,14 @@ export async function GET(request: NextRequest) {
     const issues = await prisma.card.findMany({
       where: whereClause,
       include: {
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
+        // createdBy removed from schema
+        // createdBy: {
+        //   select: {
+        //     id: true,
+        //     name: true,
+        //     email: true,
+        //   },
+        // },
         assignee: {
           select: {
             id: true,
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
             email: true,
           },
         },
-        agentDeveloperInstructions: true,
+        agentInstructions: true,
         labels: {
           include: {
             label: true
@@ -100,7 +101,7 @@ export async function POST(request: NextRequest) {
       acceptanceCriteria,
       projectId,
       priority = 3,
-      effortPoints = 5,
+      storyPoints = 5,
       isAiAllowedTask = true,
       agentInstructions = [],
       status,
@@ -121,15 +122,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Check usage limits before creating card
-    const canCreateCard = await UsageService.incrementCardUsage(user.id)
-    if (!canCreateCard) {
-      const usageStatus = await UsageService.getUserUsageStatus(user.id)
+    const hasReachedLimit = await UsageService.hasReachedDailyCardLimit(user.id)
+    if (hasReachedLimit) {
+      const usageStats = await UsageService.getUserUsageStats(user.id)
       return NextResponse.json({ 
         error: 'Daily card limit reached', 
         usageLimit: {
-          used: usageStatus.dailyCardsUsed,
-          limit: usageStatus.dailyCardsLimit,
-          resetTime: usageStatus.resetTime,
+          used: usageStats.dailyCardProcessingCount,
+          limit: 5, // Default limit for now since service is stubbed
+          resetTime: usageStats.lastResetDate,
         }
       }, { status: 429 })
     }
@@ -141,35 +142,39 @@ export async function POST(request: NextRequest) {
         acceptanceCriteria,
         projectId,
         priority,
-        effortPoints,
-        createdById: user.id,
+        storyPoints,
+        // createdById removed from schema - not setting on creation
         isAiAllowedTask,
         status,
         sprintId,
-        agentDeveloperInstructions: {
+        agentInstructions: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           create: agentInstructions.map((instruction: any) => ({
-            type: instruction.type,
+            instructionType: instruction.instructionType,
             branchName: instruction.branchName,
-            createNewBranch: instruction.createNewBranch || false,
+            createBranch: instruction.createBranch || false,
             webResearchPrompt: instruction.webResearchPrompt,
             codeResearchPrompt: instruction.codeResearchPrompt,
-            architecturePrompt: instruction.architecturePrompt,
-            instructions: instruction.instructions,
+            architectureGuidelines: instruction.architectureGuidelines,
+            generalInstructions: instruction.generalInstructions,
           })),
         },
       },
       include: {
-        createdBy: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        agentDeveloperInstructions: true,
+        // createdBy removed from schema
+        // createdBy: {
+        //   select: {
+        //     id: true,
+        //     name: true,
+        //     email: true,
+        //   },
+        // },
+        agentInstructions: true,
       },
     })
+
+    // Increment usage after successful card creation
+    await UsageService.incrementCardUsage(user.id)
 
     return NextResponse.json(issue, { status: 201 })
   } catch (error) {

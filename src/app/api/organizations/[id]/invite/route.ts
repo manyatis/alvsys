@@ -67,15 +67,32 @@ export async function POST(
       }
     }
 
-    // For now, we'll create a pending invitation record
-    // In a full implementation, you'd want to send an email invitation
-    // and have a separate invitation acceptance flow
-    
-    // Since we don't have an invitations table, we'll return a success message
-    // with instructions for the user to sign up
+    // Create an invitation record with 7-day expiry
+    const invitation = await prisma.organizationInvitation.create({
+      data: {
+        email,
+        organizationId,
+        invitedBy: userOrganization.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+      },
+      include: {
+        organization: {
+          select: { name: true }
+        }
+      }
+    });
+
+    // In a production app, you would send an email here with the invitation link
+    // For now, we'll return the invitation details
     return NextResponse.json({ 
-      message: `Invitation would be sent to ${email}. For now, ask them to sign up and they'll be added to your organization.`,
-      email 
+      message: 'Invitation created successfully',
+      invitation: {
+        id: invitation.id,
+        email: invitation.email,
+        organization: invitation.organization.name,
+        expiresAt: invitation.expiresAt,
+        invitationLink: `/invite/${invitation.token}` // This would be the acceptance link
+      }
     });
 
   } catch (error) {

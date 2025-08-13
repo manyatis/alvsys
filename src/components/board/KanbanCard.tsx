@@ -203,7 +203,7 @@ export default function KanbanCard({
           
           {/* Effort Points badge */}
           <span className="px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded border bg-blue-100 text-blue-600 border-blue-200">
-            {card.effortPoints}pt
+            {card.storyPoints}pt
           </span>
           
           {/* AI Allowed Task badge */}
@@ -217,13 +217,13 @@ export default function KanbanCard({
         
         {/* Assignee (currently showing creator) */}
         <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink-0">
-          {card.createdBy && (
+          {card.assignee && (
             <div className="flex items-center gap-0.5 sm:gap-1 text-xs text-gray-500 dark:text-gray-400">
               <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                {getInitials(card.createdBy.email || null, card.createdBy.name || null)}
+                {getInitials(card.assignee.email || null, card.assignee.name || null)}
               </div>
               <span className="hidden md:inline truncate max-w-12 sm:max-w-16">
-                {card.createdBy.name || card.createdBy.email}
+                {card.assignee.name || card.assignee.email}
               </span>
             </div>
           )}
