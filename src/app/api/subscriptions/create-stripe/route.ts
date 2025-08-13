@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../../../lib/auth';
 import { prisma } from '@/lib/prisma';
-import { stripe } from '@/lib/stripe-server';
+import { getStripe } from '@/lib/stripe-server';
 
 export async function POST(request: NextRequest) {
   try {
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     
     if (!stripeCustomerId) {
       console.debug('👤 Creating Stripe customer...');
-      const customer = await stripe.customers.create({
+      const customer = await getStripe().customers.create({
         email: user.email,
         name: user.name || undefined,
         metadata: {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
       console.debug('💰 Creating Stripe price...');
       
       // First, create or get the product
-      const product = await stripe.products.create({
+      const product = await getStripe().products.create({
         name: `VibeHero ${subscriptionPlan.name} Plan`,
         description: subscriptionPlan.description || undefined,
         metadata: {
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
         }
       });
 
-      const price = await stripe.prices.create({
+      const price = await getStripe().prices.create({
         unit_amount: subscriptionPlan.priceCents,
         currency: 'usd',
         recurring: {
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
 
     // Create Stripe Checkout Session for subscription
     console.debug('📋 Creating Stripe Checkout Session...');
-    const checkoutSession = await stripe.checkout.sessions.create({
+    const checkoutSession = await getStripe().checkout.sessions.create({
       mode: 'subscription',
       customer: stripeCustomerId,
       line_items: [{
