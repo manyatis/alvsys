@@ -35,7 +35,7 @@ export default function ExampleWorkflowPage() {
       title: 'Set Up Your Project',
       description: 'Create a new project and configure your organization settings',
       icon: Plus,
-      screenshot: '/screenshots/project-setup.png',
+      screenshot: '/create project.png',
       details: [
         'Navigate to the Projects page and click "Create New Project"',
         'Enter your project name and description',
@@ -54,7 +54,7 @@ export default function ExampleWorkflowPage() {
       title: 'Create User Stories',
       description: 'Add detailed user stories with clear acceptance criteria',
       icon: FileText,
-      screenshot: '/screenshots/create-stories.png',
+      screenshot: '/create issue.png',
       details: [
         'Click the "+" button in any column to create a new story',
         'Write stories in user story format: "As a [user], I want [goal] so that [reason]"',
@@ -75,7 +75,7 @@ export default function ExampleWorkflowPage() {
       title: 'Set Up API Key (Required)',
       description: 'Create and configure your API key file for AI agent authentication',
       icon: Copy,
-      screenshot: '/screenshots/api-key-setup.png',
+      screenshot: '/generate api key.png',
       details: [
         'Navigate to your account settings (click your avatar → Account Settings) to generate a new API key',
         'Create a file named "api_key.txt" in your project\'s root directory (same level as package.json)',
@@ -98,7 +98,7 @@ export default function ExampleWorkflowPage() {
       title: 'Copy the AI Onboard Link',
       description: 'Get your project\'s AI agent onboarding URL to connect automated agents',
       icon: Copy,
-      screenshot: '/screenshots/onboard-link.png',
+      screenshot: '/copy_onboarding_link.png',
       details: [
         'Open your project board and look for the onboard link in the sidebar',
         'Click the copy button to get your unique AI agent onboarding URL',
@@ -117,7 +117,7 @@ export default function ExampleWorkflowPage() {
       title: 'Give Link to Your AI Agent',
       description: 'Connect your AI assistant to start automated development work',
       icon: Bot,
-      screenshot: '/screenshots/ai-agent.png',
+      screenshot: '/give onboarding link to ai.png',
       details: [
         'Share the onboard link with your AI agent (Claude Code, GitHub Copilot, etc.)',
         'The agent will use both the onboard link and your api_key.txt file for authentication',
@@ -139,7 +139,7 @@ export default function ExampleWorkflowPage() {
       title: 'Watch Status Updates',
       description: 'Monitor real-time progress as tasks move through your board',
       icon: RefreshCw,
-      screenshot: '/screenshots/status-updates.png',
+      screenshot: '/track tasks and progress.png',
       details: [
         'Tasks automatically move between columns as work progresses',
         'AI agents update status from "Ready" → "In Progress" → "Ready for Review"',
@@ -159,7 +159,7 @@ export default function ExampleWorkflowPage() {
       title: 'Review and Provide Feedback',
       description: 'Review completed work and guide next steps through comments',
       icon: Eye,
-      screenshot: '/screenshots/review-feedback.png',
+      screenshot: '/provide feedback to the agent.png',
       details: [
         'Click on tasks in "Ready for Review" to see detailed work completed',
         'Review all acceptance criteria to ensure they\'ve been met',
@@ -172,26 +172,6 @@ export default function ExampleWorkflowPage() {
         'Provide constructive feedback with specific improvement suggestions',
         'Test the functionality thoroughly before approving',
         'Document any new requirements or edge cases discovered during review'
-      ]
-    },
-    {
-      id: 8,
-      title: 'Iterate and Improve',
-      description: 'Continue the cycle of development, review, and refinement',
-      icon: Target,
-      screenshot: '/screenshots/iteration.png',
-      details: [
-        'Tasks move back to "In Progress" when additional work is needed',
-        'Agents and team members address feedback and implement improvements',
-        'Use comments to maintain context and decision history',
-        'Regularly review and prioritize the backlog of upcoming tasks',
-        'Hold team retrospectives to improve the workflow process',
-        'Track velocity and identify bottlenecks in your development process'
-      ],
-      tips: [
-        'Celebrate completed milestones and successful releases',
-        'Keep the feedback loop short for faster iteration',
-        'Document lessons learned to improve future story creation'
       ]
     }
   ];
@@ -289,23 +269,17 @@ export default function ExampleWorkflowPage() {
                     Visual Example
                   </h3>
                   
-                  {/* Placeholder for screenshot */}
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-xl aspect-video flex items-center justify-center mb-4">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gray-200 dark:bg-gray-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <currentStepData.icon className="h-8 w-8 text-gray-400 dark:text-gray-500" />
-                      </div>
-                      <p className="text-gray-500 dark:text-gray-400 font-medium">
-                        Screenshot: {currentStepData.title}
-                      </p>
-                      <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                        Visual guide showing this workflow step
-                      </p>
-                    </div>
+                  {/* Actual screenshot */}
+                  <div className="rounded-xl overflow-hidden mb-4 border border-gray-200 dark:border-gray-600">
+                    <img
+                      src={currentStepData.screenshot}
+                      alt={`Screenshot showing ${currentStepData.title}`}
+                      className="w-full h-auto object-contain bg-white dark:bg-gray-800"
+                    />
                   </div>
                   
                   <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                    This screenshot would show the actual VibeHero interface during this step of the workflow
+                    Step-by-step visual guide showing the VibeHero interface for {currentStepData.title.toLowerCase()}
                   </p>
                 </div>
               </div>
