@@ -140,6 +140,15 @@ const TERMINAL_COMMANDS = [
   }
 ];
 
+// Create modal typing content
+const CREATE_MODAL_CONTENT = [
+  'Add user authentication',
+  'Create payment integration', 
+  'Build analytics dashboard',
+  'Optimize database queries',
+  'Mobile responsive design'
+];
+
 interface AnimatedBoardDemoProps {
   autoPlay?: boolean;
   speed?: number; // milliseconds between transitions
@@ -147,13 +156,40 @@ interface AnimatedBoardDemoProps {
 
 export default function AnimatedBoardDemo({ 
   autoPlay = true, 
-  speed = 2000
+  speed = 3000
 }: AnimatedBoardDemoProps) {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [currentStatusIndex, setCurrentStatusIndex] = useState(0);
   const [showTerminal, setShowTerminal] = useState(false);
   const [terminalText, setTerminalText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [createModalText, setCreateModalText] = useState('');
+  const [isTypingCreate, setIsTypingCreate] = useState(false);
+
+  // Typewriter effect for create modal
+  const typeCreateModal = (text: string) => {
+    setShowCreateModal(true);
+    setIsTypingCreate(true);
+    setCreateModalText('');
+    
+    let currentIndex = 0;
+    const typeInterval = setInterval(() => {
+      if (currentIndex <= text.length) {
+        setCreateModalText(text.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typeInterval);
+        setIsTypingCreate(false);
+        
+        // Hide create modal after completion
+        setTimeout(() => {
+          setShowCreateModal(false);
+          setCreateModalText('');
+        }, 1000);
+      }
+    }, 80); // Typing speed for create modal
+  };
 
   // Typewriter effect for terminal
   const typeText = (commands: string[]) => {
@@ -192,12 +228,18 @@ export default function AnimatedBoardDemo({
     if (!autoPlay) return;
 
     const interval = setInterval(() => {
+      // Show create modal at the beginning of each new card
+      if (currentStatusIndex === 0) {
+        const nextCardText = CREATE_MODAL_CONTENT[currentCardIndex % CREATE_MODAL_CONTENT.length];
+        typeCreateModal(nextCardText);
+      }
+      
       // Show terminal work before status change (except for first status)
       if (currentStatusIndex > 0 && currentStatusIndex < DEMO_COLUMNS.length && TERMINAL_COMMANDS[currentStatusIndex - 1]) {
         typeText(TERMINAL_COMMANDS[currentStatusIndex - 1].commands);
       }
       
-      // Wait for terminal to finish, then update status
+      // Wait for animations to finish, then update status
       setTimeout(() => {
         setCurrentStatusIndex(prev => {
           const nextStatusIndex = prev + 1;
@@ -210,11 +252,11 @@ export default function AnimatedBoardDemo({
           
           return nextStatusIndex;
         });
-      }, currentStatusIndex > 0 ? 3000 : 0); // Delay for terminal animation
+      }, currentStatusIndex === 0 ? 2500 : (currentStatusIndex > 0 ? 3000 : 0)); // Different delays for create vs terminal
     }, speed);
 
     return () => clearInterval(interval);
-  }, [autoPlay, speed, currentStatusIndex]);
+  }, [autoPlay, speed, currentStatusIndex, currentCardIndex]);
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -251,9 +293,43 @@ export default function AnimatedBoardDemo({
   const currentStatus = DEMO_COLUMNS[currentStatusIndex];
 
   return (
-    <div className="relative w-full max-w-sm mx-auto">
-      {/* Single Card Flipper */}
-      <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 min-h-[180px] transition-all duration-500 ${showTerminal ? 'opacity-30' : 'opacity-100'}`}>
+    <div className="w-full max-w-sm mx-auto space-y-4">
+      {/* Create Modal Area - Top */}
+      <div className="min-h-[120px]">
+        {showCreateModal && (
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-slate-600">
+              <h3 className="text-sm font-medium text-slate-900 dark:text-white">Create New Issue</h3>
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+            </div>
+            
+            {/* Form Content */}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
+                <div className="border border-slate-300 dark:border-slate-600 rounded p-2 bg-white dark:bg-slate-700 min-h-[20px]">
+                  <span className="text-sm text-slate-900 dark:text-white">
+                    {createModalText}
+                    {isTypingCreate && <span className="animate-pulse">|</span>}
+                  </span>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-2">
+                <button className="px-3 py-1 text-xs text-slate-600 dark:text-slate-400">Cancel</button>
+                <button className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Task Card Area - Middle */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 min-h-[160px]">
         {/* Current Status Badge */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -283,41 +359,43 @@ export default function AnimatedBoardDemo({
             </span>
           </div>
         </div>
+
+        {/* Progress Dots */}
+        <div className="flex justify-center mt-4 gap-1">
+          {DEMO_COLUMNS.map((column, index) => (
+            <div
+              key={column.status}
+              className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                currentStatusIndex === index
+                  ? column.color
+                  : 'bg-slate-300 dark:bg-slate-600'
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
-      {/* Terminal Overlay */}
-      {showTerminal && (
-        <div className="absolute inset-0 bg-black/90 rounded-xl p-4 font-mono text-xs overflow-hidden">
-          {/* Terminal Header */}
-          <div className="flex items-center gap-2 mb-3 border-b border-gray-600 pb-2">
-            <div className="flex gap-1">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+      {/* Terminal Area - Bottom */}
+      <div className="min-h-[140px]">
+        {showTerminal && (
+          <div className="bg-black rounded-lg p-4 font-mono text-xs overflow-hidden">
+            {/* Terminal Header */}
+            <div className="flex items-center gap-2 mb-3 border-b border-gray-600 pb-2">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              </div>
+              <span className="text-gray-300 text-xs">AI Agent Terminal</span>
             </div>
-            <span className="text-gray-300 text-xs">AI Agent Terminal</span>
+            
+            {/* Terminal Content */}
+            <div className="text-green-400 whitespace-pre-wrap leading-relaxed max-h-20 overflow-hidden">
+              {terminalText}
+              {isTyping && <span className="animate-pulse">▊</span>}
+            </div>
           </div>
-          
-          {/* Terminal Content */}
-          <div className="text-green-400 whitespace-pre-wrap leading-relaxed">
-            {terminalText}
-            {isTyping && <span className="animate-pulse">▊</span>}
-          </div>
-        </div>
-      )}
-
-      {/* Progress Dots */}
-      <div className="flex justify-center mt-3 gap-1">
-        {DEMO_COLUMNS.map((column, index) => (
-          <div
-            key={column.status}
-            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
-              currentStatusIndex === index
-                ? column.color
-                : 'bg-slate-300 dark:bg-slate-600'
-            }`}
-          />
-        ))}
+        )}
       </div>
     </div>
   );
