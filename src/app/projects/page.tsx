@@ -237,7 +237,7 @@ export default function ProjectsPage() {
                       Organization
                     </label>
                     <select
-                      value={formData.organizationId}
+                      value={formData.useExistingOrg ? formData.organizationId : 'new'}
                       onChange={(e) => {
                         const value = e.target.value;
                         if (value === 'new') {
@@ -247,9 +247,9 @@ export default function ProjectsPage() {
                         }
                       }}
                       className="select-professional"
-                      required
+                      required={formData.useExistingOrg}
                     >
-                      <option value="">Choose an organization</option>
+                      {formData.useExistingOrg && <option value="">Choose an organization</option>}
                       {organizations.map((org) => (
                         <option key={org.id} value={org.id}>
                           {org.name}
