@@ -42,19 +42,18 @@ STEP 1: WAIT 20 SECONDS
 - sleep 20
 
 STEP 2: FETCH NEXT TASK
-- curl -X GET https://vibehero.io/api/ai/issues?projectId=${project.id} -H 'Authorization: Bearer \${API_KEY}'
-- Take the first card from the "cards" array (highest priority READY task)
-- If no tasks available: go back to STEP 1 (wait and retry)
-- Extract TASK_ID from the returned card for status updates
+- curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "next_ready", "projectId": "${project.id}"}'
+- If "card" is null: no tasks available, go back to STEP 1 (wait and retry)
+- Extract TASK_ID from the returned card.id for status updates
 - Update status to IN_PROGRESS with comment using:
-  curl -X PUT https://vibehero.io/api/ai/issues/\${TASK_ID} -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"status": "IN_PROGRESS", "comment": "Starting work on task"}'
+  curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "update_status", "cardId": "\${TASK_ID}", "status": "IN_PROGRESS", "projectId": "${project.id}", "comment": "Starting work on task"}'
 
 STEP 3: EXECUTE TASK
 - Complete the implementation
 - Run "npm run build" and fix any errors
 - Git commit changes
 - Update status to READY_FOR_REVIEW with detailed comment using:
-  curl -X PUT https://vibehero.io/api/ai/issues/\${TASK_ID} -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"status": "READY_FOR_REVIEW", "comment": "Task completed. Details: [describe work done]"}'
+  curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "update_status", "cardId": "\${TASK_ID}", "status": "READY_FOR_REVIEW", "projectId": "${project.id}", "comment": "Task completed. Details: [describe work done]"}'
 
 STEP 4: RESET AND LOOP
 - IMMEDIATELY fetch: https://vibehero.io/api/${project.id}/ai/onboard
