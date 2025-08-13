@@ -49,11 +49,31 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
     fetchCards();
   }, [resolvedParams.id]);
 
-  const filteredCards = cards.filter(card => {
-    if (selectedSprintFilter === 'all') return true;
-    if (selectedSprintFilter === 'unassigned') return !card.sprintId;
-    return card.sprintId === selectedSprintFilter;
-  });
+  const groupedCards = () => {
+    if (selectedSprintFilter === 'all') {
+      // Group cards by sprint
+      const cardsBySprintId: Record<string | 'unassigned', Card[]> = {};
+      
+      cards.forEach(card => {
+        const key = card.sprintId || 'unassigned';
+        if (!cardsBySprintId[key]) {
+          cardsBySprintId[key] = [];
+        }
+        cardsBySprintId[key].push(card);
+      });
+      
+      return cardsBySprintId;
+    } else {
+      // Return filtered cards as a single group
+      const filtered = cards.filter(card => {
+        if (selectedSprintFilter === 'unassigned') return !card.sprintId;
+        return card.sprintId === selectedSprintFilter;
+      });
+      return { [selectedSprintFilter]: filtered };
+    }
+  };
+
+  const cardGroups = groupedCards();
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -138,7 +158,7 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
               <p className="text-gray-600 dark:text-gray-400">Loading backlog items...</p>
             </div>
           </div>
-        ) : filteredCards.length === 0 ? (
+        ) : Object.keys(cardGroups).length === 0 || Object.values(cardGroups).every(group => group.length === 0) ? (
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-8">
             <div className="text-center">
               <div className="text-gray-400 dark:text-gray-500 mb-4">
@@ -160,73 +180,89 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
             </div>
           </div>
         ) : (
-          <div className="space-y-3">
-            {filteredCards.map((card) => {
-              const sprint = sprints.find(s => s.id === card.sprintId);
+          <div className="space-y-6">
+            {Object.entries(cardGroups).map(([groupKey, groupCards]) => {
+              if (groupCards.length === 0) return null;
+              
+              const isUnassigned = groupKey === 'unassigned';
+              const sprint = isUnassigned ? null : sprints.find(s => s.id === groupKey);
+              const groupTitle = isUnassigned ? 'Backlog (Unassigned)' : 
+                                sprint ? `${sprint.name} ${sprint.isActive ? '(Active)' : '(Completed)'}` : 
+                                'Unknown Sprint';
+              
               return (
-                <div key={card.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="flex items-center gap-2">
-                          <Flag className={`h-4 w-4 ${
-                            card.priority === 1 ? 'text-red-500' :
-                            card.priority === 2 ? 'text-orange-500' :
-                            card.priority === 3 ? 'text-yellow-500' :
-                            card.priority === 4 ? 'text-green-500' :
-                            'text-blue-500'
-                          }`} />
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(card.priority)}`}>
-                            P{card.priority}
-                          </span>
-                        </div>
-                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(card.status)}`}>
-                          {card.status.replace('_', ' ')}
+                <div key={groupKey} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  {/* Group Header */}
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 rounded-t-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {groupTitle}
+                        </h2>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          ({groupCards.length} {groupCards.length === 1 ? 'item' : 'items'})
                         </span>
-                        {card.isAiAllowedTask && (
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
-                            AI Task
-                          </span>
-                        )}
-                      </div>
-                      
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400">
-                        {card.title}
-                      </h3>
-                      
-                      {card.description && (
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2">
-                          {card.description}
-                        </p>
-                      )}
-                      
-                      <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                        <span>
-                          Created {new Date(card.createdAt).toLocaleDateString()}
-                        </span>
-                        {card.storyPoints && (
-                          <span>
-                            {card.storyPoints} story points
-                          </span>
-                        )}
-                        {card.assignee && (
-                          <span>
-                            Assigned to {card.assignee.name || card.assignee.email}
-                          </span>
-                        )}
-                        {sprint && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {sprint.name} {sprint.isActive ? '(Active)' : '(Completed)'}
-                          </span>
-                        )}
-                        {!card.sprintId && (
-                          <span className="text-gray-400">
-                            Unassigned
-                          </span>
-                        )}
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* Group Items */}
+                  <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {groupCards.map((card) => (
+                      <div key={card.id} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <Flag className={`h-3 w-3 ${
+                                card.priority === 1 ? 'text-red-500' :
+                                card.priority === 2 ? 'text-orange-500' :
+                                card.priority === 3 ? 'text-yellow-500' :
+                                card.priority === 4 ? 'text-green-500' :
+                                'text-blue-500'
+                              }`} />
+                              <span className={`px-1.5 py-0.5 text-xs font-medium rounded ${getPriorityColor(card.priority)}`}>
+                                P{card.priority}
+                              </span>
+                              <span className={`px-1.5 py-0.5 text-xs font-medium rounded ${getStatusColor(card.status)}`}>
+                                {card.status.replace('_', ' ')}
+                              </span>
+                              {card.isAiAllowedTask && (
+                                <span className="px-1.5 py-0.5 text-xs font-medium rounded bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
+                                  AI
+                                </span>
+                              )}
+                            </div>
+                            
+                            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-1 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400">
+                              {card.title}
+                            </h3>
+                            
+                            {card.description && (
+                              <p className="text-gray-600 dark:text-gray-400 text-xs mb-2 line-clamp-1">
+                                {card.description}
+                              </p>
+                            )}
+                            
+                            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                              <span>
+                                {new Date(card.createdAt).toLocaleDateString()}
+                              </span>
+                              {card.storyPoints && (
+                                <span>
+                                  {card.storyPoints}pt
+                                </span>
+                              )}
+                              {card.assignee && (
+                                <span>
+                                  {card.assignee.name || card.assignee.email.split('@')[0]}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               );
