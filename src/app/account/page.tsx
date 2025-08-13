@@ -197,13 +197,13 @@ export default function AccountSettings() {
                 <p className="text-green-700 dark:text-green-300 text-sm mb-3">
                   Please copy this key now. You won&apos;t be able to see it again.
                 </p>
-                <div className="flex items-center gap-2 p-3 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-600 rounded">
-                  <code className="flex-1 text-sm text-slate-900 dark:text-white font-mono">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-600 rounded">
+                  <code className="flex-1 text-sm text-slate-900 dark:text-white font-mono break-all min-w-0">
                     {generatedKey}
                   </code>
                   <button
                     onClick={() => copyToClipboard(generatedKey)}
-                    className="px-3 py-1 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors"
+                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors whitespace-nowrap self-start sm:self-center"
                   >
                     Copy
                   </button>
@@ -227,7 +227,7 @@ export default function AccountSettings() {
                       className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={generateApiKey}
                       disabled={generating}
@@ -262,39 +262,41 @@ export default function AccountSettings() {
                 userKeys.map((key) => (
                   <div
                     key={key.id}
-                    className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-600 rounded-lg"
+                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-slate-200 dark:border-slate-600 rounded-lg gap-3"
                   >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <code className="text-sm font-mono text-slate-900 dark:text-white">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <code className="text-sm font-mono text-slate-900 dark:text-white break-all">
                           {key.keyPrefix}...
                         </code>
-                        {key.name && (
-                          <span className="text-sm text-slate-600 dark:text-slate-300">
-                            ({key.name})
+                        <div className="flex items-center gap-2 flex-wrap">
+                          {key.name && (
+                            <span className="text-sm text-slate-600 dark:text-slate-300">
+                              ({key.name})
+                            </span>
+                          )}
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full whitespace-nowrap ${
+                              key.isActive
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
+                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                            }`}
+                          >
+                            {key.isActive ? 'Active' : 'Inactive'}
                           </span>
-                        )}
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            key.isActive
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                          }`}
-                        >
-                          {key.isActive ? 'Active' : 'Inactive'}
-                        </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-slate-500 dark:text-slate-400">
                         <span>Created {new Date(key.createdAt).toLocaleDateString()}</span>
                         {key.lastUsed && (
                           <span>Last used {new Date(key.lastUsed).toLocaleDateString()}</span>
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                       <button
                         onClick={() => toggleKeyStatus(key.id, !key.isActive)}
-                        className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                        className={`px-3 py-2 text-sm font-medium rounded transition-colors min-w-[90px] ${
                           key.isActive
                             ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-800/40 dark:text-yellow-300'
                             : 'bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-800/40 dark:text-green-300'
@@ -304,7 +306,7 @@ export default function AccountSettings() {
                       </button>
                       <button
                         onClick={() => deleteKey(key.id)}
-                        className="px-3 py-1 text-sm font-medium bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/40 dark:text-red-300 rounded transition-colors"
+                        className="px-3 py-2 text-sm font-medium bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/40 dark:text-red-300 rounded transition-colors min-w-[70px]"
                       >
                         Delete
                       </button>
