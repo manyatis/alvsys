@@ -23,13 +23,34 @@ export async function GET(request: NextRequest) {
 
     // Build the where clause
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const whereClause: { projectId: string; status?: any } = {
+    const whereClause: { projectId: string; status?: any; sprintId?: string | null } = {
       projectId: projectId,
     }
 
     // Add status filter if provided
     if (status) {
       whereClause.status = status
+    }
+
+    // Check if we should filter by active sprint
+    const showOnlyActiveSprint = searchParams.get('activeSprint') === 'true'
+    
+    if (showOnlyActiveSprint) {
+      // Find the active sprint for this project
+      const activeSprint = await prisma.sprint.findFirst({
+        where: {
+          projectId,
+          isActive: true,
+        },
+      })
+      
+      // If there's an active sprint, filter cards by it
+      // Otherwise, show cards with no sprint assigned (backlog)
+      if (activeSprint) {
+        whereClause.sprintId = activeSprint.id
+      } else {
+        whereClause.sprintId = null
+      }
     }
 
     const issues = await prisma.card.findMany({
@@ -55,6 +76,7 @@ export async function GET(request: NextRequest) {
             label: true
           }
         },
+        sprint: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -82,6 +104,7 @@ export async function POST(request: NextRequest) {
       isAiAllowedTask = true,
       agentInstructions = [],
       status,
+      sprintId,
     } = body
 
     if (!title || !projectId) {
@@ -122,6 +145,7 @@ export async function POST(request: NextRequest) {
         createdById: user.id,
         isAiAllowedTask,
         status,
+        sprintId,
         agentDeveloperInstructions: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           create: agentInstructions.map((instruction: any) => ({

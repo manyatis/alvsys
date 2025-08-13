@@ -4,7 +4,9 @@ import { Loader2 } from 'lucide-react';
 import { CardStatus, Label } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
+import SprintSelector from '@/components/SprintSelector';
 import { OrganizationMember } from '@/utils/board-utils';
+import { Sprint } from '@/hooks/useSprints';
 
 interface NewCard {
   title: string;
@@ -16,6 +18,7 @@ interface NewCard {
   isAiAllowedTask: boolean;
   assigneeId: string | null;
   labelIds: string[];
+  sprintId: string | null;
 }
 
 interface CreateIssueModalProps {
@@ -29,6 +32,7 @@ interface CreateIssueModalProps {
   labels: Label[];
   organizationMembers: OrganizationMember[];
   currentUserId: string | null;
+  sprints: Sprint[];
   statusColumns: Array<{
     status: CardStatus;
     title: string;
@@ -53,6 +57,7 @@ export default function CreateIssueModal({
   labels,
   organizationMembers,
   currentUserId,
+  sprints,
   statusColumns,
   onClose,
   onCreate,
@@ -217,14 +222,24 @@ export default function CreateIssueModal({
               />
             </div>
 
-            <div>
-              <AssigneeSelector
-                currentUserId={currentUserId || undefined}
-                organizationMembers={organizationMembers}
-                selectedAssigneeId={newCard.assigneeId || undefined}
-                onSelectionChange={(assigneeId) => setNewCard({ ...newCard, assigneeId })}
-                isAiAllowedTask={newCard.isAiAllowedTask}
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <AssigneeSelector
+                  currentUserId={currentUserId || undefined}
+                  organizationMembers={organizationMembers}
+                  selectedAssigneeId={newCard.assigneeId || undefined}
+                  onSelectionChange={(assigneeId) => setNewCard({ ...newCard, assigneeId })}
+                  isAiAllowedTask={newCard.isAiAllowedTask}
+                />
+              </div>
+
+              <div>
+                <SprintSelector
+                  sprints={sprints}
+                  selectedSprintId={newCard.sprintId}
+                  onSelectionChange={(sprintId) => setNewCard({ ...newCard, sprintId })}
+                />
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
