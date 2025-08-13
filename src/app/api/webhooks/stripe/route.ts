@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe-server';
+import { getStripe } from '@/lib/stripe-server';
 import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripe().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -174,7 +174,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       : session.subscription.id;
     
     console.debug('📋 Retrieving subscription:', subscriptionId);
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
     
     // Process the subscription
     await handleSubscriptionChange(subscription);
@@ -208,7 +208,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
   }
 
   // Fetch the latest subscription status from Stripe
-  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const subscription = await getStripe().subscriptions.retrieve(subscriptionId);
   
   console.debug('🔄 Subscription status after payment:', subscription.status);
   
