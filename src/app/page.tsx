@@ -38,10 +38,23 @@ export default function Home() {
               while you sleep, travel, or focus on strategy.
             </p>
             
-            <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-12 max-w-4xl mx-auto">
+            <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
               <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
                 <span className="font-semibold text-purple-700 dark:text-purple-400">Stop the chaos:</span> No more scattered ideas, forgotten tasks, or waiting around for AI responses. 
                 VibeHero brings real software engineering practices to AI-assisted development.
+              </p>
+            </div>
+            
+            <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 mb-12 max-w-4xl mx-auto border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-center mb-3">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <span className="font-semibold text-green-700 dark:text-green-400">Total Privacy Guaranteed</span>
+              </div>
+              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
+                We only facilitate project management - we have <strong>no access to your code, data, or repositories</strong>. 
+                VibeHero provides a secure management layer for your AI agents while ensuring complete privacy of your development work.
               </p>
             </div>
             
