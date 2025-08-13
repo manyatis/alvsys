@@ -39,25 +39,31 @@ PROJECT: ${project.id} | STATUS: ACTIVE | MODE: INFINITE_LOOP
 === API KEY VALIDATION (STEP 0) ===
 1. Check "api_key.txt" file exists in working directory
 2. Verify API key starts with "vhk_" and is 52 characters total
-3. IF NO VALID KEY: STOP and report "API key required"
+3. Use the API key from this file as \${API_KEY} in all curl commands
+4. IF NO VALID KEY: STOP and report "API key required"
 
 === INFINITE EXECUTION LOOP ===
 THIS IS AN INFINITE LOOP. YOU WILL REPEAT THESE 4 STEPS FOREVER:
+
+STEP 0: CUT A BRANCH called feature/vibehero and work off this.
 
 STEP 1: WAIT 20 SECONDS
 - sleep 20
 
 STEP 2: FETCH NEXT TASK
-- curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "next_ready", "projectId": "${project.id}"}'
-- If task returned: mark IN_PROGRESS and proceed to STEP 3
-- If no task: go back to STEP 1 (wait and retry)
+- curl -X GET https://vibehero.io/api/ai/issues?projectId=${project.id} -H 'Authorization: Bearer \${API_KEY}'
+- Take the first card from the "cards" array (highest priority READY task)
+- If no tasks available: go back to STEP 1 (wait and retry)
+- Extract TASK_ID from the returned card for status updates
 
 STEP 3: EXECUTE TASK
-- Update status to IN_PROGRESS with comment
+- Update status to IN_PROGRESS with comment using:
+  curl -X PUT https://vibehero.io/api/ai/issues/\${TASK_ID} -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"status": "IN_PROGRESS", "comment": "Starting work on task"}'
 - Complete the implementation
 - Run "npm run build" and fix any errors
 - Git commit changes
-- Update status to READY_FOR_REVIEW with detailed comment
+- Update status to READY_FOR_REVIEW with detailed comment using:
+  curl -X PUT https://vibehero.io/api/ai/issues/\${TASK_ID} -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"status": "READY_FOR_REVIEW", "comment": "Task completed. Details: [describe work done]"}'
 
 STEP 4: RESET AND LOOP
 - IMMEDIATELY fetch: https://vibehero.io/api/${project.id}/ai/onboard
