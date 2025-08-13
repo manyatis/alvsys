@@ -15,6 +15,7 @@ import BoardHeader from '@/components/board/BoardHeader';
 import CreateIssueModal from '@/components/board/CreateIssueModal';
 import EditIssueModal from '@/components/board/EditIssueModal';
 import CreateSprintModal from '@/components/board/CreateSprintModal';
+import ViewOldSprintsModal from '@/components/board/ViewOldSprintsModal';
 import { useBoardData, useCardOperations, useComments } from '@/hooks/useBoardData';
 import { 
   getCardsByStatus, 
@@ -146,6 +147,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSprintModal, setShowSprintModal] = useState(false);
+  const [showOldSprintsModal, setShowOldSprintsModal] = useState(false);
   const [sprintModalVisible, setSprintModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -416,6 +418,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const openSprintModal = () => {
     setShowSprintModal(true);
     setTimeout(() => setSprintModalVisible(true), 10);
+  };
+
+  const openOldSprintsModal = () => {
+    setShowOldSprintsModal(true);
+  };
+
+  const closeOldSprintsModal = () => {
+    setShowOldSprintsModal(false);
   };
 
   const closeSprintModal = () => {
@@ -781,6 +791,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
             showOnlyActiveSprint={showOnlyActiveSprint}
             onCreateSprint={openSprintModal}
+            onViewOldSprints={openOldSprintsModal}
           />
 
         {/* Board */}
@@ -881,6 +892,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         onClose={closeSprintModal}
         onCreate={handleCreateSprint}
         isCreating={isCreatingSprint}
+      />
+
+      {/* View Old Sprints Modal */}
+      <ViewOldSprintsModal
+        isOpen={showOldSprintsModal}
+        onClose={closeOldSprintsModal}
+        sprints={sprints}
       />
 
       </div>

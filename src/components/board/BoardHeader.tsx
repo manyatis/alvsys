@@ -23,6 +23,7 @@ interface BoardHeaderProps {
   onToggleSprintFilter?: () => void;
   showOnlyActiveSprint?: boolean;
   onCreateSprint?: () => void;
+  onViewOldSprints?: () => void;
 }
 
 export default function BoardHeader({
@@ -34,6 +35,7 @@ export default function BoardHeader({
   onToggleSprintFilter,
   showOnlyActiveSprint = true,
   onCreateSprint,
+  onViewOldSprints,
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -115,7 +117,16 @@ export default function BoardHeader({
                 )}
                 
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                <div className="p-2">
+                <div className="p-2 space-y-1">
+                  <button
+                    onClick={() => {
+                      onViewOldSprints?.();
+                      setShowSprintMenu(false);
+                    }}
+                    className="w-full text-left px-2 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                  >
+                    View Old Sprints
+                  </button>
                   <button
                     onClick={() => {
                       onCreateSprint?.();
