@@ -23,6 +23,7 @@ export default function AccountSettings() {
   const [showNewKeyForm, setShowNewKeyForm] = useState(false);
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -118,8 +119,18 @@ export default function AccountSettings() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = (text: string, context: string = 'Key') => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopySuccess(`${context} copied to clipboard!`);
+      setTimeout(() => {
+        setCopySuccess(null);
+      }, 3000);
+    }).catch(() => {
+      setError('Failed to copy to clipboard');
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
+    });
   };
 
   if (status === 'loading' || loading) {
@@ -191,6 +202,12 @@ export default function AccountSettings() {
               </div>
             )}
 
+            {copySuccess && (
+              <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+                <p className="text-green-700 dark:text-green-300 text-sm">{copySuccess}</p>
+              </div>
+            )}
+
             {generatedKey && (
               <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
                 <h3 className="text-green-800 dark:text-green-300 font-medium mb-2">New API Key Generated</h3>
@@ -202,7 +219,7 @@ export default function AccountSettings() {
                     {generatedKey}
                   </code>
                   <button
-                    onClick={() => copyToClipboard(generatedKey)}
+                    onClick={() => copyToClipboard(generatedKey, 'API Key')}
                     className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors whitespace-nowrap self-start sm:self-center"
                   >
                     Copy
