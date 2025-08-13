@@ -41,7 +41,7 @@ STEP 0: CUT A BRANCH called feature/vibehero and work off this.
 STEP 1: WAIT 20 SECONDS
 - sleep 20
 
-STEP 2: FETCH NEXT TASK
+STEP 2: FETCH NEXT TASK USING POST
 - curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "next_ready", "projectId": "${project.id}"}'
 - If "card" is null: no tasks available, go back to STEP 1 (wait and retry)
 - Extract TASK_ID from the returned card.id for status updates
@@ -75,7 +75,7 @@ Forget everything except:
 3. Never stop
 
 === START THE LOOP NOW ===
-Check api_key.txt and begin STEP 1 immediately.`;
+Check api_key.txt and begin STEP 1 immediately. USE POST TO INTERACT WITH ISSUES API`;
 
     return NextResponse.json(onboardingInstructions);
 
