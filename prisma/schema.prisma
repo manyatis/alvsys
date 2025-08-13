@@ -57,10 +57,16 @@ model User {
   updatedAt         DateTime @updatedAt
   
   // Subscription management
-  stripeCustomerId  String?   @unique
-  stripeSubscriptionId String?
-  subscriptionStatus   String?
-  subscriptionPlan     String?
+  subscriptionTier  String          @default("free") // "free", "indie", "professional"
+  plan              String          @default("free") // "free", "indie", "professional"
+  
+  // Stripe subscription management
+  subscriptionId        String?         // Stripe subscription ID
+  subscriptionStatus    String?         // "active", "past_due", "canceled", "paused", "trialing", "incomplete"
+  subscriptionStartDate DateTime?       // When subscription started
+  subscriptionEndDate   DateTime?       // When subscription ends (for canceled subscriptions)
+  stripeCustomerId      String?         // Stripe customer ID
+  stripePriceId         String?         // Stripe price ID for the current subscription
   
   // System
   isActive          Boolean  @default(true)
@@ -292,6 +298,21 @@ model AIWorkLog {
   @@index([cardId])
   @@index([userId])
   @@index([createdAt])
+}
+
+model SubscriptionPlan {
+  id              Int       @id @default(autoincrement())
+  planId          String    @unique   // "free", "indie", "professional"
+  name            String                // "Free", "Indie", "Professional"
+  priceCents      Int                   // Price in cents (e.g., 1000 for $10.00)
+  billingPeriod   String    @default("month") // "month", "year"
+  features        String[]              // Array of feature descriptions
+  description     String?               // Plan description
+  stripePriceId   String?               // Stripe price ID
+  stripeProductId String?               // Stripe product ID
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 // Enums
