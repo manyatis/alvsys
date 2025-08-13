@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface Organization {
   id: string;
@@ -215,9 +216,11 @@ export default function OrganizationSettings() {
                   <div key={member.id} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg">
                     {member.image ? (
                       <div className="w-10 h-10 rounded-full overflow-hidden">
-                        <img
+                        <Image
                           src={member.image}
                           alt={member.name}
+                          width={40}
+                          height={40}
                           className="w-full h-full object-cover"
                         />
                       </div>

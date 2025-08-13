@@ -138,10 +138,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const {
     sprints,
     activeSprint,
-    loading: loadingSprints,
     createSprint,
     closeSprint,
-    refreshSprints,
   } = useSprints(resolvedParams.id);
   
   // Local state
