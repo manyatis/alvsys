@@ -36,7 +36,7 @@ export default function Home() {
             <p className="text-base md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
               Set up tasks, walk away, and let your AI agents get to work. VibeHero manages the queue, 
               tracks progress, and keeps your development organized while you focus on what matters. 
-              <strong className="text-blue-600 dark:text-blue-400">No more babysitting AI</strong> - just results.
+              <strong className="text-blue-600 dark:text-blue-400"> No more babysitting AI</strong> - just results.
             </p>
             
             <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
