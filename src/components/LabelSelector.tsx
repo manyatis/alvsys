@@ -81,8 +81,8 @@ export default function LabelSelector({
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+    <div className="form-group-professional relative" ref={dropdownRef}>
+      <label className="form-label-professional">
         Labels
       </label>
 
@@ -116,7 +116,7 @@ export default function LabelSelector({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white bg-white transition-colors"
+        className="select-professional-sm text-left"
       >
         <span className="text-gray-500 dark:text-gray-400">
           {selectedLabels.length === 0 ? 'Select labels...' : `${selectedLabels.length} selected`}
