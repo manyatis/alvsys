@@ -39,8 +39,8 @@ export default function FilterMenu({
       </div>
       
       {/* Search */}
-      <div className="mb-3">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="form-group-professional">
+        <label className="form-label-professional">
           Search
         </label>
         <input
@@ -48,19 +48,19 @@ export default function FilterMenu({
           placeholder="Search issues..."
           value={filters.search}
           onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+          className="input-professional text-xs py-2"
         />
       </div>
       
       {/* Priority */}
-      <div className="mb-3">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="form-group-professional">
+        <label className="form-label-professional">
           Priority
         </label>
         <select
           value={filters.priority}
           onChange={(e) => setFilters(prev => ({ ...prev, priority: e.target.value }))}
-          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+          className="select-professional-sm"
         >
           <option value="all">All priorities</option>
           <option value="1">P1 (Highest)</option>
@@ -72,14 +72,14 @@ export default function FilterMenu({
       </div>
       
       {/* Assignee */}
-      <div className="mb-3">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="form-group-professional">
+        <label className="form-label-professional">
           Assignee
         </label>
         <select
           value={filters.assigneeId}
           onChange={(e) => setFilters(prev => ({ ...prev, assigneeId: e.target.value }))}
-          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+          className="select-professional-sm"
         >
           <option value="">All assignees</option>
           {getUniqueAssignees(cards).map((assignee) => (
@@ -91,14 +91,14 @@ export default function FilterMenu({
       </div>
       
       {/* AI Allowed */}
-      <div className="mb-3">
-        <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="form-group-professional">
+        <label className="form-label-professional">
           AI Tasks
         </label>
         <select
           value={filters.aiAllowed}
           onChange={(e) => setFilters(prev => ({ ...prev, aiAllowed: e.target.value as 'all' | 'ai-only' | 'human-only' }))}
-          className="w-full px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+          className="select-professional-sm"
         >
           <option value="all">All issues</option>
           <option value="ai-only">AI allowed only</option>

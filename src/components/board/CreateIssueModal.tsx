@@ -100,43 +100,42 @@ export default function CreateIssueModal({
           
           <div className="flex-1 overflow-y-auto">
             <form onSubmit={onCreate} className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Summary *
-              </label>
-              <input
-                type="text"
-                value={newCard.title}
-                onChange={(e) => setNewCard({ ...newCard, title: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors"
-                placeholder="What needs to be done?"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Description
-              </label>
-              <textarea
-                value={newCard.description}
-                onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
-                rows={3}
-                placeholder="Add a description..."
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Status
+              <div className="form-group-professional">
+                <label className="form-label-professional form-label-professional-required">
+                  Summary
                 </label>
-                <div className="relative">
+                <input
+                  type="text"
+                  value={newCard.title}
+                  onChange={(e) => setNewCard({ ...newCard, title: e.target.value })}
+                  className="input-professional"
+                  placeholder="What needs to be done?"
+                  required
+                />
+              </div>
+
+              <div className="form-group-professional">
+                <label className="form-label-professional">
+                  Description
+                </label>
+                <textarea
+                  value={newCard.description}
+                  onChange={(e) => setNewCard({ ...newCard, description: e.target.value })}
+                  className="textarea-professional"
+                  rows={3}
+                  placeholder="Add a description..."
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="form-group-professional">
+                  <label className="form-label-professional">
+                    Status
+                  </label>
                   <select
                     value={newCard.status}
                     onChange={(e) => setNewCard({ ...newCard, status: e.target.value as CardStatus })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    className="select-professional-sm"
                   >
                     {statusColumns.map((col) => (
                       <option key={col.status} value={col.status}>
@@ -144,23 +143,16 @@ export default function CreateIssueModal({
                       </option>
                     ))}
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Priority
-                </label>
-                <div className="relative">
+                <div className="form-group-professional">
+                  <label className="form-label-professional">
+                    Priority
+                  </label>
                   <select
                     value={newCard.priority}
                     onChange={(e) => setNewCard({ ...newCard, priority: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    className="select-professional-sm"
                   >
                     <option value={1}>Highest</option>
                     <option value={2}>High</option>
@@ -168,37 +160,24 @@ export default function CreateIssueModal({
                     <option value={4}>Low</option>
                     <option value={5}>Lowest</option>
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Effort Points
-                </label>
-                <div className="relative">
+                <div className="form-group-professional">
+                  <label className="form-label-professional">
+                    Effort Points
+                  </label>
                   <select
                     value={newCard.effortPoints}
                     onChange={(e) => setNewCard({ ...newCard, effortPoints: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    className="select-professional-sm"
                   >
                     <option value={1}>1 point</option>
                     <option value={3}>3 points</option>
                     <option value={5}>5 points</option>
                     <option value={8}>8 points</option>
                   </select>
-                  <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </div>
                 </div>
               </div>
-            </div>
 
             <div>
               <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">

@@ -230,14 +230,14 @@ export default function ProjectsPage() {
               Create New Project
             </h2>
             <form onSubmit={handleCreateProject}>
-              <div className="mb-6">
+              <div className="form-group-professional">
                 {organizations.length > 0 ? (
                   <>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="form-label-professional form-label-professional-required">
                       Organization
                     </label>
                     <select
-                      value={formData.organizationId}
+                      value={formData.useExistingOrg ? formData.organizationId : 'new'}
                       onChange={(e) => {
                         const value = e.target.value;
                         if (value === 'new') {
@@ -246,10 +246,10 @@ export default function ProjectsPage() {
                           setFormData({ ...formData, useExistingOrg: true, organizationId: value });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
-                      required
+                      className="select-professional"
+                      required={formData.useExistingOrg}
                     >
-                      <option value="">Choose an organization</option>
+                      {formData.useExistingOrg && <option value="">Choose an organization</option>}
                       {organizations.map((org) => (
                         <option key={org.id} value={org.id}>
                           {org.name}
@@ -259,15 +259,15 @@ export default function ProjectsPage() {
                     </select>
                     
                     {!formData.useExistingOrg && (
-                      <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <div className="form-group-professional mt-4">
+                        <label className="form-label-professional form-label-professional-required">
                           New Organization Name
                         </label>
                         <input
                           type="text"
                           value={formData.organizationName}
                           onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                          className="input-professional"
                           placeholder="My Company"
                           required
                         />
@@ -276,14 +276,14 @@ export default function ProjectsPage() {
                   </>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="form-label-professional form-label-professional-required">
                       Organization Name
                     </label>
                     <input
                       type="text"
                       value={formData.organizationName}
                       onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                      className="input-professional"
                       placeholder="My Company"
                       required
                     />
@@ -291,32 +291,32 @@ export default function ProjectsPage() {
                 )}
               </div>
 
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="form-group-professional">
+                <label className="form-label-professional form-label-professional-required">
                   Project Name
                 </label>
                 <input
                   type="text"
                   value={formData.projectName}
                   onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="input-professional"
                   placeholder="My Awesome Project"
                   required
                 />
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="btn-professional-secondary"
                   disabled={creating}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                  className="btn-professional-primary"
                   disabled={creating}
                 >
                   {creating ? 'Creating...' : 'Create Project'}
