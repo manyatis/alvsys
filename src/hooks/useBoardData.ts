@@ -28,7 +28,7 @@ interface NewCard {
   sprintId: string | null;
 }
 
-export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = true) {
+export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = true, selectedSprintId: string | null = null) {
   const { data: session, status } = useSession();
   const router = useRouter();
   
@@ -69,9 +69,12 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         }
 
         // Fetch cards
-        const cardsUrl = showOnlyActiveSprint 
-          ? `/api/issues?projectId=${projectId}&activeSprint=true`
-          : `/api/issues?projectId=${projectId}`;
+        let cardsUrl = `/api/issues?projectId=${projectId}`;
+        if (selectedSprintId) {
+          cardsUrl += `&sprintId=${selectedSprintId}`;
+        } else if (showOnlyActiveSprint) {
+          cardsUrl += `&activeSprint=true`;
+        }
         const cardsRes = await fetch(cardsUrl);
         if (cardsRes.ok) {
           const cardsData = await cardsRes.json();
@@ -96,7 +99,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
     } else if (status === 'authenticated' && projectId) {
       loadData();
     }
-  }, [status, projectId, router, session, showOnlyActiveSprint]);
+  }, [status, projectId, router, session, showOnlyActiveSprint, selectedSprintId]);
 
   // Polling for real-time updates with connection management
   useEffect(() => {
@@ -112,9 +115,12 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         const controller = new AbortController();
         
         // Fetch cards
-        const cardsUrl = showOnlyActiveSprint 
-          ? `/api/issues?projectId=${projectId}&activeSprint=true`
-          : `/api/issues?projectId=${projectId}`;
+        let cardsUrl = `/api/issues?projectId=${projectId}`;
+        if (selectedSprintId) {
+          cardsUrl += `&sprintId=${selectedSprintId}`;
+        } else if (showOnlyActiveSprint) {
+          cardsUrl += `&activeSprint=true`;
+        }
         const cardsRes = await fetch(cardsUrl, { 
           signal: controller.signal,
           headers: { 'Connection': 'close' } 
@@ -155,13 +161,16 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         clearInterval(pollInterval);
       }
     };
-  }, [status, projectId, showOnlyActiveSprint]);
+  }, [status, projectId, showOnlyActiveSprint, selectedSprintId]);
 
   const refreshCards = async () => {
     try {
-      const cardsUrl = showOnlyActiveSprint 
-        ? `/api/issues?projectId=${projectId}&activeSprint=true`
-        : `/api/issues?projectId=${projectId}`;
+      let cardsUrl = `/api/issues?projectId=${projectId}`;
+      if (selectedSprintId) {
+        cardsUrl += `&sprintId=${selectedSprintId}`;
+      } else if (showOnlyActiveSprint) {
+        cardsUrl += `&activeSprint=true`;
+      }
       const cardsRes = await fetch(cardsUrl, {
         headers: { 'Connection': 'close' }
       });

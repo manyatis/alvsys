@@ -15,7 +15,6 @@ import BoardHeader from '@/components/board/BoardHeader';
 import CreateIssueModal from '@/components/board/CreateIssueModal';
 import EditIssueModal from '@/components/board/EditIssueModal';
 import CreateSprintModal from '@/components/board/CreateSprintModal';
-import ViewOldSprintsModal from '@/components/board/ViewOldSprintsModal';
 import { useBoardData, useCardOperations, useComments } from '@/hooks/useBoardData';
 import { 
   getCardsByStatus, 
@@ -111,7 +110,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     currentUserId,
     isRefreshing,
     refreshCards,
-  } = useBoardData(resolvedParams.id, showOnlyActiveSprint);
+  } = useBoardData(resolvedParams.id, showOnlyActiveSprint, selectedSprintId);
   
   const {
     createCard,
@@ -147,7 +146,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSprintModal, setShowSprintModal] = useState(false);
-  const [showOldSprintsModal, setShowOldSprintsModal] = useState(false);
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
   const [sprintModalVisible, setSprintModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -420,12 +419,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setTimeout(() => setSprintModalVisible(true), 10);
   };
 
-  const openOldSprintsModal = () => {
-    setShowOldSprintsModal(true);
-  };
-
-  const closeOldSprintsModal = () => {
-    setShowOldSprintsModal(false);
+  const handleSprintSelect = (sprintId: string | null) => {
+    setSelectedSprintId(sprintId);
   };
 
   const closeSprintModal = () => {
@@ -787,11 +782,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             currentProjectId={resolvedParams.id}
             isRefreshing={isRefreshing}
             activeSprint={activeSprint}
+            sprints={sprints}
+            selectedSprintId={selectedSprintId}
+            onSprintSelect={handleSprintSelect}
             onCloseAndStartNext={handleCloseAndStartNext}
             onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
             showOnlyActiveSprint={showOnlyActiveSprint}
             onCreateSprint={openSprintModal}
-            onViewOldSprints={openOldSprintsModal}
           />
 
         {/* Board */}
@@ -894,12 +891,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         isCreating={isCreatingSprint}
       />
 
-      {/* View Old Sprints Modal */}
-      <ViewOldSprintsModal
-        isOpen={showOldSprintsModal}
-        onClose={closeOldSprintsModal}
-        sprints={sprints}
-      />
 
       </div>
     </>
