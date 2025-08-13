@@ -203,15 +203,6 @@ export default function Navbar() {
                       </Link>
                       <button 
                         onClick={() => {
-                          router.push('/projects');
-                          setIsUserMenuOpen(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
-                      >
-                        Dashboard
-                      </button>
-                      <button 
-                        onClick={() => {
                           router.push('/organization');
                           setIsUserMenuOpen(false);
                         }}
@@ -367,19 +358,6 @@ export default function Navbar() {
                       <span className="text-xs">Projects</span>
                     </Link>
                     
-                    <button 
-                      onClick={() => {
-                        router.push('/projects');
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg transition-all duration-300"
-                      title="Dashboard"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                      </svg>
-                      <span className="text-xs">Dashboard</span>
-                    </button>
                     
                     <button 
                       onClick={() => {
