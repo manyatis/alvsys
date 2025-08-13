@@ -1,5 +1,6 @@
 'use client'
 
+import { TruckElectricIcon } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 
@@ -78,7 +79,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           <button
             onClick={() => handleSignIn('github')}
-            disabled={isLoading !== null}
+            disabled={true}
             className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-800 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading === 'github' ? (
@@ -95,7 +96,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           <button
             onClick={() => handleSignIn('apple')}
-            disabled={isLoading !== null}
+            disabled={isLoading === 'apple'}
             className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-black dark:bg-slate-700 text-white rounded-lg hover:bg-slate-800 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading === 'apple' ? (
