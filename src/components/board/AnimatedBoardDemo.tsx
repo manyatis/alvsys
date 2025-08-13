@@ -260,46 +260,46 @@ export default function AnimatedBoardDemo({
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-4">
+    <div className="w-full max-w-md mx-auto space-y-3">
       {/* Create Modal Area - Top - Always visible */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4">
+      <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-3">
         {/* Modal Header */}
-        <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-slate-600">
-          <h3 className="text-sm font-medium text-slate-900 dark:text-white">Create New Issue</h3>
+        <div className="flex items-center justify-between mb-2 pb-2 border-b border-slate-200 dark:border-slate-600">
+          <h3 className="text-xs font-medium text-slate-900 dark:text-white">Create New Issue</h3>
           <div className="flex gap-1">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
           </div>
         </div>
         
         {/* Form Content */}
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div>
             <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title</label>
-            <div className="border border-slate-300 dark:border-slate-600 rounded p-2 bg-white dark:bg-slate-700 min-h-[20px]">
-              <span className="text-sm text-slate-900 dark:text-white">
+            <div className="border border-slate-300 dark:border-slate-600 rounded p-2 bg-white dark:bg-slate-700 min-h-[18px]">
+              <span className="text-xs text-slate-900 dark:text-white">
                 {createModalText}
                 <span className="animate-pulse">|</span>
               </span>
             </div>
           </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <button className="px-3 py-1 text-xs text-slate-600 dark:text-slate-400">Cancel</button>
-            <button className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
+          <div className="flex justify-end gap-2 pt-1">
+            <button className="px-2 py-1 text-xs text-slate-600 dark:text-slate-400">Cancel</button>
+            <button className="px-2 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700">Create</button>
           </div>
         </div>
       </div>
 
       {/* Kanban Board Area - Middle - Cards moving left to right */}
-      <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 min-h-[200px]">
+      <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-3 overflow-hidden">
         {/* Column Headers */}
-        <div className="flex gap-2 mb-4">
+        <div className="grid grid-cols-5 gap-1 mb-3">
           {DEMO_COLUMNS.map((column) => (
-            <div key={column.status} className="flex-1 text-center">
+            <div key={column.status} className="text-center">
               <div className="flex items-center justify-center gap-1 mb-2">
-                <column.icon className={`w-3 h-3 ${column.textColor}`} />
-                <span className={`text-xs font-medium ${column.textColor}`}>
+                <column.icon className={`w-2.5 h-2.5 ${column.textColor}`} />
+                <span className={`text-xs font-medium ${column.textColor} truncate`}>
                   {column.title}
                 </span>
               </div>
@@ -308,30 +308,25 @@ export default function AnimatedBoardDemo({
         </div>
         
         {/* Cards Container */}
-        <div className="relative flex gap-2 min-h-[120px]">
+        <div className="grid grid-cols-5 gap-1 min-h-[100px]">
           {DEMO_COLUMNS.map((column, columnIndex) => (
-            <div key={column.status} className={`flex-1 ${column.bgColor} rounded-lg p-2 min-h-[120px]`}>
+            <div key={column.status} className={`${column.bgColor} rounded-lg p-1.5 min-h-[100px]`}>
               {cards.filter(card => card.position === columnIndex).map(card => (
                 <div
                   key={card.id}
-                  className="bg-white dark:bg-slate-700 rounded p-2 shadow-sm mb-2 transition-all duration-500 transform hover:scale-105"
+                  className="bg-white dark:bg-slate-700 rounded p-1.5 shadow-sm mb-1 transition-all duration-500 text-xs"
                 >
                   <div className="flex items-center justify-between mb-1">
                     <span className={`text-xs px-1 py-0.5 rounded font-medium ${getPriorityColor(card.priority)}`}>
-                      {getPriorityText(card.priority)}
+                      P{card.priority}
                     </span>
-                    <Zap className="w-3 h-3 text-blue-500" />
+                    <Zap className="w-2 h-2 text-blue-500" />
                   </div>
                   <h4 className="text-xs font-medium text-slate-900 dark:text-white mb-1 truncate">
                     {card.title}
                   </h4>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
-                    {card.description}
-                  </p>
-                  <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {card.storyPoints} pts
-                    </span>
+                  <div className="text-xs text-slate-500 dark:text-slate-400">
+                    {card.storyPoints} pts
                   </div>
                 </div>
               ))}
@@ -341,13 +336,13 @@ export default function AnimatedBoardDemo({
       </div>
 
       {/* Terminal Area - Bottom - Always active */}
-      <div className="bg-black rounded-lg p-4 font-mono text-xs min-h-[140px]">
+      <div className="bg-black rounded-lg p-3 font-mono text-xs min-h-[120px]">
         {/* Terminal Header */}
-        <div className="flex items-center gap-2 mb-3 border-b border-gray-600 pb-2">
+        <div className="flex items-center gap-2 mb-2 border-b border-gray-600 pb-2">
           <div className="flex gap-1">
-            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-red-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full"></div>
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
           </div>
           <span className="text-gray-300 text-xs">AI Agent Terminal</span>
         </div>
@@ -355,7 +350,7 @@ export default function AnimatedBoardDemo({
         {/* Terminal Content */}
         <div className="text-green-400 whitespace-pre leading-relaxed">
           {terminalLines.map((line, index) => (
-            <div key={index} className="opacity-90">
+            <div key={index} className="opacity-90 truncate">
               {line}
             </div>
           ))}
