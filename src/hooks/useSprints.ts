@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export interface Sprint {
   id: string;
@@ -21,7 +21,7 @@ export function useSprints(projectId: string) {
   const [activeSprint, setActiveSprint] = useState<Sprint | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchSprints = async () => {
+  const fetchSprints = useCallback(async () => {
     try {
       const response = await fetch(`/api/projects/${projectId}/sprints`);
       if (response.ok) {
@@ -35,13 +35,13 @@ export function useSprints(projectId: string) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     if (projectId) {
       fetchSprints();
     }
-  }, [projectId]);
+  }, [projectId, fetchSprints]);
 
   const createSprint = async (name: string, startDate?: Date, endDate?: Date) => {
     try {

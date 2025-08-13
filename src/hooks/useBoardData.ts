@@ -98,48 +98,79 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
     }
   }, [status, projectId, router, session, showOnlyActiveSprint]);
 
-  // Polling for real-time updates
+  // Polling for real-time updates with connection management
   useEffect(() => {
+    let pollInterval: NodeJS.Timeout | null = null;
+    let isComponentMounted = true;
+
     const refreshData = async () => {
+      if (!isComponentMounted) return;
+      
       setIsRefreshing(true);
       try {
+        // Use AbortController to cancel requests if component unmounts
+        const controller = new AbortController();
+        
         // Fetch cards
         const cardsUrl = showOnlyActiveSprint 
           ? `/api/issues?projectId=${projectId}&activeSprint=true`
           : `/api/issues?projectId=${projectId}`;
-        const cardsRes = await fetch(cardsUrl);
-        if (cardsRes.ok) {
+        const cardsRes = await fetch(cardsUrl, { 
+          signal: controller.signal,
+          headers: { 'Connection': 'close' } 
+        });
+        if (cardsRes.ok && isComponentMounted) {
           const cardsData = await cardsRes.json();
           setCards(cardsData);
         }
 
         // Fetch labels
-        const labelsRes = await fetch(`/api/projects/${projectId}/labels`);
-        if (labelsRes.ok) {
+        const labelsRes = await fetch(`/api/projects/${projectId}/labels`, { 
+          signal: controller.signal,
+          headers: { 'Connection': 'close' } 
+        });
+        if (labelsRes.ok && isComponentMounted) {
           const labelsData = await labelsRes.json();
           setLabels(labelsData);
         }
       } catch (error) {
-        console.error('Error refreshing board data:', error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Error refreshing board data:', error);
+        }
       } finally {
-        setIsRefreshing(false);
+        if (isComponentMounted) {
+          setIsRefreshing(false);
+        }
       }
     };
 
     if (status === 'authenticated' && projectId) {
-      const pollInterval = setInterval(refreshData, 20000);
-      return () => clearInterval(pollInterval);
+      // Increase polling interval to reduce connection pressure
+      pollInterval = setInterval(refreshData, 30000); // Changed from 20s to 30s
     }
+
+    return () => {
+      isComponentMounted = false;
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
   }, [status, projectId, showOnlyActiveSprint]);
 
   const refreshCards = async () => {
-    const cardsUrl = showOnlyActiveSprint 
-      ? `/api/issues?projectId=${projectId}&activeSprint=true`
-      : `/api/issues?projectId=${projectId}`;
-    const cardsRes = await fetch(cardsUrl);
-    if (cardsRes.ok) {
-      const cardsData = await cardsRes.json();
-      setCards(cardsData);
+    try {
+      const cardsUrl = showOnlyActiveSprint 
+        ? `/api/issues?projectId=${projectId}&activeSprint=true`
+        : `/api/issues?projectId=${projectId}`;
+      const cardsRes = await fetch(cardsUrl, {
+        headers: { 'Connection': 'close' }
+      });
+      if (cardsRes.ok) {
+        const cardsData = await cardsRes.json();
+        setCards(cardsData);
+      }
+    } catch (error) {
+      console.error('Error refreshing cards:', error);
     }
   };
 
