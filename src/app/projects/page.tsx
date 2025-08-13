@@ -230,10 +230,10 @@ export default function ProjectsPage() {
               Create New Project
             </h2>
             <form onSubmit={handleCreateProject}>
-              <div className="mb-6">
+              <div className="form-group-professional">
                 {organizations.length > 0 ? (
                   <>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="form-label-professional form-label-professional-required">
                       Organization
                     </label>
                     <select
@@ -246,7 +246,7 @@ export default function ProjectsPage() {
                           setFormData({ ...formData, useExistingOrg: true, organizationId: value });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                      className="select-professional"
                       required
                     >
                       <option value="">Choose an organization</option>
@@ -259,15 +259,15 @@ export default function ProjectsPage() {
                     </select>
                     
                     {!formData.useExistingOrg && (
-                      <div className="mt-4">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      <div className="form-group-professional mt-4">
+                        <label className="form-label-professional form-label-professional-required">
                           New Organization Name
                         </label>
                         <input
                           type="text"
                           value={formData.organizationName}
                           onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                          className="input-professional"
                           placeholder="My Company"
                           required
                         />
@@ -276,14 +276,14 @@ export default function ProjectsPage() {
                   </>
                 ) : (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label className="form-label-professional form-label-professional-required">
                       Organization Name
                     </label>
                     <input
                       type="text"
                       value={formData.organizationName}
                       onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                      className="input-professional"
                       placeholder="My Company"
                       required
                     />
@@ -291,15 +291,15 @@ export default function ProjectsPage() {
                 )}
               </div>
 
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="form-group-professional">
+                <label className="form-label-professional form-label-professional-required">
                   Project Name
                 </label>
                 <input
                   type="text"
                   value={formData.projectName}
                   onChange={(e) => setFormData({ ...formData, projectName: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                  className="input-professional"
                   placeholder="My Awesome Project"
                   required
                 />
