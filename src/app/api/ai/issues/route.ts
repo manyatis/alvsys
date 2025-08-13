@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { CardService } from '@/services/card-service'
 import { CardStatus } from '@/types/card'
 import { validateApiKeyForProject, createApiErrorResponse } from '@/lib/api-auth'
+import { UsageService } from '@/services/usage-service'
 
 // POST /api/ai/issues - AI endpoint to get available issues for processing
 export async function POST(request: NextRequest) {
@@ -80,6 +81,11 @@ export async function POST(request: NextRequest) {
               isAiComment: true,
             },
           })
+        }
+        
+        // Increment usage when AI completes tasks (READY_FOR_REVIEW or COMPLETED)
+        if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
+          await UsageService.incrementCardUsage(user.id)
         }
         
         // Log AI activity
