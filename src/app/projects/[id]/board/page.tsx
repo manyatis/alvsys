@@ -143,6 +143,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     closeSprint,
   } = useSprints(resolvedParams.id);
   
+  // Set active sprint as default when loaded
+  useEffect(() => {
+    if (activeSprint && selectedSprintId === null) {
+      setSelectedSprintId(activeSprint.id);
+    }
+  }, [activeSprint, selectedSprintId]);
+  
   // Local state
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);

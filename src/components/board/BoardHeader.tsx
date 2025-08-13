@@ -61,7 +61,10 @@ export default function BoardHeader({
   }, [showSprintMenu]);
 
   const getSelectedSprintName = () => {
-    if (!selectedSprintId) return 'All Sprints';
+    if (!selectedSprintId) {
+      // If no sprint selected but there's an active sprint, show active sprint name
+      return activeSprint ? activeSprint.name : 'All Sprints';
+    }
     const sprint = sprints.find(s => s.id === selectedSprintId);
     return sprint ? sprint.name : 'All Sprints';
   };

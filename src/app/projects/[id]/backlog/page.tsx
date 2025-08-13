@@ -193,10 +193,10 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
               return (
                 <div key={groupKey} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                   {/* Group Header */}
-                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750 rounded-t-lg">
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 rounded-t-lg">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-500" />
+                        <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                         <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
                           {groupTitle}
                         </h2>
@@ -210,7 +210,7 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
                   {/* Group Items */}
                   <div className="divide-y divide-gray-200 dark:divide-gray-700">
                     {groupCards.map((card) => (
-                      <div key={card.id} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors">
+                      <div key={card.id} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
