@@ -7,7 +7,6 @@ import {
   ChevronRight, 
   Filter, 
   Search, 
-  Users, 
   Copy, 
   Check,
   Archive 
@@ -163,10 +162,6 @@ export default function BoardSidebar({
               Search
             </button>
             
-            <button className="w-full flex items-center gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
-              <Users className="h-3 w-3" />
-              Assignees
-            </button>
             
           </>
         ) : (
