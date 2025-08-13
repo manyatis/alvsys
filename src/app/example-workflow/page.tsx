@@ -77,16 +77,19 @@ export default function ExampleWorkflowPage() {
       icon: Copy,
       screenshot: '/screenshots/api-key-setup.png',
       details: [
-        'Navigate to your account settings to generate a new API key',
-        'Create a file named "api_key.txt" in your project\'s root directory',
-        'Copy your generated API key (starting with "vhk_") into this file',
-        'Ensure the api_key.txt file is added to your .gitignore to keep it secure',
-        'This API key authenticates AI agents to access your project data',
-        'The key is required for all AI agent operations and task management'
+        'Navigate to your account settings (click your avatar → Account Settings) to generate a new API key',
+        'Create a file named "api_key.txt" in your project\'s root directory (same level as package.json)',
+        'Copy your generated API key (starting with "vhk_") into this file - the key should be 52 characters long',
+        'Ensure the api_key.txt file is added to your .gitignore to keep it secure and never commit it',
+        'This API key authenticates AI agents to access your project data and perform automated tasks',
+        'The key is required for all AI agent operations, task management, and status updates',
+        'Each API key is project-specific and provides access only to that project\'s data'
       ],
       tips: [
         'Never commit your API key to version control - keep it in .gitignore',
         'Store your API key securely and regenerate if compromised',
+        'The api_key.txt file should contain only the key with no extra spaces or newlines',
+        'You can verify the file is correct - it should be exactly 52 characters starting with "vhk_"',
         'Each project has its own unique API key for security isolation'
       ]
     },
@@ -117,6 +120,7 @@ export default function ExampleWorkflowPage() {
       screenshot: '/screenshots/ai-agent.png',
       details: [
         'Share the onboard link with your AI agent (Claude Code, GitHub Copilot, etc.)',
+        'The agent will use both the onboard link and your api_key.txt file for authentication',
         'The agent will call the API to understand your project structure and available tasks',
         'Agents automatically fetch the highest priority "Ready" tasks from your board',
         'They update task status to "In Progress" when starting work',
@@ -126,6 +130,7 @@ export default function ExampleWorkflowPage() {
       tips: [
         'Start with simple, well-defined tasks for AI agents',
         'Provide detailed acceptance criteria for better AI results',
+        'Ensure both the onboard link and api_key.txt file are accessible to your AI agent',
         'Monitor AI progress through the board and comments'
       ]
     },
