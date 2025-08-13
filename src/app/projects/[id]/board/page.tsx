@@ -98,6 +98,7 @@ const statusColumns: {
 export default function ProjectBoardPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const [showOnlyActiveSprint, setShowOnlyActiveSprint] = useState(true);
+  const [selectedSprintId, setSelectedSprintId] = useState<string | null>(null);
   
   // Use custom hooks
   const {
@@ -110,7 +111,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     currentUserId,
     isRefreshing,
     refreshCards,
-  } = useBoardData(resolvedParams.id, showOnlyActiveSprint);
+  } = useBoardData(resolvedParams.id, showOnlyActiveSprint, selectedSprintId);
   
   const {
     createCard,
@@ -141,6 +142,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     createSprint,
     closeSprint,
   } = useSprints(resolvedParams.id);
+  
+  // Set active sprint as default when loaded
+  useEffect(() => {
+    if (activeSprint && selectedSprintId === null) {
+      setSelectedSprintId(activeSprint.id);
+    }
+  }, [activeSprint, selectedSprintId]);
   
   // Local state
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -416,6 +424,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const openSprintModal = () => {
     setShowSprintModal(true);
     setTimeout(() => setSprintModalVisible(true), 10);
+  };
+
+  const handleSprintSelect = (sprintId: string | null) => {
+    setSelectedSprintId(sprintId);
   };
 
   const closeSprintModal = () => {
@@ -777,6 +789,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             currentProjectId={resolvedParams.id}
             isRefreshing={isRefreshing}
             activeSprint={activeSprint}
+            sprints={sprints}
+            selectedSprintId={selectedSprintId}
+            onSprintSelect={handleSprintSelect}
             onCloseAndStartNext={handleCloseAndStartNext}
             onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
             showOnlyActiveSprint={showOnlyActiveSprint}
@@ -882,6 +897,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         onCreate={handleCreateSprint}
         isCreating={isCreatingSprint}
       />
+
 
       </div>
     </>

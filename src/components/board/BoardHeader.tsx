@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreVertical, RefreshCw, Calendar, ChevronRight, Plus } from 'lucide-react';
+import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus } from 'lucide-react';
 import ProjectSelector from '@/components/ProjectSelector';
 import { Sprint } from '@/hooks/useSprints';
 import { useState, useEffect, useRef } from 'react';
@@ -19,6 +19,9 @@ interface BoardHeaderProps {
   currentProjectId: string;
   isRefreshing: boolean;
   activeSprint: Sprint | null;
+  sprints: Sprint[];
+  selectedSprintId: string | null;
+  onSprintSelect: (sprintId: string | null) => void;
   onCloseAndStartNext?: () => void;
   onToggleSprintFilter?: () => void;
   showOnlyActiveSprint?: boolean;
@@ -30,6 +33,9 @@ export default function BoardHeader({
   currentProjectId,
   isRefreshing,
   activeSprint,
+  sprints,
+  selectedSprintId,
+  onSprintSelect,
   onCloseAndStartNext,
   onToggleSprintFilter,
   showOnlyActiveSprint = true,
@@ -54,6 +60,15 @@ export default function BoardHeader({
     };
   }, [showSprintMenu]);
 
+  const getSelectedSprintName = () => {
+    if (!selectedSprintId) {
+      // If no sprint selected but there's an active sprint, show active sprint name
+      return activeSprint ? activeSprint.name : 'All Sprints';
+    }
+    const sprint = sprints.find(s => s.id === selectedSprintId);
+    return sprint ? sprint.name : 'All Sprints';
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-4 py-2">
       <div className="flex items-center justify-between max-w-full">
@@ -73,49 +88,79 @@ export default function BoardHeader({
             >
               <Calendar className="h-4 w-4" />
               <span className="hidden md:inline">
-                {activeSprint ? activeSprint.name : 'No Active Sprint'}
+                {getSelectedSprintName()}
               </span>
               <span className="md:hidden">
-                {activeSprint ? activeSprint.name.split(' ').slice(0, 2).join(' ') : 'No Sprint'}
+                {getSelectedSprintName().split(' ').slice(0, 2).join(' ')}
               </span>
-              <ChevronRight className="h-4 w-4" />
+              <ChevronDown className="h-4 w-4" />
             </button>
             
             {showSprintMenu && (
-              <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+              <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+                {/* Sprint Options */}
                 <div className="p-2">
-                  <label className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showOnlyActiveSprint}
-                      onChange={() => onToggleSprintFilter?.()}
-                      className="rounded border-gray-300 dark:border-gray-600 text-purple-600 focus:ring-purple-500"
-                    />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">
-                      Show only active sprint
-                    </span>
-                  </label>
+                  <button
+                    onClick={() => {
+                      onSprintSelect(null);
+                      setShowSprintMenu(false);
+                    }}
+                    className={`w-full text-left px-2 py-1.5 text-sm rounded transition-colors ${
+                      selectedSprintId === null 
+                        ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' 
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    All Sprints
+                  </button>
+                  
+                  {sprints.length > 0 && (
+                    <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
+                      {sprints.map((sprint) => (
+                        <button
+                          key={sprint.id}
+                          onClick={() => {
+                            onSprintSelect(sprint.id);
+                            setShowSprintMenu(false);
+                          }}
+                          className={`w-full text-left px-2 py-1.5 text-sm rounded transition-colors mb-1 ${
+                            selectedSprintId === sprint.id 
+                              ? 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' 
+                              : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span>{sprint.name}</span>
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${
+                              sprint.isActive 
+                                ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' 
+                                : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                            }`}>
+                              {sprint.isActive ? 'Active' : 'Completed'}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 
-                {activeSprint && (
-                  <>
-                    <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                    <div className="p-2">
-                      <button
-                        onClick={() => {
-                          onCloseAndStartNext?.();
-                          setShowSprintMenu(false);
-                        }}
-                        className="w-full text-left px-2 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-                      >
-                        Close & Start Next Sprint
-                      </button>
-                    </div>
-                  </>
-                )}
-                
                 <div className="border-t border-gray-200 dark:border-gray-700 my-1"></div>
-                <div className="p-2">
+                
+                {/* Management Options */}
+                <div className="p-2 space-y-1">
+                  {activeSprint && (
+                    <button
+                      onClick={() => {
+                        onCloseAndStartNext?.();
+                        setShowSprintMenu(false);
+                      }}
+                      className="w-full text-left px-2 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                    >
+                      Close & Start Next Sprint
+                    </button>
+                  )}
+                  
                   <button
                     onClick={() => {
                       onCreateSprint?.();

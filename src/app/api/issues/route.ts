@@ -32,24 +32,32 @@ export async function GET(request: NextRequest) {
       whereClause.status = status
     }
 
-    // Check if we should filter by active sprint
-    const showOnlyActiveSprint = searchParams.get('activeSprint') === 'true'
+    // Check for specific sprint ID filter
+    const sprintId = searchParams.get('sprintId')
     
-    if (showOnlyActiveSprint) {
-      // Find the active sprint for this project
-      const activeSprint = await prisma.sprint.findFirst({
-        where: {
-          projectId,
-          isActive: true,
-        },
-      })
+    if (sprintId) {
+      // Filter by specific sprint ID
+      whereClause.sprintId = sprintId
+    } else {
+      // Check if we should filter by active sprint
+      const showOnlyActiveSprint = searchParams.get('activeSprint') === 'true'
       
-      // If there's an active sprint, filter cards by it
-      // Otherwise, show cards with no sprint assigned (backlog)
-      if (activeSprint) {
-        whereClause.sprintId = activeSprint.id
-      } else {
-        whereClause.sprintId = null
+      if (showOnlyActiveSprint) {
+        // Find the active sprint for this project
+        const activeSprint = await prisma.sprint.findFirst({
+          where: {
+            projectId,
+            isActive: true,
+          },
+        })
+        
+        // If there's an active sprint, filter cards by it
+        // Otherwise, show cards with no sprint assigned (backlog)
+        if (activeSprint) {
+          whereClause.sprintId = activeSprint.id
+        } else {
+          whereClause.sprintId = null
+        }
       }
     }
 
