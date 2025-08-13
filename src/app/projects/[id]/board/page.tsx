@@ -162,7 +162,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     isAiAllowedTask: true,
     assigneeId: null,
     labelIds: [],
-    sprintId: null,
+    sprintId: activeSprint?.id || null,
   });
   const [createAnother, setCreateAnother] = useState(false);
   const [selectedCardLabelIds, setSelectedCardLabelIds] = useState<string[]>([]);
@@ -190,6 +190,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const currentMouseRef = useRef({ x: 0, y: 0 });
 
 
+
+  // Auto-assign current sprint when activeSprint changes
+  useEffect(() => {
+    if (activeSprint?.id && !newCard.sprintId) {
+      setNewCard(prev => ({ ...prev, sprintId: activeSprint.id }));
+    }
+  }, [activeSprint?.id, newCard.sprintId]);
 
   // Auto-assign "Agent" when AI allowed task is enabled for new cards
   useEffect(() => {
@@ -225,7 +232,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         isAiAllowedTask: true,
         assigneeId: null,
         labelIds: [],
-        sprintId: null,
+        sprintId: activeSprint?.id || null,
       });
     }, 300);
   };
