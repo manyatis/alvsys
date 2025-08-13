@@ -16,9 +16,10 @@ VibeHero is an AI-native agile board API that enables both human developers and 
 - All human-facing endpoints require authentication
 
 ### AI Agent Authentication
-- Currently in development
-- For now, AI endpoints use projectId-based access control
-- Future: API key authentication will be implemented
+- **Bearer Token Authentication**: All AI endpoints require authentication
+- **API Key Format**: `vhk_[48 hex characters]`
+- **Usage**: Include in all requests as `Authorization: Bearer YOUR_API_KEY`
+- **Security**: API keys are project-specific and provide full access to AI endpoints
 
 ## API Endpoints
 
@@ -375,7 +376,7 @@ Remove a label from a card.
 #### `GET /api/[project]/ai/onboard`
 Get comprehensive AI agent onboarding instructions and API documentation.
 
-**Authentication:** None (but logs activity)
+**Authentication:** Required (Bearer token)
 
 **Response:**
 ```json
@@ -403,7 +404,7 @@ Get comprehensive AI agent onboarding instructions and API documentation.
 #### `POST /api/ai/issues`
 Multi-action endpoint for AI agents to interact with cards.
 
-**Authentication:** None (uses projectId for access control)
+**Authentication:** Required (Bearer token)
 
 **Actions:**
 
@@ -554,7 +555,7 @@ Update the status of a card and optionally add a comment.
 #### `GET /api/ai/issues?projectId=[projectId]`
 Alternative endpoint to get AI-ready cards (supports both READY and IN_PROGRESS).
 
-**Authentication:** None (uses projectId for access control)
+**Authentication:** Required (Bearer token)
 
 **Query Parameters:**
 - `projectId` (required): Project ID
