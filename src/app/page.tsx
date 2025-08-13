@@ -367,8 +367,7 @@ export default function Home() {
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
                 <AnimatedBoardDemo 
                   autoPlay={true} 
-                  speed={2500} 
-                  showControls={false} 
+                  speed={3500}
                 />
               </div>
             </div>

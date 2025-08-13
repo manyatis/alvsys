@@ -1,16 +1,15 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Clock, 
   CheckCircle, 
   RefreshCw, 
   Zap,
   FileText,
-  TestTube,
-  Rocket
+  TestTube
 } from 'lucide-react';
-import { CardStatus, Card } from '@/types/card';
+import { CardStatus } from '@/types/card';
 import { ColumnConfig } from './KanbanColumn';
 
 // Demo card templates
@@ -91,109 +90,131 @@ const DEMO_COLUMNS: ColumnConfig[] = [
   },
 ];
 
-interface AnimatedCard extends Omit<Card, 'createdAt' | 'updatedAt' | 'agentInstructions'> {
-  animationKey: string;
-  isAnimating: boolean;
-  agentInstructions: never[]; // Empty array for demo
-}
+// Terminal commands for different phases
+const TERMINAL_COMMANDS = [
+  { // REFINEMENT -> READY
+    commands: [
+      '$ claude-agent pickup task',
+      'Found task: "Add user authentication"',
+      '$ analyzing requirements...',
+      'Planning OAuth implementation',
+      'Ready to start development ✓'
+    ]
+  },
+  { // READY -> IN_PROGRESS  
+    commands: [
+      '$ git checkout -b auth-feature',
+      'Switched to new branch "auth-feature"',
+      '$ npm install next-auth',
+      'Installing authentication packages...',
+      'Setting up OAuth providers...'
+    ]
+  },
+  { // IN_PROGRESS -> BLOCKED
+    commands: [
+      '$ implementing auth routes...',
+      'Creating login components...',
+      'ERROR: Missing Google OAuth credentials',
+      '$ updating status to BLOCKED',
+      'Waiting for API keys from team'
+    ]
+  },
+  { // BLOCKED -> READY_FOR_REVIEW
+    commands: [
+      '$ received OAuth credentials',
+      'Configuring authentication...',
+      '$ npm run test',
+      'All tests passing ✓',
+      '$ git push origin auth-feature',
+      'Ready for code review'
+    ]
+  },
+  { // READY_FOR_REVIEW -> COMPLETED
+    commands: [
+      '$ code review approved',
+      '$ git checkout main',
+      '$ git merge auth-feature',
+      'Deployment successful ✓',
+      'Task completed successfully'
+    ]
+  }
+];
 
 interface AnimatedBoardDemoProps {
   autoPlay?: boolean;
   speed?: number; // milliseconds between transitions
-  showControls?: boolean;
 }
 
 export default function AnimatedBoardDemo({ 
   autoPlay = true, 
-  speed = 3000,
-  showControls = true 
+  speed = 2000
 }: AnimatedBoardDemoProps) {
-  const [cards, setCards] = useState<AnimatedCard[]>([]);
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [animationStep, setAnimationStep] = useState(0);
+  const [currentStatusIndex, setCurrentStatusIndex] = useState(0);
+  const [showTerminal, setShowTerminal] = useState(false);
+  const [terminalText, setTerminalText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
-  // Create a new card
-  const createCard = useCallback((index: number) => {
-    const template = DEMO_CARDS[index % DEMO_CARDS.length];
-    const newCard: AnimatedCard = {
-      id: `demo-card-${index}`,
-      animationKey: `${index}-${Date.now()}`,
-      title: template.title,
-      description: template.description,
-      status: 'REFINEMENT' as CardStatus,
-      priority: template.priority,
-      storyPoints: template.storyPoints,
-      projectId: 'demo-project',
-      assigneeId: undefined,
-      sprintId: undefined,
-      isAiAllowedTask: true,
-      agentInstructions: [],
-      isAnimating: true,
-    };
-
-    setCards(prev => [...prev, newCard]);
-    return newCard.id;
-  }, []);
-
-  // Move card to next status
-  const moveCard = useCallback((cardId: string) => {
-    setCards(prev => prev.map(card => {
-      if (card.id !== cardId) return card;
-
-      const currentIndex = DEMO_COLUMNS.findIndex(col => col.status === card.status);
-      const nextIndex = currentIndex + 1;
-      
-      if (nextIndex >= DEMO_COLUMNS.length) {
-        // Remove completed cards after a delay
+  // Typewriter effect for terminal
+  const typeText = (commands: string[]) => {
+    setShowTerminal(true);
+    setIsTyping(true);
+    setTerminalText('');
+    
+    let fullText = '';
+    let currentIndex = 0;
+    
+    // Build full text with line breaks
+    commands.forEach((command, index) => {
+      if (index > 0) fullText += '\n';
+      fullText += command;
+    });
+    
+    const typeInterval = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setTerminalText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        clearInterval(typeInterval);
+        setIsTyping(false);
+        
+        // Hide terminal after completion
         setTimeout(() => {
-          setCards(prev => prev.filter(c => c.id !== cardId));
-        }, 2000);
-        return card;
+          setShowTerminal(false);
+          setTerminalText('');
+        }, 1000);
       }
+    }, 50); // Typing speed
+  };
 
-      return {
-        ...card,
-        status: DEMO_COLUMNS[nextIndex].status,
-        isAnimating: true,
-      };
-    }));
-  }, []);
-
-  // Animation loop
+  // Single card animation - cycle through cards and their statuses
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!autoPlay) return;
 
     const interval = setInterval(() => {
-      if (animationStep % 2 === 0) {
-        // Create new card
-        createCard(currentCardIndex);
-        setCurrentCardIndex(prev => prev + 1);
-      } else {
-        // Move existing cards
-        setCards(prev => {
-          const cardsToMove = prev.filter(card => card.status !== 'COMPLETED');
-          if (cardsToMove.length > 0) {
-            const cardToMove = cardsToMove[0]; // Move the oldest card
-            moveCard(cardToMove.id);
-          }
-          return prev;
-        });
+      // Show terminal work before status change (except for first status)
+      if (currentStatusIndex > 0 && currentStatusIndex < DEMO_COLUMNS.length && TERMINAL_COMMANDS[currentStatusIndex - 1]) {
+        typeText(TERMINAL_COMMANDS[currentStatusIndex - 1].commands);
       }
       
-      setAnimationStep(prev => prev + 1);
+      // Wait for terminal to finish, then update status
+      setTimeout(() => {
+        setCurrentStatusIndex(prev => {
+          const nextStatusIndex = prev + 1;
+          
+          // If we've completed all statuses for current card, move to next card
+          if (nextStatusIndex >= DEMO_COLUMNS.length) {
+            setCurrentCardIndex(prevCard => (prevCard + 1) % DEMO_CARDS.length);
+            return 0; // Reset to first status
+          }
+          
+          return nextStatusIndex;
+        });
+      }, currentStatusIndex > 0 ? 3000 : 0); // Delay for terminal animation
     }, speed);
 
     return () => clearInterval(interval);
-  }, [isPlaying, animationStep, currentCardIndex, speed, createCard, moveCard]);
-
-  // Stop animation after a delay
-  useEffect(() => {
-    setCards(prev => prev.map(card => ({
-      ...card,
-      isAnimating: false
-    })));
-  }, [cards]);
+  }, [autoPlay, speed, currentStatusIndex]);
 
   const getPriorityColor = (priority: number) => {
     switch (priority) {
@@ -225,119 +246,78 @@ export default function AnimatedBoardDemo({
     }
   };
 
+  // Get current card and status
+  const currentCard = DEMO_CARDS[currentCardIndex];
+  const currentStatus = DEMO_COLUMNS[currentStatusIndex];
+
   return (
-    <div className="relative">
-      {/* Controls */}
-      {showControls && (
-        <div className="flex items-center gap-4 mb-6 p-4 bg-slate-50 dark:bg-slate-800 rounded-lg">
-          <button
-            onClick={() => setIsPlaying(!isPlaying)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-          >
-            {isPlaying ? <Zap className="w-4 h-4" /> : <Rocket className="w-4 h-4" />}
-            {isPlaying ? 'Pause Demo' : 'Start Demo'}
-          </button>
+    <div className="relative w-full max-w-sm mx-auto">
+      {/* Single Card Flipper */}
+      <div className={`bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-4 min-h-[180px] transition-all duration-500 ${showTerminal ? 'opacity-30' : 'opacity-100'}`}>
+        {/* Current Status Badge */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <currentStatus.icon className={`w-4 h-4 ${currentStatus.textColor}`} />
+            <span className={`text-xs font-medium ${currentStatus.textColor} px-2 py-1 rounded-full ${currentStatus.bgColor}`}>
+              {currentStatus.title}
+            </span>
+          </div>
+          <Zap className="w-4 h-4 text-blue-500" />
+        </div>
+
+        {/* Card Content */}
+        <div className="transition-all duration-300">
+          <h3 className="font-semibold text-slate-900 dark:text-white mb-2 text-sm">
+            {currentCard.title}
+          </h3>
+          <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
+            {currentCard.description}
+          </p>
           
-          <button
-            onClick={() => {
-              setCards([]);
-              setCurrentCardIndex(0);
-              setAnimationStep(0);
-            }}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-lg transition-colors"
-          >
-            <RefreshCw className="w-4 h-4" />
-            Reset
-          </button>
+          <div className="flex items-center justify-between">
+            <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(currentCard.priority)}`}>
+              {getPriorityText(currentCard.priority)}
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {currentCard.storyPoints} pts
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Terminal Overlay */}
+      {showTerminal && (
+        <div className="absolute inset-0 bg-black/90 rounded-xl p-4 font-mono text-xs overflow-hidden">
+          {/* Terminal Header */}
+          <div className="flex items-center gap-2 mb-3 border-b border-gray-600 pb-2">
+            <div className="flex gap-1">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            </div>
+            <span className="text-gray-300 text-xs">AI Agent Terminal</span>
+          </div>
           
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            Cards: {cards.length} | Speed: {speed/1000}s
+          {/* Terminal Content */}
+          <div className="text-green-400 whitespace-pre-wrap leading-relaxed">
+            {terminalText}
+            {isTyping && <span className="animate-pulse">▊</span>}
           </div>
         </div>
       )}
 
-      {/* Board */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        {DEMO_COLUMNS.map((column) => {
-          const columnCards = cards.filter(card => card.status === column.status);
-          
-          return (
-            <div
-              key={column.status}
-              className={`rounded-lg p-4 min-h-[400px] ${column.bgColor} border border-slate-200 dark:border-slate-700`}
-            >
-              {/* Column Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <column.icon className={`w-5 h-5 ${column.textColor}`} />
-                  <h3 className={`font-semibold ${column.textColor}`}>
-                    {column.title}
-                  </h3>
-                  <span className={`w-6 h-6 rounded-full ${column.color} text-white text-xs flex items-center justify-center font-medium`}>
-                    {columnCards.length}
-                  </span>
-                </div>
-              </div>
-
-              {/* Cards */}
-              <div className="space-y-3">
-                {columnCards.map((card) => (
-                  <div
-                    key={`${card.id}-${card.animationKey}`}
-                    className={`p-3 bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 cursor-pointer hover:shadow-md transition-all duration-500 ${
-                      card.isAnimating ? 'animate-pulse scale-105' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="text-sm font-medium text-slate-900 dark:text-white line-clamp-2">
-                        {card.title}
-                      </h4>
-                      {card.isAiAllowedTask && (
-                        <div className="flex-shrink-0 ml-2">
-                          <Zap className="w-4 h-4 text-blue-500" />
-                        </div>
-                      )}
-                    </div>
-                    
-                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 line-clamp-2">
-                      {card.description}
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(card.priority)}`}>
-                        {getPriorityText(card.priority)}
-                      </span>
-                      
-                      {card.storyPoints && (
-                        <div className="flex items-center gap-1">
-                          <span className="text-xs text-slate-500 dark:text-slate-400">
-                            {card.storyPoints} pts
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Demo Info */}
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-        <div className="flex items-start gap-3">
-          <Zap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-          <div className="flex-1">
-            <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
-              AI-Powered Workflow Demo
-            </h4>
-            <p className="text-sm text-blue-700 dark:text-blue-300">
-              Watch as VibeHero creates tasks and AI agents automatically move them through your development workflow. 
-              Each card with a ⚡ icon can be processed by AI agents autonomously.
-            </p>
-          </div>
-        </div>
+      {/* Progress Dots */}
+      <div className="flex justify-center mt-3 gap-1">
+        {DEMO_COLUMNS.map((column, index) => (
+          <div
+            key={column.status}
+            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+              currentStatusIndex === index
+                ? column.color
+                : 'bg-slate-300 dark:bg-slate-600'
+            }`}
+          />
+        ))}
       </div>
     </div>
   );
