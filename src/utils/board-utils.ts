@@ -122,7 +122,7 @@ export const formatCommentDate = (date: Date | string) => {
 };
 
 export const copyOnboardLink = async (projectId: string, onSuccess: () => void) => {
-  const onboardUrl = `https://vibehero.io/api/${projectId}/ai/onboard`;
+  const onboardUrl = `Fetch from this https://vibehero.io/api/${projectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
   try {
     await navigator.clipboard.writeText(onboardUrl);
     onSuccess();
