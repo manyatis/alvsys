@@ -231,26 +231,21 @@ export default function ProjectsPage() {
             </h2>
             <form onSubmit={handleCreateProject}>
               <div className="mb-6">
-                <label className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    checked={formData.useExistingOrg}
-                    onChange={(e) => setFormData({ ...formData, useExistingOrg: e.target.checked })}
-                    className="mr-2"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Use existing organization
-                  </span>
-                </label>
-
-                {formData.useExistingOrg ? (
-                  <div>
+                {organizations.length > 0 ? (
+                  <>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Select Organization
+                      Organization
                     </label>
                     <select
                       value={formData.organizationId}
-                      onChange={(e) => setFormData({ ...formData, organizationId: e.target.value })}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === 'new') {
+                          setFormData({ ...formData, useExistingOrg: false, organizationId: '' });
+                        } else {
+                          setFormData({ ...formData, useExistingOrg: true, organizationId: value });
+                        }
+                      }}
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
                       required
                     >
@@ -260,8 +255,25 @@ export default function ProjectsPage() {
                           {org.name}
                         </option>
                       ))}
+                      <option value="new">+ Create new organization</option>
                     </select>
-                  </div>
+                    
+                    {!formData.useExistingOrg && (
+                      <div className="mt-4">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          New Organization Name
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.organizationName}
+                          onChange={(e) => setFormData({ ...formData, organizationName: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                          placeholder="My Company"
+                          required
+                        />
+                      </div>
+                    )}
+                  </>
                 ) : (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
