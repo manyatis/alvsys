@@ -24,9 +24,25 @@ export async function GET() {
     }
 
     // Get usage summary
-    const usageSummary = await UsageService.getUsageSummary(user.id);
+    const usageStats = await UsageService.getUserUsageStats(user.id);
+    
+    // Transform to expected format
+    const usageStatus = {
+      tier: 'FREE' as const,
+      usage: {
+        canCreateCard: !(await UsageService.hasReachedDailyCardLimit(user.id)),
+        canCreateProject: !(await UsageService.hasReachedProjectLimit(user.id)),
+        dailyCardsUsed: usageStats.dailyCardProcessingCount,
+        dailyCardsLimit: 5, // Default for FREE tier
+        projectsUsed: usageStats.totalProjectCount,
+        projectsLimit: 1, // Default for FREE tier
+        resetTime: usageStats.lastResetDate,
+      },
+      isAtCardLimit: await UsageService.hasReachedDailyCardLimit(user.id),
+      isAtProjectLimit: await UsageService.hasReachedProjectLimit(user.id),
+    };
 
-    return NextResponse.json(usageSummary);
+    return NextResponse.json(usageStatus);
   } catch (error) {
     console.error('Error fetching user usage:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

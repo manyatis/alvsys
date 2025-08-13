@@ -122,15 +122,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Check usage limits before creating card
-    const canCreateCard = await UsageService.incrementCardUsage(user.id)
-    if (!canCreateCard) {
-      const usageStatus = await UsageService.getUserUsageStatus(user.id)
+    const hasReachedLimit = await UsageService.hasReachedDailyCardLimit(user.id)
+    if (hasReachedLimit) {
+      const usageStats = await UsageService.getUserUsageStats(user.id)
       return NextResponse.json({ 
         error: 'Daily card limit reached', 
         usageLimit: {
-          used: usageStatus.dailyCardsUsed,
-          limit: usageStatus.dailyCardsLimit,
-          resetTime: usageStatus.resetTime,
+          used: usageStats.dailyCardProcessingCount,
+          limit: 5, // Default limit for now since service is stubbed
+          resetTime: usageStats.lastResetDate,
         }
       }, { status: 429 })
     }
@@ -172,6 +172,9 @@ export async function POST(request: NextRequest) {
         agentInstructions: true,
       },
     })
+
+    // Increment usage after successful card creation
+    await UsageService.incrementCardUsage(user.id)
 
     return NextResponse.json(issue, { status: 201 })
   } catch (error) {
