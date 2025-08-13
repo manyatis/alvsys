@@ -9,7 +9,8 @@ import {
   Search, 
   Copy, 
   Check,
-  Archive 
+  Archive,
+  Key
 } from 'lucide-react';
 import { FilterState, hasActiveFilters, copyOnboardLink } from '@/utils/board-utils';
 import FilterMenu from './FilterMenu';
@@ -122,6 +123,14 @@ export default function BoardSidebar({
               {copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
             </button>
             
+            <button
+              onClick={() => router.push('/account')}
+              className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <Key className="h-3 w-3" />
+              API Keys
+            </button>
+            
             <div className="relative">
               <button 
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
@@ -198,6 +207,14 @@ export default function BoardSidebar({
               ) : (
                 <Copy className="h-3 w-3" />
               )}
+            </button>
+            
+            <button
+              onClick={() => router.push('/account')}
+              className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title="API Keys"
+            >
+              <Key className="h-3 w-3" />
             </button>
             
             <div className="relative">
