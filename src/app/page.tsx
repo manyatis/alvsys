@@ -610,8 +610,11 @@ export default function Home() {
                 </li>
               </ul>
               
-              <button className="w-full px-6 py-3 bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg cursor-not-allowed" disabled>
-                Coming Soon
+              <button 
+                onClick={() => window.location.href = '/subscribe'}
+                className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Subscribe Now
               </button>
             </div>
           </div>

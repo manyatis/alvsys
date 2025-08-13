@@ -45,9 +45,9 @@ export default function SubscriptionFlow() {
   };
 
   const handlePlanSelect = (plan: SubscriptionPlan) => {
-    // Only allow indie plan for now (professional is coming soon)
-    if (plan.planId !== 'indie') {
-      return; // Do nothing for disabled plans
+    // Allow subscription to any active paid plan
+    if (plan.planId === 'free' || !plan.isActive) {
+      return; // Do nothing for free plan or inactive plans
     }
     setSelectedPlan(plan);
     setStep('payment');
