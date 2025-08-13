@@ -51,23 +51,23 @@ export default function ExampleWorkflowPage() {
     },
     {
       id: 2,
-      title: 'Create User Stories',
-      description: 'Add detailed user stories with clear acceptance criteria',
+      title: 'Create Tasks for Your Team',
+      description: 'Add tasks for humans, AI agents, or collaborative work',
       icon: FileText,
       screenshot: '/create issue.png',
       details: [
-        'Click the "+" button in any column to create a new story',
-        'Write stories in user story format: "As a [user], I want [goal] so that [reason]"',
-        'Add detailed descriptions explaining the context and requirements',
-        'Define clear acceptance criteria that specify what "done" looks like',
-        'Set appropriate priority levels (P1-P5) based on business importance',
-        'Enable AI access for technical tasks that can be automated',
-        'Assign team members or leave unassigned for team pickup'
+        'Click the "+" button in any column to create a new task',
+        'Write clear task descriptions: feature requests, bug fixes, improvements',
+        'Add detailed requirements explaining exactly what needs to be done',
+        'Define acceptance criteria so everyone knows when the task is complete',
+        'Set priority levels (P1-P5) to help the team focus on what matters most',
+        'Choose assignee: specific team members, AI agents, or leave open for anyone',
+        'Enable "AI Allowed" on technical tasks that can be automated'
       ],
       tips: [
-        'Keep stories small and focused on a single feature',
-        'Include mockups or examples for UI-related stories',
-        'Write acceptance criteria as testable conditions'
+        'Keep tasks focused on a single feature or fix',
+        'Include examples or mockups for UI-related work',
+        'Write clear acceptance criteria that both humans and AI can understand'
       ]
     },
     {
@@ -114,24 +114,24 @@ export default function ExampleWorkflowPage() {
     },
     {
       id: 5,
-      title: 'Give Link to Your AI Agent',
-      description: 'Connect your AI assistant to start automated development work',
+      title: 'Add AI Agents to Your Team',
+      description: 'Connect AI assistants to work alongside human team members',
       icon: Bot,
       screenshot: '/give onboarding link to ai.png',
       details: [
         'Share the onboard link with your AI agent (Claude Code, GitHub Copilot, etc.)',
-        'The agent will use both the onboard link and your api_key.txt file for authentication',
-        'The agent will call the API to understand your project structure and available tasks',
-        'Agents automatically fetch the highest priority "Ready" tasks from your board',
-        'They update task status to "In Progress" when starting work',
+        'AI agents work alongside humans on the same board with full visibility',
+        'Agents automatically fetch AI-enabled tasks that are marked as "Ready"',
+        'They update task status to "In Progress" when starting work, just like humans do',
         'Agents add progress comments as they work through implementation',
-        'All AI activity is logged and visible to your team in real-time'
+        'Your team can see AI progress in real-time and provide guidance when needed',
+        'Both humans and AI agents contribute to the same workflow seamlessly'
       ],
       tips: [
-        'Start with simple, well-defined tasks for AI agents',
-        'Provide detailed acceptance criteria for better AI results',
-        'Ensure both the onboard link and api_key.txt file are accessible to your AI agent',
-        'Monitor AI progress through the board and comments'
+        'Start AI agents with simple, well-defined technical tasks',
+        'Both humans and AI benefit from detailed acceptance criteria',
+        'Your team can collaborate with AI agents through comments and status updates',
+        'AI agents work best on technical implementation while humans handle strategy'
       ]
     },
     {
@@ -193,20 +193,20 @@ export default function ExampleWorkflowPage() {
               Example Workflow
             </h1>
             <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Follow this step-by-step guide to see how VibeHero enables seamless collaboration between human teams and AI agents
+              Follow this step-by-step guide to set up VibeHero as your AI agent&apos;s project manager and delegate development work
             </p>
             <div className="flex items-center justify-center gap-6 text-blue-100">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                <span>Create Stories</span>
+                <span>Queue Tasks</span>
               </div>
               <div className="flex items-center gap-2">
                 <Bot className="h-5 w-5" />
-                <span>AI Collaboration</span>
+                <span>AI Delegation</span>
               </div>
               <div className="flex items-center gap-2">
                 <UserCheck className="h-5 w-5" />
-                <span>Review Process</span>
+                <span>Review Results</span>
               </div>
             </div>
           </div>

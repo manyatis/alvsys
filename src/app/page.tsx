@@ -23,26 +23,27 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              AI-Powered Development
+              AI Project Management
             </div>
             
             <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
-              Bring Structure to{" "}
+              Your AI Agent&apos;s{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-                Vibe Coding
+                Project Manager
               </span>
             </h1>
             
             <p className="text-base md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Transform chaotic &quot;vibe coding&quot; into structured, asynchronous development. 
-              Create organized backlogs, enable AI agents, and watch work happen automatically 
-              while you sleep, travel, or focus on strategy. <strong className="text-blue-600 dark:text-blue-400">Maximize your token limits</strong> with efficient task queueing.
+              Set up tasks, walk away, and let your AI agents get to work. VibeHero manages the queue, 
+              tracks progress, and keeps your development organized while you focus on what matters. 
+              <strong className="text-blue-600 dark:text-blue-400">No more babysitting AI</strong> - just results.
             </p>
             
             <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
               <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
-                <span className="font-semibold text-purple-700 dark:text-purple-400">Stop the chaos:</span> No more scattered ideas, forgotten tasks, or waiting around for AI responses. 
-                VibeHero brings real software engineering practices to AI-assisted development.
+                <span className="font-semibold text-purple-700 dark:text-purple-400">The better way:</span> Create tasks when inspiration strikes, 
+                then delegate everything to your AI agents. They pick up work automatically, follow your requirements, 
+                and deliver results while you&apos;re away. True delegation, not micromanagement.
               </p>
             </div>
             
@@ -54,8 +55,8 @@ export default function Home() {
                 <span className="font-semibold text-green-700 dark:text-green-400">Optimize Your AI Usage</span>
               </div>
               <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
-                <strong>Get the most from your token limits.</strong> Queue up exactly what you need done and let AI agents work efficiently through prioritized tasks. 
-                No more wasted tokens on incomplete prompts or context switching.
+                <strong>Stop wasting tokens on management.</strong> Instead of manually prompting AI for each task, 
+                create a backlog and let agents work through it systematically. More actual work, less overhead.
               </p>
             </div>
             
@@ -247,11 +248,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Structured Task Creation
+                Task Management for Teams
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Transform scattered ideas into well-defined user stories with clear acceptance criteria. 
-                Create organized backlogs from anywhere - mobile, desktop, or on-the-go.
+                Create feature requests, bug fixes, and improvements for both humans and AI agents. 
+                Set who can work on what - your team collaborates seamlessly with AI assistants.
               </p>
             </div>
             
@@ -262,11 +263,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Asynchronous AI Workflow
+                Set It and Forget It
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                No more prompting AI for every single task. Agents automatically pick up work, 
-                follow your requirements, and deliver results while you&apos;re away. True async development.
+                Queue up your work, connect your AI agent, and walk away. No monitoring required. 
+                Agents work through tasks systematically, updating status and adding progress notes.
               </p>
             </div>
             
@@ -277,11 +278,11 @@ export default function Home() {
                 </svg>
               </div>
               <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Real Engineering Practices
+                Review When Ready
               </h3>
               <p className="text-slate-600 dark:text-slate-300">
-                Bring agile methodologies to AI development. Proper prioritization, status tracking, 
-                code review processes, and full audit trails for professional-grade development.
+                Get notified when work is complete. Review the results, provide feedback, or approve. 
+                Full visibility into what was done with complete audit trails for every task.
               </p>
             </div>
           </div>
@@ -294,10 +295,10 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <div>
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                From Chaos to Structure
+                How It Works
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                Here&apos;s how we use VibeHero to transform chaotic development into structured productivity:
+                VibeHero acts as your AI agent&apos;s project manager, handling the coordination so you don&apos;t have to:
               </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -310,12 +311,12 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      1. Brain Dump Your Ideas
+                      1. Create Your Work Queue
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      <strong className="text-blue-600 dark:text-blue-400">Create issues as they come to mind</strong> - 
-                      during QA testing, while traversing your software, or whenever inspiration strikes. 
-                      Don&apos;t worry about perfection, just capture everything.
+                      <strong className="text-blue-600 dark:text-blue-400">Add tasks when inspiration strikes</strong> - 
+                      feature requests, bug fixes, improvements. Assign to humans, AI agents, or leave open. 
+                      Everyone works together on prioritized tasks.
                     </p>
                   </div>
                 </div>
@@ -330,12 +331,12 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      2. Deploy Your AI Agent
+                      2. Connect Your AI Agent
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      <strong className="text-blue-600 dark:text-blue-400">Launch any CLI agent</strong> (Claude Desktop, 
-                      Cursor, Windsurf, etc), copy-paste the onboard instructions from your project, 
-                      and let it start working through your backlog.
+                      <strong className="text-blue-600 dark:text-blue-400">Connect AI agents to work alongside your team.</strong> 
+                      They automatically fetch AI-enabled tasks, update status, and work through the backlog. 
+                      Humans and AI agents collaborate seamlessly on the same board.
                     </p>
                   </div>
                 </div>
@@ -350,12 +351,12 @@ export default function Home() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      3. Review As It Completes
+                      3. Review When Convenient
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      <strong className="text-blue-600 dark:text-blue-400">Watch your work get done</strong> - 
-                      the AI agent moves cards through the workflow, and you review completed work 
-                      for correctness. Stay in control while working asynchronously.
+                      <strong className="text-blue-600 dark:text-blue-400">Return to completed work</strong> - 
+                      agents move tasks to review status when done. You can check progress anytime, 
+                      provide feedback, or approve. Full autonomy with human oversight.
                     </p>
                   </div>
                 </div>
@@ -606,11 +607,11 @@ export default function Home() {
       <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Transform Your Workflow?
+            Ready to Stop Managing AI?
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join developers who create backlogs on the go and wake up to completed features. 
-            <strong className="text-yellow-300">Make every token count</strong> with organized, efficient task queues that maximize your AI investment.
+            Join developers who set up work queues and let AI agents handle the rest. 
+            <strong className="text-yellow-300">True delegation</strong> means you focus on strategy while agents execute.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
