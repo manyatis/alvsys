@@ -580,7 +580,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   // Touch handlers for mobile
   const handleTouchStart = (card: Card, element: HTMLElement, touch: React.Touch) => {
-    // Add 200ms delay for touch devices to prevent accidental drags
+    // Add 1.5 second delay for touch devices to prevent accidental drags
     setTimeout(() => {
       setDraggedCard(card);
       setIsDragging(true);
@@ -608,7 +608,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       if ('vibrate' in navigator) {
         navigator.vibrate(10);
       }
-    }, 200);
+    }, 1500);
   };
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
