@@ -72,10 +72,16 @@ export default function Home() {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+              <button 
+                onClick={() => window.location.href = '/projects'}
+                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+              >
                 Join Free
               </button>
-              <button className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all">
+              <button 
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-8 py-4 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all"
+              >
                 View Pricing
               </button>
             </div>
@@ -290,25 +296,25 @@ export default function Home() {
                 From Chaos to Structure
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                Stop the endless cycle of prompting AI agents and losing track of work. 
-                VibeHero brings professional development practices to the AI era.
+                Here&apos;s how we use VibeHero to transform chaotic development into structured productivity:
               </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                       </svg>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Queue Work, Walk Away
+                      1. Brain Dump Your Ideas
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Line up a week&apos;s worth of structured tasks, enable AI agents, and let them work 
-                      asynchronously. <strong className="text-blue-600 dark:text-blue-400">Use your token limits efficiently</strong> - no more babysitting AI or losing context between sessions.
+                      <strong className="text-blue-600 dark:text-blue-400">Create issues as they come to mind</strong> - 
+                      during QA testing, while traversing your software, or whenever inspiration strikes. 
+                      Don&apos;t worry about perfection, just capture everything.
                     </p>
                   </div>
                 </div>
@@ -317,17 +323,18 @@ export default function Home() {
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Professional Development Process
+                      2. Deploy Your AI Agent
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Replace chaotic &quot;vibe coding&quot; with proper user stories, acceptance criteria, 
-                      priority management, and code review workflows that scale.
+                      <strong className="text-blue-600 dark:text-blue-400">Launch any CLI agent</strong> (Claude Desktop, 
+                      Cursor, Windsurf, etc), copy-paste the onboard instructions from your project, 
+                      and let it start working through your backlog.
                     </p>
                   </div>
                 </div>
@@ -336,17 +343,18 @@ export default function Home() {
                   <div className="flex-shrink-0">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      Full Traceability & Control
+                      3. Review As It Completes
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Every AI action is logged, every decision is traceable, and you maintain 
-                      complete control over your codebase with human review gates.
+                      <strong className="text-blue-600 dark:text-blue-400">Watch your work get done</strong> - 
+                      the AI agent moves cards through the workflow, and you review completed work 
+                      for correctness. Stay in control while working asynchronously.
                     </p>
                   </div>
                 </div>
@@ -397,7 +405,7 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
               </span>
-              Eating Our Own Dog Food
+              Built with VibeHero
             </div>
             
             <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
@@ -413,13 +421,7 @@ export default function Home() {
             </p>
 
             {/* Proof Points */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-300 mb-2">247</div>
-                <div className="text-lg text-white font-semibold mb-2">Tasks Completed</div>
-                <div className="text-blue-200 text-sm">By AI agents while building VibeHero</div>
-              </div>
-              
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 max-w-2xl mx-auto">
               <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
                 <div className="text-3xl font-bold text-yellow-300 mb-2">72%</div>
                 <div className="text-lg text-white font-semibold mb-2">AI Automation</div>
@@ -438,14 +440,14 @@ export default function Home() {
               <h3 className="text-2xl font-bold text-white mb-6 text-center">The Story</h3>
               <div className="space-y-4 text-blue-100 leading-relaxed">
                 <p>
-                  <strong className="text-white">The Challenge:</strong> We were tired of the chaotic &quot;vibe coding&quot; approach - 
-                  scattered ideas, constant AI prompting, and lost context between sessions. 
-                  We needed structure without losing the creative flow.
+                  <strong className="text-white">The Inspiration:</strong> We wanted to work on our software even when not at the computer. 
+                  Waiting in line at the grocery store and have ideas to vibe code later? No problem - 
+                  create tasks and get them ready, then come home, turn on the agent and let it chew through the backlog.
                 </p>
                 <p>
-                  <strong className="text-white">The Solution:</strong> We built VibeHero to solve our own problems. 
-                  Every user story, every bug fix, every new feature was managed through our own platform.
-                  AI agents worked asynchronously while we slept, creating the very tool you&apos;re using now.
+                  <strong className="text-white">The Vision:</strong> We wanted to bring structure to the vibe coding process 
+                  while recognizing that not all tasks can be automated. So we built an AI-native task management board 
+                  designed for both humans and robots to work together seamlessly.
                 </p>
                 <p>
                   <strong className="text-white">The Result:</strong> A development process that scales. 
@@ -510,7 +512,10 @@ export default function Home() {
                 </li>
               </ul>
               
-              <button className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+              <button 
+                onClick={() => window.location.href = '/projects'}
+                className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              >
                 Get Started
               </button>
             </div>
@@ -559,8 +564,11 @@ export default function Home() {
                 </li>
               </ul>
               
-              <button className="w-full px-6 py-3 bg-slate-300 dark:bg-slate-600 text-slate-500 dark:text-slate-400 font-semibold rounded-lg cursor-not-allowed" disabled>
-                Coming Soon
+              <button 
+                onClick={() => window.location.href = '/subscribe'}
+                className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+              >
+                Subscribe Now
               </button>
             </div>
             
@@ -621,10 +629,16 @@ export default function Home() {
             <strong className="text-yellow-300">Make every token count</strong> with organized, efficient task queues that maximize your AI investment.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+            <button 
+              onClick={() => window.location.href = '/projects'}
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+            >
               Join Free
             </button>
-            <button className="px-8 py-4 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-blue-600 transition-all">
+            <button 
+              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
+              className="px-8 py-4 bg-transparent text-white font-semibold rounded-lg border-2 border-white hover:bg-white hover:text-blue-600 transition-all"
+            >
               View Pricing
             </button>
           </div>
