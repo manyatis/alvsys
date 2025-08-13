@@ -64,9 +64,9 @@ export class SubscriptionService {
   static async assignSubscriptionToUser(
     userId: string,
     tierType: SubscriptionTierType,
-    stripeSubscriptionId?: string
+    subscriptionId?: string
   ): Promise<void> {
-    console.log('Subscription assignment not implemented:', { userId, tierType, stripeSubscriptionId });
+    console.log('Subscription assignment not implemented:', { userId, tierType, subscriptionId });
   }
 
   /**
@@ -76,7 +76,7 @@ export class SubscriptionService {
     return {
       userId,
       tier: this.TIERS[SubscriptionTierType.FREE],
-      stripeSubscriptionId: null,
+      subscriptionId: null,
       status: 'active',
       currentPeriodEnd: null,
     };
@@ -116,9 +116,9 @@ export class SubscriptionService {
   static async upgradeUserSubscription(
     userId: string,
     newTierType: SubscriptionTierType,
-    stripeSubscriptionId: string
+    subscriptionId: string
   ): Promise<void> {
-    console.log('Subscription upgrade not implemented:', { userId, newTierType, stripeSubscriptionId });
+    console.log('Subscription upgrade not implemented:', { userId, newTierType, subscriptionId });
   }
 
   /**
