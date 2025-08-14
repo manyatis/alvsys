@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:localhost)",
+      "Bash(curl:*)",
+      "Bash(curl -X:*)",
+      "Bash(curl -X POST:*)",
+      "Bash(npm run build:*)",
+      "WebFetch(domain:vibehero.vercel.app)",
+      "Bash(ls:*)"
+    ],
+    "deny": []
+  }
+}

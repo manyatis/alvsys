@@ -1,0 +1,333 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  emailVerified     DateTime?
+  name              String?
+  image             String?
+  bio               String?
+  username          String?   @unique
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id])
+  // API keys for AI agents
+  apiKeys           APIKey[]
+  accounts          Account[]
+  sessions          Session[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  // Subscription management
+  subscriptionTier  String          @default("free") // "free", "indie", "professional"
+  plan              String          @default("free") // "free", "indie", "professional"
+  
+  // Stripe subscription management
+  subscriptionId        String?         // Stripe subscription ID
+  subscriptionStatus    String?         // "active", "past_due", "canceled", "paused", "trialing", "incomplete"
+  subscriptionStartDate DateTime?       // When subscription started
+  subscriptionEndDate   DateTime?       // When subscription ends (for canceled subscriptions)
+  stripeCustomerId      String?         // Stripe customer ID
+  stripePriceId         String?         // Stripe price ID for the current subscription
+  
+  // System
+  isActive          Boolean  @default(true)
+  isAdmin           Boolean  @default(false)
+  // Project relationships
+  ownedProjects     Project[] @relation("ProjectOwner")
+  projectAccess     ProjectUser[]
+  
+  // Card relationships
+  assignedCards     Card[]
+  comments          Comment[]
+  
+  // Activity logging
+  aiWorkLogs        AIWorkLog[]
+  
+  // Organization invitations (as sender)
+  sentInvitations   OrganizationInvitation[] @relation("InvitationSender")
+}
+
+model Organization {
+  id              String       @id @default(cuid())
+  name            String
+  slug            String?      @unique
+  description     String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  users           User[]
+  projects        Project[]
+  // Organization invitations
+  invitations     OrganizationInvitation[]
+}
+
+model OrganizationInvitation {
+  id              String       @id @default(cuid())
+  email           String
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  invitedBy       String
+  inviter         User         @relation("InvitationSender", fields: [invitedBy], references: [id])
+  role            String       @default("member") // member, admin, owner
+  token           String       @unique @default(cuid())
+  expiresAt       DateTime     // Invitation expiry
+  acceptedAt      DateTime?    // When the invitation was accepted
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  @@index([email])
+  @@index([organizationId])
+  @@index([token])
+}
+
+model Project {
+  id              String       @id @default(cuid())
+  name            String
+  description     String?
+  organizationId  String?
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  ownerId         String
+  owner           User         @relation("ProjectOwner", fields: [ownerId], references: [id])
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  
+  // Project settings
+  isActive        Boolean      @default(true)
+  isPublic        Boolean      @default(false)
+  
+  // Relationships
+  users           ProjectUser[]
+  cards           Card[]
+  labels          Label[]
+  sprints         Sprint[]
+  
+  @@index([organizationId])
+  @@index([ownerId])
+}
+
+model ProjectUser {
+  id        String   @id @default(cuid())
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      String   @default("member") // owner, admin, member, viewer
+  joinedAt  DateTime @default(now())
+  
+  @@unique([projectId, userId])
+  @@index([userId])
+}
+
+model Card {
+  id                String   @id @default(cuid())
+  title             String
+  description       String?
+  acceptanceCriteria String?
+  status            Status   @default(REFINEMENT)
+  priority          Int      @default(3) // 1-5, 1 being highest
+  storyPoints       Int?
+  projectId         String
+  project           Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assigneeId        String?
+  assignee          User?    @relation(fields: [assigneeId], references: [id])
+  sprintId          String?
+  sprint            Sprint?  @relation(fields: [sprintId], references: [id])
+  
+  // AI-specific fields
+  isAiAllowedTask   Boolean  @default(true)
+  aiAssigneeId      String?  // ID of the AI agent working on this
+  
+  // Timestamps
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  completedAt       DateTime?
+  
+  // Relationships
+  comments          Comment[]
+  labels            CardLabel[]
+  agentInstructions AgentDeveloperInstructions[]
+  aiWorkLogs        AIWorkLog[]
+  
+  @@index([projectId])
+  @@index([status])
+  @@index([assigneeId])
+  @@index([sprintId])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  isAiComment Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([cardId])
+  @@index([authorId])
+}
+
+model Label {
+  id          String      @id @default(cuid())
+  name        String
+  color       String      @default("#6366f1") // Default indigo
+  description String?
+  projectId   String
+  project     Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  cards       CardLabel[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@unique([projectId, name])
+  @@index([projectId])
+}
+
+model CardLabel {
+  id      String @id @default(cuid())
+  cardId  String
+  card    Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  labelId String
+  label   Label  @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  
+  @@unique([cardId, labelId])
+  @@index([cardId])
+  @@index([labelId])
+}
+
+model Sprint {
+  id        String    @id @default(cuid())
+  name      String
+  goal      String?
+  startDate DateTime
+  endDate   DateTime
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  cards     Card[]
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  @@index([projectId])
+  @@index([isActive])
+}
+
+model AgentDeveloperInstructions {
+  id                    String          @id @default(cuid())
+  cardId                String
+  card                  Card            @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  instructionType       InstructionType
+  branchName            String?
+  createBranch          Boolean         @default(false)
+  webResearchPrompt     String?
+  codeResearchPrompt    String?
+  architectureGuidelines String?
+  generalInstructions   String?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  
+  @@index([cardId])
+}
+
+model APIKey {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  name        String
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastUsedAt  DateTime?
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@index([userId])
+  @@index([key])
+}
+
+model AIWorkLog {
+  id          String   @id @default(cuid())
+  cardId      String
+  card        Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  userId      String   // The user whose API key was used
+  user        User     @relation(fields: [userId], references: [id])
+  action      String   // e.g., "status_update", "comment_added", "card_viewed"
+  details     Json?    // Additional details about the action
+  apiEndpoint String?  // Which API endpoint was called
+  createdAt   DateTime @default(now())
+  
+  @@index([cardId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model SubscriptionPlan {
+  id              Int       @id @default(autoincrement())
+  planId          String    @unique   // "free", "indie", "professional"
+  name            String                // "Free", "Indie", "Professional"
+  priceCents      Int                   // Price in cents (e.g., 1000 for $10.00)
+  billingPeriod   String    @default("month") // "month", "year"
+  features        String[]              // Array of feature descriptions
+  description     String?               // Plan description
+  stripePriceId   String?               // Stripe price ID
+  stripeProductId String?               // Stripe product ID
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// Enums
+enum Status {
+  REFINEMENT
+  READY
+  IN_PROGRESS
+  BLOCKED
+  READY_FOR_REVIEW
+  COMPLETED
+}
+
+enum InstructionType {
+  GIT
+  SPIKE
+  CODING
+  ARCHITECTURE
+}

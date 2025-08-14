@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Prevent text selection when dragging */
+body.dragging * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Professional Select/Dropdown Styling */
+.select-professional {
+  @apply w-full px-4 py-3 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm transition-all duration-200 ease-in-out;
+  @apply text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400;
+  @apply hover:border-slate-400 dark:hover:border-slate-500;
+  @apply disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+  padding-right: 44px;
+}
+
+.select-professional:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Dark mode dropdown arrow */
+.dark .select-professional {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Professional Select Compact Variant */
+.select-professional-sm {
+  @apply w-full px-3 py-2 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-md shadow-sm transition-all duration-200 ease-in-out;
+  @apply text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400;
+  @apply focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400;
+  @apply hover:border-slate-400 dark:hover:border-slate-500;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+  padding-right: 32px;
+}
+
+.dark .select-professional-sm {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Professional Select Large Variant */
+.select-professional-lg {
+  @apply w-full px-6 py-4 text-base bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl shadow-sm transition-all duration-200 ease-in-out;
+  @apply text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400;
+  @apply hover:border-slate-400 dark:hover:border-slate-500;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 16px center;
+  background-repeat: no-repeat;
+  background-size: 18px 18px;
+  padding-right: 52px;
+}
+
+.dark .select-professional-lg {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+}
+
+/* Form Group Styling */
+.form-group-professional {
+  @apply space-y-2;
+}
+
+.form-label-professional {
+  @apply block text-sm font-medium text-slate-700 dark:text-slate-300;
+}
+
+.form-label-professional-required::after {
+  content: " *";
+  @apply text-red-500;
+}
+
+/* Input Professional Styling to match selects */
+.input-professional {
+  @apply w-full px-4 py-3 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm transition-all duration-200 ease-in-out;
+  @apply text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400;
+  @apply hover:border-slate-400 dark:hover:border-slate-500;
+  @apply disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed;
+}
+
+.input-professional:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.textarea-professional {
+  @apply w-full px-4 py-3 text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg shadow-sm transition-all duration-200 ease-in-out;
+  @apply text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400;
+  @apply hover:border-slate-400 dark:hover:border-slate-500;
+  @apply disabled:bg-slate-100 dark:disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.textarea-professional:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Professional Button Styling */
+.btn-professional-primary {
+  @apply flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-all duration-200 ease-in-out;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+  @apply disabled:cursor-not-allowed disabled:opacity-60;
+  @apply shadow-sm hover:shadow;
+}
+
+.btn-professional-secondary {
+  @apply flex-1 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 font-medium rounded-lg transition-all duration-200 ease-in-out;
+  @apply hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500;
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+  @apply disabled:cursor-not-allowed disabled:opacity-60;
+  @apply shadow-sm hover:shadow;
+}
+
+.btn-professional-danger {
+  @apply flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-medium rounded-lg transition-all duration-200 ease-in-out;
+  @apply focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+  @apply disabled:cursor-not-allowed disabled:opacity-60;
+  @apply shadow-sm hover:shadow;
+}
