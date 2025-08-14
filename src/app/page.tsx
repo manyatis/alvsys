@@ -17,7 +17,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
         <div className="container mx-auto px-6 py-24 lg:py-32">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="max-w-6xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 px-4 py-2 rounded-full text-sm font-medium mb-8">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
@@ -26,14 +26,32 @@ export default function Home() {
               AI Project Management
             </div>
             
-            <h1 className="text-3xl md:text-5xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-12">
               Your AI Agent&apos;s{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
                 Project Manager
               </span>
             </h1>
             
-            <p className="text-base md:text-xl lg:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+            {/* Video - Large and centered */}
+            <div className="max-w-5xl mx-auto mb-12">
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700">
+                <video 
+                  className="w-full h-auto"
+                  controls
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                  controlsList="nodownload"
+                >
+                  <source src="/VibeHero Demo.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+            </div>
+            
+            <p className="text-xl md:text-2xl lg:text-3xl text-slate-600 dark:text-slate-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               Set up tasks, walk away, and let your AI agents get to work. VibeHero manages the queue, 
               tracks progress, and keeps your development organized while you focus on what matters. 
               <strong className="text-blue-600 dark:text-blue-400"> No more babysitting AI</strong> - just results.
@@ -47,33 +65,7 @@ export default function Home() {
               </p>
             </div>
             
-            <div className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto border border-green-200 dark:border-green-800">
-              <div className="flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span className="font-semibold text-green-700 dark:text-green-400">Optimize Your AI Usage</span>
-              </div>
-              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
-                <strong>Stop wasting tokens on management.</strong> Instead of manually prompting AI for each task, 
-                create a backlog and let agents work through it systematically. More actual work, less overhead.
-              </p>
-            </div>
-            
-            <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 mb-12 max-w-4xl mx-auto border border-green-200 dark:border-green-800">
-              <div className="flex items-center justify-center mb-3">
-                <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span className="font-semibold text-green-700 dark:text-green-400">Total Privacy Guaranteed</span>
-              </div>
-              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
-                We only facilitate project management - we have <strong>no access to your code, data, or repositories</strong>. 
-                VibeHero provides a secure management layer for your AI agents while ensuring complete privacy of your development work.
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <button 
                 onClick={() => window.location.href = '/projects'}
                 className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
@@ -86,6 +78,35 @@ export default function Home() {
               >
                 View Pricing
               </button>
+            </div>
+          
+            {/* Privacy and AI Usage boxes */}
+            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 rounded-2xl p-6 border border-green-200 dark:border-green-800">
+                <div className="flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span className="font-semibold text-green-700 dark:text-green-400">Optimize Your AI Usage</span>
+                </div>
+                <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
+                  <strong>Stop wasting tokens on management.</strong> Instead of manually prompting AI for each task, 
+                  create a backlog and let agents work through it systematically. More actual work, less overhead.
+                </p>
+              </div>
+              
+              <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 border border-green-200 dark:border-green-800">
+                <div className="flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span className="font-semibold text-green-700 dark:text-green-400">Total Privacy Guaranteed</span>
+                </div>
+                <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
+                  We only facilitate project management - we have <strong>no access to your code, data, or repositories</strong>. 
+                  VibeHero provides a secure management layer for your AI agents while ensuring complete privacy of your development work.
+                </p>
+              </div>
             </div>
           </div>
         </div>
