@@ -2,6 +2,8 @@
 
 **Your code never leaves your system. Your API keys stay yours.**
 
+Hosted on Vercel with Supabase (PostgreSQL) - no sketchy infrastructure, just boring, reliable services.
+
 Autonomous AI agent that works through your GitHub issues while you sleep. Create issues from your phone, let AI solve them.
 
 ## How it works

@@ -17,9 +17,9 @@ export class UsageService {
     switch (tierType) {
       case SubscriptionTierType.FREE:
         return { dailyCardProcessLimit: 5, projectLimit: 1 };
-      case SubscriptionTierType.INDIE:
+      case SubscriptionTierType.COLLABORATIVE:
         return { dailyCardProcessLimit: 50, projectLimit: 10 };
-      case SubscriptionTierType.PROFESSIONAL:
+      case SubscriptionTierType.ENTERPRISE:
         return { dailyCardProcessLimit: -1, projectLimit: -1 }; // unlimited
       default:
         return { dailyCardProcessLimit: 5, projectLimit: 1 };
