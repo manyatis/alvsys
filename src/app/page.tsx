@@ -40,7 +40,7 @@ export default function Home() {
             <p className="text-xl md:text-2xl lg:text-3xl text-slate-600 dark:text-slate-300 mb-12 max-w-4xl mx-auto leading-relaxed">
               Set up tasks, walk away, and let your AI agents get to work. VibeHero manages the queue, 
               tracks progress, and keeps your development organized while you focus on what matters. 
-              <strong className="text-green-600 dark:text-green-400">Open sourced to provide full transparency - host it yourself or take advantage of our hosting convenience.</strong>
+              <strong className="text-green-600 dark:text-green-400">Open sourced to provide full transparency.</strong>
             </p>
             
             {/* Video - Large and centered */}
