@@ -6,6 +6,9 @@ import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth';
 // GET /api/projects - Get user's projects
 export async function GET(request: NextRequest) {
   try {
+    // DEPRECATION NOTICE: This endpoint will be replaced by /mcp/projects
+    console.warn('[DEPRECATED] /api/projects - Use /mcp/projects instead. This endpoint will be removed in a future version.');
+    
     // Validate authentication (API key or session)
     const user = await validateHybridAuth(request);
     if (!user) {
@@ -53,7 +56,11 @@ export async function GET(request: NextRequest) {
       new Map(allProjects.map(p => [p.id, p])).values()
     );
 
-    return NextResponse.json({ projects: uniqueProjects });
+    const response = NextResponse.json({ projects: uniqueProjects });
+    response.headers.set('Deprecation', 'true');
+    response.headers.set('Sunset', new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()); // 90 days
+    response.headers.set('Link', '</mcp/projects>; rel="successor-version"');
+    return response;
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

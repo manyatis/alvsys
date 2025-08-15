@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { mcpClient, MCPClientError } from '@/lib/mcp-client';
 
 interface Project {
   id: string;
@@ -52,13 +53,13 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/projects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data.projects || []);
-      }
+      const projects = await mcpClient.listProjects();
+      setProjects(projects || []);
     } catch (error) {
       console.error('Error fetching projects:', error);
+      if (error instanceof MCPClientError) {
+        console.error('MCP Error:', error.code, error.message);
+      }
     } finally {
       setLoading(false);
     }

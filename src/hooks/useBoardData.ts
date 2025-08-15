@@ -5,6 +5,8 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, Comment, Label, CardStatus } from '@/types/card';
 import { OrganizationMember } from '@/utils/board-utils';
+import { mcpClient, MCPClientError } from '@/lib/mcp-client';
+import { mcpWebSocket } from '@/lib/mcp-websocket';
 
 interface Project {
   id: string;
@@ -73,24 +75,26 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
           }
         }
 
-        // Fetch cards
-        let cardsUrl = `/api/issues?projectId=${projectId}`;
-        if (selectedSprintId) {
-          cardsUrl += `&sprintId=${selectedSprintId}`;
-        } else if (showOnlyActiveSprint) {
-          cardsUrl += `&activeSprint=true`;
-        }
-        const cardsRes = await fetch(cardsUrl);
-        if (cardsRes.ok) {
-          const cardsData = await cardsRes.json();
+        // Fetch cards using MCP
+        try {
+          const cardsData = await mcpClient.listIssues(projectId);
           setCards(cardsData);
+        } catch (error) {
+          console.error('Error fetching cards:', error);
+          if (error instanceof MCPClientError) {
+            console.error('MCP Error:', error.code, error.message);
+          }
         }
 
-        // Fetch labels
-        const labelsRes = await fetch(`/api/projects/${projectId}/labels`);
-        if (labelsRes.ok) {
-          const labelsData = await labelsRes.json();
+        // Fetch labels using MCP
+        try {
+          const labelsData = await mcpClient.listLabels(projectId);
           setLabels(labelsData);
+        } catch (error) {
+          console.error('Error fetching labels:', error);
+          if (error instanceof MCPClientError) {
+            console.error('MCP Error:', error.code, error.message);
+          }
         }
       } catch (error) {
         console.error('Error fetching project data:', error);
@@ -103,10 +107,47 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
       router.push('/');
     } else if (status === 'authenticated' && projectId) {
       loadData();
+      
+      // Set up real-time updates via WebSocket
+      if (mcpWebSocket) {
+        // Listen for project-specific events
+        mcpWebSocket.onProjectEvent(projectId, (event) => {
+          console.log('Board event received:', event);
+          
+          switch (event.type) {
+            case 'issue.created':
+            case 'issue.updated':
+            case 'issue.deleted':
+            case 'issue.status_changed':
+              // Refresh cards when issues change
+              refreshCards();
+              break;
+            case 'label.created':
+            case 'label.updated':
+            case 'label.deleted':
+              // Refresh labels when they change
+              loadLabels();
+              break;
+            case 'comment.created':
+              // Handle comment updates if needed
+              break;
+          }
+        });
+      }
     }
   }, [status, projectId, router, session, showOnlyActiveSprint, selectedSprintId]);
+  
+  // Helper function to load labels
+  const loadLabels = async () => {
+    try {
+      const labelsData = await mcpClient.listLabels(projectId);
+      setLabels(labelsData);
+    } catch (error) {
+      console.error('Error loading labels:', error);
+    }
+  };
 
-  // Polling for real-time updates with connection management
+  // Reduced polling for fallback (WebSocket handles most updates)
   useEffect(() => {
     let pollInterval: NodeJS.Timeout | null = null;
     let isComponentMounted = true;
@@ -116,38 +157,24 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
       
       setIsRefreshing(true);
       try {
-        // Use AbortController to cancel requests if component unmounts
-        const controller = new AbortController();
+        // Use MCP for data refresh
+        const [cardsData, labelsData] = await Promise.all([
+          mcpClient.listIssues(projectId).catch(error => {
+            console.error('Error refreshing cards:', error);
+            return cards; // Keep existing data on error
+          }),
+          mcpClient.listLabels(projectId).catch(error => {
+            console.error('Error refreshing labels:', error);
+            return labels; // Keep existing data on error
+          })
+        ]);
         
-        // Fetch cards
-        let cardsUrl = `/api/issues?projectId=${projectId}`;
-        if (selectedSprintId) {
-          cardsUrl += `&sprintId=${selectedSprintId}`;
-        } else if (showOnlyActiveSprint) {
-          cardsUrl += `&activeSprint=true`;
-        }
-        const cardsRes = await fetch(cardsUrl, { 
-          signal: controller.signal,
-          headers: { 'Connection': 'close' } 
-        });
-        if (cardsRes.ok && isComponentMounted) {
-          const cardsData = await cardsRes.json();
+        if (isComponentMounted) {
           setCards(cardsData);
-        }
-
-        // Fetch labels
-        const labelsRes = await fetch(`/api/projects/${projectId}/labels`, { 
-          signal: controller.signal,
-          headers: { 'Connection': 'close' } 
-        });
-        if (labelsRes.ok && isComponentMounted) {
-          const labelsData = await labelsRes.json();
           setLabels(labelsData);
         }
       } catch (error) {
-        if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Error refreshing board data:', error);
-        }
+        console.error('Error refreshing board data:', error);
       } finally {
         if (isComponentMounted) {
           setIsRefreshing(false);
@@ -156,8 +183,8 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
     };
 
     if (status === 'authenticated' && projectId) {
-      // Increase polling interval to reduce connection pressure
-      pollInterval = setInterval(refreshData, 30000); // Changed from 20s to 30s
+      // Reduced polling frequency since WebSocket handles real-time updates
+      pollInterval = setInterval(refreshData, 120000); // 2 minutes fallback polling
     }
 
     return () => {
@@ -166,25 +193,17 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         clearInterval(pollInterval);
       }
     };
-  }, [status, projectId, showOnlyActiveSprint, selectedSprintId]);
+  }, [status, projectId, showOnlyActiveSprint, selectedSprintId, cards, labels]);
 
   const refreshCards = async () => {
     try {
-      let cardsUrl = `/api/issues?projectId=${projectId}`;
-      if (selectedSprintId) {
-        cardsUrl += `&sprintId=${selectedSprintId}`;
-      } else if (showOnlyActiveSprint) {
-        cardsUrl += `&activeSprint=true`;
-      }
-      const cardsRes = await fetch(cardsUrl, {
-        headers: { 'Connection': 'close' }
-      });
-      if (cardsRes.ok) {
-        const cardsData = await cardsRes.json();
-        setCards(cardsData);
-      }
+      const cardsData = await mcpClient.listIssues(projectId);
+      setCards(cardsData);
     } catch (error) {
       console.error('Error refreshing cards:', error);
+      if (error instanceof MCPClientError) {
+        console.error('MCP Error:', error.code, error.message);
+      }
     }
   };
 
@@ -208,48 +227,33 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
   const createCard = async (newCard: NewCard) => {
     setIsCreatingIssue(true);
     try {
-      const response = await fetch('/api/issues', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: newCard.title,
-          description: newCard.description,
-          acceptanceCriteria: newCard.acceptanceCriteria,
-          status: newCard.status,
-          priority: newCard.priority,
-          effortPoints: newCard.effortPoints,
-          isAiAllowedTask: newCard.isAiAllowedTask,
-          assigneeId: newCard.assigneeId || null,
-          labelIds: newCard.labelIds,
-          sprintId: newCard.sprintId,
-          projectId,
-        }),
+      // Create issue using MCP
+      const issue = await mcpClient.createIssue({
+        projectId,
+        title: newCard.title,
+        description: newCard.description,
+        status: newCard.status as 'todo' | 'in_progress' | 'done',
+        priority: (['low', 'medium', 'high'][newCard.priority] || 'medium') as 'low' | 'medium' | 'high'
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        
-        // Assign labels to the new card
-        if (newCard.labelIds.length > 0) {
-          for (const labelId of newCard.labelIds) {
-            await fetch(`/api/issues/${data.id}/labels`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ labelId }),
-            });
+      
+      // Assign labels to the new issue
+      if (newCard.labelIds.length > 0) {
+        for (const labelId of newCard.labelIds) {
+          try {
+            await mcpClient.assignLabel(issue.id, labelId);
+          } catch (error) {
+            console.error('Error assigning label:', labelId, error);
           }
         }
-        
-        await refreshCards();
-        return data;
       }
-      throw new Error('Failed to create card');
+      
+      await refreshCards();
+      return issue;
     } catch (error) {
       console.error('Error creating card:', error);
+      if (error instanceof MCPClientError) {
+        console.error('MCP Error:', error.code, error.message);
+      }
       throw error;
     } finally {
       setIsCreatingIssue(false);

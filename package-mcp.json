@@ -1,0 +1,28 @@
+{
+  "name": "vibehero-mcp-server",
+  "version": "1.0.0", 
+  "description": "VibeHero MCP Server for project and issue management",
+  "type": "module",
+  "main": "dist/lib/mcp/index.js",
+  "bin": {
+    "vibehero-mcp": "dist/lib/mcp/index.js"
+  },
+  "scripts": {
+    "build-mcp": "tsc src/lib/mcp/*.ts --outDir dist --module ESNext --target ES2020 --moduleResolution node --allowSyntheticDefaultImports --esModuleInterop",
+    "start-mcp": "node dist/lib/mcp/index.js"
+  },
+  "capabilities": {
+    "tools": {
+      "list_projects": "List all projects for the authenticated user",
+      "create_project": "Create a new project",
+      "list_issues": "List issues for a project", 
+      "create_issue": "Create a new issue",
+      "update_issue": "Update an existing issue"
+    }
+  },
+  "mcp": {
+    "server": {
+      "transport": "stdio"
+    }
+  }
+}

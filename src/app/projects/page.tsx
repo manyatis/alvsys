@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Plus, Folder, Users, Calendar } from 'lucide-react';
+import { mcpClient, MCPClientError } from '@/lib/mcp-client';
+import { mcpWebSocket } from '@/lib/mcp-websocket';
 
 interface Project {
   id: string;
@@ -57,18 +59,57 @@ export default function ProjectsPage() {
       fetchProjects();
       fetchOrganizations();
       fetchUsageStatus();
+      
+      // Set up real-time updates via WebSocket
+      if (mcpWebSocket) {
+        // Listen for project events
+        mcpWebSocket.onProjectEvents((event) => {
+          console.log('Project event received:', event);
+          
+          if (event.type === 'project.created') {
+            // Refresh projects list when a new project is created
+            fetchProjects();
+          } else if (event.type === 'project.updated') {
+            // Update specific project in the list
+            setProjects(prev => prev.map(p => 
+              p.id === event.data.id ? { ...p, ...event.data } : p
+            ));
+          } else if (event.type === 'project.deleted') {
+            // Remove project from list
+            setProjects(prev => prev.filter(p => p.id !== event.data.id));
+          }
+        });
+        
+        // Listen for organization events
+        mcpWebSocket.onEventType('organization.created', (event) => {
+          console.log('Organization created:', event);
+          fetchOrganizations(); // Refresh organizations list
+        });
+      }
     }
   }, [status, router]);
+  
+  // Cleanup WebSocket listeners on unmount
+  useEffect(() => {
+    return () => {
+      if (mcpWebSocket) {
+        mcpWebSocket.removeAllListeners('event:project.created');
+        mcpWebSocket.removeAllListeners('event:project.updated');
+        mcpWebSocket.removeAllListeners('event:project.deleted');
+        mcpWebSocket.removeAllListeners('event:organization.created');
+      }
+    };
+  }, []);
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/api/projects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data.projects);
-      }
+      const projects = await mcpClient.listProjects();
+      setProjects(projects);
     } catch (error) {
       console.error('Error fetching projects:', error);
+      if (error instanceof MCPClientError) {
+        console.error('MCP Error:', error.code, error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -76,25 +117,25 @@ export default function ProjectsPage() {
 
   const fetchOrganizations = async () => {
     try {
-      const response = await fetch('/api/organizations');
-      if (response.ok) {
-        const data = await response.json();
-        setOrganizations(data.organizations);
-      }
+      const organizations = await mcpClient.listOrganizations();
+      setOrganizations(organizations);
     } catch (error) {
       console.error('Error fetching organizations:', error);
+      if (error instanceof MCPClientError) {
+        console.error('MCP Error:', error.code, error.message);
+      }
     }
   };
 
   const fetchUsageStatus = async () => {
     try {
-      const response = await fetch('/api/user/usage');
-      if (response.ok) {
-        const data = await response.json();
-        setUsageStatus(data);
-      }
+      const usageStats = await mcpClient.getUsageStats();
+      setUsageStatus(usageStats);
     } catch (error) {
       console.error('Error fetching usage status:', error);
+      if (error instanceof MCPClientError) {
+        console.error('MCP Error:', error.code, error.message);
+      }
     }
   };
 
@@ -103,32 +144,39 @@ export default function ProjectsPage() {
     setCreating(true);
 
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          organizationName: formData.useExistingOrg ? undefined : formData.organizationName,
-          organizationId: formData.useExistingOrg ? formData.organizationId : undefined,
-          projectName: formData.projectName,
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        router.push(`/projects/${data.project.id}/board`);
-      } else {
-        const error = await response.json();
-        if (response.status === 429) {
-          alert(`${error.error}\nYou have ${error.usageLimit.used}/${error.usageLimit.limit} projects.`);
-        } else {
-          alert(error.error || 'Failed to create project');
-        }
+      let organizationId = formData.organizationId;
+      
+      // Create organization if needed
+      if (!formData.useExistingOrg && formData.organizationName) {
+        const organization = await mcpClient.createOrganization(formData.organizationName);
+        organizationId = organization.id;
       }
+      
+      // Create project
+      const project = await mcpClient.createProject(formData.projectName);
+      
+      // Navigate to the new project
+      router.push(`/projects/${project.id}/board`);
+      
+      // Close modal
+      setShowCreateModal(false);
+      
+      // Refresh the project list
+      fetchProjects();
     } catch (error) {
       console.error('Error creating project:', error);
-      alert('Failed to create project');
+      
+      if (error instanceof MCPClientError) {
+        if (error.code === -32001) { // Authentication error
+          alert('Authentication required. Please log in again.');
+        } else if (error.code === -32600) { // Rate limit or usage limit
+          alert(`${error.message}\n${error.data?.details || ''}`);
+        } else {
+          alert(error.message || 'Failed to create project');
+        }
+      } else {
+        alert('Failed to create project');
+      }
     } finally {
       setCreating(false);
     }
