@@ -18,6 +18,8 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "database",
   },
+  // Allow account linking
+  debug: process.env.NODE_ENV === 'development',
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -39,7 +41,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user }) {
+    async signIn({ user, account, profile }) {
       // New users automatically get FREE tier via database defaults
       // No need to explicitly assign - Prisma schema defaults handle this
       if (user?.id) {

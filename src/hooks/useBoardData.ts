@@ -39,6 +39,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
   const [organizationMembers, setOrganizationMembers] = useState<OrganizationMember[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Load initial data
   useEffect(() => {
@@ -49,6 +50,58 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         if (projectRes.ok) {
           const projectData = await projectRes.json();
           setProject(projectData.project);
+          
+          // If project has GitHub sync enabled, perform background sync
+          if (projectData.project.githubSyncEnabled) {
+            // Start sync in background - don't block the initial load
+            setIsSyncing(true);
+            fetch(`/api/projects/${projectId}/github/sync`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                direction: 'BIDIRECTIONAL',
+                conflictResolution: 'LATEST_TIMESTAMP',
+                syncComments: true,
+                syncLabels: true,
+              }),
+            }).then(async (syncRes) => {
+              if (syncRes.ok) {
+                console.log('Background GitHub sync completed successfully');
+                // Refresh cards after sync
+                // Only filter by active sprint if there actually is an active sprint
+                let cardsUrl = `/api/issues?projectId=${projectId}`;
+                if (selectedSprintId) {
+                  cardsUrl += `&sprintId=${selectedSprintId}`;
+                } else if (showOnlyActiveSprint) {
+                  // Check if there's an active sprint before filtering
+                  const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`);
+                  if (sprintsRes.ok) {
+                    const sprints = await sprintsRes.json();
+                    const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+                    if (activeSprint) {
+                      cardsUrl += `&activeSprint=true`;
+                    }
+                    // If no active sprint, show all cards
+                  }
+                }
+                
+                const cardsRes = await fetch(cardsUrl);
+                if (cardsRes.ok) {
+                  const cardsData = await cardsRes.json();
+                  setCards(cardsData);
+                  console.log('Cards refreshed after GitHub sync');
+                }
+              } else {
+                console.warn('Background GitHub sync failed:', await syncRes.text());
+              }
+              setIsSyncing(false);
+            }).catch(syncError => {
+              console.warn('Background GitHub sync error:', syncError);
+              setIsSyncing(false);
+            });
+          }
           
           // Fetch organization members
           const membersRes = await fetch(`/api/organizations/${projectData.project.organization.id}/members`);
@@ -73,7 +126,16 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         if (selectedSprintId) {
           cardsUrl += `&sprintId=${selectedSprintId}`;
         } else if (showOnlyActiveSprint) {
-          cardsUrl += `&activeSprint=true`;
+          // Check if there's an active sprint before filtering
+          const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`);
+          if (sprintsRes.ok) {
+            const sprints = await sprintsRes.json();
+            const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+            if (activeSprint) {
+              cardsUrl += `&activeSprint=true`;
+            }
+            // If no active sprint, show all cards
+          }
         }
         const cardsRes = await fetch(cardsUrl);
         if (cardsRes.ok) {
@@ -119,7 +181,19 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         if (selectedSprintId) {
           cardsUrl += `&sprintId=${selectedSprintId}`;
         } else if (showOnlyActiveSprint) {
-          cardsUrl += `&activeSprint=true`;
+          // Check if there's an active sprint before filtering
+          const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`, {
+            signal: controller.signal,
+            headers: { 'Connection': 'close' }
+          });
+          if (sprintsRes.ok && isComponentMounted) {
+            const sprints = await sprintsRes.json();
+            const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+            if (activeSprint) {
+              cardsUrl += `&activeSprint=true`;
+            }
+            // If no active sprint, show all cards
+          }
         }
         const cardsRes = await fetch(cardsUrl, { 
           signal: controller.signal,
@@ -169,7 +243,16 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
       if (selectedSprintId) {
         cardsUrl += `&sprintId=${selectedSprintId}`;
       } else if (showOnlyActiveSprint) {
-        cardsUrl += `&activeSprint=true`;
+        // Check if there's an active sprint before filtering
+        const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`);
+        if (sprintsRes.ok) {
+          const sprints = await sprintsRes.json();
+          const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+          if (activeSprint) {
+            cardsUrl += `&activeSprint=true`;
+          }
+          // If no active sprint, show all cards
+        }
       }
       const cardsRes = await fetch(cardsUrl, {
         headers: { 'Connection': 'close' }
@@ -192,6 +275,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
     organizationMembers,
     currentUserId,
     isRefreshing,
+    isSyncing,
     refreshCards,
   };
 }

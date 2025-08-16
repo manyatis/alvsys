@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth'
+import { GitHubSyncService } from '@/services/github-sync-service'
 
 // GET /api/issues/[id] - Get a specific issue
 export async function GET(
@@ -90,6 +91,7 @@ export async function PUT(
       isAiAllowedTask,
       agentInstructions,
       sprintId,
+      assigneeId,
     } = body
 
     // Check if issue exists and user has access
@@ -126,6 +128,25 @@ export async function PUT(
     if (storyPoints !== undefined) updateData.storyPoints = storyPoints
     if (isAiAllowedTask !== undefined) updateData.isAiAllowedTask = isAiAllowedTask
     if (sprintId !== undefined) updateData.sprintId = sprintId
+    if (assigneeId !== undefined) {
+      // Handle assigneeId validation - null/empty string should set to null
+      if (assigneeId === '' || assigneeId === null) {
+        updateData.assigneeId = null;
+      } else {
+        // Verify the user exists before assigning
+        const assigneeExists = await prisma.user.findUnique({
+          where: { id: assigneeId },
+          select: { id: true },
+        });
+        
+        if (assigneeExists) {
+          updateData.assigneeId = assigneeId;
+        } else {
+          console.warn(`Assignee ID ${assigneeId} not found, setting to null`);
+          updateData.assigneeId = null;
+        }
+      }
+    }
 
     // Handle agent instructions update
     if (agentInstructions !== undefined) {
@@ -162,6 +183,8 @@ export async function PUT(
           select: {
             id: true,
             name: true,
+            githubSyncEnabled: true,
+            githubRepoName: true,
           },
         },
         agentInstructions: true,
@@ -172,6 +195,30 @@ export async function PUT(
         },
       },
     })
+
+    // If this card has GitHub sync enabled and relevant fields were updated, sync to GitHub
+    const shouldSyncToGitHub = (
+      (title !== undefined || description !== undefined || status !== undefined || assigneeId !== undefined) &&
+      updatedIssue.project.githubSyncEnabled && 
+      updatedIssue.githubSyncEnabled
+    );
+    
+    if (shouldSyncToGitHub) {
+      try {
+        // Use the installation-based sync service
+        const syncService = await GitHubSyncService.createForProject(updatedIssue.projectId);
+        
+        if (syncService) {
+          await syncService.syncCardToGitHub(updatedIssue.id);
+          console.log(`Synced card ${updatedIssue.id} changes to GitHub`);
+        } else {
+          console.log('GitHub sync service not available for project');
+        }
+      } catch (syncError) {
+        console.error('Failed to sync changes to GitHub:', syncError);
+        // Don't fail the card update if GitHub sync fails
+      }
+    }
 
     return NextResponse.json(updatedIssue)
   } catch (error) {
