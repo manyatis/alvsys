@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
       
       try {
         installations = await userGithubService.getInstallations();
-      } catch (error) {
+      } catch {
         // If user token doesn't have GitHub App access, return empty installations
         // This forces the UI to show the "install GitHub App" message
         console.log('User token not authorized for GitHub App - no installations found');
