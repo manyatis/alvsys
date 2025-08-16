@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import GitHubSyncError from './GitHubSyncError';
 
 interface GitHubRepository {
   id: number;
@@ -48,32 +47,10 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
   const [selectedInstallation, setSelectedInstallation] = useState<number | null>(null);
   const [selectedRepo, setSelectedRepo] = useState<string>('');
   const [error, setError] = useState<string>('');
-  const [syncError, setSyncError] = useState<{ error: string; debugInfo?: any } | null>(null);
   const [needsGitHubConnection, setNeedsGitHubConnection] = useState(false);
   const [needsAppInstallation, setNeedsAppInstallation] = useState(false);
-  const [installUrl, setInstallUrl] = useState<string>('');
 
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      await Promise.all([
-        loadSyncStatus(),
-        loadInstallations(),
-        loadInstallUrl(),
-      ]);
-    } catch (error) {
-      console.error('Error loading GitHub data:', error);
-      setError('Failed to load GitHub integration data');
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const loadSyncStatus = async () => {
+  const loadSyncStatus = useCallback(async () => {
     try {
       const response = await fetch(`/api/projects/${projectId}/github`);
       if (response.ok) {
@@ -84,7 +61,26 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
     } catch (error) {
       console.error('Error loading sync status:', error);
     }
-  };
+  }, [projectId, onSyncStatusChange]);
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      await Promise.all([
+        loadSyncStatus(),
+        loadInstallations(),
+      ]);
+    } catch (error) {
+      console.error('Error loading GitHub data:', error);
+      setError('Failed to load GitHub integration data');
+    } finally {
+      setLoading(false);
+    }
+  }, [loadSyncStatus]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const loadInstallations = async () => {
     try {
@@ -107,20 +103,6 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
       console.error('Error loading installations:', error);
       setError('Failed to load GitHub installations');
       setNeedsGitHubConnection(false);
-    }
-  };
-
-  const loadInstallUrl = async () => {
-    try {
-      const response = await fetch('/api/debug/github-app/install-url');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.urls?.userInstall) {
-          setInstallUrl(data.urls.userInstall);
-        }
-      }
-    } catch (error) {
-      console.error('Error loading install URL:', error);
     }
   };
 
@@ -197,7 +179,6 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
     try {
       setSyncing(true);
       setError('');
-      setSyncError(null);
 
       const response = await fetch(`/api/projects/${projectId}/github/sync`, {
         method: 'POST',
@@ -205,8 +186,6 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          direction: 'BIDIRECTIONAL',
-          conflictResolution: 'LATEST_TIMESTAMP',
           syncComments: true,
           syncLabels: true,
         }),
@@ -218,22 +197,7 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
         await loadSyncStatus(); // Refresh status
       } else {
         const errorData = await response.json();
-        // Enhanced error handling
-        if (errorData.debugInfo) {
-          console.log('Sync debug info:', errorData.debugInfo);
-        }
-        
-        // Store sync-specific errors separately for better handling
-        setSyncError({
-          error: errorData.error || 'Failed to sync',
-          debugInfo: errorData.debugInfo,
-        });
-        
-        if (errorData.suggestion) {
-          setError(`${errorData.error || 'Failed to sync'}: ${errorData.suggestion}`);
-        } else {
-          setError(errorData.error || 'Failed to sync');
-        }
+        setError(errorData.error || 'Failed to sync');
       }
     } catch (error) {
       console.error('Error syncing:', error);
@@ -256,24 +220,9 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
     <div className="p-4 border rounded-lg">
       <h3 className="text-lg font-semibold mb-4">GitHub Integration</h3>
 
-      {error && !syncError && (
+      {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
           {error}
-        </div>
-      )}
-
-      {syncError && (
-        <div className="mb-4">
-          <GitHubSyncError
-            projectId={projectId}
-            error={syncError.error}
-            debugInfo={syncError.debugInfo}
-            onFixed={() => {
-              setSyncError(null);
-              setError('');
-              loadData();
-            }}
-          />
         </div>
       )}
 
@@ -345,31 +294,17 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
           ) : installations.length === 0 || needsAppInstallation ? (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
               <div className="text-sm text-yellow-700 mb-3">
-                <strong>GitHub App Installation Required</strong><br />
+                <strong>GitHub App Required</strong><br />
                 To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
               </div>
-              {installUrl ? (
-                <a 
-                  href={installUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                >
-                  Install GitHub App
-                </a>
-              ) : (
-                <div className="mt-2">
-                  <div className="text-sm text-yellow-700 mb-2">
-                    To install the GitHub App manually:
-                  </div>
-                  <ol className="text-xs text-yellow-600 space-y-1 list-decimal list-inside">
-                    <li>Go to your GitHub settings</li>
-                    <li>Navigate to "Integrations" → "Applications"</li>
-                    <li>Look for the VibeHero app</li>
-                    <li>Click "Configure" and grant access to your repositories</li>
-                  </ol>
-                </div>
-              )}
+              <a 
+                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibehero'}/installations/new`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              >
+                Install GitHub App
+              </a>
               <div className="text-xs text-yellow-600 mt-2">
                 After installation, refresh this page to see your repositories.
               </div>

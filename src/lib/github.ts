@@ -173,11 +173,12 @@ export class GitHubService {
       const service = Object.create(GitHubService.prototype);
       service.octokit = octokit;
       return service;
-    } catch (error: any) {
+    } catch (error) {
       // Enhance error message for better debugging
-      if (error.status === 404) {
+      const errorStatus = (error as { status?: number }).status;
+      if (errorStatus === 404) {
         throw new Error(`GitHub App installation not found (ID: ${installationId}). The app may have been uninstalled.`);
-      } else if (error.status === 401) {
+      } else if (errorStatus === 401) {
         throw new Error('GitHub App authentication failed. Check your app credentials.');
       }
       throw error;
@@ -372,9 +373,10 @@ export class GitHubService {
       try {
         const { data } = await this.octokit.rest.apps.listInstallationsForAuthenticatedUser();
         return data.installations;
-      } catch (error: any) {
+      } catch (error) {
         // If the user hasn't authorized the GitHub App, this will fail with 403
-        if (error.status === 403 || error.status === 404) {
+        const errorStatus = (error as { status?: number }).status;
+        if (errorStatus === 403 || errorStatus === 404) {
           throw new Error('GitHub App not authorized. Please install the GitHub App to continue.');
         }
         throw error;
