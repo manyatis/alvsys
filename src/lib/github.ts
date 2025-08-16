@@ -168,10 +168,20 @@ export class GitHubService {
   }
 
   static async createForInstallation(installationId: string): Promise<GitHubService> {
-    const octokit = await getGitHubInstallation(installationId);
-    const service = Object.create(GitHubService.prototype);
-    service.octokit = octokit;
-    return service;
+    try {
+      const octokit = await getGitHubInstallation(installationId);
+      const service = Object.create(GitHubService.prototype);
+      service.octokit = octokit;
+      return service;
+    } catch (error: any) {
+      // Enhance error message for better debugging
+      if (error.status === 404) {
+        throw new Error(`GitHub App installation not found (ID: ${installationId}). The app may have been uninstalled.`);
+      } else if (error.status === 401) {
+        throw new Error('GitHub App authentication failed. Check your app credentials.');
+      }
+      throw error;
+    }
   }
 
   /**
@@ -359,8 +369,16 @@ export class GitHubService {
   async getInstallations() {
     if (this.userToken) {
       // For user tokens, get installations the user has access to
-      const { data } = await this.octokit.rest.apps.listInstallationsForAuthenticatedUser();
-      return data.installations;
+      try {
+        const { data } = await this.octokit.rest.apps.listInstallationsForAuthenticatedUser();
+        return data.installations;
+      } catch (error: any) {
+        // If the user hasn't authorized the GitHub App, this will fail with 403
+        if (error.status === 403 || error.status === 404) {
+          throw new Error('GitHub App not authorized. Please install the GitHub App to continue.');
+        }
+        throw error;
+      }
     } else {
       // For app tokens, get all installations
       const { data } = await this.octokit.rest.apps.listInstallations();
