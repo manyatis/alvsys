@@ -61,8 +61,6 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({
-                direction: 'BIDIRECTIONAL',
-                conflictResolution: 'LATEST_TIMESTAMP',
                 syncComments: true,
                 syncLabels: true,
               }),

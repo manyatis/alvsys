@@ -1,11 +1,9 @@
-import { PrismaClient, Card, Project, Status, SyncDirection, ConflictResolution, GitHubIssueSync } from '@/generated/prisma';
+import { PrismaClient, Card, Project, Status, GitHubIssueSync } from '@/generated/prisma';
 import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
 
 const prisma = new PrismaClient();
 
 export interface SyncOptions {
-  direction: SyncDirection;
-  conflictResolution: ConflictResolution;
   syncComments: boolean;
   syncLabels: boolean;
 }
@@ -95,13 +93,9 @@ export class GitHubSyncService {
       const syncByCardId = new Map(existingSyncs.map(sync => [sync.cardId, sync]));
       const syncByIssueId = new Map(existingSyncs.map(sync => [sync.githubIssueId, sync]));
 
-      if (options.direction === SyncDirection.GITHUB_TO_VIBES || options.direction === SyncDirection.BIDIRECTIONAL) {
-        await this.syncFromGitHub(owner, repo, syncByIssueId, result, options);
-      }
-
-      if (options.direction === SyncDirection.VIBES_TO_GITHUB || options.direction === SyncDirection.BIDIRECTIONAL) {
-        await this.syncToGitHub(owner, repo, syncByCardId, result, options);
-      }
+      // Sync both directions - last writer wins
+      await this.syncFromGitHub(owner, repo, syncByIssueId, result, options);
+      await this.syncToGitHub(owner, repo, syncByCardId, result, options);
 
       // Update project last sync time
       await prisma.project.update({
@@ -201,7 +195,6 @@ export class GitHubSyncService {
             githubIssueId: githubIssue.number,
             githubIssueNodeId: githubIssue.node_id,
             githubRepoName: this.project.githubRepoName,
-            lastSyncDirection: SyncDirection.VIBES_TO_GITHUB,
             lastSyncAt: new Date(),
           },
         });
@@ -304,7 +297,6 @@ export class GitHubSyncService {
             githubIssueId: githubIssue.number,
             githubIssueNodeId: githubIssue.node_id,
             githubRepoName: this.project.githubRepoName,
-            lastSyncDirection: SyncDirection.GITHUB_TO_VIBES,
             lastSyncAt: new Date(),
           },
         });
@@ -349,41 +341,36 @@ export class GitHubSyncService {
         const existingSync = syncByIssueId.get(githubIssue.number);
 
         if (existingSync) {
-          // Update existing card
-          const shouldUpdate = this.shouldUpdateCard(existingSync.card, githubIssue as GitHubIssue, options.conflictResolution);
-          
-          if (shouldUpdate) {
-            // Try to find assignee
-            let assigneeId = null;
-            if ((githubIssue as GitHubIssue).assignees && (githubIssue as GitHubIssue).assignees.length > 0) {
-              const firstAssignee = (githubIssue as GitHubIssue).assignees[0];
-              const assigneeUser = await this.findUserByGitHub(firstAssignee.login, firstAssignee.id);
-              if (assigneeUser) {
-                assigneeId = assigneeUser.id;
-              }
+          // Update existing card - last writer wins
+          // Try to find assignee
+          let assigneeId = null;
+          if ((githubIssue as GitHubIssue).assignees && (githubIssue as GitHubIssue).assignees.length > 0) {
+            const firstAssignee = (githubIssue as GitHubIssue).assignees[0];
+            const assigneeUser = await this.findUserByGitHub(firstAssignee.login, firstAssignee.id);
+            if (assigneeUser) {
+              assigneeId = assigneeUser.id;
             }
-
-            await prisma.card.update({
-              where: { id: existingSync.cardId },
-              data: {
-                title: githubIssue.title,
-                description: githubIssue.body || '',
-                status: GITHUB_STATUS_MAPPING[githubIssue.state as keyof typeof GITHUB_STATUS_MAPPING] as Status,
-                assigneeId,
-                githubLastSyncAt: new Date(),
-              },
-            });
-
-            await prisma.gitHubIssueSync.update({
-              where: { id: existingSync.id },
-              data: {
-                lastSyncDirection: SyncDirection.GITHUB_TO_VIBES,
-                lastSyncAt: new Date(),
-              },
-            });
-
-            result.synced.cardsUpdated++;
           }
+
+          await prisma.card.update({
+            where: { id: existingSync.cardId },
+            data: {
+              title: githubIssue.title,
+              description: githubIssue.body || '',
+              status: GITHUB_STATUS_MAPPING[githubIssue.state as keyof typeof GITHUB_STATUS_MAPPING] as Status,
+              assigneeId,
+              githubLastSyncAt: new Date(),
+            },
+          });
+
+          await prisma.gitHubIssueSync.update({
+            where: { id: existingSync.id },
+            data: {
+              lastSyncAt: new Date(),
+            },
+          });
+
+          result.synced.cardsUpdated++;
         } else {
           // Create new card
           console.log(`Creating card for GitHub issue #${githubIssue.number}: ${githubIssue.title} (${githubIssue.state})`);
@@ -419,7 +406,6 @@ export class GitHubSyncService {
               githubIssueId: githubIssue.number,
               githubIssueNodeId: githubIssue.node_id,
               githubRepoName: this.project.githubRepoName!,
-              lastSyncDirection: SyncDirection.GITHUB_TO_VIBES,
               lastSyncAt: new Date(),
             },
           });
@@ -500,7 +486,6 @@ export class GitHubSyncService {
           await prisma.gitHubIssueSync.update({
             where: { id: existingSync.id },
             data: {
-              lastSyncDirection: SyncDirection.VIBES_TO_GITHUB,
               lastSyncAt: new Date(),
             },
           });
@@ -535,7 +520,6 @@ export class GitHubSyncService {
               githubIssueId: githubIssue.number,
               githubIssueNodeId: githubIssue.node_id,
               githubRepoName: this.project.githubRepoName!,
-              lastSyncDirection: SyncDirection.VIBES_TO_GITHUB,
               lastSyncAt: new Date(),
             },
           });
@@ -636,27 +620,6 @@ export class GitHubSyncService {
     });
   }
 
-  /**
-   * Determine if a card should be updated based on conflict resolution strategy
-   */
-  private shouldUpdateCard(card: Card, githubIssue: GitHubIssue, conflictResolution: ConflictResolution): boolean {
-    if (conflictResolution === ConflictResolution.GITHUB_WINS) {
-      return true;
-    }
-
-    if (conflictResolution === ConflictResolution.VIBES_WINS) {
-      return false;
-    }
-
-    if (conflictResolution === ConflictResolution.LATEST_TIMESTAMP) {
-      const cardUpdated = card.updatedAt;
-      const issueUpdated = new Date(githubIssue.updated_at);
-      return issueUpdated > cardUpdated;
-    }
-
-    // MANUAL resolution - don't auto-update, require manual intervention
-    return false;
-  }
 }
 
 /**

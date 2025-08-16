@@ -340,15 +340,8 @@ model GitHubIssueSync {
   githubIssueNodeId     String   // GitHub GraphQL node ID
   githubRepoName        String   // e.g., "owner/repo"
   
-  // Sync metadata
-  lastSyncDirection     SyncDirection // VIBES_TO_GITHUB, GITHUB_TO_VIBES, BIDIRECTIONAL
-  lastSyncAt            DateTime?
-  lastSyncError         String?
-  syncConflictResolution ConflictResolution @default(MANUAL)
-  
-  // Mapping configuration
-  statusMapping         Json?    // Custom status mapping between systems
-  labelMapping          Json?    // Custom label mapping between systems
+  // Sync metadata - simplified!
+  lastSyncAt            DateTime @default(now())
   
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
@@ -449,15 +442,3 @@ enum InstructionType {
   ARCHITECTURE
 }
 
-enum SyncDirection {
-  VIBES_TO_GITHUB
-  GITHUB_TO_VIBES
-  BIDIRECTIONAL
-}
-
-enum ConflictResolution {
-  MANUAL              // Require manual resolution
-  VIBES_WINS          // VibeHero always wins conflicts
-  GITHUB_WINS         // GitHub always wins conflicts
-  LATEST_TIMESTAMP    // Most recent update wins
-}

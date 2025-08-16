@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@/generated/prisma';
 import { validateApiAccess } from '@/lib/api-auth';
 import { GitHubSyncService } from '@/services/github-sync-service';
-import { GitHubService } from '@/lib/github';
-import { SyncDirection, ConflictResolution } from '@/generated/prisma';
 
 const prisma = new PrismaClient();
 
@@ -39,50 +37,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     const body = await request.json();
     const {
-      direction = 'BIDIRECTIONAL',
-      conflictResolution = 'MANUAL',
       syncComments = true,
       syncLabels = true,
     } = body;
 
-    // Validate direction and conflict resolution
-    if (!Object.values(SyncDirection).includes(direction)) {
+    // Create sync service using installation token
+    const syncService = await GitHubSyncService.createForProject(projectId);
+    
+    if (!syncService) {
       return NextResponse.json(
-        { error: 'Invalid sync direction' },
+        { error: 'GitHub sync not configured for this project' },
         { status: 400 }
       );
     }
-
-    if (!Object.values(ConflictResolution).includes(conflictResolution)) {
-      return NextResponse.json(
-        { error: 'Invalid conflict resolution strategy' },
-        { status: 400 }
-      );
-    }
-
-    // Get user's GitHub account for OAuth token
-    const githubAccount = await prisma.account.findFirst({
-      where: {
-        userId: validation.userId!,
-        provider: 'github',
-      },
-    });
-
-    if (!githubAccount?.access_token) {
-      return NextResponse.json(
-        { error: 'GitHub account not connected' },
-        { status: 400 }
-      );
-    }
-
-    // Create sync service using user's OAuth token
-    const githubService = new GitHubService(undefined, githubAccount.access_token);
-    const syncService = new GitHubSyncService(githubService, project);
 
     // Perform sync
     const result = await syncService.syncProject({
-      direction,
-      conflictResolution,
       syncComments,
       syncLabels,
     });

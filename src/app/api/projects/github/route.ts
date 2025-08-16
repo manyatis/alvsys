@@ -119,8 +119,6 @@ export async function POST(request: NextRequest) {
         const syncService = new GitHubSyncService(userGithubService, project);
         
         const syncResult = await syncService.syncProject({
-          direction: 'GITHUB_TO_VIBES',
-          conflictResolution: 'GITHUB_WINS',
           syncComments: true,
           syncLabels: true,
         });
