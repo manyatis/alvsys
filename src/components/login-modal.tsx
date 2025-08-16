@@ -79,7 +79,7 @@ export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           <button
             onClick={() => handleSignIn('github')}
-            disabled={true}
+            disabled={false}
             className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-slate-900 dark:bg-slate-700 text-white rounded-lg hover:bg-slate-800 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading === 'github' ? (
