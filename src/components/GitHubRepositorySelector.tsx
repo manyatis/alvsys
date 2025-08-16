@@ -93,7 +93,7 @@ export default function GitHubRepositorySelector({
             GitHub Account Required
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            You're signed in with a different provider. To use GitHub integration, you need to connect your GitHub account.
+            You&apos;re signed in with a different provider. To use GitHub integration, you need to connect your GitHub account.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Please sign out and sign back in with GitHub to use this feature.
