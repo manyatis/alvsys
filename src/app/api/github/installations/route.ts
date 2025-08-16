@@ -47,40 +47,13 @@ export async function GET(request: NextRequest) {
       try {
         installations = await userGithubService.getInstallations();
       } catch (error) {
-        // If user token doesn't have GitHub App access, get user's repositories directly
-        console.log('User token not authorized for GitHub App, getting user repositories instead');
-        
-        // Get user's repositories directly
-        const { data: userRepos } = await userGithubService.octokit.rest.repos.listForAuthenticatedUser({
-          visibility: 'all',
-          sort: 'updated',
-          per_page: 100,
-        });
-        
-        // Create a mock installation structure using user's repositories
-        const userAccount = await userGithubService.octokit.rest.users.getAuthenticated();
-        installations = [{
-          id: userAccount.data.id,
-          account: {
-            login: userAccount.data.login,
-            type: userAccount.data.type,
-            avatar_url: userAccount.data.avatar_url,
-          },
-          repository_selection: 'all',
-          permissions: {},
-          repositories: userRepos.map((repo) => ({
-            id: repo.id,
-            name: repo.name,
-            full_name: repo.full_name,
-            description: repo.description,
-            private: repo.private,
-            html_url: repo.html_url,
-            default_branch: repo.default_branch,
-          })),
-        }];
+        // If user token doesn't have GitHub App access, return empty installations
+        // This forces the UI to show the "install GitHub App" message
+        console.log('User token not authorized for GitHub App - no installations found');
         
         return NextResponse.json({
-          installations,
+          installations: [],
+          needsAppInstallation: true,
         });
       }
       

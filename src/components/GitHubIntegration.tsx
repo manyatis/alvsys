@@ -48,6 +48,7 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
   const [selectedRepo, setSelectedRepo] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [needsGitHubConnection, setNeedsGitHubConnection] = useState(false);
+  const [needsAppInstallation, setNeedsAppInstallation] = useState(false);
 
   const loadData = useCallback(async () => {
     try {
@@ -87,6 +88,7 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
       if (response.ok) {
         const data = await response.json();
         setInstallations(data.installations || []);
+        setNeedsAppInstallation(data.needsAppInstallation || false);
       } else {
         const errorData = await response.json();
         if (response.status === 400 && errorData.error === 'GitHub account not connected') {
@@ -291,14 +293,23 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
                 GitHub integration requires signing in with GitHub. You can sign out and sign back in with GitHub to use this feature.
               </div>
             </div>
-          ) : installations.length === 0 ? (
+          ) : installations.length === 0 || needsAppInstallation ? (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
-              <div className="text-sm text-yellow-700">
-                No GitHub installations found. Please install the VibeHero GitHub App first.
+              <div className="text-sm text-yellow-700 mb-3">
+                <strong>GitHub App Required</strong><br />
+                To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
               </div>
-              <button className="mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+              <a 
+                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibehero'}/installations/new`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+              >
                 Install GitHub App
-              </button>
+              </a>
+              <div className="text-xs text-yellow-600 mt-2">
+                After installation, refresh this page to see your repositories.
+              </div>
             </div>
           ) : (
             <div className="space-y-3">

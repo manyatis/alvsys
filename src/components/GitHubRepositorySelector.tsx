@@ -42,6 +42,8 @@ export default function GitHubRepositorySelector({
   const [selectedInstallation, setSelectedInstallation] = useState<number | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectedRepoId, setSelectedRepoId] = useState<number | null>(null);
+  const [needsAppInstallation, setNeedsAppInstallation] = useState(false);
+  const [needsGitHubConnection, setNeedsGitHubConnection] = useState(false);
 
   useEffect(() => {
     loadInstallations();
@@ -54,9 +56,16 @@ export default function GitHubRepositorySelector({
       if (response.ok) {
         const data = await response.json();
         setInstallations(data.installations || []);
+        setNeedsAppInstallation(data.needsAppInstallation || false);
+        setError('');
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Failed to load GitHub repositories');
+        if (response.status === 400 && errorData.error === 'GitHub account not connected') {
+          setNeedsGitHubConnection(true);
+          setError('');
+        } else {
+          setError(errorData.error || 'Failed to load GitHub repositories');
+        }
       }
     } catch (error) {
       console.error('Error loading installations:', error);
@@ -75,19 +84,19 @@ export default function GitHubRepositorySelector({
     );
   }
 
-  if (error) {
+  if (needsGitHubConnection) {
     return (
       <div className="p-6">
         <div className="text-center mb-6">
-          <Github className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <Github className="mx-auto h-12 w-12 text-blue-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            GitHub Connection Required
+            GitHub Account Required
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            {error}
+            You're signed in with a different provider. To use GitHub integration, you need to connect your GitHub account.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            Please sign in with GitHub or install the VibeHero GitHub App to access your repositories.
+            Please sign out and sign back in with GitHub to use this feature.
           </p>
         </div>
         <div className="flex gap-3 justify-center">
@@ -102,16 +111,16 @@ export default function GitHubRepositorySelector({
     );
   }
 
-  if (installations.length === 0) {
+  if (error) {
     return (
       <div className="p-6">
         <div className="text-center mb-6">
-          <Github className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+          <Github className="mx-auto h-12 w-12 text-red-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            No GitHub Repositories Found
+            Error Loading Repositories
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            Install the VibeHero GitHub App to access your repositories.
+            {error}
           </p>
         </div>
         <div className="flex gap-3 justify-center">
@@ -122,9 +131,51 @@ export default function GitHubRepositorySelector({
             Cancel
           </button>
           <button
+            onClick={loadInstallations}
             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
           >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (installations.length === 0 || needsAppInstallation) {
+    return (
+      <div className="p-6">
+        <div className="text-center mb-6">
+          <Github className="mx-auto h-12 w-12 text-yellow-500 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+            GitHub App Required
+          </h3>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">
+            To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            After installation, refresh this page to see your repositories.
+          </p>
+        </div>
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm"
+          >
+            Cancel
+          </button>
+          <a
+            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibehero'}/installations/new`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+          >
             Install GitHub App
+          </a>
+          <button
+            onClick={loadInstallations}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+          >
+            Refresh
           </button>
         </div>
       </div>
