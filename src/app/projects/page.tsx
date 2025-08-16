@@ -44,13 +44,15 @@ export default function ProjectsPage() {
     organizationName: '',
     projectName: '',
     useExistingOrg: false,
-    organizationId: ''
+    organizationId: '',
+    linkToGitHub: false,
+    githubRepo: '',
+    githubInstallationId: ''
   });
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [creating, setCreating] = useState(false);
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
   const [showGitHubModal, setShowGitHubModal] = useState(false);
-  const [gitHubModalMode, setGitHubModalMode] = useState<'create' | 'link'>('create');
 
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
@@ -106,20 +108,49 @@ export default function ProjectsPage() {
     setCreating(true);
 
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          organizationName: formData.useExistingOrg ? undefined : formData.organizationName,
-          organizationId: formData.useExistingOrg ? formData.organizationId : undefined,
-          projectName: formData.projectName,
-        }),
-      });
+      let response;
+      
+      if (formData.linkToGitHub && formData.githubRepo) {
+        // Create project from GitHub repository
+        response = await fetch('/api/projects/github', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            repoName: formData.githubRepo,
+            repoDescription: `Project created from GitHub repository ${formData.githubRepo}`,
+            installationId: formData.githubInstallationId,
+            syncIssues: true,
+          }),
+        });
+      } else {
+        // Create regular project
+        response = await fetch('/api/projects', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            organizationName: formData.useExistingOrg ? undefined : formData.organizationName,
+            organizationId: formData.useExistingOrg ? formData.organizationId : undefined,
+            projectName: formData.projectName,
+          }),
+        });
+      }
 
       if (response.ok) {
         const data = await response.json();
+        setShowCreateModal(false);
+        setFormData({
+          organizationName: '',
+          projectName: '',
+          useExistingOrg: false,
+          organizationId: '',
+          linkToGitHub: false,
+          githubRepo: '',
+          githubInstallationId: ''
+        });
         router.push(`/projects/${data.project.id}/board`);
       } else {
         const error = await response.json();
@@ -146,34 +177,45 @@ export default function ProjectsPage() {
     html_url: string; 
     default_branch: string; 
   }, installationId: number) => {
-    setCreating(true);
-    try {
-      const response = await fetch('/api/projects/github', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          repoName: repo.full_name,
-          repoDescription: repo.description,
-          installationId: installationId.toString(),
-          syncIssues: true,
-        }),
+    if (showCreateModal) {
+      // We're in the "Link to GitHub" flow during project creation
+      setFormData({ 
+        ...formData, 
+        githubRepo: repo.full_name,
+        githubInstallationId: installationId.toString() 
       });
-
-      if (response.ok) {
-        const data = await response.json();
-        router.push(`/projects/${data.project.id}/board`);
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to create project from GitHub repository');
-      }
-    } catch (error) {
-      console.error('Error creating project from GitHub:', error);
-      alert('Failed to create project from GitHub repository');
-    } finally {
-      setCreating(false);
       setShowGitHubModal(false);
+    } else {
+      // Legacy "create from GitHub" flow (if still needed)
+      setCreating(true);
+      try {
+        const response = await fetch('/api/projects/github', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            repoName: repo.full_name,
+            repoDescription: repo.description,
+            installationId: installationId.toString(),
+            syncIssues: true,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          router.push(`/projects/${data.project.id}/board`);
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to create project from GitHub repository');
+        }
+      } catch (error) {
+        console.error('Error creating project from GitHub:', error);
+        alert('Failed to create project from GitHub repository');
+      } finally {
+        setCreating(false);
+        setShowGitHubModal(false);
+      }
     }
   };
 
@@ -206,23 +248,12 @@ export default function ProjectsPage() {
               </div>
             )}
             <button
-              onClick={() => {
-                setGitHubModalMode('create');
-                setShowGitHubModal(true);
-              }}
-              disabled={usageStatus?.isAtProjectLimit}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              <Github className="h-5 w-5" />
-              From GitHub
-            </button>
-            <button
               onClick={() => setShowCreateModal(true)}
               disabled={usageStatus?.isAtProjectLimit}
               className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Plus className="h-5 w-5" />
-              New Project
+              Create Project
             </button>
           </div>
         </div>
@@ -236,18 +267,7 @@ export default function ProjectsPage() {
             <p className="text-gray-500 dark:text-gray-400 mb-6">
               Create your first project to get started with VibeHero
             </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => {
-                  setGitHubModalMode('create');
-                  setShowGitHubModal(true);
-                }}
-                disabled={usageStatus?.isAtProjectLimit}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                <Github className="h-5 w-5" />
-                From GitHub
-              </button>
+            <div className="flex justify-center">
               <button
                 onClick={() => setShowCreateModal(true)}
                 disabled={usageStatus?.isAtProjectLimit}
@@ -372,6 +392,48 @@ export default function ProjectsPage() {
                 />
               </div>
 
+              <div className="form-group-professional">
+                <label className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.linkToGitHub}
+                    onChange={(e) => setFormData({ ...formData, linkToGitHub: e.target.checked })}
+                    className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                  />
+                  <div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Link to GitHub Repository
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Sync issues bidirectionally with a GitHub repository
+                    </div>
+                  </div>
+                </label>
+              </div>
+
+              {formData.linkToGitHub && (
+                <div className="form-group-professional bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
+                  <button
+                    type="button"
+                    onClick={() => setShowGitHubModal(true)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 transition-colors"
+                  >
+                    <Github className="h-4 w-4" />
+                    {formData.githubRepo ? `Selected: ${formData.githubRepo}` : 'Select GitHub Repository'}
+                  </button>
+                  {!formData.githubRepo && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Choose a repository to sync with this project
+                    </div>
+                  )}
+                  {formData.githubRepo && (
+                    <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      This will create a project from the GitHub repository and sync existing issues
+                    </div>
+                  )}
+                </div>
+              )}
+
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
@@ -384,9 +446,9 @@ export default function ProjectsPage() {
                 <button
                   type="submit"
                   className="btn-professional-primary"
-                  disabled={creating}
+                  disabled={creating || (formData.linkToGitHub && !formData.githubRepo)}
                 >
-                  {creating ? 'Creating...' : 'Create Project'}
+                  {creating ? 'Creating...' : formData.linkToGitHub && formData.githubRepo ? 'Create from GitHub' : 'Create Project'}
                 </button>
               </div>
             </form>
@@ -400,7 +462,7 @@ export default function ProjectsPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full mx-2 md:mx-4 max-h-[90vh] overflow-hidden">
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {gitHubModalMode === 'create' ? 'Create Project from GitHub Repository' : 'Link GitHub Repository'}
+                Select GitHub Repository
               </h2>
             </div>
             <div className="overflow-y-auto max-h-[calc(90vh-120px)]">

@@ -46,7 +46,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     
     if (!syncService) {
       return NextResponse.json(
-        { error: 'GitHub sync not configured for this project' },
+        { 
+          error: 'GitHub sync not configured for this project. Please ensure the GitHub App is installed and the project is linked to a repository.',
+          needsAppInstallation: true 
+        },
         { status: 400 }
       );
     }
