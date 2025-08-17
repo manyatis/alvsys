@@ -800,7 +800,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   return (
     <>
-      <div className="h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 flex w-full max-w-full pt-20">
+      <div className="h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 flex flex-col sm:flex-row w-full max-w-full pt-20">
         {/* Left Sidebar */}
         <BoardSidebar
           sidebarCollapsed={sidebarCollapsed}
