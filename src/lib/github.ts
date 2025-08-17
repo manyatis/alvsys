@@ -89,7 +89,7 @@ export const STATUS_MAPPING = {
  * Reverse status mapping (GitHub -> VibeHero)
  */
 export const GITHUB_STATUS_MAPPING = {
-  open: 'READY', // Default new GitHub issues to ready (To Do)
+  open: 'REFINEMENT', // Default new GitHub issues to ready (To Do)
   closed: 'COMPLETED',
 } as const;
 

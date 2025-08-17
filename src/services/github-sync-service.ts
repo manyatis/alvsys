@@ -260,18 +260,32 @@ export class GitHubSyncService {
       }
 
       if (existingSync) {
-        // Update existing card
+        // Update existing card - preserve existing status unless GitHub issue is closed
+        const updateData: {
+          title: string;
+          description: string;
+          assigneeId: string | null;
+          githubIssueId: number;
+          githubIssueUrl: string;
+          githubLastSyncAt: Date;
+          status?: Status;
+        } = {
+          title: githubIssue.title,
+          description: githubIssue.body || '',
+          assigneeId,
+          githubIssueId: githubIssue.number,
+          githubIssueUrl: githubIssue.html_url,
+          githubLastSyncAt: new Date(),
+        };
+        
+        // Only update status if GitHub issue is closed (to mark as completed)
+        if (githubIssue.state === 'closed') {
+          updateData.status = GITHUB_STATUS_MAPPING.closed as Status;
+        }
+        
         card = await prisma.card.update({
           where: { id: existingSync.cardId },
-          data: {
-            title: githubIssue.title,
-            description: githubIssue.body || '',
-            status: GITHUB_STATUS_MAPPING[githubIssue.state as keyof typeof GITHUB_STATUS_MAPPING] as Status,
-            assigneeId,
-            githubIssueId: githubIssue.number,
-            githubIssueUrl: githubIssue.html_url,
-            githubLastSyncAt: new Date(),
-          },
+          data: updateData,
         });
       } else {
         // Create new card
@@ -352,15 +366,28 @@ export class GitHubSyncService {
             }
           }
 
+          // Update existing card - preserve existing status unless GitHub issue is closed
+          const updateData: {
+            title: string;
+            description: string;
+            assigneeId: string | null;
+            githubLastSyncAt: Date;
+            status?: Status;
+          } = {
+            title: githubIssue.title,
+            description: githubIssue.body || '',
+            assigneeId,
+            githubLastSyncAt: new Date(),
+          };
+          
+          // Only update status if GitHub issue is closed (to mark as completed)
+          if (githubIssue.state === 'closed') {
+            updateData.status = GITHUB_STATUS_MAPPING.closed as Status;
+          }
+          
           await prisma.card.update({
             where: { id: existingSync.cardId },
-            data: {
-              title: githubIssue.title,
-              description: githubIssue.body || '',
-              status: GITHUB_STATUS_MAPPING[githubIssue.state as keyof typeof GITHUB_STATUS_MAPPING] as Status,
-              assigneeId,
-              githubLastSyncAt: new Date(),
-            },
+            data: updateData,
           });
 
           await prisma.gitHubIssueSync.update({
