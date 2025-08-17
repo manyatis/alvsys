@@ -51,9 +51,17 @@ STEP 2: FETCH NEXT TASK USING POST
 STEP 3: EXECUTE TASK
 - Complete the implementation
 - Run "npm run build" and fix any errors
-- Git commit changes
-- Update status to READY_FOR_REVIEW with detailed comment using:
-  curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "update_status", "cardId": "\${TASK_ID}", "status": "READY_FOR_REVIEW", "projectId": "${project.id}", "comment": "Task completed. Details: [describe work done]"}'
+- COMMIT CHANGES TO GIT:
+  1. Stage all changes: git add -A
+  2. Create commit with descriptive message: git commit -m "Brief description of changes made
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+  3. Get the commit hash: COMMIT_HASH=\$(git rev-parse HEAD)
+  4. Get the commit message: COMMIT_MSG=\$(git log -1 --pretty=%B)
+- Update status to READY_FOR_REVIEW with commit details using:
+  curl -X POST https://vibehero.io/api/ai/issues -H 'Content-Type: application/json' -H 'Authorization: Bearer \${API_KEY}' -d '{"action": "update_status", "cardId": "\${TASK_ID}", "status": "READY_FOR_REVIEW", "projectId": "${project.id}", "comment": "Task completed. Commit: \${COMMIT_HASH} - \${COMMIT_MSG}"}'
 
 STEP 4: RESET AND LOOP
 - IMMEDIATELY fetch: https://vibehero.io/api/${project.id}/ai/onboard
