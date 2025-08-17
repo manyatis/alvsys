@@ -88,7 +88,7 @@ export default function BoardHeader({
           )}
           
           {/* Sprint Selector and Copy AI Link Button */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
             {/* Sprint Selector */}
             <div className="relative" ref={menuRef}>
               <button
@@ -206,18 +206,18 @@ export default function BoardHeader({
                 setCopyFeedback(true);
                 setTimeout(() => setCopyFeedback(false), 2000);
               }}
-              className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 whitespace-nowrap"
+              className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex-shrink-0 min-w-0"
             >
               {copyFeedback ? (
                 <>
-                  <Check className="h-4 w-4" />
-                  <span className="hidden sm:inline">Copied!</span>
+                  <Check className="h-4 w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Bot className="h-4 w-4" />
-                  <span className="hidden sm:inline">Copy AI Link</span>
-                  <Copy className="h-3 w-3" />
+                  <Bot className="h-4 w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Copy AI Link</span>
+                  <Copy className="h-3 w-3 flex-shrink-0" />
                 </>
               )}
             </button>
