@@ -193,6 +193,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [isDragging, setIsDragging] = useState(false);
   const boardRef = useRef<HTMLDivElement>(null);
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
   const [ghostElement, setGhostElement] = useState<HTMLElement | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'left' | 'right' | null>(null);
@@ -606,8 +607,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 
   // Touch handlers for mobile
   const handleTouchStart = (card: Card, element: HTMLElement, touch: React.Touch) => {
+    // Clear any existing timeout first
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current);
+      touchTimeoutRef.current = null;
+    }
+    
     // Add 1.5 second delay for touch devices to prevent accidental drags
-    setTimeout(() => {
+    touchTimeoutRef.current = setTimeout(() => {
       setDraggedCard(card);
       setIsDragging(true);
       setTouchStartPos({ x: touch.clientX, y: touch.clientY });
@@ -634,6 +641,9 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       if ('vibrate' in navigator) {
         navigator.vibrate(10);
       }
+      
+      // Clear the timeout ref since it completed
+      touchTimeoutRef.current = null;
     }, 1500);
   };
 
@@ -706,7 +716,13 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   }, [isDragging, ghostElement, touchStartPos]);
 
   const cleanupTouch = useCallback(() => {
-    // Immediately clear the scroll interval first
+    // Clear the touch timeout to prevent ghost element creation
+    if (touchTimeoutRef.current) {
+      clearTimeout(touchTimeoutRef.current);
+      touchTimeoutRef.current = null;
+    }
+    
+    // Immediately clear the scroll interval
     if (scrollIntervalRef.current) {
       clearInterval(scrollIntervalRef.current);
       scrollIntervalRef.current = null;
@@ -715,6 +731,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     // Reset scroll direction immediately
     setScrollDirection(null);
     
+    // Clean up ghost element if it exists
     if (ghostElement) {
       ghostElement.remove();
       setGhostElement(null);
@@ -759,6 +776,19 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       };
     }
   }, [isDragging, touchStartPos, handleTouchMove, handleTouchEnd, cleanupTouch]);
+  
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Clear any pending timeout
+      if (touchTimeoutRef.current) {
+        clearTimeout(touchTimeoutRef.current);
+      }
+      // Clean up any leftover ghost elements
+      const ghosts = document.querySelectorAll('[style*="position: fixed"][style*="z-index: 9999"]');
+      ghosts.forEach(ghost => ghost.remove());
+    };
+  }, []);
 
   if (loading) {
     return (
