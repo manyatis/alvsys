@@ -42,25 +42,25 @@ export default function ProductGuidePage() {
 
   const problemsSolutions: ProblemSolution[] = [
     {
-      problem: "Coding Lacks Structure & Organization",
-      solution: "AI-Native Agile Board with Clear Task Management",
+      problem: "GitHub Issues Lack Visual Organization",
+      solution: "Visual GitHub Issue Boards",
       icon: Puzzle,
       benefits: [
-        "Organize work into clear, prioritized user stories",
-        "Visual kanban board shows progress at a glance",
-        "Structured acceptance criteria define success",
-        "Team visibility into all ongoing work"
+        "Transform issues into visual Kanban boards",
+        "Real-time sync with GitHub repositories",
+        "Drag-and-drop issue status updates",
+        "Clear progress tracking across projects"
       ]
     },
     {
-      problem: "Constant Need to Prompt AI Agents",
-      solution: "Autonomous AI Agent Integration",
+      problem: "Switching Between Agents is Difficult",
+      solution: "Universal Agent API",
       icon: Bot,
       benefits: [
-        "AI agents automatically pick up ready tasks",
-        "No need for manual prompting or micromanagement",
-        "Agents work independently while you focus on strategy",
-        "Built-in onboarding API for seamless agent connection"
+        "Work with Claude, GPT, or custom agents seamlessly",
+        "Continue projects from any device or environment",
+        "Agents fetch tasks and update progress automatically",
+        "Built-in onboarding API for quick agent setup"
       ]
     },
     {

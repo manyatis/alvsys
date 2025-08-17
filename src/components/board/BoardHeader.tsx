@@ -77,9 +77,9 @@ export default function BoardHeader({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-2 md:px-4 py-2">
-      <div className="flex items-center justify-between max-w-full">
-        <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
           {project && (
             <ProjectSelector 
               currentProject={project} 
@@ -88,23 +88,60 @@ export default function BoardHeader({
           )}
           
           {/* Sprint Selector */}
-          <div className="relative" ref={menuRef}>
+          <div className="relative w-full sm:w-auto" ref={menuRef}>
             <button
               onClick={() => setShowSprintMenu(!showSprintMenu)}
-              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="flex items-center justify-between sm:justify-start gap-2 px-3 py-2 w-full sm:w-auto text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             >
-              <Calendar className="h-4 w-4" />
-              <span className="hidden md:inline">
-                {getSelectedSprintName()}
-              </span>
-              <span className="md:hidden">
-                {getSelectedSprintName().split(' ').slice(0, 2).join(' ')}
-              </span>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                <span>
+                  {getSelectedSprintName()}
+                </span>
+              </div>
               <ChevronDown className="h-4 w-4" />
             </button>
             
+            {/* Copy AI Link Button - positioned next to sprint selector */}
+            <button
+              onClick={() => {
+                const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
+                if (navigator.clipboard && window.isSecureContext) {
+                  navigator.clipboard.writeText(onboardText);
+                } else {
+                  // Fallback for older browsers or non-secure contexts
+                  const textArea = document.createElement('textarea');
+                  textArea.value = onboardText;
+                  textArea.style.position = 'fixed';
+                  textArea.style.left = '-999999px';
+                  textArea.style.top = '-999999px';
+                  document.body.appendChild(textArea);
+                  textArea.focus();
+                  textArea.select();
+                  document.execCommand('copy');
+                  textArea.remove();
+                }
+                setCopyFeedback(true);
+                setTimeout(() => setCopyFeedback(false), 2000);
+              }}
+              className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 whitespace-nowrap"
+            >
+              {copyFeedback ? (
+                <>
+                  <Check className="h-4 w-4" />
+                  <span className="hidden sm:inline">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Bot className="h-4 w-4" />
+                  <span className="hidden sm:inline">Copy AI Link</span>
+                  <Copy className="h-3 w-3" />
+                </>
+              )}
+            </button>
+            
             {showSprintMenu && (
-              <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+              <div className="absolute top-full left-0 sm:left-auto sm:right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
                 {/* Sprint Options */}
                 <div className="p-2">
                   <button
@@ -184,45 +221,7 @@ export default function BoardHeader({
           </div>
         </div>
         
-        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-2 md:ml-4">
-          {/* AI Onboard Link - Prominent Button */}
-          <button
-            onClick={() => {
-              const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
-              if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(onboardText);
-              } else {
-                // Fallback for older browsers or non-secure contexts
-                const textArea = document.createElement('textarea');
-                textArea.value = onboardText;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                textArea.style.top = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                document.execCommand('copy');
-                textArea.remove();
-              }
-              setCopyFeedback(true);
-              setTimeout(() => setCopyFeedback(false), 2000);
-            }}
-            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 animate-pulse"
-          >
-            {copyFeedback ? (
-              <>
-                <Check className="h-4 w-4" />
-                <span className="hidden sm:inline">Copied!</span>
-              </>
-            ) : (
-              <>
-                <Bot className="h-4 w-4" />
-                <span className="hidden sm:inline">Copy AI Link</span>
-                <Copy className="h-3 w-3" />
-              </>
-            )}
-          </button>
-         
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           {isRefreshing && (
             <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <RefreshCw className="h-3 w-3 animate-spin" />

@@ -34,11 +34,11 @@ function HomeContent() {
             </a>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-12">
-              Task Management for AI Agents
+              AI Native Project Management
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Create tasks, connect AI agents, and let them work through your backlog autonomously.
+              Visual GitHub boards with APIs for any AI agent to complete your project tasks.
             </p>
             
             {/* Video - Large and centered */}
@@ -233,10 +233,10 @@ function HomeContent() {
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <div>
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                How It Works
+                Work with Any Agent, Anywhere
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                Simple workflow for AI-powered development:
+                Connect any AI agent to your project board via our API:
               </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -249,10 +249,10 @@ function HomeContent() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      1. Create Your Work Queue
+                      1. Visual GitHub Issues
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Add tasks for features, bug fixes, or improvements. Set priorities and assign to humans or AI.
+                      Sync with GitHub to visualize issues on a Kanban board. Track progress in real-time.
                     </p>
                   </div>
                 </div>
@@ -267,10 +267,10 @@ function HomeContent() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      2. Connect Your AI Agent
+                      2. API for Any Agent
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Connect AI agents that automatically pick up tasks, update progress, and complete work.
+                      Claude, GPT, or custom agents can fetch tasks and update progress via our API.
                     </p>
                   </div>
                 </div>
@@ -285,10 +285,10 @@ function HomeContent() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      3. Review When Convenient
+                      3. Continue from Anywhere
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Review completed work, provide feedback, and approve results.
+                      Switch between devices and agents seamlessly. Your project state stays synchronized.
                     </p>
                   </div>
                 </div>
@@ -473,10 +473,10 @@ function HomeContent() {
       <section className="py-24 bg-blue-600">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Start Building with AI Agents
+            Start Your AI Native Project
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Set up your task board and connect AI agents to handle development work.
+            Connect your GitHub repository and let AI agents work on your project.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 

@@ -19,34 +19,34 @@ export default function Features() {
   const features = [
     {
       category: 'ai',
-      title: 'Autonomous AI Agents',
-      description: 'Deploy intelligent agents that automatically pick up tasks from your backlog and execute them 24/7.',
+      title: 'Universal Agent API',
+      description: 'Connect any AI agent (Claude, GPT, custom) to fetch and complete project tasks via our API.',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
         </svg>
       ),
       details: [
-        'Automatic task selection based on priority',
-        'Real-time status updates and progress tracking',
-        'Intelligent error handling and retry logic',
-        'Multi-agent coordination for complex tasks'
+        'RESTful API for task fetching and status updates',
+        'Works with Claude Code, ChatGPT, and custom agents',
+        'Real-time synchronization across devices',
+        'Agent authentication and authorization'
       ]
     },
     {
       category: 'ai',
-      title: 'AI-Powered Task Management',
-      description: 'Let AI agents handle your development tasks while you focus on strategy and review.',
+      title: 'GitHub Issue Visualization',
+      description: 'Transform GitHub issues into visual Kanban boards with real-time sync.',
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
       details: [
-        'Intelligent task routing to appropriate agents',
-        'Progress estimation and deadline tracking',
-        'Automatic blocker detection and escalation',
-        'Performance analytics and insights'
+        'Automatic GitHub repository synchronization',
+        'Drag-and-drop issue status updates',
+        'Visual progress tracking and sprint management',
+        'Comments and labels sync with GitHub'
       ]
     },
     {

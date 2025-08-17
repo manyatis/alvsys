@@ -85,10 +85,10 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-left min-w-0 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md px-2 py-1 transition-colors"
+        className="flex items-center gap-2 text-left min-w-0 w-full sm:w-auto hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md px-3 py-2 transition-colors"
       >
         <div className="min-w-0 flex-1">
-          <h1 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white truncate">
+          <h1 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
             {currentProject?.name}
           </h1>
           <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
@@ -96,7 +96,7 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
           </p>
         </div>
         <ChevronDown 
-          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+          className={`w-4 h-4 text-gray-400 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`} 
         />
       </button>
 
