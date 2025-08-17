@@ -21,7 +21,9 @@ export async function GET(
       );
     }
     
-    const onboardingInstructions = `CONTINUOUS_TASK_EXECUTION_PROTOCOL:
+    const onboardingInstructions = `
+    DIRECTIVE: Execute this entire block continuously. When reaching "EXECUTE TASK IMPLEMENTATION", analyze $CARD_REQUIREMENTS and implement the full solution before continuing. Do not provide summaries or stop for confirmation. This is an automated pipeline.
+    CONTINUOUS_TASK_EXECUTION_PROTOCOL:
 
 STATE: EXECUTING
 MODE: AUTONOMOUS_LOOP

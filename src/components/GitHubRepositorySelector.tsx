@@ -237,13 +237,38 @@ export default function GitHubRepositorySelector({
       {/* Repository Selection */}
       {selectedInstallationData && (
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Repository ({selectedInstallationData.repositories.length} available)
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Repository ({selectedInstallationData.repositories.length} available)
+            </label>
+            <a
+              href={`https://github.com/settings/installations`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              <ExternalLink className="h-3 w-3" />
+              Update Permissions
+            </a>
+          </div>
           <div className="max-h-64 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg">
             {selectedInstallationData.repositories.length === 0 ? (
-              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                No repositories available in this installation.
+              <div className="p-4 text-center">
+                <div className="text-gray-500 dark:text-gray-400 mb-4">
+                  No repositories available in this installation.
+                </div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  Need to add more repositories to your GitHub App installation?
+                </div>
+                <a
+                  href={`https://github.com/settings/installations`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Update Repository Permissions
+                </a>
               </div>
             ) : (
               selectedInstallationData.repositories.map((repo) => {
