@@ -170,14 +170,6 @@ export async function POST(request: NextRequest) {
         },
       },
       include: {
-        // createdBy removed from schema
-        // createdBy: {
-        //   select: {
-        //     id: true,
-        //     name: true,
-        //     email: true,
-        //   },
-        // },
         agentInstructions: true,
       },
     })
