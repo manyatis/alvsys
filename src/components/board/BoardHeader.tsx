@@ -1,6 +1,6 @@
 'use client';
 
-import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus } from 'lucide-react';
+import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, Copy, Check, Bot } from 'lucide-react';
 import ProjectSelector from '@/components/ProjectSelector';
 import { Sprint } from '@/hooks/useSprints';
 import { useState, useEffect, useRef } from 'react';
@@ -26,6 +26,8 @@ interface BoardHeaderProps {
   onToggleSprintFilter?: () => void;
   showOnlyActiveSprint?: boolean;
   onCreateSprint?: () => void;
+  copyFeedback?: boolean;
+  setCopyFeedback?: (feedback: boolean) => void;
 }
 
 export default function BoardHeader({
@@ -40,6 +42,8 @@ export default function BoardHeader({
   onToggleSprintFilter,
   showOnlyActiveSprint = true,
   onCreateSprint,
+  copyFeedback = false,
+  setCopyFeedback = () => {},
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -178,6 +182,44 @@ export default function BoardHeader({
         </div>
         
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 ml-2 md:ml-4">
+          {/* AI Onboard Link - Prominent Button */}
+          <button
+            onClick={() => {
+              const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
+              if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(onboardText);
+              } else {
+                // Fallback for older browsers or non-secure contexts
+                const textArea = document.createElement('textarea');
+                textArea.value = onboardText;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                textArea.remove();
+              }
+              setCopyFeedback(true);
+              setTimeout(() => setCopyFeedback(false), 2000);
+            }}
+            className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 animate-pulse"
+          >
+            {copyFeedback ? (
+              <>
+                <Check className="h-4 w-4" />
+                <span className="hidden sm:inline">Copied!</span>
+              </>
+            ) : (
+              <>
+                <Bot className="h-4 w-4" />
+                <span className="hidden sm:inline">Copy AI Link</span>
+                <Copy className="h-3 w-3" />
+              </>
+            )}
+          </button>
+          
           {isRefreshing && (
             <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <RefreshCw className="h-3 w-3 animate-spin" />

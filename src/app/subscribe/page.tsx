@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Navbar from '@/components/navbar';
 import LoginModal from '@/components/login-modal';
 import SubscriptionFlow from '@/components/payments/SubscriptionFlow';
+import Footer from '@/components/Footer';
 
 export default function SubscribePage() {
   const { status } = useSession();
@@ -57,6 +58,9 @@ export default function SubscribePage() {
           <SubscriptionFlow />
         </div>
       </main>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

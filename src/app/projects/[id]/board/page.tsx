@@ -802,6 +802,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
             showOnlyActiveSprint={showOnlyActiveSprint}
             onCreateSprint={openSprintModal}
+            copyFeedback={copyFeedback}
+            setCopyFeedback={setCopyFeedback}
           />
 
         {/* Board */}

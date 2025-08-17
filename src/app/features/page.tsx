@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/Footer';
 
 export default function Features() {
   const [activeCategory, setActiveCategory] = useState('all');
@@ -414,12 +415,8 @@ export default function Features() {
           </div>
         </section>
 
-        {/* Simple Footer */}
-        <footer className="py-12 bg-slate-900 text-slate-400">
-          <div className="container mx-auto px-6 text-center">
-            <p>&copy; 2024 VibeHero. All rights reserved.</p>
-          </div>
-        </footer>
+        {/* Footer */}
+        <Footer />
       </div>
     </div>
   );
