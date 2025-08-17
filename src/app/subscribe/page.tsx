@@ -2,10 +2,8 @@
 
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import Navbar from '@/components/navbar';
 import LoginModal from '@/components/login-modal';
 import SubscriptionFlow from '@/components/payments/SubscriptionFlow';
-import Footer from '@/components/Footer';
 
 export default function SubscribePage() {
   const { status } = useSession();
@@ -22,7 +20,6 @@ export default function SubscribePage() {
   if (status === 'unauthenticated') {
     return (
       <div className="min-h-screen bg-white dark:bg-slate-900">
-        <Navbar />
         <div className="flex items-center justify-center py-12 sm:py-20 px-4">
           <div className="max-w-md w-full bg-slate-50 dark:bg-slate-800 rounded-lg shadow-xl p-6 sm:p-8 text-center border border-slate-200 dark:border-slate-700">
             <div className="text-6xl mb-6">🔐</div>
@@ -51,16 +48,12 @@ export default function SubscribePage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900">
-      <Navbar />
       
       <main className="pt-20">
         <div className="container mx-auto px-4 py-16">
           <SubscriptionFlow />
         </div>
       </main>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

@@ -3,8 +3,6 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import LoginModal from '@/components/login-modal';
-import Navbar from '@/components/navbar';
-import Footer from '@/components/Footer';
 import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
 
 function HomeContent() {
@@ -14,7 +12,6 @@ function HomeContent() {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
       
       {/* Add padding top to account for fixed navbar */}
       <div className="pt-20">
@@ -496,9 +493,6 @@ function HomeContent() {
       </section>
 
       </div>
-      
-      {/* Footer */}
-      <Footer />
       
       {/* Login Modal */}
       <LoginModal 

@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Footer from '@/components/Footer';
 
 export default function Documentation() {
   const [activeSection, setActiveSection] = useState('overview');
@@ -1071,9 +1070,6 @@ export default function Documentation() {
           </div>
         </div>
       </div>
-      
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }
