@@ -32,15 +32,11 @@ GitHub
             </a>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-12">
-              Your AI Agent&apos;s{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-                Project Manager
-              </span>
+              Task Management for AI Agents
             </h1>
             
-            <p className="text-xl md:text-2xl lg:text-3xl text-slate-600 dark:text-slate-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Set up tasks, walk away, and let your AI agents get to work. VibeHero manages the queue, 
-              tracks progress, and keeps your development organized while you focus on what matters. 
+            <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+              Create tasks, connect AI agents, and let them work through your backlog autonomously.
             </p>
             
             {/* Video - Large and centered */}
@@ -61,20 +57,13 @@ GitHub
               </div>
             </div>
             
-            <div className="bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-900/30 dark:to-blue-900/30 rounded-2xl p-6 mb-8 max-w-4xl mx-auto">
-              <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed">
-                <span className="font-semibold text-purple-700 dark:text-purple-400">The better way:</span> Create tasks when inspiration strikes, 
-                then delegate everything to your AI agents. They pick up work automatically, follow your requirements, 
-                and deliver results while you&apos;re away. True delegation, not micromanagement.
-              </p>
-            </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <button 
                 onClick={() => window.location.href = '/projects'}
-                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
               >
-                Join Free
+                Get Started
               </button>
               <button 
                 onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
@@ -84,21 +73,6 @@ GitHub
               </button>
             </div>
           
-            {/* Privacy box */}
-            <div className="max-w-3xl mx-auto">
-              <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 border border-green-200 dark:border-green-800">
-                <div className="flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                  <span className="font-semibold text-green-700 dark:text-green-400">Total Privacy Guaranteed</span>
-                </div>
-                <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
-                  We <strong>never access your API keys</strong> and <strong>never access your code</strong>. 
-                  VibeHero provides a secure management layer for your AI agents while ensuring complete privacy of your development work.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
         
@@ -114,11 +88,8 @@ GitHub
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
-              See Your Board in Action
+              Interactive Demo
             </h2>
-            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8">
-              Experience the power of structured, AI-native project management
-            </p>
             
             {/* Board Preview */}
             <div className="max-w-5xl mx-auto mb-12">
@@ -251,8 +222,6 @@ GitHub
               </div>
             </div>
           </div>
-          
-          {/* Feature cards removed as requested */}
         </div>
       </section>
 
@@ -265,7 +234,7 @@ GitHub
                 How It Works
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                VibeHero acts as your AI agent&apos;s project manager, handling the coordination so you don&apos;t have to:
+                Simple workflow for AI-powered development:
               </p>
               <div className="space-y-6">
                 <div className="flex gap-4">
@@ -281,9 +250,7 @@ GitHub
                       1. Create Your Work Queue
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      <strong className="text-blue-600 dark:text-blue-400">Add tasks when inspiration strikes</strong> - 
-                      feature requests, bug fixes, improvements. Assign to humans, AI agents, or leave open. 
-                      Everyone works together on prioritized tasks.
+                      Add tasks for features, bug fixes, or improvements. Set priorities and assign to humans or AI.
                     </p>
                   </div>
                 </div>
@@ -301,9 +268,7 @@ GitHub
                       2. Connect Your AI Agent
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      <strong className="text-blue-600 dark:text-blue-400">Connect AI agents to work alongside your team.</strong> 
-                      They automatically fetch AI-enabled tasks, update status, and work through the backlog. 
-                      Humans and AI agents collaborate seamlessly on the same board.
+                      Connect AI agents that automatically pick up tasks, update progress, and complete work.
                     </p>
                   </div>
                 </div>
@@ -321,9 +286,7 @@ GitHub
                       3. Review When Convenient
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      <strong className="text-blue-600 dark:text-blue-400">Return to completed work</strong> - 
-                      agents move tasks to review status when done. You can check progress anytime, 
-                      provide feedback, or approve. Full autonomy with human oversight.
+                      Review completed work, provide feedback, and approve results.
                     </p>
                   </div>
                 </div>
@@ -342,73 +305,6 @@ GitHub
         </div>
       </section>
 
-      {/* Meta Section - Built with VibeHero */}
-      <section className="py-24 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 dark:from-purple-800 dark:via-blue-800 dark:to-indigo-900 relative overflow-hidden">
-        {/* Background decorations */}
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.05%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%221%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
-        
-        <div className="container mx-auto px-6 relative">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-full text-sm font-medium mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
-              </span>
-              Built with VibeHero
-            </div>
-            
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-              VibeHero Was Built{" "}
-              <span className="text-yellow-300">
-                Using VibeHero
-              </span>
-            </h2>
-            
-            <p className="text-xl lg:text-2xl text-blue-100 mb-12 leading-relaxed max-w-3xl mx-auto">
-              Every feature you see, every page you&apos;re reading, every API endpoint was developed 
-              using our own platform. We practice what we preach.
-            </p>
-
-            {/* Proof Points */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 max-w-2xl mx-auto">
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-300 mb-2">72%</div>
-                <div className="text-lg text-white font-semibold mb-2">AI Automation</div>
-                <div className="text-blue-200 text-sm">Of development tasks handled by AI</div>
-              </div>
-              
-              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-                <div className="text-3xl font-bold text-yellow-300 mb-2">3x</div>
-                <div className="text-lg text-white font-semibold mb-2">Faster Delivery</div>
-                <div className="text-blue-200 text-sm">Compared to traditional development</div>
-              </div>
-            </div>
-
-            {/* The Story */}
-            <div className="bg-white/15 backdrop-blur-sm rounded-2xl p-8 text-left max-w-3xl mx-auto mb-12">
-              <h3 className="text-2xl font-bold text-white mb-6 text-center">The Story</h3>
-              <div className="space-y-4 text-blue-100 leading-relaxed">
-                <p>
-                  <strong className="text-white">The Inspiration:</strong> We wanted to work on our software even when not at the computer. 
-                  Waiting in line at the grocery store and have ideas to vibe code later? No problem - 
-                  create tasks and get them ready, then come home, turn on the agent and let it chew through the backlog.
-                </p>
-                <p>
-                  <strong className="text-white">The Vision:</strong> We wanted to bring structure to the vibe coding process 
-                  while recognizing that not all tasks can be automated. So we built an AI-native task management board 
-                  designed for both humans and robots to work together seamlessly.
-                </p>
-                <p>
-                  <strong className="text-white">The Result:</strong> A development process that scales. 
-                  We went from chaotic late-night coding sessions to structured, predictable progress. 
-                  Our AI agents became reliable team members, not just occasional helpers.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
 
       {/* Pricing Section */}
@@ -572,21 +468,20 @@ GitHub
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-24 bg-blue-600">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to Stop Managing AI?
+            Start Building with AI Agents
           </h2>
           <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join developers who set up work queues and let AI agents handle the rest. 
-            <strong className="text-yellow-300">True delegation</strong> means you focus on strategy while agents execute.
+            Set up your task board and connect AI agents to handle development work.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={() => window.location.href = '/projects'}
-              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
             >
-              Join Free
+              Get Started
             </button>
             <button 
               onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
