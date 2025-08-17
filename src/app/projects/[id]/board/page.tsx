@@ -195,7 +195,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [touchStartPos, setTouchStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [ghostElement, setGhostElement] = useState<HTMLElement | null>(null);
   const [scrollDirection, setScrollDirection] = useState<'left' | 'right' | null>(null);
   const currentMouseRef = useRef({ x: 0, y: 0 });
 
@@ -619,21 +618,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setIsDragging(true);
       setTouchStartPos({ x: touch.clientX, y: touch.clientY });
       
-      // Create ghost element
-      const ghost = element.cloneNode(true) as HTMLElement;
-      ghost.style.position = 'fixed';
-      ghost.style.left = `${touch.clientX}px`;
-      ghost.style.top = `${touch.clientY}px`;
-      ghost.style.width = `${element.offsetWidth}px`;
-      ghost.style.zIndex = '9999';
-      ghost.style.opacity = '0.9';
-      ghost.style.pointerEvents = 'none';
-      ghost.style.transform = 'translate(-50%, -50%) rotate(2deg) scale(1.05)';
-      ghost.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
-      ghost.style.transition = 'none';
-      document.body.appendChild(ghost);
-      setGhostElement(ghost);
-      
       // Allow horizontal scrolling but prevent vertical on the board
       document.body.style.touchAction = 'pan-x';
       
@@ -648,7 +632,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   };
 
   const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!isDragging || !ghostElement || !boardRef.current) return;
+    if (!isDragging || !boardRef.current) return;
     
     // Only prevent default for vertical scrolling, allow horizontal
     if (Math.abs(e.touches[0].clientY - (touchStartPos?.y || 0)) < Math.abs(e.touches[0].clientX - (touchStartPos?.x || 0))) {
@@ -657,10 +641,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     const touch = e.touches[0];
     const currentTouchPos = { x: touch.clientX, y: touch.clientY };
-    
-    // Update ghost element position
-    ghostElement.style.left = `${touch.clientX}px`;
-    ghostElement.style.top = `${touch.clientY}px`;
     
     // Find which column we're over
     const columns = boardRef.current.querySelectorAll('[data-column-status]');
@@ -713,7 +693,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setScrollDirection(null);
     }
     
-  }, [isDragging, ghostElement, touchStartPos]);
+  }, [isDragging, touchStartPos]);
 
   const cleanupTouch = useCallback(() => {
     // Clear the touch timeout to prevent ghost element creation
@@ -731,12 +711,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     // Reset scroll direction immediately
     setScrollDirection(null);
     
-    // Clean up ghost element if it exists
-    if (ghostElement) {
-      ghostElement.remove();
-      setGhostElement(null);
-    }
-    
     setDraggedCard(null);
     setDragOverColumn(null);
     setIsDragging(false);
@@ -744,7 +718,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     // Re-enable normal scrolling
     document.body.style.touchAction = '';
-  }, [ghostElement]);
+  }, []);
 
   const handleTouchEnd = useCallback(async (e: TouchEvent) => {
     if (!isDragging || !dragOverColumn || !draggedCard) {
@@ -784,9 +758,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       if (touchTimeoutRef.current) {
         clearTimeout(touchTimeoutRef.current);
       }
-      // Clean up any leftover ghost elements
-      const ghosts = document.querySelectorAll('[style*="position: fixed"][style*="z-index: 9999"]');
-      ghosts.forEach(ghost => ghost.remove());
     };
   }, []);
 
