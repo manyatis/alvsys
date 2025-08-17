@@ -82,6 +82,9 @@ model User {
   // Activity logging
   aiWorkLogs        AIWorkLog[]
   
+  // GitHub integrations
+  githubInstallations GitHubInstallation[]
+  
   // Organization invitations (as sender)
   sentInvitations   OrganizationInvitation[] @relation("InvitationSender")
 }
@@ -133,14 +136,26 @@ model Project {
   isActive        Boolean      @default(true)
   isPublic        Boolean      @default(false)
   
+  // GitHub integration (optional)
+  githubRepoId            String?  // GitHub repository ID
+  githubRepoName          String?  // e.g., "owner/repo"
+  githubRepoUrl           String?  // Full GitHub repository URL
+  githubInstallationId    String?  // GitHub App installation ID
+  githubSyncEnabled       Boolean  @default(false)
+  githubLastSyncAt        DateTime?
+  githubWebhookSecret     String?  // Unique webhook secret for this project
+  
   // Relationships
-  users           ProjectUser[]
-  cards           Card[]
-  labels          Label[]
-  sprints         Sprint[]
+  users             ProjectUser[]
+  cards             Card[]
+  labels            Label[]
+  sprints           Sprint[]
+  githubIssueSync   GitHubIssueSync[]
+  githubWebhookEvents GitHubWebhookEvent[]
   
   @@index([organizationId])
   @@index([ownerId])
+  @@index([githubRepoId])
 }
 
 model ProjectUser {
@@ -175,6 +190,12 @@ model Card {
   isAiAllowedTask   Boolean  @default(true)
   aiAssigneeId      String?  // ID of the AI agent working on this
   
+  // GitHub integration (optional)
+  githubIssueId     Int?     // GitHub issue number
+  githubIssueUrl    String?  // Full GitHub issue URL
+  githubSyncEnabled Boolean  @default(false)
+  githubLastSyncAt  DateTime?
+  
   // Timestamps
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -185,11 +206,13 @@ model Card {
   labels            CardLabel[]
   agentInstructions AgentDeveloperInstructions[]
   aiWorkLogs        AIWorkLog[]
+  githubSync        GitHubIssueSync?
   
   @@index([projectId])
   @@index([status])
   @@index([assigneeId])
   @@index([sprintId])
+  @@index([githubIssueId])
 }
 
 model Comment {
@@ -200,11 +223,17 @@ model Comment {
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
   isAiComment Boolean @default(false)
+  
+  // GitHub integration (optional)
+  githubCommentId   Int?     // GitHub comment ID
+  githubSyncEnabled Boolean  @default(false)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   @@index([cardId])
   @@index([authorId])
+  @@index([githubCommentId])
 }
 
 model Label {
@@ -300,6 +329,87 @@ model AIWorkLog {
   @@index([createdAt])
 }
 
+// GitHub Integration Models
+model GitHubIssueSync {
+  id                    String   @id @default(cuid())
+  cardId                String   @unique
+  card                  Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  projectId             String
+  project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  githubIssueId         Int      // GitHub issue number
+  githubIssueNodeId     String   // GitHub GraphQL node ID
+  githubRepoName        String   // e.g., "owner/repo"
+  
+  // Sync metadata - simplified!
+  lastSyncAt            DateTime @default(now())
+  
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  
+  @@index([projectId])
+  @@index([githubIssueId])
+  @@index([githubRepoName])
+}
+
+model GitHubInstallation {
+  id                    String   @id @default(cuid())
+  githubInstallationId  String   @unique
+  githubAccountId       String   // GitHub account ID (user or org)
+  githubAccountLogin    String   // GitHub username or org name
+  githubAccountType     String   // "User" or "Organization"
+  
+  // Installation details
+  repositorySelection   String   // "all" or "selected"
+  targetType           String   // "User" or "Organization"
+  permissions          Json     // GitHub app permissions
+  events               String[] // Subscribed webhook events
+  
+  // User association
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Status
+  isActive             Boolean  @default(true)
+  suspendedAt          DateTime?
+  suspendedBy          String?  // GitHub user who suspended
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([githubAccountLogin])
+}
+
+model GitHubWebhookEvent {
+  id                   String   @id @default(cuid())
+  githubEventId        String   @unique // GitHub delivery ID
+  eventType            String   // e.g., "issues", "issue_comment", "pull_request"
+  action               String   // e.g., "opened", "closed", "edited"
+  repositoryName       String   // "owner/repo"
+  
+  // Project association
+  projectId            String?
+  project              Project? @relation(fields: [projectId], references: [id])
+  
+  // Processing status
+  processed            Boolean  @default(false)
+  processedAt          DateTime?
+  processingError      String?
+  retryCount           Int      @default(0)
+  
+  // Event data
+  payload              Json     // Full webhook payload
+  signature            String   // GitHub webhook signature
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  
+  @@index([projectId])
+  @@index([eventType])
+  @@index([processed])
+  @@index([repositoryName])
+}
+
 model SubscriptionPlan {
   id              Int       @id @default(autoincrement())
   planId          String    @unique   // "free", "indie", "professional"
@@ -331,3 +441,4 @@ enum InstructionType {
   CODING
   ARCHITECTURE
 }
+

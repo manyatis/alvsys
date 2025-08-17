@@ -195,3 +195,28 @@ export async function validateHybridAuthForProject(
 
   return user;
 }
+
+/**
+ * Validate API access with consistent return format
+ */
+export async function validateApiAccess(request: NextRequest): Promise<{
+  isValid: boolean;
+  userId?: string;
+  user?: ApiUser;
+  error?: string;
+}> {
+  const user = await validateHybridAuth(request);
+  
+  if (!user) {
+    return {
+      isValid: false,
+      error: 'Authentication required',
+    };
+  }
+
+  return {
+    isValid: true,
+    userId: user.id,
+    user,
+  };
+}

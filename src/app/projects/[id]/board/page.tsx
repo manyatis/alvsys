@@ -110,6 +110,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     organizationMembers,
     currentUserId,
     isRefreshing,
+    isSyncing,
     refreshCards,
   } = useBoardData(resolvedParams.id, showOnlyActiveSprint, selectedSprintId);
   
@@ -794,6 +795,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             project={project}
             currentProjectId={resolvedParams.id}
             isRefreshing={isRefreshing}
+            isSyncing={isSyncing}
             activeSprint={activeSprint}
             sprints={sprints}
             selectedSprintId={selectedSprintId}

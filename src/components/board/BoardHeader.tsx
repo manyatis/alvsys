@@ -1,5 +1,6 @@
 'use client';
 
+
 import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, Copy, Check, Bot } from 'lucide-react';
 import ProjectSelector from '@/components/ProjectSelector';
 import { Sprint } from '@/hooks/useSprints';
@@ -18,6 +19,7 @@ interface BoardHeaderProps {
   project: Project | null;
   currentProjectId: string;
   isRefreshing: boolean;
+  isSyncing?: boolean;
   activeSprint: Sprint | null;
   sprints: Sprint[];
   selectedSprintId: string | null;
@@ -34,6 +36,7 @@ export default function BoardHeader({
   project,
   currentProjectId,
   isRefreshing,
+  isSyncing = false,
   activeSprint,
   sprints,
   selectedSprintId,
@@ -219,7 +222,7 @@ export default function BoardHeader({
               </>
             )}
           </button>
-          
+         
           {isRefreshing && (
             <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <RefreshCw className="h-3 w-3 animate-spin" />
