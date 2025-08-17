@@ -46,6 +46,33 @@ export default function Footer() {
               </div>
             </div>
 
+            {/* Features */}
+            <div className="md:col-span-1">
+              <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Features</h3>
+              <ul className="space-y-3">
+                <li>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Visual board for mobile/desktop
+                  </span>
+                </li>
+                <li>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    Manage features by sprints
+                  </span>
+                </li>
+                <li>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    AI-native for independent agents
+                  </span>
+                </li>
+                <li>
+                  <span className="text-sm text-slate-600 dark:text-slate-400">
+                    No code or AI key access needed
+                  </span>
+                </li>
+              </ul>
+            </div>
+
             {/* Navigation Links */}
             <div className="md:col-span-1">
               <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Navigation</h3>
@@ -62,14 +89,6 @@ export default function Footer() {
                     className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                   >
                     Projects
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/features"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    Features
                   </Link>
                 </li>
                 <li>
@@ -91,28 +110,6 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Guide Links */}
-            <div className="md:col-span-1">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Guides</h3>
-              <ul className="space-y-3">
-                <li>
-                  <Link 
-                    href="/product-guide"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    Product Guide
-                  </Link>
-                </li>
-                <li>
-                  <Link 
-                    href="/example-workflow"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    Example Workflow
-                  </Link>
-                </li>
-              </ul>
-            </div>
 
             {/* Links & Resources */}
             <div className="md:col-span-1">

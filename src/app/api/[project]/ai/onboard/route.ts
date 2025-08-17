@@ -60,7 +60,7 @@ curl -X POST $BASE_URL/ai/issues \
   -d "{\"action\": \"update_status\", \"cardId\": \"$CARD_ID\", \"status\": \"IN_PROGRESS\", \"projectId\": \"$PROJECT_ID\"}"
 
 # CREATE BRANCH
-git checkout -b feature/vh-$CARD_ID || git checkout feature/vh-$CARD_ID
+git checkout -b feature/vibehero || git checkout feature/vibehero
 
 # EXECUTE TASK IMPLEMENTATION
 ## READ REQUIREMENTS: $CARD_REQUIREMENTS
