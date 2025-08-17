@@ -46,14 +46,28 @@ export async function GET(request: NextRequest) {
       
       try {
         installations = await userGithubService.getInstallations();
-      } catch {
+      } catch (error) {
         // If user token doesn't have GitHub App access, return empty installations
         // This forces the UI to show the "install GitHub App" message
-        console.log('User token not authorized for GitHub App - no installations found');
+        console.error('Error getting installations:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorStatus = (error as { status?: number }).status;
+        
+        // If it's a 403, the user needs to authorize the app
+        if (errorStatus === 403) {
+          return NextResponse.json({
+            installations: [],
+            needsAppInstallation: true,
+            needsAuthorization: true,
+            authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`,
+            error: 'GitHub App requires authorization. Please authorize the app to access your installations.',
+          });
+        }
         
         return NextResponse.json({
           installations: [],
           needsAppInstallation: true,
+          error: errorMessage,
         });
       }
       

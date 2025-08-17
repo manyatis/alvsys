@@ -84,7 +84,13 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
 
   const loadInstallations = async () => {
     try {
-      const response = await fetch('/api/github/installations');
+      // Try the app-based endpoint first (doesn't require OAuth authorization)
+      let response = await fetch('/api/github/app-installations');
+      
+      // If that fails, fall back to user-based endpoint
+      if (!response.ok) {
+        response = await fetch('/api/github/installations');
+      }
       if (response.ok) {
         const data = await response.json();
         setInstallations(data.installations || []);
