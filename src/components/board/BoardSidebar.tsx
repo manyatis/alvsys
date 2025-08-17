@@ -10,11 +10,14 @@ import {
   Copy, 
   Check,
   Archive,
-  Key
+  Key,
+  Github
 } from 'lucide-react';
 import { FilterState, hasActiveFilters, copyOnboardLink } from '@/utils/board-utils';
 import FilterMenu from './FilterMenu';
+import GitHubIntegration from '@/components/GitHubIntegration';
 import { Card, Label } from '@/types/card';
+import { useState } from 'react';
 
 interface UsageStatus {
   tier: 'FREE' | 'INDIE' | 'PROFESSIONAL';
@@ -63,6 +66,8 @@ export default function BoardSidebar({
   usageStatus,
 }: BoardSidebarProps) {
   const router = useRouter();
+  const [showGitHubIntegration, setShowGitHubIntegration] = useState(false);
+  
   return (
     <div className={`bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 sticky left-0 top-0 h-full z-10 ${
       sidebarCollapsed ? 'w-8 md:w-10' : 'w-32 sm:w-44 md:w-48'
@@ -129,6 +134,14 @@ export default function BoardSidebar({
             >
               <Key className="h-3 w-3" />
               API Keys
+            </button>
+            
+            <button
+              onClick={() => setShowGitHubIntegration(!showGitHubIntegration)}
+              className="w-full flex items-center gap-1 md:gap-2 px-2 py-1.5 text-left text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <Github className="h-3 w-3" />
+              GitHub Integration
             </button>
             
             <div className="relative">
@@ -217,6 +230,14 @@ export default function BoardSidebar({
               <Key className="h-3 w-3" />
             </button>
             
+            <button
+              onClick={() => setShowGitHubIntegration(!showGitHubIntegration)}
+              className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              title="GitHub Integration"
+            >
+              <Github className="h-3 w-3" />
+            </button>
+            
             <div className="relative">
               <button 
                 onClick={() => setShowFilterMenu(!showFilterMenu)}
@@ -262,6 +283,15 @@ export default function BoardSidebar({
           </>
         )}
       </div>
+      
+      {/* GitHub Integration Panel */}
+      {showGitHubIntegration && !sidebarCollapsed && (
+        <div className="border-t border-gray-200 dark:border-gray-700">
+          <div className="p-2 md:p-3">
+            <GitHubIntegration projectId={projectId} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

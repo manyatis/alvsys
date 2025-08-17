@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Plus, Folder, Users, Calendar } from 'lucide-react';
+import { Plus, Folder, Users, Calendar, Github, Zap } from 'lucide-react';
+import GitHubRepositorySelector from '@/components/GitHubRepositorySelector';
 
 interface Project {
   id: string;
@@ -33,21 +34,27 @@ interface UsageStatus {
   isAtProjectLimit: boolean;
 }
 
+type CreationMode = 'select' | 'vibes' | 'github';
+
 export default function ProjectsPage() {
   const { status } = useSession();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [creationMode, setCreationMode] = useState<CreationMode>('select');
   const [formData, setFormData] = useState({
     organizationName: '',
     projectName: '',
     useExistingOrg: false,
-    organizationId: ''
+    organizationId: '',
+    githubRepo: '',
+    githubInstallationId: ''
   });
   const [organizations, setOrganizations] = useState<{id: string, name: string}[]>([]);
   const [creating, setCreating] = useState(false);
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
+  const [showGitHubModal, setShowGitHubModal] = useState(false);
 
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
@@ -117,6 +124,16 @@ export default function ProjectsPage() {
 
       if (response.ok) {
         const data = await response.json();
+        setShowCreateModal(false);
+        setCreationMode('select');
+        setFormData({
+          organizationName: '',
+          projectName: '',
+          useExistingOrg: false,
+          organizationId: '',
+          githubRepo: '',
+          githubInstallationId: ''
+        });
         router.push(`/projects/${data.project.id}/board`);
       } else {
         const error = await response.json();
@@ -132,6 +149,59 @@ export default function ProjectsPage() {
     } finally {
       setCreating(false);
     }
+  };
+
+  const handleGitHubRepositorySelect = async (repo: { 
+    id: number; 
+    name: string; 
+    full_name: string; 
+    description: string | null; 
+    private: boolean; 
+    html_url: string; 
+    default_branch: string; 
+  }, installationId: number) => {
+    setCreating(true);
+    try {
+      const response = await fetch('/api/projects/github', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          repoName: repo.full_name,
+          repoDescription: repo.description,
+          installationId: installationId.toString(),
+          syncIssues: true,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        router.push(`/projects/${data.project.id}/board`);
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to create project from GitHub repository');
+      }
+    } catch (error) {
+      console.error('Error creating project from GitHub:', error);
+      alert('Failed to create project from GitHub repository');
+    } finally {
+      setCreating(false);
+      setShowGitHubModal(false);
+    }
+  };
+
+  const openCreateModal = () => {
+    setShowCreateModal(true);
+    setCreationMode('select');
+    setFormData({
+      organizationName: '',
+      projectName: '',
+      useExistingOrg: false,
+      organizationId: '',
+      githubRepo: '',
+      githubInstallationId: ''
+    });
   };
 
   if (loading) {
@@ -156,14 +226,14 @@ export default function ProjectsPage() {
               </div>
             )}
           </div>
-          <div>
+          <div className="flex gap-3">
             {usageStatus?.isAtProjectLimit && (
               <div className="mb-2 text-sm text-red-600 dark:text-red-400">
                 Project limit reached ({usageStatus.usage.projectsUsed}/{usageStatus.usage.projectsLimit})
               </div>
             )}
             <button
-              onClick={() => setShowCreateModal(true)}
+              onClick={openCreateModal}
               disabled={usageStatus?.isAtProjectLimit}
               className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
@@ -182,14 +252,16 @@ export default function ProjectsPage() {
             <p className="text-gray-500 dark:text-gray-400 mb-6">
               Create your first project to get started with VibeHero
             </p>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              disabled={usageStatus?.isAtProjectLimit}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-            >
-              <Plus className="h-5 w-5" />
-              Create Project
-            </button>
+            <div className="flex justify-center">
+              <button
+                onClick={openCreateModal}
+                disabled={usageStatus?.isAtProjectLimit}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                <Plus className="h-5 w-5" />
+                New Project
+              </button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -223,11 +295,68 @@ export default function ProjectsPage() {
       </div>
 
       {/* Create Project Modal */}
-      {showCreateModal && (
+      {showCreateModal && creationMode === 'select' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 max-w-md w-full mx-2 md:mx-4">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Create New Project
+            </h2>
+            <div className="space-y-4">
+              <button
+                onClick={() => setCreationMode('vibes')}
+                className="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-purple-500 dark:hover:border-purple-400 transition-colors text-left"
+              >
+                <div className="flex items-start gap-3">
+                  <Zap className="h-6 w-6 text-purple-600 mt-1" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      New VibeHero Project
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      Start fresh with a new project
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setShowGitHubModal(true)}
+                className="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-purple-500 dark:hover:border-purple-400 transition-colors text-left"
+              >
+                <div className="flex items-start gap-3">
+                  <Github className="h-6 w-6 text-gray-700 dark:text-gray-300 mt-1" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Link from GitHub
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      Import issues from a GitHub repository
+                    </p>
+                  </div>
+                </div>
+              </button>
+            </div>
+            <div className="mt-6">
+              <button
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setCreationMode('select');
+                }}
+                className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* VibeHero Project Form */}
+      {showCreateModal && creationMode === 'vibes' && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 max-w-md w-full mx-2 md:mx-4">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              New VibeHero Project
             </h2>
             <form onSubmit={handleCreateProject}>
               <div className="form-group-professional">
@@ -308,11 +437,11 @@ export default function ProjectsPage() {
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={() => setCreationMode('select')}
                   className="btn-professional-secondary"
                   disabled={creating}
                 >
-                  Cancel
+                  Back
                 </button>
                 <button
                   type="submit"
@@ -323,6 +452,26 @@ export default function ProjectsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* GitHub Repository Modal */}
+      {showGitHubModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full mx-2 md:mx-4 max-h-[90vh] overflow-hidden">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                Link from GitHub Repository
+              </h2>
+            </div>
+            <div className="overflow-y-auto max-h-[calc(90vh-120px)]">
+              <GitHubRepositorySelector
+                onRepositorySelect={handleGitHubRepositorySelect}
+                onCancel={() => setShowGitHubModal(false)}
+                loading={creating}
+              />
+            </div>
           </div>
         </div>
       )}

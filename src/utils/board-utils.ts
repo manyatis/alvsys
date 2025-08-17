@@ -16,10 +16,15 @@ export interface OrganizationMember {
 }
 
 export const getCardsByStatus = (
-  cards: Card[], 
+  cards: Card[] | undefined, 
   status: CardStatus, 
   filters: FilterState
 ) => {
+  // Return empty array if cards is undefined or null
+  if (!cards || !Array.isArray(cards)) {
+    return [];
+  }
+  
   return cards
     .filter(card => {
       // Filter by status
