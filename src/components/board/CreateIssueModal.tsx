@@ -75,14 +75,14 @@ export default function CreateIssueModal({
       >
         <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
       </div>
-      <div className="fixed inset-0 z-50 flex items-start justify-center p-2 pointer-events-none overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
         <div
-          style={{ pointerEvents: 'auto' }} 
-          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[100vh] shadow-2xl transform transition-all duration-300 my-0 flex flex-col ${
+          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[85vh] shadow-2xl transform transition-all duration-300 my-4 flex flex-col overflow-y-auto ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-4'
           }`}
+          onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
@@ -98,7 +98,7 @@ export default function CreateIssueModal({
             </button>
           </div>
           
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1">
             <form onSubmit={onCreate} className="space-y-4">
               <div className="form-group-professional">
                 <label className="form-label-professional form-label-professional-required">
