@@ -15,6 +15,7 @@ import {
   Bot,
   UserCheck
 } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 interface WorkflowStep {
   id: number;
@@ -119,6 +120,7 @@ export default function ExampleWorkflowPage() {
       icon: Bot,
       screenshot: '/give onboarding link to ai.png',
       details: [
+        'IMPORTANT: Run Claude with full permissions but inside a VM for security, or set up proper permissions before sharing the onboarding link',
         'Share the onboard link with your AI agent (Claude Code, GitHub Copilot, etc.)',
         'AI agents work alongside humans on the same board with full visibility',
         'Agents automatically fetch AI-enabled tasks that are marked as "Ready"',
@@ -128,6 +130,7 @@ export default function ExampleWorkflowPage() {
         'Both humans and AI agents contribute to the same workflow seamlessly'
       ],
       tips: [
+        'SECURITY: Use a VM environment or configure proper file permissions before giving AI agents access',
         'Start AI agents with simple, well-defined technical tasks',
         'Both humans and AI benefit from detailed acceptance criteria',
         'Your team can collaborate with AI agents through comments and status updates',
@@ -413,6 +416,9 @@ export default function ExampleWorkflowPage() {
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

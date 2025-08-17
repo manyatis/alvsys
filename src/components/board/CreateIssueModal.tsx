@@ -75,10 +75,10 @@ export default function CreateIssueModal({
       >
         <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
       </div>
-      <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-2 sm:p-4 pointer-events-none overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-start justify-center p-2 pointer-events-none overflow-y-auto">
         <div
           style={{ pointerEvents: 'auto' }} 
-          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[95vh] sm:max-h-[90vh] shadow-2xl transform transition-all duration-300 my-2 sm:my-4 flex flex-col ${
+          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[100vh] shadow-2xl transform transition-all duration-300 my-0 flex flex-col ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-4'

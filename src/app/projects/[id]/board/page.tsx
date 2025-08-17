@@ -253,6 +253,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       return;
     }
     
+    // Don't open modal until data is loaded
+    if (loading) {
+      console.warn('Cannot open create modal: data still loading');
+      return;
+    }
+    
     if (status) {
       setNewCard(prev => ({ ...prev, status }));
     }
@@ -798,6 +804,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
             showOnlyActiveSprint={showOnlyActiveSprint}
             onCreateSprint={openSprintModal}
+            copyFeedback={copyFeedback}
+            setCopyFeedback={setCopyFeedback}
           />
 
         {/* Board */}

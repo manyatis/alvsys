@@ -63,12 +63,24 @@ export default function AssigneeSelector({
           email: currentUser.email,
           type: 'self'
         });
+      } else {
+        // If current user is not found in organization members, still add "Assign to me" option
+        // This handles edge cases where the user might not be in the fetched members list
+        options.push({
+          id: currentUserId,
+          name: 'Assign to me',
+          type: 'self'
+        });
       }
+    } else {
+      // If no currentUserId but we have organization members, show all members
+      // This ensures users can still assign tasks even if currentUserId is not set
+      console.debug('AssigneeSelector: No currentUserId provided');
     }
 
-    // Add organization members
+    // Add organization members (excluding the current user to avoid duplication)
     organizationMembers.forEach(member => {
-      if (member.id !== currentUserId) { // Don't duplicate current user
+      if (member.id !== currentUserId) {
         options.push({
           id: member.id,
           name: member.name || member.email?.split('@')[0] || 'Unknown User',

@@ -114,6 +114,11 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
               );
               if (currentUser) {
                 setCurrentUserId(currentUser.id);
+              } else {
+                console.warn('Current user not found in organization members:', {
+                  sessionEmail: session.user.email,
+                  memberEmails: membersData.members.map((m: OrganizationMember) => m.email)
+                });
               }
             }
           }

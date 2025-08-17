@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import LoginModal from '@/components/login-modal';
 import Navbar from '@/components/navbar';
+import Footer from '@/components/Footer';
 import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
 
 export default function Home() {
@@ -27,7 +28,7 @@ export default function Home() {
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
               </svg>
-              Open Sourced
+GitHub
             </a>
             
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-12">
@@ -40,7 +41,6 @@ export default function Home() {
             <p className="text-xl md:text-2xl lg:text-3xl text-slate-600 dark:text-slate-300 mb-12 max-w-4xl mx-auto leading-relaxed">
               Set up tasks, walk away, and let your AI agents get to work. VibeHero manages the queue, 
               tracks progress, and keeps your development organized while you focus on what matters. 
-              <strong className="text-green-600 dark:text-green-400">Open sourced to provide full transparency.</strong>
             </p>
             
             {/* Video - Large and centered */}
@@ -84,21 +84,8 @@ export default function Home() {
               </button>
             </div>
           
-            {/* Privacy and AI Usage boxes */}
-            <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-r from-green-100 to-teal-100 dark:from-green-900/30 dark:to-teal-900/30 rounded-2xl p-6 border border-green-200 dark:border-green-800">
-                <div className="flex items-center justify-center mb-3">
-                  <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  <span className="font-semibold text-green-700 dark:text-green-400">Optimize Your AI Usage</span>
-                </div>
-                <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
-                  <strong>Stop wasting tokens on management.</strong> Instead of manually prompting AI for each task, 
-                  create a backlog and let agents work through it systematically. More actual work, less overhead.
-                </p>
-              </div>
-              
+            {/* Privacy box */}
+            <div className="max-w-3xl mx-auto">
               <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-2xl p-6 border border-green-200 dark:border-green-800">
                 <div className="flex items-center justify-center mb-3">
                   <svg className="w-6 h-6 text-green-600 dark:text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +94,7 @@ export default function Home() {
                   <span className="font-semibold text-green-700 dark:text-green-400">Total Privacy Guaranteed</span>
                 </div>
                 <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed text-center">
-                  We only facilitate project management - we have <strong>no access to your code, data, or repositories</strong>. 
+                  We <strong>never access your API keys</strong> and <strong>never access your code</strong>. 
                   VibeHero provides a secure management layer for your AI agents while ensuring complete privacy of your development work.
                 </p>
               </div>
@@ -265,52 +252,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
-            <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-              <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6">
-                <svg className="w-7 h-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Task Management for Teams
-              </h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                Create feature requests, bug fixes, and improvements for both humans and AI agents. 
-                Set who can work on what - your team collaborates seamlessly with AI assistants.
-              </p>
-            </div>
-            
-            <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-              <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-6">
-                <svg className="w-7 h-7 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Set It and Forget It
-              </h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                Queue up your work, connect your AI agent, and walk away. No monitoring required. 
-                Agents work through tasks systematically, updating status and adding progress notes.
-              </p>
-            </div>
-            
-            <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-              <div className="w-14 h-14 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6">
-                <svg className="w-7 h-7 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-3">
-                Review When Ready
-              </h3>
-              <p className="text-slate-600 dark:text-slate-300">
-                Get notified when work is complete. Review the results, provide feedback, or approve. 
-                Full visibility into what was done with complete audit trails for every task.
-              </p>
-            </div>
-          </div>
+          {/* Feature cards removed as requested */}
         </div>
       </section>
 
@@ -468,96 +410,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Open Source Section */}
-      <section className="py-24 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
-        <div className="container mx-auto px-6">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium mb-8">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-              Open Source & Community Driven
-            </div>
-            
-            <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white mb-6">
-              Built by Developers,{" "}
-              <span className="text-green-600 dark:text-green-400">
-                For Developers
-              </span>
-            </h2>
-            
-            <p className="text-xl text-slate-600 dark:text-slate-300 mb-12 leading-relaxed">
-              VibeHero is completely open source so you can trust the code and see exactly how it works. 
-              Host it yourself for complete control, or use our hosted version for convenience. 
-              Built by developers who believe in transparency and trust.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-green-200 dark:border-green-800">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                  Transparent & Trustworthy
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm">
-                  Open source code means you can see exactly how it works. No hidden functionality or data collection.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-green-200 dark:border-green-800">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                  Self-Host or Hosted
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm">
-                  Deploy on your own infrastructure for complete control, or use our hosted service for convenience.
-                </p>
-              </div>
-              
-              <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-green-200 dark:border-green-800">
-                <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                  Community Driven
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm">
-                  Contribute to the project, request features, or customize it for your needs. Full community ownership.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
-                href="https://github.com/slightlymikey/vibehero"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-                View Source Code
-              </a>
-              <button 
-                onClick={() => window.location.href = '/projects'}
-                className="px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
-              >
-                Start Using Free
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Pricing Section */}
       <section id="pricing" className="py-24 bg-white dark:bg-slate-900">
@@ -594,7 +446,7 @@ export default function Home() {
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-slate-600 dark:text-slate-300">20 AI tasks per day</span>
+                  <span className="text-slate-600 dark:text-slate-300">Unlimited AI tasks</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -746,13 +598,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Simple Footer */}
-      <footer className="py-12 bg-slate-900 text-slate-400">
-        <div className="container mx-auto px-6 text-center">
-          <p>&copy; 2025 VibeHero. All rights reserved.</p>
-        </div>
-      </footer>
       </div>
+      
+      {/* Footer */}
+      <Footer />
       
       {/* Login Modal */}
       <LoginModal 

@@ -21,6 +21,7 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 interface ProblemSolution {
   problem: string;
@@ -432,6 +433,9 @@ export default function ProductGuidePage() {
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
