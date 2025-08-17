@@ -7,15 +7,16 @@ import { useState } from 'react'
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
+  callbackUrl?: string
 }
 
-export default function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export default function LoginModal({ isOpen, onClose, callbackUrl = '/' }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState<string | null>(null)
 
   const handleSignIn = async (provider: string) => {
     setIsLoading(provider)
     try {
-      await signIn(provider, { callbackUrl: '/' })
+      await signIn(provider, { callbackUrl })
     } catch (error) {
       console.error('Sign in error:', error)
     } finally {

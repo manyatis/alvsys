@@ -59,7 +59,8 @@ export default function ProjectsPage() {
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
     if (status === 'unauthenticated') {
-      router.push('/');
+      // Redirect to home page with callbackUrl to return to projects after login
+      router.push('/?callbackUrl=' + encodeURIComponent('/projects'));
     } else if (status === 'authenticated') {
       fetchProjects();
       fetchOrganizations();
@@ -217,14 +218,11 @@ export default function ProjectsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              My Projects
-            </h1>
-            {usageStatus && (
+            {/* {usageStatus && (
               <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 {usageStatus.tier} Plan • {usageStatus.usage.projectsUsed}/{usageStatus.usage.projectsLimit} projects • {usageStatus.usage.dailyCardsUsed}/{usageStatus.usage.dailyCardsLimit} daily cards
               </div>
-            )}
+            )} */}
           </div>
           <div className="flex gap-3">
             {usageStatus?.isAtProjectLimit && (
