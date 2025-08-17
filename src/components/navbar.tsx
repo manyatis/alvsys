@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [loginCallbackUrl, setLoginCallbackUrl] = useState('/');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isMobileProjectsOpen, setIsMobileProjectsOpen] = useState(false);
@@ -92,6 +93,7 @@ export default function Navbar() {
 
   const handleMobileProjectsClick = () => {
     if (!session) {
+      setLoginCallbackUrl('/projects');
       setIsLoginModalOpen(true);
       return;
     }
@@ -130,6 +132,7 @@ export default function Navbar() {
                   onClick={(e) => {
                     if (!session) {
                       e.preventDefault();
+                      setLoginCallbackUrl('/projects');
                       setIsLoginModalOpen(true);
                     } else {
                       router.push('/projects');
@@ -592,6 +595,7 @@ export default function Navbar() {
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
+        callbackUrl={loginCallbackUrl}
       />
     </>
   );

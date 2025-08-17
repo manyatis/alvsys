@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import LoginModal from '@/components/login-modal';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/Footer';
 import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
 
-export default function Home() {
+function HomeContent() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl') || '/';
 
   return (
     <div className="min-h-screen">
@@ -501,7 +504,16 @@ export default function Home() {
       <LoginModal 
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
+        callbackUrl={callbackUrl}
       />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

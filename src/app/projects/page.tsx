@@ -59,7 +59,8 @@ export default function ProjectsPage() {
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
     if (status === 'unauthenticated') {
-      router.push('/');
+      // Redirect to home page with callbackUrl to return to projects after login
+      router.push('/?callbackUrl=' + encodeURIComponent('/projects'));
     } else if (status === 'authenticated') {
       fetchProjects();
       fetchOrganizations();
