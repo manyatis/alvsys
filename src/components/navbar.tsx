@@ -13,7 +13,6 @@ export default function Navbar() {
   const [loginCallbackUrl, setLoginCallbackUrl] = useState('/');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
-  const [isMobileProjectsOpen, setIsMobileProjectsOpen] = useState(false);
   const [projects, setProjects] = useState<{id: string; name: string; organization?: {name: string}}[]>([]);
   const [projectsLoading, setProjectsLoading] = useState(false);
   const { data: session, status } = useSession();
@@ -91,17 +90,6 @@ export default function Navbar() {
     }
   };
 
-  const handleMobileProjectsClick = () => {
-    if (!session) {
-      setLoginCallbackUrl('/projects');
-      setIsLoginModalOpen(true);
-      return;
-    }
-    setIsMobileProjectsOpen(!isMobileProjectsOpen);
-    if (projects.length === 0) {
-      fetchProjects();
-    }
-  };
 
   return (
     <>
@@ -367,70 +355,22 @@ export default function Navbar() {
           isMobileMenuOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="px-6 py-4 space-y-2">
-            {/* Mobile Projects Section */}
-            <div className="space-y-1">
-              <button 
-                onClick={handleMobileProjectsClick}
-                className="flex items-center justify-between w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
-              >
-                Projects
-                {session && (
-                  <svg className={`w-4 h-4 transition-transform ${isMobileProjectsOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                )}
-              </button>
-              
-              {/* Mobile Projects Dropdown */}
-              {session && (
-                <div className={`pl-4 space-y-1 transition-all duration-300 ${isMobileProjectsOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                  {projectsLoading ? (
-                    <div className="px-4 py-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
-                      Loading...
-                    </div>
-                  ) : projects.length > 0 ? (
-                    <>
-                      {projects.slice(0, 5).map((project) => (
-                        <button
-                          key={project.id}
-                          onClick={() => {
-                            router.push(`/projects/${project.id}/board`);
-                            setIsMobileMenuOpen(false);
-                            setIsMobileProjectsOpen(false);
-                          }}
-                          className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
-                        >
-                          <div className="font-medium">{project.name}</div>
-                          <div className="text-xs opacity-75">{project.organization?.name}</div>
-                        </button>
-                      ))}
-                      <button
-                        onClick={() => {
-                          router.push('/projects');
-                          setIsMobileMenuOpen(false);
-                          setIsMobileProjectsOpen(false);
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 rounded-lg transition-all duration-300"
-                      >
-                        View All Projects
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        router.push('/projects');
-                        setIsMobileMenuOpen(false);
-                        setIsMobileProjectsOpen(false);
-                      }}
-                      className="block w-full text-left px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-white hover:bg-blue-600 rounded-lg transition-all duration-300"
-                    >
-                      Create your first project
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Mobile Projects Section - Simplified */}
+            <button 
+              onClick={(e) => {
+                if (!session) {
+                  e.preventDefault();
+                  setLoginCallbackUrl('/projects');
+                  setIsLoginModalOpen(true);
+                } else {
+                  router.push('/projects');
+                }
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+            >
+              Projects
+            </button>
             <Link 
               href="/features"
               onClick={() => setIsMobileMenuOpen(false)}
@@ -467,38 +407,21 @@ export default function Navbar() {
               GitHub
             </a>
             
-            {/* Mobile Guide Section */}
-            <div className="space-y-1">
-              <button 
-                onClick={() => setIsGuideOpen(!isGuideOpen)}
-                className="flex items-center justify-between w-full text-left px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300"
-              >
-                Guide
-                <svg className={`w-4 h-4 transition-transform ${isGuideOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-              
-              {/* Mobile Guide Dropdown */}
-              <div className={`pl-4 space-y-1 transition-all duration-300 ${
-                isGuideOpen ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
-              }`}>
-                <Link 
-                  href="/product-guide"
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Product Guide
-                </Link>
-                <Link 
-                  href="/example-workflow"
-                  className="block w-full text-left px-4 py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-300"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Example Workflow
-                </Link>
-              </div>
-            </div>
+            {/* Mobile Guide Section - Simplified */}
+            <Link 
+              href="/product-guide"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Product Guide
+            </Link>
+            <Link 
+              href="/example-workflow"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Example Workflow
+            </Link>
             
             {/* Mobile Auth Section */}
             <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
