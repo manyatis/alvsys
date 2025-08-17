@@ -44,7 +44,6 @@ export default function GitHubRepositorySelector({
   const [selectedRepoId, setSelectedRepoId] = useState<number | null>(null);
   const [needsAppInstallation, setNeedsAppInstallation] = useState(false);
   const [needsGitHubConnection, setNeedsGitHubConnection] = useState(false);
-
   useEffect(() => {
     loadInstallations();
   }, []);
@@ -52,12 +51,22 @@ export default function GitHubRepositorySelector({
   const loadInstallations = async () => {
     try {
       setLoadingInstallations(true);
-      const response = await fetch('/api/github/installations');
+      // Try the app-based endpoint first (doesn't require OAuth authorization)
+      let response = await fetch('/api/github/app-installations');
+      
+      // If that fails, fall back to user-based endpoint
+      if (!response.ok) {
+        response = await fetch('/api/github/installations');
+      }
       if (response.ok) {
         const data = await response.json();
         setInstallations(data.installations || []);
         setNeedsAppInstallation(data.needsAppInstallation || false);
-        setError('');
+        if (data.error && data.installations.length === 0) {
+          setError(data.error);
+        } else {
+          setError('');
+        }
       } else {
         const errorData = await response.json();
         if (response.status === 400 && errorData.error === 'GitHub account not connected') {
@@ -153,8 +162,18 @@ export default function GitHubRepositorySelector({
             To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            After installation, refresh this page to see your repositories.
+            After installation, you may need to authorize the app and grant repository access.
           </p>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-2 bg-blue-50 dark:bg-blue-900/20 p-3 rounded">
+            <strong>Installation Steps:</strong>
+            <ol className="list-decimal list-inside mt-1 space-y-1">
+              <li>Click &quot;Install GitHub App&quot; below</li>
+              <li>Select your account or organization</li>
+              <li>Choose which repositories to grant access to</li>
+              <li>Click &quot;Install&quot; to complete</li>
+              <li>Return here and click &quot;Refresh&quot;</li>
+            </ol>
+          </div>
         </div>
         <div className="flex gap-3 justify-center">
           <button
@@ -164,7 +183,7 @@ export default function GitHubRepositorySelector({
             Cancel
           </button>
           <a
-            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibehero'}/installations/new`}
+            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
