@@ -58,7 +58,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl = '/' }: Login
         
         {/* Social Login Buttons */}
         <div className="space-y-4">
-          <button
+          {/* <button
             onClick={() => handleSignIn('google')}
             disabled={isLoading !== null}
             className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -76,7 +76,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl = '/' }: Login
             <span className="font-medium text-slate-700 dark:text-slate-200">
               Continue with Google
             </span>
-          </button>
+          </button> */}
 
           <button
             onClick={() => handleSignIn('github')}
@@ -94,7 +94,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl = '/' }: Login
               Continue with GitHub
             </span>
           </button>
-
+{/* 
           <button
             onClick={() => handleSignIn('apple')}
             disabled={true}
@@ -110,7 +110,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl = '/' }: Login
             <span className="font-medium">
               Continue with Apple
             </span>
-          </button>
+          </button> */}
         </div>
         
         {/* Footer */}
