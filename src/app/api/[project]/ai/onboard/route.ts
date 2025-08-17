@@ -36,6 +36,8 @@ export BASE_URL="https://vibehero.io/api"
 
 @LOOP_START:
 # FETCH NEXT TASK
+# Example payload for next_ready action:
+# {"action": "next_ready", "projectId": "your-project-id"}
 RESPONSE=$(curl -X POST $BASE_URL/ai/issues \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $API_KEY" \
@@ -50,6 +52,8 @@ CARD_REQUIREMENTS=$(echo $RESPONSE | jq -r '.card.requirements')
 [[ "$CARD_ID" == "null" ]] && sleep 20 && curl $BASE_URL/$PROJECT_ID/ai/onboard | sh && goto @LOOP_START
 
 # MARK IN_PROGRESS
+# Example payload for update_status action:
+# {"action": "update_status", "cardId": "card-id-here", "status": "IN_PROGRESS", "projectId": "your-project-id"}
 curl -X POST $BASE_URL/ai/issues \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $API_KEY" \
@@ -79,6 +83,8 @@ Auto-implemented by VibeHero AI"
 git push origin feature/vh-$CARD_ID
 
 # MARK COMPLETE
+# Example payload for update_status with comment:
+# {"action": "update_status", "cardId": "card-id-here", "status": "READY_FOR_REVIEW", "projectId": "your-project-id", "comment": "Implementation complete. Branch: feature/vh-card-id"}
 curl -X POST $BASE_URL/ai/issues \
   -H 'Content-Type: application/json' \
   -H "Authorization: Bearer $API_KEY" \
