@@ -37,7 +37,7 @@ export default function Footer() {
                 VibeHero
               </Link>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                Your AI agent&apos;s project manager. Set up tasks, walk away, and let your AI agents get to work.
+                Your AI Native Project Management. Set up tasks, walk away, and let your AI agents get to work.
               </p>
               <div className="flex items-center gap-2">
                 <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 rounded-full border border-green-200 dark:border-green-800/30">
