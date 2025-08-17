@@ -618,8 +618,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       setIsDragging(true);
       setTouchStartPos({ x: touch.clientX, y: touch.clientY });
       
-      // Allow horizontal scrolling but prevent vertical on the board
-      document.body.style.touchAction = 'pan-x';
+      // Restrict touch action only on the board during drag
+      if (boardRef.current) {
+        boardRef.current.style.touchAction = 'pan-x';
+      }
       
       // Add haptic feedback if available
       if ('vibrate' in navigator) {
@@ -716,8 +718,10 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     setIsDragging(false);
     setTouchStartPos(null);
     
-    // Re-enable normal scrolling
-    document.body.style.touchAction = '';
+    // Re-enable normal scrolling on the board
+    if (boardRef.current) {
+      boardRef.current.style.touchAction = '';
+    }
   }, []);
 
   const handleTouchEnd = useCallback(async (e: TouchEvent) => {
@@ -823,7 +827,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             </div>
           )}
           
-          <div ref={boardRef} className="flex gap-2 md:gap-3 h-full pb-4 overflow-x-auto overflow-y-hidden relative w-full" style={{ touchAction: 'pan-x' }}>
+          <div ref={boardRef} className="flex gap-2 md:gap-3 h-full pb-4 overflow-x-auto overflow-y-hidden relative w-full">
             {statusColumns.map((column) => {
               const columnCards = getCardsByStatus(cards, column.status, filters);
               
