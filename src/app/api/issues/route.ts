@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { UsageService } from '@/services/usage-service'
 import { validateHybridAuthForProject, createApiErrorResponse } from '@/lib/api-auth'
+import { GitHubSyncService } from '@/services/github-sync-service'
 
 // GET /api/issues - Get all issues for a project with optional status filter
 export async function GET(request: NextRequest) {
@@ -183,6 +184,31 @@ export async function POST(request: NextRequest) {
 
     // Increment usage after successful card creation
     await UsageService.incrementCardUsage(user.id)
+
+    // Auto-sync to GitHub if the project has GitHub sync enabled
+    try {
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { githubSyncEnabled: true, githubInstallationId: true, githubRepoName: true },
+      })
+      
+      if (project?.githubSyncEnabled && project.githubInstallationId && project.githubRepoName) {
+        const githubSyncService = await GitHubSyncService.createForProject(projectId)
+        if (githubSyncService) {
+          // Enable GitHub sync for this card and sync it to GitHub
+          await prisma.card.update({
+            where: { id: issue.id },
+            data: { githubSyncEnabled: true },
+          })
+          
+          await githubSyncService.syncCardToGitHub(issue.id)
+          console.log(`Auto-synced new card ${issue.id} to GitHub`)
+        }
+      }
+    } catch (error) {
+      // Log the error but don't fail the card creation
+      console.error('Failed to auto-sync card to GitHub:', error)
+    }
 
     return NextResponse.json(issue, { status: 201 })
   } catch (error) {
