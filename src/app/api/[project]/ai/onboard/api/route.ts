@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AIService } from '../../../../../lib/ai-service';
-import { generateApiOnboarding } from '../../../../../lib/ai/onboarding';
+import { AIService } from '../../../../../../lib/ai-service';
+import { generateApiOnboarding } from '../../../../../../lib/ai/onboarding';
 
 export async function GET(
   request: NextRequest,
@@ -12,7 +12,6 @@ export async function GET(
   try {
     const project = await AIService.getProjectById(projectId);
     
-    // Default to API onboarding for backward compatibility
     const onboardingInstructions = generateApiOnboarding({
       projectId: project.id,
       apiToken: process.env.VIBE_HERO_API_TOKEN
@@ -25,7 +24,7 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error('Error in AI onboarding:', error);
+    console.error('Error in API onboarding:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
