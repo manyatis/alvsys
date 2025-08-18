@@ -15,6 +15,13 @@ function HomeContent() {
 
       {/* Add padding top to account for fixed navbar */}
       <div className="pt-20">
+        {/* Banner */}
+        <div className="bg-blue-600 text-white py-3 px-6 text-center">
+          <p className="text-base font-medium">
+            Due to popular demand we will be rolling out MCP connection soon
+          </p>
+        </div>
+
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
           <div className="container mx-auto px-6 py-24 lg:py-32">
@@ -80,7 +87,7 @@ function HomeContent() {
                   Work with Any Agent, Anywhere
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  Connect any AI agent to your project board via our API:
+                  Connect any AI agent to your project board via our APIs/MCPs:
                 </p>
                 <div className="space-y-6">
                   <div className="flex gap-4">
@@ -111,7 +118,7 @@ function HomeContent() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        2. APIs for Any Agent
+                        2. MCPs/APIs for Any Agent
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
                         Claude, GPT, or custom agents can fetch tasks and update progress via our API. Our tooling prompts and manages them to complete tasks.
@@ -132,7 +139,7 @@ function HomeContent() {
                         3. Private and Secure
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Copy the onboarding link from your board, prompt any agent of your choice, and watch it begin using our website. No code or AI key access required.
+                        Copy the onboarding link from your board, prompt any agent of your choice, and watch it begin using our website. No code or AI key access required. Agentic connection via MCP.
                       </p>
                     </div>
                   </div>
