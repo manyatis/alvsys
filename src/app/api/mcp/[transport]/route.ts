@@ -1,6 +1,6 @@
 import { createMcpHandler } from 'mcp-handler';
 import { z } from 'zod';
-import { generateMcpOnboarding } from '../../../../lib/ai/onboarding';
+import { generateMcpOnboardingInstructions } from '../../../../lib/ai/onboarding-flows';
 import { AIService } from '../../../../lib/ai-service';
 import { 
   createTaskInstructions,
@@ -157,9 +157,9 @@ const handler = createMcpHandler(
         const user = await authenticateMcpRequest(bearerToken, projectId);
 
         const project = await AIService.getProjectById(projectId);
-        const instructions = generateMcpOnboarding({
+        const instructions = generateMcpOnboardingInstructions({
           projectId: project.id,
-          apiToken: process.env.VIBE_HERO_API_TOKEN
+          apiToken: bearerToken
         });
 
         return {
