@@ -112,22 +112,7 @@ export default function BoardSidebar({
               <Archive className="h-4 w-4 sm:h-3 sm:w-3" />
               Backlog
             </button>
-            
-            <button
-              onClick={() => copyOnboardLink(projectId, () => {
-                setCopyFeedback(true);
-                setTimeout(() => setCopyFeedback(false), 2000);
-              })}
-              className="flex-1 sm:flex-initial sm:w-full flex items-center gap-2 px-3 py-2 text-left text-sm sm:text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              {copyFeedback ? (
-                <Check className="h-4 w-4 sm:h-3 sm:w-3 text-green-600" />
-              ) : (
-                <Copy className="h-4 w-4 sm:h-3 sm:w-3" />
-              )}
-              {copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
-            </button>
-            
+
             <button
               onClick={() => router.push('/account')}
               className="flex-1 sm:flex-initial sm:w-full flex items-center gap-2 px-3 py-2 text-left text-sm sm:text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
