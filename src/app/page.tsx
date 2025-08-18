@@ -19,26 +19,15 @@ function HomeContent() {
       <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
         <div className="container mx-auto px-6 py-24 lg:py-32">
           <div className="max-w-6xl mx-auto text-center">
-            <a 
-              href="https://github.com/slightlymikey/vibehero" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-300 px-4 py-2 rounded-full text-sm font-medium mb-8 hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-              </svg>
-            </a>
-            
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-12">
-              AI Native Project Management
+              AI Native Project Management Tooling
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Visual GitHub boards with APIs for any AI agent to complete your project tasks.
+              Visual Issue boards with APIs for any AI agent to complete your project tasks. Integrate seamlessly with GitHub Issues.
             </p>
             
-            {/* Video - Large and centered */}
+            {/* Video - Large and centered
             <div className="max-w-5xl mx-auto mb-12">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700">
                 <video 
@@ -54,7 +43,7 @@ function HomeContent() {
                   Your browser does not support the video tag.
                 </video>
               </div>
-            </div>
+            </div> */}
             
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
@@ -104,10 +93,10 @@ function HomeContent() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      1. Visual GitHub Issues
+                      1. Visual Issues, Tasks, and Features
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Sync with GitHub to visualize issues on a Kanban board. Track progress in real-time.
+                      Optionally Sync with GitHub to your project board. Track progress in real-time.
                     </p>
                   </div>
                 </div>
@@ -122,10 +111,10 @@ function HomeContent() {
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                      2. API for Any Agent
+                      2. APIs for Any Agent
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Claude, GPT, or custom agents can fetch tasks and update progress via our API.
+                      Claude, GPT, or custom agents can fetch tasks and update progress via our API. Our tooling prompts and manages them to complete tasks.
                     </p>
                   </div>
                 </div>
@@ -143,7 +132,7 @@ function HomeContent() {
                       3. Continue from Anywhere
                     </h3>
                     <p className="text-slate-600 dark:text-slate-300">
-                      Switch between devices and agents seamlessly. Your project state stays synchronized.
+                      Switch between devices and agents seamlessly. Your project state stays synchronized. Continue working on your start up from any location.
                     </p>
                   </div>
                 </div>
@@ -241,17 +230,18 @@ function HomeContent() {
               </div>
               
               <ul className="space-y-4 mb-8">
+
                 <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-slate-600 dark:text-slate-300">1 Project</span>
+                  <span className="text-slate-600 dark:text-slate-300 font-semibold">3 Projects</span>
                 </li>
-                <li className="flex items-start gap-3">
+                                <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
-                  <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited AI tasks</span>
+                  <span className="text-slate-600 dark:text-slate-300">Unlimited AI tasks</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
