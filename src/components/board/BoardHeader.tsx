@@ -1,8 +1,9 @@
 'use client';
 
 
-import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, Copy, Check, Bot } from 'lucide-react';
+import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, Copy, Check, Bot, Settings } from 'lucide-react';
 import ProjectSelector from '@/components/ProjectSelector';
+import BoardSettingsModal from '@/components/board/BoardSettingsModal';
 import { Sprint } from '@/hooks/useSprints';
 import { useState, useEffect, useRef } from 'react';
 
@@ -49,6 +50,7 @@ export default function BoardHeader({
   setCopyFeedback = () => {},
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
+  const [showBoardSettings, setShowBoardSettings] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -77,20 +79,21 @@ export default function BoardHeader({
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-full">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
-          {project && (
-            <ProjectSelector 
-              currentProject={project} 
-              currentProjectId={currentProjectId}
-            />
-          )}
-          
-          {/* Sprint Selector and Copy AI Link Button */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
-            {/* Sprint Selector */}
-            <div className="relative" ref={menuRef}>
+    <>
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
+            {project && (
+              <ProjectSelector 
+                currentProject={project} 
+                currentProjectId={currentProjectId}
+              />
+            )}
+            
+            {/* Sprint Selector and Copy AI Link Button */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto min-w-0">
+              {/* Sprint Selector */}
+              <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setShowSprintMenu(!showSprintMenu)}
                 className="flex items-center justify-between sm:justify-start gap-2 px-3 py-2 w-full sm:w-auto text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
@@ -231,11 +234,26 @@ export default function BoardHeader({
               <span className="hidden md:inline">Syncing...</span>
             </div>
           )}
-          <button className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400">
-            <MoreVertical className="h-3 w-3" />
+          <button 
+            onClick={() => setShowBoardSettings(true)}
+            className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            title="Board Settings"
+          >
+            <Settings className="h-4 w-4" />
           </button>
+          </div>
         </div>
       </div>
-    </div>
+      
+      {/* Board Settings Modal */}
+      {project && (
+        <BoardSettingsModal
+          isOpen={showBoardSettings}
+          onClose={() => setShowBoardSettings(false)}
+          projectId={project.id}
+          projectName={project.name}
+        />
+      )}
+    </>
   );
 }
