@@ -34,7 +34,6 @@ function HomeContent() {
                 Visual Issue boards with APIs for any AI agent to complete your project tasks. Integrate seamlessly with GitHub Issues.
               </p>
 
-              {/* Video - Large and centered
             <div className="max-w-5xl mx-auto mb-12">
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700">
                 <video 
@@ -50,7 +49,7 @@ function HomeContent() {
                   Your browser does not support the video tag.
                 </video>
               </div>
-            </div> */}
+            </div>
 
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
