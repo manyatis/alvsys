@@ -99,8 +99,8 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
   };
 
   return (
-    <div className="h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 pt-20">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="max-w-6xl mx-auto px-4 py-8 pb-20">
         {/* Header */}
         <div className="mb-8">
           <button
