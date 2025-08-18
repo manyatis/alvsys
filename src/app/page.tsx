@@ -27,9 +27,14 @@ function HomeContent() {
         <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
           <div className="container mx-auto px-6 py-24 lg:py-32">
             <div className="max-w-6xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-12">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
                 AI Native Project Management Tooling
               </h1>
+
+              {/* Agents Carousel below hero text */}
+              <div className="mb-12">
+                <AgentsCarousel />
+              </div>
 
               <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
                 Visual Issue boards with APIs for any AI agent to complete your project tasks. Integrate seamlessly with GitHub Issues.
@@ -176,8 +181,6 @@ function HomeContent() {
           </div>
         </section>
 
-        {/* Verified Agents Carousel */}
-        <AgentsCarousel />
 
 
 
