@@ -7,7 +7,6 @@ import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 
 export default function Navbar() {
-  const [isGuideOpen, setIsGuideOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [loginCallbackUrl, setLoginCallbackUrl] = useState('/');
@@ -211,40 +210,7 @@ export default function Navbar() {
               >
                 API
               </Link>
-              
-              {/* Guide Dropdown */}
-              <div 
-                className="relative h-full"
-                onMouseEnter={() => setIsGuideOpen(true)}
-                onMouseLeave={() => setIsGuideOpen(false)}
-              >
-                <button className="flex items-center gap-1 px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500">
-                  Guide
-                  <svg className={`w-4 h-4 transition-transform ${isGuideOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                
-                {/* Dropdown Menu */}
-                <div className={`absolute top-full left-0 mt-2 w-48 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${
-                  isGuideOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
-                }`}>
-                  <div className="py-2 px-2 space-y-1">
-                    <Link 
-                      href="/product-guide"
-                      className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
-                    >
-                      Product Guide
-                    </Link>
-                    <Link 
-                      href="/example-workflow"
-                      className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
-                    >
-                      Example Workflow
-                    </Link>
-                  </div>
-                </div>
-              </div>
+
             </div>
             
             {/* Mobile menu button */}
@@ -383,22 +349,6 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               API
-            </Link>
-            
-            {/* Mobile Guide Section - Simplified */}
-            <Link 
-              href="/product-guide"
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Product Guide
-            </Link>
-            <Link 
-              href="/example-workflow"
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Example Workflow
             </Link>
             
             {/* Mobile Auth Section */}
