@@ -80,7 +80,7 @@ Task ID: $CARD_ID
 Auto-implemented by VibeHero AI"
 
 # PUSH TO REMOTE
-git push origin feature/vh-$CARD_ID
+git push origin feature/vibehero
 
 # MARK COMPLETE
 # Example payload for update_status with comment:
