@@ -4,6 +4,7 @@ import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import LoginModal from '@/components/login-modal';
 import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
+import AgentsCarousel from '@/components/AgentsCarousel';
 
 function HomeContent() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -174,6 +175,9 @@ function HomeContent() {
             </div>
           </div>
         </section>
+
+        {/* Verified Agents Carousel */}
+        <AgentsCarousel />
 
 
 
