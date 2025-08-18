@@ -334,7 +334,7 @@ export default function AccountSettings() {
               <div>
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">API Keys</h2>
                 <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-                  Generate and manage API keys for programmatic access
+                  Generate and manage API keys for programmatic access. Set your API key in the environment variable: <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-xs font-mono">VIBE_HERO_API_TOKEN</code>
                 </p>
               </div>
               <button
@@ -489,7 +489,7 @@ export default function AccountSettings() {
               <div>
                 <h2 className="text-lg font-semibold text-slate-900 dark:text-white">MCP Tokens</h2>
                 <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-                  Generate tokens for Model Context Protocol (MCP) access
+                  Generate tokens for Model Context Protocol (MCP) access. Set your MCP token in the environment variable: <code className="bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-xs font-mono">VIBE_HERO_API_TOKEN</code>
                 </p>
               </div>
               <button

@@ -151,7 +151,7 @@ export default function BoardSettingsModal({
           <div className="flex items-center gap-3">
             <Settings className="h-5 w-5 text-gray-600 dark:text-gray-400" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Board Settings
+              API/MCP Tokens
             </h2>
           </div>
           <button
@@ -188,7 +188,7 @@ export default function BoardSettingsModal({
                     MCP Tokens
                   </h3>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                    Generate tokens for Model Context Protocol access to this project
+                    Generate tokens for Model Context Protocol access to this project. Set in environment variable: <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-xs font-mono">VIBE_HERO_API_TOKEN</code>
                   </p>
                 </div>
                 <button
