@@ -71,38 +71,6 @@ async function authenticateMcpRequest(bearerToken: string, projectId: string) {
 
 const handler = createMcpHandler(
   (server) => {
-    // Onboard prompt
-    server.prompt(
-      'onboard',
-      'Get onboarding instructions for AI agents to autonomously execute tasks in a project',
-      {
-        projectId: z.string().describe('The project ID to get onboarding instructions for'),
-        bearerToken: z.string().describe('Bearer token for authentication'),
-      },
-      async ({ projectId, bearerToken }) => {
-        // Authenticate the request
-        const user = await authenticateMcpRequest(bearerToken, projectId);
-
-        const project = await AIService.getProjectById(projectId);
-        const instructions = generateMcpOnboardingInstructions({
-          projectId: project.id,
-          apiToken: bearerToken
-        });
-
-        return {
-          messages: [
-            {
-              role: 'user',
-              content: {
-                type: 'text',
-                text: instructions,
-              },
-            },
-          ],
-        };
-      }
-    );
-
     // Fetch all tasks tool
     server.tool(
       'fetchAllTasks',
@@ -176,6 +144,34 @@ const handler = createMcpHandler(
       }
     );
 
+    // Onboard tool
+    server.tool(
+      'onboard',
+      'Get onboarding instructions for AI agents to autonomously execute tasks in a project',
+      {
+        projectId: z.string().describe('The project ID to get onboarding instructions for'),
+        bearerToken: z.string().describe('Bearer token for authentication'),
+      },
+      async ({ projectId, bearerToken }) => {
+        // Authenticate the request
+        const user = await authenticateMcpRequest(bearerToken, projectId);
+
+        const project = await AIService.getProjectById(projectId);
+        const instructions = generateMcpOnboardingInstructions({
+          projectId: project.id,
+          apiToken: bearerToken
+        });
+
+        return {
+          content: [
+            {
+              type: 'text',
+              text: instructions,
+            },
+          ],
+        };
+      }
+    );
 
     // Next ready tool
     server.tool(
