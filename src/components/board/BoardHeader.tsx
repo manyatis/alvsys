@@ -1,7 +1,7 @@
 'use client';
 
 
-import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, Copy, Check, Bot } from 'lucide-react';
+import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, Copy, Check, Bot, GitBranch } from 'lucide-react';
 import ProjectSelector from '@/components/ProjectSelector';
 import { Sprint } from '@/hooks/useSprints';
 import { useState, useEffect, useRef } from 'react';
@@ -30,6 +30,7 @@ interface BoardHeaderProps {
   onCreateSprint?: () => void;
   copyFeedback?: boolean;
   setCopyFeedback?: (feedback: boolean) => void;
+  onManualSync?: () => void;
 }
 
 export default function BoardHeader({
@@ -42,30 +43,36 @@ export default function BoardHeader({
   selectedSprintId,
   onSprintSelect,
   onCloseAndStartNext,
-  onToggleSprintFilter,
-  showOnlyActiveSprint = true,
+  onToggleSprintFilter: _onToggleSprintFilter,
+  showOnlyActiveSprint: _showOnlyActiveSprint = true,
   onCreateSprint,
   copyFeedback = false,
   setCopyFeedback = () => {},
+  onManualSync,
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
+  const [showEllipsisMenu, setShowEllipsisMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const ellipsisMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowSprintMenu(false);
       }
+      if (ellipsisMenuRef.current && !ellipsisMenuRef.current.contains(event.target as Node)) {
+        setShowEllipsisMenu(false);
+      }
     };
 
-    if (showSprintMenu) {
+    if (showSprintMenu || showEllipsisMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showSprintMenu]);
+  }, [showSprintMenu, showEllipsisMenu]);
 
   const getSelectedSprintName = () => {
     if (!selectedSprintId) {
@@ -225,15 +232,38 @@ export default function BoardHeader({
         </div>
         
         <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          {isRefreshing && (
+          {(isRefreshing || isSyncing) && (
             <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
               <RefreshCw className="h-3 w-3 animate-spin" />
-              <span className="hidden md:inline">Syncing...</span>
+              <span className="hidden md:inline">{isSyncing ? 'Git Syncing...' : 'Syncing...'}</span>
             </div>
           )}
-          <button className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400">
-            <MoreVertical className="h-3 w-3" />
-          </button>
+          <div className="relative" ref={ellipsisMenuRef}>
+            <button 
+              onClick={() => setShowEllipsisMenu(!showEllipsisMenu)}
+              className="p-1 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+            >
+              <MoreVertical className="h-3 w-3" />
+            </button>
+            
+            {showEllipsisMenu && (
+              <div className="absolute top-full right-0 mt-1 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                <div className="p-2">
+                  <button
+                    onClick={() => {
+                      onManualSync?.();
+                      setShowEllipsisMenu(false);
+                    }}
+                    disabled={isSyncing}
+                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <GitBranch className="h-4 w-4" />
+                    Manual Git Sync
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
