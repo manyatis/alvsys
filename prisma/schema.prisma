@@ -51,8 +51,6 @@ model User {
   organization      Organization? @relation(fields: [organizationId], references: [id])
   // API keys for AI agents
   apiKeys           APIKey[]
-  // MCP tokens for Model Context Protocol access
-  mcpTokens         MCPToken[]
   accounts          Account[]
   sessions          Session[]
   createdAt         DateTime @default(now())
@@ -313,22 +311,6 @@ model APIKey {
   
   @@index([userId])
   @@index([key])
-}
-
-model MCPToken {
-  id          String    @id @default(cuid())
-  keyHash     String    @unique // Store the full token hash
-  keyPrefix   String    // Store partial key for display (e.g., "vhm_abc123...")
-  name        String?   // Optional name for the token
-  userId      String
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lastUsed    DateTime?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  
-  @@index([userId])
-  @@index([keyHash])
 }
 
 model AIWorkLog {

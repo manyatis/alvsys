@@ -13,15 +13,6 @@ interface UserKey {
   createdAt: string;
 }
 
-interface MCPToken {
-  id: string;
-  keyPrefix: string;
-  name: string | null;
-  isActive: boolean;
-  lastUsed: string | null;
-  createdAt: string;
-}
-
 interface GitHubInstallation {
   id: number;
   account: {
@@ -42,16 +33,11 @@ export default function AccountSettings() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [userKeys, setUserKeys] = useState<UserKey[]>([]);
-  const [mcpTokens, setMcpTokens] = useState<MCPToken[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
-  const [generatingMcp, setGeneratingMcp] = useState(false);
   const [newKeyName, setNewKeyName] = useState('');
-  const [newMcpTokenName, setNewMcpTokenName] = useState('');
   const [showNewKeyForm, setShowNewKeyForm] = useState(false);
-  const [showNewMcpTokenForm, setShowNewMcpTokenForm] = useState(false);
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
-  const [generatedMcpToken, setGeneratedMcpToken] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [githubInstallations, setGithubInstallations] = useState<GitHubInstallation[]>([]);
@@ -65,7 +51,6 @@ export default function AccountSettings() {
       return;
     }
     fetchUserKeys();
-    fetchMcpTokens();
     fetchGitHubData();
   }, [session, status, router]);
 
@@ -182,89 +167,6 @@ export default function AccountSettings() {
       }
     } catch {
       setError('Failed to delete API key');
-    }
-  };
-
-  const fetchMcpTokens = async () => {
-    try {
-      const response = await fetch('/api/user/mcp-tokens');
-      if (response.ok) {
-        const data = await response.json();
-        setMcpTokens(data.tokens || []);
-      } else {
-        setError('Failed to fetch MCP tokens');
-      }
-    } catch {
-      setError('Failed to fetch MCP tokens');
-    }
-  };
-
-  const generateMcpToken = async () => {
-    setGeneratingMcp(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/user/mcp-tokens', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newMcpTokenName || null }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setGeneratedMcpToken(data.mcpToken);
-        setNewMcpTokenName('');
-        setShowNewMcpTokenForm(false);
-        await fetchMcpTokens();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to generate MCP token');
-      }
-    } catch {
-      setError('Failed to generate MCP token');
-    } finally {
-      setGeneratingMcp(false);
-    }
-  };
-
-  const toggleMcpTokenStatus = async (tokenId: string, isActive: boolean) => {
-    try {
-      const response = await fetch(`/api/user/mcp-tokens/${tokenId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ isActive }),
-      });
-
-      if (response.ok) {
-        await fetchMcpTokens();
-      } else {
-        setError('Failed to update MCP token status');
-      }
-    } catch {
-      setError('Failed to update MCP token status');
-    }
-  };
-
-  const deleteMcpToken = async (tokenId: string) => {
-    if (!confirm('Are you sure you want to delete this MCP token? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/user/mcp-tokens/${tokenId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        await fetchMcpTokens();
-      } else {
-        setError('Failed to delete MCP token');
-      }
-    } catch {
-      setError('Failed to delete MCP token');
     }
   };
 
@@ -472,149 +374,6 @@ export default function AccountSettings() {
                       </button>
                       <button
                         onClick={() => deleteKey(key.id)}
-                        className="px-3 py-2 text-sm font-medium bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/40 dark:text-red-300 rounded transition-colors min-w-[70px]"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* MCP Tokens Section */}
-          <div className="px-6 py-6 border-t border-slate-200 dark:border-slate-700">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">MCP Tokens</h2>
-                <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-                  Generate tokens for Model Context Protocol (MCP) access
-                </p>
-              </div>
-              <button
-                onClick={() => setShowNewMcpTokenForm(true)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-              >
-                Generate MCP Token
-              </button>
-            </div>
-
-            {generatedMcpToken && (
-              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-                <h3 className="text-blue-800 dark:text-blue-300 font-medium mb-2">New MCP Token Generated</h3>
-                <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
-                  Please copy this token now. You won&apos;t be able to see it again.
-                </p>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-600 rounded">
-                  <code className="flex-1 text-sm text-slate-900 dark:text-white font-mono break-all min-w-0">
-                    {generatedMcpToken}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(generatedMcpToken, 'MCP Token')}
-                    className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors whitespace-nowrap self-start sm:self-center"
-                  >
-                    Copy
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {showNewMcpTokenForm && (
-              <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg">
-                <h3 className="font-medium text-slate-900 dark:text-white mb-3">Generate New MCP Token</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      Token Name (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={newMcpTokenName}
-                      onChange={(e) => setNewMcpTokenName(e.target.value)}
-                      placeholder="e.g., Claude Desktop, Development MCP"
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      onClick={generateMcpToken}
-                      disabled={generatingMcp}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors"
-                    >
-                      {generatingMcp ? 'Generating...' : 'Generate Token'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowNewMcpTokenForm(false);
-                        setNewMcpTokenName('');
-                        setError(null);
-                      }}
-                      className="px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* MCP Tokens List */}
-            <div className="space-y-3">
-              {mcpTokens.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-500 dark:text-slate-400">
-                    No MCP tokens found. Generate your first token to get started.
-                  </p>
-                </div>
-              ) : (
-                mcpTokens.map((token) => (
-                  <div
-                    key={token.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-slate-200 dark:border-slate-600 rounded-lg gap-3"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                        <code className="text-sm font-mono text-slate-900 dark:text-white break-all">
-                          {token.keyPrefix}...
-                        </code>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {token.name && (
-                            <span className="text-sm text-slate-600 dark:text-slate-300">
-                              ({token.name})
-                            </span>
-                          )}
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full whitespace-nowrap ${
-                              token.isActive
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                            }`}
-                          >
-                            {token.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        <span>Created {new Date(token.createdAt).toLocaleDateString()}</span>
-                        {token.lastUsed && (
-                          <span>Last used {new Date(token.lastUsed).toLocaleDateString()}</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                      <button
-                        onClick={() => toggleMcpTokenStatus(token.id, !token.isActive)}
-                        className={`px-3 py-2 text-sm font-medium rounded transition-colors min-w-[90px] ${
-                          token.isActive
-                            ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-800/40 dark:text-yellow-300'
-                            : 'bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-800/40 dark:text-green-300'
-                        }`}
-                      >
-                        {token.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-                      <button
-                        onClick={() => deleteMcpToken(token.id)}
                         className="px-3 py-2 text-sm font-medium bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/40 dark:text-red-300 rounded transition-colors min-w-[70px]"
                       >
                         Delete
