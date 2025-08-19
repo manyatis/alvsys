@@ -51,28 +51,23 @@ export default function BoardHeader({
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
   const [showBoardSettings, setShowBoardSettings] = useState(false);
-  const [showAiMenu, setShowAiMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const aiMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setShowSprintMenu(false);
       }
-      if (aiMenuRef.current && !aiMenuRef.current.contains(event.target as Node)) {
-        setShowAiMenu(false);
-      }
     };
 
-    if (showSprintMenu || showAiMenu) {
+    if (showSprintMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showSprintMenu, showAiMenu]);
+  }, [showSprintMenu]);
 
   const getSelectedSprintName = () => {
     if (!selectedSprintId) {
@@ -192,87 +187,43 @@ export default function BoardHeader({
               )}
             </div>
             
-            {/* AI Onboarding Links Menu */}
-            <div className="relative" ref={aiMenuRef}>
-              <button
-                onClick={() => setShowAiMenu(!showAiMenu)}
-                className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex-shrink-0 min-w-0"
-              >
-                {copyFeedback ? (
-                  <>
-                    <Check className="h-4 w-4 flex-shrink-0" />
-                    <span className="hidden sm:inline text-xs sm:text-sm">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Bot className="h-4 w-4 flex-shrink-0" />
-                    <span className="hidden sm:inline text-xs sm:text-sm">AI Links</span>
-                    <ChevronDown className="h-3 w-3 flex-shrink-0" />
-                  </>
-                )}
-              </button>
-              
-              {showAiMenu && (
-                <div className="absolute top-full right-0 mt-1 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                  <div className="p-2">
-                    <button
-                      onClick={() => {
-                        const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
-                        if (navigator.clipboard && window.isSecureContext) {
-                          navigator.clipboard.writeText(onboardText);
-                        } else {
-                          // Fallback for older browsers or non-secure contexts
-                          const textArea = document.createElement('textarea');
-                          textArea.value = onboardText;
-                          textArea.style.position = 'fixed';
-                          textArea.style.left = '-999999px';
-                          textArea.style.top = '-999999px';
-                          document.body.appendChild(textArea);
-                          textArea.focus();
-                          textArea.select();
-                          document.execCommand('copy');
-                          textArea.remove();
-                        }
-                        setCopyFeedback(true);
-                        setTimeout(() => setCopyFeedback(false), 2000);
-                        setShowAiMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copy API Onboarding Link
-                    </button>
-                    <button
-                      onClick={() => {
-                        const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard/mcp and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
-                        if (navigator.clipboard && window.isSecureContext) {
-                          navigator.clipboard.writeText(onboardText);
-                        } else {
-                          // Fallback for older browsers or non-secure contexts
-                          const textArea = document.createElement('textarea');
-                          textArea.value = onboardText;
-                          textArea.style.position = 'fixed';
-                          textArea.style.left = '-999999px';
-                          textArea.style.top = '-999999px';
-                          document.body.appendChild(textArea);
-                          textArea.focus();
-                          textArea.select();
-                          document.execCommand('copy');
-                          textArea.remove();
-                        }
-                        setCopyFeedback(true);
-                        setTimeout(() => setCopyFeedback(false), 2000);
-                        setShowAiMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded flex items-center gap-2"
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copy MCP Onboarding Link
-                    </button>
-                  </div>
-                </div>
+            {/* Copy AI Link Button - positioned next to sprint selector */}
+            <button
+              onClick={() => {
+                const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
+                if (navigator.clipboard && window.isSecureContext) {
+                  navigator.clipboard.writeText(onboardText);
+                } else {
+                  // Fallback for older browsers or non-secure contexts
+                  const textArea = document.createElement('textarea');
+                  textArea.value = onboardText;
+                  textArea.style.position = 'fixed';
+                  textArea.style.left = '-999999px';
+                  textArea.style.top = '-999999px';
+                  document.body.appendChild(textArea);
+                  textArea.focus();
+                  textArea.select();
+                  document.execCommand('copy');
+                  textArea.remove();
+                }
+                setCopyFeedback(true);
+                setTimeout(() => setCopyFeedback(false), 2000);
+              }}
+              className="flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex-shrink-0 min-w-0"
+            >
+              {copyFeedback ? (
+                <>
+                  <Check className="h-4 w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Bot className="h-4 w-4 flex-shrink-0" />
+                  <span className="hidden sm:inline text-xs sm:text-sm">Copy AI Link</span>
+                  <Copy className="h-3 w-3 flex-shrink-0" />
+                </>
               )}
-            </div>
+            </button>
           </div>
         </div>
         
