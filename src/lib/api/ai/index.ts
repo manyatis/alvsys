@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { ApiError } from '@/lib/api/errors';
+import { CardStatus } from '@/types/card';
 
 export interface GetNextReadyTaskParams {
   projectId: string;
@@ -112,7 +113,7 @@ export class AiAPI {
     const updatedCard = await prisma.card.update({
       where: { id: cardId },
       data: {
-        status,
+        status: status as CardStatus,
         ...(assigneeId !== undefined && { assigneeId }),
       },
       include: {

@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     const result = await ProjectsAPI.getProjects({ userId: user.id });
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     const { data, status } = handleApiError(error);
     return NextResponse.json(data, { status });
   }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     });
     
     return NextResponse.json(result, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const { data, status } = handleApiError(error);
     return NextResponse.json(data, { status });
   }

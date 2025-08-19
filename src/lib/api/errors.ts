@@ -39,11 +39,11 @@ export class ApiError extends Error {
   }
 }
 
-export function handleApiError(error: any) {
+export function handleApiError(error: unknown) {
   console.error('API Error:', error);
 
   if (error instanceof ApiError) {
-    const response: any = { error: error.message };
+    const response: { error: string; usageLimit?: ApiError['usageLimit'] } = { error: error.message };
     if (error.usageLimit) {
       response.usageLimit = error.usageLimit;
     }
@@ -51,12 +51,14 @@ export function handleApiError(error: any) {
   }
 
   // Handle Prisma errors
-  if (error.code === 'P2025') {
-    return { data: { error: 'Record not found' }, status: 404 };
-  }
+  if (error && typeof error === 'object' && 'code' in error) {
+    if (error.code === 'P2025') {
+      return { data: { error: 'Record not found' }, status: 404 };
+    }
 
-  if (error.code === 'P2002') {
-    return { data: { error: 'Duplicate record' }, status: 409 };
+    if (error.code === 'P2002') {
+      return { data: { error: 'Duplicate record' }, status: 409 };
+    }
   }
 
   // Default error

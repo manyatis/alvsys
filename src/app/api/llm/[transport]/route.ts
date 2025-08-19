@@ -1,6 +1,5 @@
 import { AiAPI, GetNextReadyTaskParams } from '@/lib/api/ai';
 import { createMcpHandler } from '@vercel/mcp-adapter';
-import z from 'zod';
 
 
 
@@ -16,7 +15,7 @@ const handler = createMcpHandler(
           content: [{ type: "text", text: "error, no project id was passed in" }]
         }
 
-        let params: GetNextReadyTaskParams = { projectId }
+        const params: GetNextReadyTaskParams = { projectId }
         const result = await AiAPI.getNextReadyTask(params);
         
         return {
@@ -34,7 +33,7 @@ const handler = createMcpHandler(
           content: [{ type: "text", text: "error, no project id was passed in" }]
         }
 
-        let params: GetNextReadyTaskParams = { projectId }
+        const params: GetNextReadyTaskParams = { projectId }
         const result = await AiAPI.getOnboardInstructions(params);
 
         return {

@@ -18,7 +18,7 @@ export async function GET(
 
     const project = await ProjectsAPI.getProjectById(resolvedParams.id, user.id);
     return NextResponse.json({ project });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const { data, status } = handleApiError(error);
     return NextResponse.json(data, { status });
   }
@@ -40,7 +40,7 @@ export async function PUT(
     const body = await request.json();
     const project = await ProjectsAPI.updateProject(resolvedParams.id, user.id, body);
     return NextResponse.json({ project });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const { data, status } = handleApiError(error);
     return NextResponse.json(data, { status });
   }
@@ -61,7 +61,7 @@ export async function DELETE(
 
     await ProjectsAPI.deleteProject(resolvedParams.id, user.id);
     return NextResponse.json({ message: 'Project deleted successfully' }, { status: 200 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const { data, status } = handleApiError(error);
     return NextResponse.json(data, { status });
   }

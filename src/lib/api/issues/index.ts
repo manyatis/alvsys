@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { UsageService } from '@/services/usage-service';
 import { GitHubSyncService } from '@/services/github-sync-service';
 import { ApiError } from '@/lib/api/errors';
+import { CardStatus, AgentInstructionType } from '@/types/card';
 
 export interface GetIssuesParams {
   projectId: string;
@@ -20,7 +21,15 @@ export interface CreateIssueParams {
   priority?: number;
   storyPoints?: number;
   isAiAllowedTask?: boolean;
-  agentInstructions?: any[];
+  agentInstructions?: Array<{
+    instructionType: string;
+    branchName?: string;
+    createBranch?: boolean;
+    webResearchPrompt?: string;
+    codeResearchPrompt?: string;
+    architectureGuidelines?: string;
+    generalInstructions?: string;
+  }>;
   status?: string;
   sprintId?: string;
 }
@@ -43,13 +52,13 @@ export class IssuesAPI {
     const { projectId, status, sprintId, activeSprint } = params;
 
     // Build the where clause
-    const whereClause: { projectId: string; status?: any; sprintId?: string | null } = {
+    const whereClause: { projectId: string; status?: CardStatus; sprintId?: string | null } = {
       projectId,
     };
 
     // Add status filter if provided
     if (status) {
-      whereClause.status = status;
+      whereClause.status = status as CardStatus;
     }
 
     if (sprintId) {
@@ -134,11 +143,11 @@ export class IssuesAPI {
         priority,
         storyPoints,
         isAiAllowedTask,
-        status,
+        status: status as CardStatus,
         sprintId,
         agentInstructions: {
-          create: agentInstructions.map((instruction: any) => ({
-            instructionType: instruction.instructionType,
+          create: agentInstructions.map((instruction) => ({
+            instructionType: instruction.instructionType as AgentInstructionType,
             branchName: instruction.branchName,
             createBranch: instruction.createBranch || false,
             webResearchPrompt: instruction.webResearchPrompt,
@@ -207,7 +216,7 @@ export class IssuesAPI {
         sprint: true,
         comments: {
           include: {
-            user: {
+            author: {
               select: {
                 id: true,
                 name: true,
@@ -244,7 +253,10 @@ export class IssuesAPI {
 
     const updatedIssue = await prisma.card.update({
       where: { id: issueId },
-      data: updates,
+      data: {
+        ...updates,
+        status: updates.status ? updates.status as CardStatus : undefined,
+      },
       include: {
         assignee: {
           select: {
@@ -264,7 +276,7 @@ export class IssuesAPI {
     });
 
     // Sync to GitHub if enabled
-    if (updatedIssue.githubSyncEnabled && updatedIssue.githubIssueNumber) {
+    if (updatedIssue.githubSyncEnabled && updatedIssue.githubIssueId) {
       try {
         const githubSyncService = await GitHubSyncService.createForProject(projectId);
         if (githubSyncService) {
@@ -291,17 +303,7 @@ export class IssuesAPI {
       throw ApiError.notFound('Issue not found');
     }
 
-    // Close GitHub issue if synced
-    if (issue.githubSyncEnabled && issue.githubIssueNumber) {
-      try {
-        const githubSyncService = await GitHubSyncService.createForProject(projectId);
-        if (githubSyncService) {
-          await githubSyncService.closeGitHubIssue(issue.githubIssueNumber);
-        }
-      } catch (error) {
-        console.error('Failed to close GitHub issue:', error);
-      }
-    }
+    // Note: Closing GitHub issues would need to be implemented in GitHubSyncService
 
     // Delete the issue
     await prisma.card.delete({
