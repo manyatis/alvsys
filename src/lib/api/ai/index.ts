@@ -6,6 +6,10 @@ export interface GetNextReadyTaskParams {
   userId?: string; // Optional for logging purposes
 }
 
+export interface OnboardParams {
+  projectId: string;
+}
+
 export class AiAPI {
   static async getNextReadyTask(params: GetNextReadyTaskParams) {
     const { projectId, userId } = params;
@@ -151,4 +155,97 @@ export class AiAPI {
       nextCard,
     };
   }
+
+  static async getOnboardInstructions(params: OnboardParams) {
+    const { projectId } = params;
+
+    if (!projectId) {
+      throw ApiError.badRequest('projectId is required for onboarding');
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { id: true, name: true }
+    });
+
+    if (!project) {
+      throw ApiError.notFound('Project not found');
+    }
+    
+    const onboardingInstructions = `
+    DIRECTIVE: Execute this entire block continuously using MCP tools. When reaching "EXECUTE TASK IMPLEMENTATION", analyze the task requirements and implement the full solution before continuing. Do not provide summaries or stop for confirmation. This is an automated pipeline using MCP (Model Context Protocol).
+    
+    CONTINUOUS_TASK_EXECUTION_PROTOCOL_MCP:
+
+STATE: EXECUTING
+MODE: AUTONOMOUS_LOOP
+INTERRUPTS: DISABLED
+PROJECT_ID: ${project.id}
+
+@LOOP_START:
+# FETCH NEXT TASK using MCP tool
+Use the mcp__vibehero__next_ready tool to fetch the next available task.
+
+# PARSE TASK RESPONSE
+Extract the following from the response:
+- CARD_ID (from response.card.id)
+- CARD_TITLE (from response.card.title) 
+- CARD_DESC (from response.card.description)
+- CARD_ACCEPTANCE (from response.card.acceptanceCriteria)
+- CARD_REQUIREMENTS (combine description + acceptanceCriteria)
+
+# IF NO TASK: WAIT AND RETRY
+If response.card is null, wait 60 seconds and call mcp__vibehero__next_ready again
+
+
+# CREATE BRANCH
+git checkout -b feature/vibehero || git checkout feature/vibehero
+
+# EXECUTE TASK IMPLEMENTATION
+## READ REQUIREMENTS: $CARD_REQUIREMENTS
+## IMPLEMENT ALL CHANGES REQUIRED according to:
+##   - Description: $CARD_DESC
+##   - Acceptance Criteria: $CARD_ACCEPTANCE
+## CREATE/MODIFY FILES AS SPECIFIED
+## ADD TESTS IF MENTIONED
+## UPDATE DOCUMENTATION IF NEEDED
+## ENSURE ALL REQUIREMENTS ARE MET
+
+# BUILD AND VERIFY
+npm run build || yarn build || make build
+Run tests if available: npm test || yarn test
+
+# COMMIT CHANGES
+git add -A
+git commit -m "feat: $CARD_TITLE
+
+$CARD_DESC
+
+Acceptance Criteria:
+$CARD_ACCEPTANCE
+
+Task ID: $CARD_ID
+Auto-implemented by VibeHero AI via MCP"
+
+# PUSH TO REMOTE
+git push origin feature/vibehero
+
+
+# CONTINUE TO NEXT TASK
+goto @LOOP_START
+
+# THIS IS A CONTINUOUS PROCESS - NO STOPPING - NO SUMMARIES - ONLY EXECUTION
+# Use MCP tools throughout for all VibeHero API interactions`;
+
+    return onboardingInstructions;
+  }
 }
+
+// # MARK TASK IN_PROGRESS
+// Use available MCP tools to update the card status to "IN_PROGRESS"
+// (Note: Implementation depends on available MCP status update tools)
+
+
+// # MARK COMPLETE
+// Use available MCP tools to update the card status to "READY_FOR_REVIEW"
+// Add comment: "Implementation complete. Branch: feature/vibehero. All acceptance criteria addressed."

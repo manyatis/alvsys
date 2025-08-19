@@ -114,6 +114,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     refreshCards,
   } = useBoardData(resolvedParams.id, showOnlyActiveSprint, selectedSprintId);
   
+  const [isManualSyncing, setIsManualSyncing] = useState(false);
+  
   const {
     createCard,
     updateCard,
@@ -440,6 +442,38 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const closeSprintModal = () => {
     setSprintModalVisible(false);
     setTimeout(() => setShowSprintModal(false), 300);
+  };
+
+  const handleManualSync = async () => {
+    if (isManualSyncing || isSyncing) return;
+    
+    setIsManualSyncing(true);
+    try {
+      const response = await fetch(`/api/projects/${resolvedParams.id}/github/sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          syncComments: true,
+          syncLabels: true,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('Manual GitHub sync completed successfully');
+        await refreshCards();
+      } else {
+        const errorData = await response.json();
+        console.error('Manual GitHub sync failed:', errorData);
+        alert(`Sync failed: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Manual GitHub sync error:', error);
+      alert('Sync failed: Network error');
+    } finally {
+      setIsManualSyncing(false);
+    }
   };
 
 
@@ -800,7 +834,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             project={project}
             currentProjectId={resolvedParams.id}
             isRefreshing={isRefreshing}
-            isSyncing={isSyncing}
+            isSyncing={isSyncing || isManualSyncing}
             activeSprint={activeSprint}
             sprints={sprints}
             selectedSprintId={selectedSprintId}
@@ -811,6 +845,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             onCreateSprint={openSprintModal}
             copyFeedback={copyFeedback}
             setCopyFeedback={setCopyFeedback}
+            onManualSync={handleManualSync}
           />
 
         {/* Board */}
