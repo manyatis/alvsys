@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AIService } from '../../../../../lib/ai-service';
-import { generateApiOnboarding } from '../../../../../lib/ai/onboarding';
+import { prisma } from '@/lib/prisma';
+import { generateOnboardingInstructions } from '@/lib/ai/onboarding';
 
 export async function GET(
   request: NextRequest,
@@ -10,19 +10,21 @@ export async function GET(
   const projectId = resolvedParams.project;
 
   try {
-    const project = await AIService.getProjectById(projectId);
-    
-    // Default to API onboarding for backward compatibility
-    const onboardingInstructions = generateApiOnboarding({
-      projectId: project.id,
-      apiToken: process.env.VIBE_HERO_API_TOKEN
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      select: { id: true, name: true }
     });
 
-    return new NextResponse(onboardingInstructions, {
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
+    if (!project) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+    
+    const onboardingInstructions = generateOnboardingInstructions(project.id);
+
+    return NextResponse.json(onboardingInstructions);
 
   } catch (error) {
     console.error('Error in AI onboarding:', error);
