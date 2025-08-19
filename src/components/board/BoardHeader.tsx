@@ -244,7 +244,7 @@ export default function BoardHeader({
                     </button>
                     <button
                       onClick={() => {
-                        const onboardText = `Connect to MCP server at https://vibehero.io/api/mcp/sse and use the "onboard" tool with projectId "${currentProjectId}" and your bearerToken. Follow the returned instructions. Do not ever stop for summary or analysis. Only stop if explicitly told to do so.`;
+                        const onboardText = `Fetch from this https://vibehero.io/api/${currentProjectId}/ai/onboard/mcp and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
                         if (navigator.clipboard && window.isSecureContext) {
                           navigator.clipboard.writeText(onboardText);
                         } else {
