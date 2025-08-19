@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth';
+import { ProjectsAPI } from '@/lib/api/projects';
+import { handleApiError } from '@/lib/api/errors';
 
 // GET /api/projects/[id] - Get specific project
 export async function GET(
@@ -10,54 +10,59 @@ export async function GET(
 ) {
   const resolvedParams = await params;
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return createApiErrorResponse('Unauthorized', 401);
     }
 
-    // Check if user has access to this project
-    const project = await prisma.project.findFirst({
-      where: {
-        id: resolvedParams.id,
-        OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } }
-        ]
-      },
-      include: {
-        organization: true,
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        },
-        _count: {
-          select: {
-            cards: true,
-            users: true
-          }
-        }
-      }
-    });
-
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 404 });
-    }
-
+    const project = await ProjectsAPI.getProjectById(resolvedParams.id, user.id);
     return NextResponse.json({ project });
-  } catch (error) {
-    console.error('Error fetching project:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    const { data, status } = handleApiError(error);
+    return NextResponse.json(data, { status });
+  }
+}
+
+// PUT /api/projects/[id] - Update project
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const resolvedParams = await params;
+  try {
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401);
+    }
+
+    const body = await request.json();
+    const project = await ProjectsAPI.updateProject(resolvedParams.id, user.id, body);
+    return NextResponse.json({ project });
+  } catch (error: any) {
+    const { data, status } = handleApiError(error);
+    return NextResponse.json(data, { status });
+  }
+}
+
+// DELETE /api/projects/[id] - Delete project
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const resolvedParams = await params;
+  try {
+    // Validate authentication (API key or session)
+    const user = await validateHybridAuth(request);
+    if (!user) {
+      return createApiErrorResponse('Unauthorized', 401);
+    }
+
+    await ProjectsAPI.deleteProject(resolvedParams.id, user.id);
+    return NextResponse.json({ message: 'Project deleted successfully' }, { status: 200 });
+  } catch (error: any) {
+    const { data, status } = handleApiError(error);
+    return NextResponse.json(data, { status });
   }
 }
