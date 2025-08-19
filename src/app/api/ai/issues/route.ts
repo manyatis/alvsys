@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 import { CardService } from '@/services/card-service'
 import { CardStatus } from '@/types/card'
 import { validateApiKeyForProject, createApiErrorResponse } from '@/lib/api-auth'
-import { AIService } from '@/lib/ai-service'
+import { UsageService } from '@/services/usage-service'
 
 // POST /api/ai/issues - AI endpoint to get available issues for processing
 export async function POST(request: NextRequest) {
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     switch (action) {
       case 'get_ready_cards':
-        const readyCards = await AIService.getReadyCards(projectId)
+        const readyCards = await CardService.getAiReadyCards(projectId)
         
         // Log AI activity
         // TODO: Fix AIWorkLog usage - requires cardId and userId
@@ -60,42 +61,136 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        try {
-          const result = await AIService.updateCardStatus(
-            cardId, 
-            status as CardStatus, 
-            projectId, 
-            comment,
-            user.id
+        // Verify card belongs to the specified project for privacy
+        const cardToUpdate = await prisma.card.findFirst({
+          where: { id: cardId, projectId }
+        })
+        if (!cardToUpdate) {
+          return NextResponse.json(
+            { error: 'Card not found in specified project' },
+            { status: 404 }
           )
-          
-          // Log AI activity
-          await AIService.logAIActivity(
-            cardId,
-            user.id,
-            'update_card_status',
-            { status, comment },
-            '/api/ai/issues'
-          )
-
-          // Log auto fetch activity if next card exists
-          if (result.nextCard) {
-            await AIService.logAIActivity(
-              result.nextCard.id,
-              user.id,
-              'auto_fetch_next_ready_card',
-              { afterCardId: cardId, projectId, nextCardTitle: result.nextCard.title },
-              '/api/ai/issues'
-            )
-          }
-
-          return NextResponse.json(result)
-        } catch (error) {
-          if (error instanceof Error && error.message === 'Card not found in specified project') {
-            return NextResponse.json({ error: error.message }, { status: 404 })
-          }
-          throw error
         }
+
+        const updatedCard = await CardService.updateCardStatus(cardId, status as CardStatus)
+        
+        // Add comment if provided
+        if (comment) {
+          await prisma.comment.create({
+            data: {
+              cardId,
+              content: comment,
+              authorId: user.id,
+              isAiComment: true,
+            },
+          })
+        }
+        
+        // Increment usage when AI completes tasks (READY_FOR_REVIEW or COMPLETED)
+        if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
+          await UsageService.incrementCardUsage(user.id)
+        }
+        
+        // Log AI activity
+        await prisma.aIWorkLog.create({
+          data: {
+            cardId: cardId,
+            userId: user.id,
+            action: 'update_card_status',
+            details: { status, comment, previousStatus: cardToUpdate.status },
+            apiEndpoint: '/api/ai/issues'
+          },
+        })
+
+        // Check if the card was moved to READY_FOR_REVIEW or COMPLETED, then fetch next task
+        let autoNextCard = null
+        if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
+          autoNextCard = await prisma.card.findFirst({
+            where: {
+              projectId,
+              status: 'READY',
+              isAiAllowedTask: true,
+            },
+            orderBy: [
+              { priority: 'asc' },
+              { createdAt: 'asc' },
+            ],
+            include: {
+              project: true,
+              agentInstructions: true,
+              assignee: true,
+            },
+          })
+
+          // Log the next card fetch activity
+          if (autoNextCard) {
+            await prisma.aIWorkLog.create({
+              data: {
+                cardId: autoNextCard.id,
+                userId: user.id,
+                action: 'auto_fetch_next_ready_card',
+                details: { afterCardId: cardId, projectId, nextCardTitle: autoNextCard.title },
+                apiEndpoint: '/api/ai/issues'
+              },
+            })
+          }
+        }
+
+        const response: {
+          message: string;
+          card: {
+            id: string;
+            status: string;
+            title: string;
+          };
+          instruction?: string;
+          nextCard?: {
+            id: string;
+            title: string;
+            description: string | null;
+            acceptanceCriteria: string | null;
+            status: string;
+            priority: number;
+            projectId: string;
+            isAiAllowedTask: boolean;
+            agentInstructions: unknown[];
+            project: unknown;
+            assignee: unknown;
+            createdAt: Date;
+            updatedAt: Date;
+          };
+        } = {
+          message: 'Card status updated successfully',
+          card: {
+            id: updatedCard.id,
+            status: updatedCard.status,
+            title: updatedCard.title,
+          },
+        }
+
+        // Include next card in response if found
+        if (autoNextCard) {
+          response.nextCard = {
+            id: autoNextCard.id,
+            title: autoNextCard.title,
+            description: autoNextCard.description,
+            acceptanceCriteria: autoNextCard.acceptanceCriteria,
+            status: autoNextCard.status,
+            priority: autoNextCard.priority,
+            projectId: autoNextCard.projectId,
+            isAiAllowedTask: autoNextCard.isAiAllowedTask,
+            agentInstructions: autoNextCard.agentInstructions,
+            project: autoNextCard.project,
+            assignee: autoNextCard.assignee,
+            createdAt: autoNextCard.createdAt,
+            updatedAt: autoNextCard.updatedAt,
+          }
+        } else if (status === 'READY_FOR_REVIEW' || status === 'COMPLETED') {
+          response.message = 'Card status updated successfully. No more ready tasks available. Continue polling for new tasks every 1 minute.'
+          ;(response as {instruction?: string}).instruction = 'Wait 60 seconds, then call next_ready API again. Do not stop - keep checking for new work.'
+        }
+
+        return NextResponse.json(response)
 
       case 'get_card_details':
         if (!cardId || !projectId) {
@@ -105,25 +200,46 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        try {
-          const result = await AIService.getCardDetails(cardId, projectId)
-
-          // Log AI activity
-          await AIService.logAIActivity(
-            cardId,
-            user.id,
-            'get_card_details',
-            { title: result.card.title },
-            '/api/ai/issues'
-          )
-
-          return NextResponse.json(result)
-        } catch (error) {
-          if (error instanceof Error && error.message === 'Card not found in specified project') {
-            return NextResponse.json({ error: error.message }, { status: 404 })
+        // Verify card belongs to the specified project for privacy
+        const card = await prisma.card.findFirst({
+          where: { id: cardId, projectId },
+          include: {
+            project: true,
+            agentInstructions: true,
+            assignee: true,
           }
-          throw error
+        })
+        if (!card) {
+          return NextResponse.json({ error: 'Card not found in specified project' }, { status: 404 })
         }
+
+        // Log AI activity
+        await prisma.aIWorkLog.create({
+          data: {
+            cardId: cardId,
+            userId: user.id,
+            action: 'get_card_details',
+            details: { title: card.title },
+            apiEndpoint: '/api/ai/issues'
+          },
+        })
+
+        return NextResponse.json({
+          card: {
+            id: card.id,
+            title: card.title,
+            description: card.description,
+            acceptanceCriteria: card.acceptanceCriteria,
+            status: card.status,
+            projectId: card.projectId,
+            isAiAllowedTask: card.isAiAllowedTask,
+            agentInstructions: card.agentInstructions,
+            project: card.project,
+            assignee: card.assignee,
+            createdAt: card.createdAt,
+            updatedAt: card.updatedAt,
+          },
+        })
 
       case 'next_ready':
         if (!projectId) {
@@ -133,20 +249,60 @@ export async function POST(request: NextRequest) {
           )
         }
 
-        const result = await AIService.getNextReadyCard(projectId)
+        // Get the highest priority READY card that is AI-allowed
+        const nextCard = await prisma.card.findFirst({
+          where: {
+            projectId,
+            status: 'READY',
+            isAiAllowedTask: true,
+          },
+          orderBy: [
+            { priority: 'asc' },
+            { createdAt: 'asc' },
+          ],
+          include: {
+            project: true,
+            agentInstructions: true,
+            assignee: true,
+          },
+        })
 
-        // Log AI activity if card found
-        if (result.card) {
-          await AIService.logAIActivity(
-            result.card.id,
-            user.id,
-            'get_next_ready_card',
-            { projectId, title: result.card.title },
-            '/api/ai/issues'
-          )
+        if (!nextCard) {
+          return NextResponse.json({
+            message: 'No ready tasks available. Continue polling for new tasks every 1 minute. Do not stop - keep checking for new work.',
+            card: null,
+            instruction: 'Wait 60 seconds, then call next_ready API again. Repeat indefinitely until tasks become available.'
+          })
         }
 
-        return NextResponse.json(result)
+        // Log AI activity
+        await prisma.aIWorkLog.create({
+          data: {
+            cardId: nextCard.id,
+            userId: user.id,
+            action: 'get_next_ready_card',
+            details: { projectId, title: nextCard.title },
+            apiEndpoint: '/api/ai/issues'
+          },
+        })
+
+        return NextResponse.json({
+          card: {
+            id: nextCard.id,
+            title: nextCard.title,
+            description: nextCard.description,
+            acceptanceCriteria: nextCard.acceptanceCriteria,
+            status: nextCard.status,
+            priority: nextCard.priority,
+            projectId: nextCard.projectId,
+            isAiAllowedTask: nextCard.isAiAllowedTask,
+            agentInstructions: nextCard.agentInstructions,
+            project: nextCard.project,
+            assignee: nextCard.assignee,
+            createdAt: nextCard.createdAt,
+            updatedAt: nextCard.updatedAt,
+          },
+        })
 
       default:
         return NextResponse.json(
@@ -192,7 +348,7 @@ export async function GET(request: NextRequest) {
       return createApiErrorResponse('Invalid API key or insufficient permissions', 401)
     }
 
-    const readyCards = await AIService.getReadyCards(projectId)
+    const readyCards = await CardService.getAiReadyCards(projectId)
     
     // Log AI activity
     // TODO: Fix AIWorkLog usage - requires cardId and userId
