@@ -55,8 +55,17 @@ export default function GitHubRepositorySelector({
       const data = await getAllInstallations();
       setInstallations(data.installations || []);
       setNeedsAppInstallation(data.needsAppInstallation || false);
-      if (data.needsAuthorization || data.error === 'GitHub account not connected') {
+      
+      // Handle different error states
+      if (data.error === 'GitHub account not connected') {
+        // User signed in with a different provider
         setNeedsGitHubConnection(true);
+        setError('');
+      } else if (data.needsAuthorization && data.needsAppInstallation) {
+        // User signed in with GitHub but GitHub App needs authorization
+        // Show the GitHub App installation prompt, not the account connection prompt
+        setNeedsAppInstallation(true);
+        setNeedsGitHubConnection(false);
         setError('');
       } else if (data.error && data.installations.length === 0) {
         setError(data.error);
