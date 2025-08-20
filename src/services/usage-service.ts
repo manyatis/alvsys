@@ -1,5 +1,5 @@
 // This service is disabled until usage tracking models are added to the schema
-// import { PrismaClient } from '@/generated/prisma';
+// import { PrismaClient } from '@prisma/client';
 import { SubscriptionTierType } from '@/services/subscription-service';
 
 // const prisma = new PrismaClient();
