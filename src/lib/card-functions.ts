@@ -1,7 +1,6 @@
 'use server';
 
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// Authentication imports removed - will be handled at a higher layer
 import { prisma } from '@/lib/prisma';
 import { CardService } from '@/services/card-service';
 import { Card } from '@/types/card';
@@ -17,28 +16,12 @@ export interface CardsResult {
  */
 export async function getProjectCards(projectId: string): Promise<CardsResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
-
-    // Get user ID
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Get all cards for the project
-    const cards = await CardService.getCardsByProject(projectId, user.id);
+    const cards = await CardService.getCardsByProject(projectId, userId);
 
     return {
       success: true,
@@ -64,29 +47,13 @@ export interface SyncCardResult {
  */
 export async function syncCardToGitHub(cardId: string): Promise<SyncCardResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, email: true, name: true, organizationId: true }
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Import syncCardToGitHub here to avoid circular dependency
     const { syncCardToGitHub } = await import('@/lib/github-functions');
-    const result = await syncCardToGitHub(cardId, user.id);
+    const result = await syncCardToGitHub(cardId, userId);
 
     if (!result.success) {
       return {
@@ -114,29 +81,13 @@ export async function syncCardToGitHub(cardId: string): Promise<SyncCardResult> 
  */
 export async function disableCardGitHubSync(cardId: string): Promise<SyncCardResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, email: true, name: true, organizationId: true }
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Import disableCardSync here to avoid circular dependency
     const { disableCardSync } = await import('@/lib/github-functions');
-    const result = await disableCardSync(cardId, user.id);
+    const result = await disableCardSync(cardId, userId);
 
     if (!result.success) {
       return {

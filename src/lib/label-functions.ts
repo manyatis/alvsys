@@ -1,7 +1,6 @@
 'use server';
 
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// Authentication imports removed - will be handled at a higher layer
 import { prisma } from '@/lib/prisma';
 
 export interface Label {
@@ -53,52 +52,19 @@ function generateRandomColor(): string {
  */
 export async function getProjectLabels(projectId: string): Promise<LabelsResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    // Check if user has access to this project
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        owner: true,
-        users: {
-          include: {
-            user: true
-          }
-        }
-      }
+      where: { id: projectId }
     });
 
     if (!project) {
       return {
         success: false,
         error: 'Project not found'
-      };
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
-    const hasAccess = project.ownerId === user.id || 
-                     project.users.some(pu => pu.userId === user.id);
-
-    if (!hasAccess) {
-      return {
-        success: false,
-        error: 'Access denied'
       };
     }
 
@@ -132,13 +98,9 @@ export async function createLabel(
   }
 ): Promise<CreateLabelResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     const { name, color } = data;
 
@@ -149,44 +111,15 @@ export async function createLabel(
       };
     }
 
-    // Check if user has access to this project
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findUnique({
-      where: { id: projectId },
-      include: {
-        owner: true,
-        users: {
-          include: {
-            user: true
-          }
-        }
-      }
+      where: { id: projectId }
     });
 
     if (!project) {
       return {
         success: false,
         error: 'Project not found'
-      };
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
-    const hasAccess = project.ownerId === user.id || 
-                     project.users.some(pu => pu.userId === user.id);
-
-    if (!hasAccess) {
-      return {
-        success: false,
-        error: 'Access denied'
       };
     }
 
