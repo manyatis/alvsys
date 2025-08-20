@@ -8,7 +8,7 @@ import GitHubRepositorySelector from '@/components/GitHubRepositorySelector';
 import { getUserUsage } from '@/lib/usage-functions';
 import { getUserProjects, createProject } from '@/lib/project-functions';
 import { getUserOrganizations } from '@/lib/organization-functions';
-import { createProjectFromRepository } from '@/lib/github-functions';
+import { createProjectFromRepository } from '@/lib/github-actions';
 
 interface Project {
   id: string;
@@ -155,8 +155,7 @@ export default function ProjectsPage() {
         repo.full_name,
         repo.description || undefined,
         installationId,
-        true, // syncIssues
-        '' // userId will be extracted from session inside the function
+        true // syncIssues
       );
 
       if (result.success && result.project) {

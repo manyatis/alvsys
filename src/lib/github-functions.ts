@@ -32,6 +32,7 @@ export interface GitHubInstallationsResponse {
   installations: GitHubInstallation[];
   needsAppInstallation?: boolean;
   needsAuthorization?: boolean;
+  needsGitHubConnection?: boolean;
   authorizationUrl?: string;
   installUrl?: string;
   usingAppAuth?: boolean;

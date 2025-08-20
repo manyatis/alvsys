@@ -65,10 +65,41 @@ export async function getAppInstallations() {
  */
 export async function getAllInstallations() {
   try {
+    // Always check if user has GitHub OAuth connection first
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      throw new Error('Unauthorized');
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Check if user has GitHub OAuth token
+    const githubAccount = await prisma.account.findFirst({
+      where: {
+        userId: user.id,
+        provider: 'github',
+      },
+    });
+
     // Try app installations first
     try {
       const appResult = await getAppInstallations();
       if (appResult.installations && appResult.installations.length > 0) {
+        // If we have app installations but no OAuth token, indicate OAuth is needed for project creation
+        if (!githubAccount?.access_token) {
+          return {
+            ...appResult,
+            error: 'GitHub account not connected',
+            needsGitHubConnection: true,
+          };
+        }
         return appResult;
       }
     } catch (error) {
@@ -79,6 +110,44 @@ export async function getAllInstallations() {
     return await getUserInstallations();
   } catch (error) {
     console.error('Error in getAllInstallations server action:', error);
+    throw error;
+  }
+}
+
+/**
+ * Create a new project from a GitHub repository (server action)
+ */
+export async function createProjectFromRepository(
+  repoName: string,
+  repoDescription: string | undefined,
+  installationId: number,
+  syncIssues: boolean
+) {
+  try {
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      throw new Error('Unauthorized');
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Use the consolidated GitHub functions
+    const result = await import('@/lib/github-functions').then(module => 
+      module.createProjectFromRepository(repoName, repoDescription, installationId, syncIssues, user.id)
+    );
+    
+    return result;
+  } catch (error) {
+    console.error('Error in createProjectFromRepository server action:', error);
     throw error;
   }
 }

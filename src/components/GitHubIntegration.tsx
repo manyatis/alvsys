@@ -97,7 +97,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
       const data = await getAllInstallations();
       setInstallations(data.installations || []);
       setNeedsAppInstallation(data.needsAppInstallation || false);
-      if (data.needsAuthorization || data.error === 'GitHub account not connected') {
+      if (data.needsAuthorization || data.error === 'GitHub account not connected' || data.needsGitHubConnection) {
         setNeedsGitHubConnection(true);
         setError('');
       } else if (data.error) {

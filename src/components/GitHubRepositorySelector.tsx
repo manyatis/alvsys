@@ -57,8 +57,8 @@ export default function GitHubRepositorySelector({
       setNeedsAppInstallation(data.needsAppInstallation || false);
       
       // Handle different error states
-      if (data.error === 'GitHub account not connected') {
-        // User signed in with a different provider
+      if (data.error === 'GitHub account not connected' || data.needsGitHubConnection) {
+        // User signed in with a different provider or needs OAuth connection
         setNeedsGitHubConnection(true);
         setError('');
       } else if (data.needsAuthorization || data.needsAppInstallation) {
