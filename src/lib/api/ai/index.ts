@@ -204,6 +204,8 @@ git checkout -b feature/vibehero || git checkout feature/vibehero
 
 # EXECUTE TASK IMPLEMENTATION
 ## READ REQUIREMENTS: $CARD_REQUIREMENTS
+# MARK TASK IN_PROGRESS
+Use update_task MCP tool to update the card status to "IN_PROGRESS" and add a comment.
 ## IMPLEMENT ALL CHANGES REQUIRED according to:
 ##   - Description: $CARD_DESC
 ##   - Acceptance Criteria: $CARD_ACCEPTANCE
@@ -215,6 +217,11 @@ git checkout -b feature/vibehero || git checkout feature/vibehero
 # BUILD AND VERIFY
 npm run build || yarn build || make build
 Run tests if available: npm test || yarn test
+
+# MARK COMPLETE
+Use update_task MCP tool to update the card status to "READY_FOR_REVIEW"
+Add comment: "Implementation complete. Branch: feature/vibehero. All acceptance criteria addressed."
+
 
 # COMMIT CHANGES
 git add -A
@@ -242,11 +249,3 @@ goto @LOOP_START
   }
 }
 
-// # MARK TASK IN_PROGRESS
-// Use available MCP tools to update the card status to "IN_PROGRESS"
-// (Note: Implementation depends on available MCP status update tools)
-
-
-// # MARK COMPLETE
-// Use available MCP tools to update the card status to "READY_FOR_REVIEW"
-// Add comment: "Implementation complete. Branch: feature/vibehero. All acceptance criteria addressed."
