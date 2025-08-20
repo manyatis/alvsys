@@ -97,7 +97,7 @@ export const GITHUB_STATUS_MAPPING = {
 /**
  * Map GitHub issue state and state_reason to VibeHero status
  */
-export function getVibeHeroStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null): string {
+export function getVibeHeroStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null | undefined): string {
   if (state === 'open') {
     return 'READY';
   } else if (state === 'closed') {
@@ -120,7 +120,7 @@ export interface GitHubIssue {
   title: string;
   body: string | null | undefined;
   state: 'open' | 'closed';
-  state_reason: 'completed' | 'not_planned' | 'reopened' | null;
+  state_reason: 'completed' | 'not_planned' | 'reopened' | null | undefined;
   labels: Array<{
     id: number;
     name: string;
