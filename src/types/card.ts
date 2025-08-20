@@ -72,7 +72,7 @@ export interface Card {
   status: CardStatus
   projectId: string
   // createdById: string - removed as not in schema
-  assigneeId?: string
+  assigneeId?: string | null
   sprintId?: string
   title: string
   description?: string
@@ -114,7 +114,7 @@ export interface CreateCardRequest {
   description?: string
   acceptanceCriteria?: string
   projectId: string
-  assigneeId?: string
+  assigneeId?: string | null
   priority?: number
   storyPoints?: number
   isAiAllowedTask?: boolean
@@ -138,7 +138,7 @@ export interface UpdateCardRequest {
   status?: CardStatus
   priority?: number
   storyPoints?: number
-  assigneeId?: string
+  assigneeId?: string | null
   sprintId?: string
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]

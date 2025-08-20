@@ -181,7 +181,7 @@ export async function updateIssueWithAgentInstructions(
     priority?: number;
     storyPoints?: number;
     status?: string;
-    assigneeId?: string;
+    assigneeId?: string | null;
     sprintId?: string | null;
     isAiAllowedTask?: boolean;
     githubSyncEnabled?: boolean;
@@ -255,7 +255,7 @@ export async function updateIssue(
     priority?: number;
     storyPoints?: number;
     status?: string;
-    assigneeId?: string;
+    assigneeId?: string | null;
     sprintId?: string | null;
     isAiAllowedTask?: boolean;
     githubSyncEnabled?: boolean;

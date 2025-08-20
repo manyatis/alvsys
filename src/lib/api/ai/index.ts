@@ -109,12 +109,29 @@ export class AiAPI {
       throw ApiError.notFound('Card not found in the specified project');
     }
 
+    // Handle assigneeId: convert empty string to null, validate if not null
+    let processedAssigneeId: string | null | undefined = undefined;
+    if (assigneeId !== undefined) {
+      if (assigneeId === '' || assigneeId === null) {
+        processedAssigneeId = null;
+      } else {
+        // Verify the assignee exists
+        const assigneeExists = await prisma.user.findUnique({
+          where: { id: assigneeId },
+        });
+        if (!assigneeExists) {
+          throw ApiError.badRequest('Invalid assignee ID');
+        }
+        processedAssigneeId = assigneeId;
+      }
+    }
+
     // Update the card
     const updatedCard = await prisma.card.update({
       where: { id: cardId },
       data: {
         status: status as CardStatus,
-        ...(assigneeId !== undefined && { assigneeId }),
+        ...(processedAssigneeId !== undefined && { assigneeId: processedAssigneeId }),
       },
       include: {
         project: true,
