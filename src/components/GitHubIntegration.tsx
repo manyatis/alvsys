@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { getAllInstallations } from '@/lib/github-actions';
 
 interface GitHubRepository {
   id: number;
@@ -84,31 +85,25 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
 
   const loadInstallations = async () => {
     try {
-      // Try the app-based endpoint first (doesn't require OAuth authorization)
-      let response = await fetch('/api/github/app-installations');
-      
-      // If that fails, fall back to user-based endpoint
-      if (!response.ok) {
-        response = await fetch('/api/github/installations');
-      }
-      if (response.ok) {
-        const data = await response.json();
-        setInstallations(data.installations || []);
-        setNeedsAppInstallation(data.needsAppInstallation || false);
-      } else {
-        const errorData = await response.json();
-        if (response.status === 400 && errorData.error === 'GitHub account not connected') {
-          setNeedsGitHubConnection(true);
-          setError('');
-        } else {
-          setError('Failed to load GitHub installations.');
-          setNeedsGitHubConnection(false);
-        }
+      const data = await getAllInstallations();
+      setInstallations(data.installations || []);
+      setNeedsAppInstallation(data.needsAppInstallation || false);
+      if (data.needsAuthorization || data.error === 'GitHub account not connected') {
+        setNeedsGitHubConnection(true);
+        setError('');
+      } else if (data.error) {
+        setError(data.error);
+        setNeedsGitHubConnection(false);
       }
     } catch (error) {
       console.error('Error loading installations:', error);
-      setError('Failed to load GitHub installations');
-      setNeedsGitHubConnection(false);
+      if (error instanceof Error && error.message === 'Unauthorized') {
+        setNeedsGitHubConnection(true);
+        setError('');
+      } else {
+        setError('Failed to load GitHub installations');
+        setNeedsGitHubConnection(false);
+      }
     }
   };
 

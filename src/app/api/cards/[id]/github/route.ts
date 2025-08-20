@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { GitHubFunctions } from '@/lib/github-functions';
 import { PrismaClient } from '@/generated/prisma';
-import { GitHubSyncService } from '@/services/github-sync-service';
 
 const prisma = new PrismaClient();
 
@@ -30,53 +30,18 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Get card and check access
-    const card = await prisma.card.findFirst({
-      where: {
-        id: cardId,
-        project: {
-          OR: [
-            { ownerId: user.id },
-            { users: { some: { userId: user.id } } },
-          ],
-        },
-      },
-      include: {
-        project: true,
-      },
-    });
-
-    if (!card) {
-      return NextResponse.json({ error: 'Card not found' }, { status: 404 });
-    }
-
-    // Create sync service
-    const syncService = await GitHubSyncService.createForProject(card.projectId);
-    if (!syncService) {
-      return NextResponse.json(
-        { error: 'Project not linked to GitHub or sync service unavailable' },
-        { status: 400 }
-      );
-    }
-
-    // Sync card to GitHub
-    const result = await syncService.syncCardToGitHub(cardId);
+    // Use the consolidated GitHub functions
+    const result = await GitHubFunctions.syncCardToGitHub(cardId, user.id);
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 500 });
+      const status = result.error?.includes('not found') ? 404 : 
+                    result.error?.includes('not linked') ? 400 : 500;
+      return NextResponse.json({ error: result.error }, { status });
     }
-
-    // Get updated card
-    const updatedCard = await prisma.card.findUnique({
-      where: { id: cardId },
-      include: {
-        githubSync: true,
-      },
-    });
 
     return NextResponse.json({
       message: 'Card synced to GitHub successfully',
-      card: updatedCard,
+      card: result.card,
     });
   } catch (error) {
     console.error('Error syncing card to GitHub:', error);
@@ -107,38 +72,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Get card and check access
-    const card = await prisma.card.findFirst({
-      where: {
-        id: cardId,
-        project: {
-          OR: [
-            { ownerId: user.id },
-            { users: { some: { userId: user.id } } },
-          ],
-        },
-      },
-    });
+    // Use the consolidated GitHub functions
+    const result = await GitHubFunctions.disableCardSync(cardId, user.id);
 
-    if (!card) {
-      return NextResponse.json({ error: 'Card not found' }, { status: 404 });
+    if (!result.success) {
+      const status = result.error?.includes('not found') ? 404 : 500;
+      return NextResponse.json({ error: result.error }, { status });
     }
-
-    // Disable GitHub sync for this card
-    await prisma.card.update({
-      where: { id: cardId },
-      data: {
-        githubSyncEnabled: false,
-        githubIssueId: null,
-        githubIssueUrl: null,
-        githubLastSyncAt: null,
-      },
-    });
-
-    // Remove sync record if exists
-    await prisma.gitHubIssueSync.deleteMany({
-      where: { cardId },
-    });
 
     return NextResponse.json({
       message: 'GitHub sync disabled for card',

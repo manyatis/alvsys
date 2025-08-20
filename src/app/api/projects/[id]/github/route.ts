@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { GitHubFunctions } from '@/lib/github-functions';
 import { PrismaClient } from '@/generated/prisma';
-import { ProjectGitHubService } from '@/services/github-sync-service';
 
 const prisma = new PrismaClient();
 
@@ -31,25 +31,23 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    // Check project access
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
-        ],
-      },
-    });
+    // Use the consolidated GitHub functions
+    const result = await GitHubFunctions.getProjectGitHubStatus(projectId, user.id);
 
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    if (!result.success) {
+      const status = result.error?.includes('not found') ? 404 : 500;
+      return NextResponse.json({ error: result.error }, { status });
     }
 
-    // Get sync status
-    const syncStatus = await ProjectGitHubService.getSyncStatus(projectId);
-
-    return NextResponse.json({ syncStatus });
+    return NextResponse.json({ 
+      syncStatus: {
+        isLinked: result.isLinked,
+        repositoryName: result.repositoryName,
+        installationId: result.installationId,
+        syncEnabled: result.syncEnabled,
+        lastSyncAt: result.lastSyncAt,
+      }
+    });
   } catch (error) {
     console.error('Error getting GitHub status:', error);
     return NextResponse.json(
@@ -80,18 +78,6 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    // Check project ownership (only owners can link repositories)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        ownerId: user.id,
-      },
-    });
-
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found or insufficient permissions' }, { status: 404 });
-    }
-
     const body = await request.json();
     const { repoName, installationId } = body;
 
@@ -102,19 +88,31 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    // Link the repository
-    const result = await ProjectGitHubService.linkRepository(projectId, repoName, installationId);
+    // Use the consolidated GitHub functions
+    const result = await GitHubFunctions.linkProjectToRepository(
+      projectId, 
+      repoName, 
+      installationId, 
+      user.id
+    );
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+      const status = result.error?.includes('not found') ? 404 : 400;
+      return NextResponse.json({ error: result.error }, { status });
     }
 
     // Get updated sync status
-    const syncStatus = await ProjectGitHubService.getSyncStatus(projectId);
+    const statusResult = await GitHubFunctions.getProjectGitHubStatus(projectId, user.id);
 
     return NextResponse.json({
       message: 'Repository linked successfully',
-      syncStatus,
+      syncStatus: statusResult.success ? {
+        isLinked: statusResult.isLinked,
+        repositoryName: statusResult.repositoryName,
+        installationId: statusResult.installationId,
+        syncEnabled: statusResult.syncEnabled,
+        lastSyncAt: statusResult.lastSyncAt,
+      } : null,
     });
   } catch (error) {
     console.error('Error linking repository:', error);
@@ -146,23 +144,13 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    // Check project ownership (only owners can unlink repositories)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        ownerId: user.id,
-      },
-    });
-
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found or insufficient permissions' }, { status: 404 });
-    }
-
-    // Unlink the repository
-    const result = await ProjectGitHubService.unlinkRepository(projectId);
+    // Use the consolidated GitHub functions
+    const result = await GitHubFunctions.unlinkProjectFromRepository(projectId, user.id);
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+      const status = result.error?.includes('not found') ? 404 : 
+                    result.error?.includes('insufficient permissions') ? 403 : 500;
+      return NextResponse.json({ error: result.error }, { status });
     }
 
     return NextResponse.json({

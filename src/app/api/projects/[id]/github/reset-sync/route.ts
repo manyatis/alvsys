@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import { GitHubFunctions } from '@/lib/github-functions';
 import { PrismaClient } from '@/generated/prisma';
 
 const prisma = new PrismaClient();
@@ -30,36 +31,17 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
-    // Check project access
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
-        ],
-      },
-    });
+    // Use the consolidated GitHub functions
+    const result = await GitHubFunctions.resetProjectSync(projectId, user.id);
 
-    if (!project) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    if (!result.success) {
+      const status = result.error?.includes('not found') ? 404 : 
+                    result.error?.includes('not linked') ? 400 : 500;
+      return NextResponse.json({ error: result.error }, { status });
     }
 
-    // Reset the sync timestamp
-    await prisma.project.update({
-      where: { id: projectId },
-      data: { 
-        githubLastSyncAt: null,
-      },
-    });
-
-    // Also delete any existing sync records to start fresh
-    await prisma.gitHubIssueSync.deleteMany({
-      where: { projectId },
-    });
-
     return NextResponse.json({
-      message: 'GitHub sync timestamp reset successfully. Next sync will process all issues.',
+      message: 'GitHub sync reset successfully. Next sync will process all issues.',
     });
   } catch (error) {
     console.error('Error resetting GitHub sync:', error);

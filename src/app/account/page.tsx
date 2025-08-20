@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { getAllInstallations } from '@/lib/github-actions';
 
 
 interface GitHubInstallation {
@@ -46,22 +47,13 @@ export default function AccountSettings() {
       setLoadingGithub(true);
       // Check if user is connected via GitHub
       if (session?.user?.email && session?.user?.name) {
-        // Try to fetch GitHub installations
-        const response = await fetch('/api/github/app-installations');
-        if (response.ok) {
-          const data = await response.json();
+        try {
+          const data = await getAllInstallations();
           setGithubInstallations(data.installations || []);
           setGithubConnected(true);
-        } else {
-          // Fallback to user installations
-          const userResponse = await fetch('/api/github/installations');
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            setGithubInstallations(userData.installations || []);
-            setGithubConnected(true);
-          } else {
-            setGithubConnected(false);
-          }
+        } catch (error) {
+          console.error('Error fetching GitHub installations:', error);
+          setGithubConnected(false);
         }
       }
     } catch (error) {

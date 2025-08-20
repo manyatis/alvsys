@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { PrismaClient } from '@/generated/prisma';
 import { validateWebhookSignature } from '@/lib/github';
-import { GitHubSyncService } from '@/services/github-sync-service';
+import { GitHubFunctions } from '@/lib/github-functions';
 
 const prisma = new PrismaClient();
 
@@ -68,8 +68,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Process the webhook event
-    await processWebhookEvent(event, data, deliveryId);
+    // Process the webhook event using consolidated functions
+    const result = await GitHubFunctions.handleWebhook(data, event);
+    
+    if (!result.success) {
+      console.error('Webhook processing failed:', result.error);
+      // Still return success to GitHub to avoid retries
+    }
 
     return NextResponse.json({ message: 'Webhook processed successfully' });
   } catch (error) {
