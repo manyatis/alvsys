@@ -43,6 +43,7 @@ export default function GitHubRepositorySelector({
   const [selectedInstallation, setSelectedInstallation] = useState<number | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
   const [selectedRepoId, setSelectedRepoId] = useState<number | null>(null);
+  const [selectedRepoName, setSelectedRepoName] = useState<string>('');
   const [needsAppInstallation, setNeedsAppInstallation] = useState(false);
   const [needsGitHubConnection, setNeedsGitHubConnection] = useState(false);
   useEffect(() => {
@@ -80,6 +81,25 @@ export default function GitHubRepositorySelector({
       setLoadingInstallations(false);
     }
   };
+
+  // Show full loading state when project is being created
+  if (loading && isSelecting && selectedRepoName) {
+    return (
+      <div className="p-12 text-center">
+        <Github className="mx-auto h-16 w-16 text-blue-500 mb-6 animate-pulse" />
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-6"></div>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          Creating Project from GitHub
+        </h3>
+        <p className="text-gray-600 dark:text-gray-400 mb-2">
+          Setting up your project from <span className="font-mono font-semibold">{selectedRepoName}</span>
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          This may take a moment while we sync your GitHub issues...
+        </p>
+      </div>
+    );
+  }
 
   if (loadingInstallations) {
     return (
@@ -279,6 +299,7 @@ export default function GitHubRepositorySelector({
                     if (isDisabled) return;
                     setIsSelecting(true);
                     setSelectedRepoId(repo.id);
+                    setSelectedRepoName(repo.full_name);
                     onRepositorySelect(repo, selectedInstallation!);
                   }}
                   className={`relative p-3 border-b border-gray-200 dark:border-gray-600 last:border-b-0 transition-colors ${
