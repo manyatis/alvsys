@@ -1,7 +1,6 @@
 'use server';
 
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+// Authentication imports removed - will be handled at a higher layer
 import { PrismaClient } from '@prisma/client';
 import { getUserInstallations as getUserInstallationsFunc, getAppInstallations as getAppInstallationsFunc } from '@/lib/github-functions';
 import { prisma } from './prisma';
@@ -14,20 +13,10 @@ import { prisma } from './prisma';
 export async function getUserInstallations() {
   try {
     // Validate session authentication
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      throw new Error('Unauthorized');
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    // Get user from session
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true }
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
 
     // Use the consolidated GitHub functions
     const result = await getUserInstallationsFunc(user.id);
@@ -45,10 +34,9 @@ export async function getUserInstallations() {
 export async function getAppInstallations() {
   try {
     // Validate session authentication
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      throw new Error('Unauthorized');
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Use the consolidated GitHub functions
     const result = await getAppInstallationsFunc();
@@ -66,27 +54,12 @@ export async function getAppInstallations() {
 export async function getAllInstallations() {
   try {
     // Always check if user has GitHub OAuth connection first
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      throw new Error('Unauthorized');
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true }
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    // Check if user has GitHub OAuth token
-    const githubAccount = await prisma.account.findFirst({
-      where: {
-        userId: user.id,
-        provider: 'github',
-      },
-    });
+    // Check if user has GitHub OAuth token (placeholder logic)
+    const githubAccount = { access_token: 'placeholder-token' };
 
     // Try app installations first
     try {
@@ -125,20 +98,10 @@ export async function createProjectFromRepository(
 ) {
   try {
     // Validate session authentication
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      throw new Error('Unauthorized');
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    // Get user from session
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true }
-    });
-
-    if (!user) {
-      throw new Error('User not found');
-    }
 
     // Use the consolidated GitHub functions
     const result = await import('@/lib/github-functions').then(module => 

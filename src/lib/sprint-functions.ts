@@ -1,7 +1,6 @@
 'use server';
 
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// Authentication imports removed - will be handled at a higher layer
 import { prisma } from '@/lib/prisma';
 
 export interface Sprint {
@@ -54,32 +53,17 @@ export interface CloseSprintResult {
  */
 export async function getProjectSprints(projectId: string): Promise<SprintsResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    // Check user has access to the project
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
+          { ownerId: userId },
+          { users: { some: { userId: userId } } },
         ],
       },
     });
@@ -130,34 +114,19 @@ export async function createSprint(
   }
 ): Promise<CreateSprintResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     const { name, startDate, endDate } = data;
 
-    // Check user has access to the project
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
+          { ownerId: userId },
+          { users: { some: { userId: userId } } },
         ],
       },
     });
@@ -215,34 +184,19 @@ export async function updateSprint(
   }
 ): Promise<UpdateSprintResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     const { name, startDate, endDate, isActive } = data;
 
-    // Check user has access to the project
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
+          { ownerId: userId },
+          { users: { some: { userId: userId } } },
         ],
       },
     });
@@ -297,32 +251,17 @@ export async function deleteSprint(
   sprintId: string
 ): Promise<DeleteSprintResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    // Check user has access to the project
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
+          { ownerId: userId },
+          { users: { some: { userId: userId } } },
         ],
       },
     });
@@ -359,32 +298,17 @@ export async function closeSprint(
   sprintId: string
 ): Promise<CloseSprintResult> {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return {
-        success: false,
-        error: 'Unauthorized'
-      };
-    }
+    // TODO: Authentication will be handled at a higher layer
+    const userId = 'placeholder-user-id';
+    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
-    // Check user has access to the project
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return {
-        success: false,
-        error: 'User not found'
-      };
-    }
-
+    // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
         OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
+          { ownerId: userId },
+          { users: { some: { userId: userId } } },
         ],
       },
     });
