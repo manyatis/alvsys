@@ -1,7 +1,8 @@
 import { PrismaClient, Card, Project, Status, GitHubIssueSync } from '@/generated/prisma';
 import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
+import { prisma } from '@/lib/prisma';
 
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 export interface SyncOptions {
   syncComments: boolean;

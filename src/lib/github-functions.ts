@@ -1,8 +1,7 @@
 import { PrismaClient, Card, Project, Status } from '@/generated/prisma';
 import { GitHubService } from '@/lib/github';
 import { GitHubSyncService, SyncOptions, SyncResult } from '@/services/github-sync-service';
-
-const prisma = new PrismaClient();
+import { prisma } from './prisma';
 
 export interface GitHubInstallation {
   id: number;

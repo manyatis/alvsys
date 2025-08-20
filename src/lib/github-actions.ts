@@ -4,8 +4,9 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
 import { GitHubFunctions } from '@/lib/github-functions';
+import { prisma } from './prisma';
 
-const prisma = new PrismaClient();
+
 
 /**
  * Get GitHub installations for the authenticated user

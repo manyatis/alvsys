@@ -4,8 +4,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
 import { UsageService } from '@/services/usage-service';
+import { prisma } from './prisma';
 
-const prisma = new PrismaClient();
 
 export interface UsageStatus {
   tier: 'FREE';
