@@ -1,4 +1,4 @@
-import { PrismaClient, Card, Project, Status, GitHubIssueSync } from '@/generated/prisma';
+import { PrismaClient, Card, Project, Status, GitHubIssueSync } from '@prisma/client';
 import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 
