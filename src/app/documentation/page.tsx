@@ -258,11 +258,11 @@ export VIBEHERO_DEFAULT_BRANCH="main"`}</pre>
     "version": "1.0.0"
   },
   "auth": {
-    "sessionToken": "${VIBEHERO_SESSION_TOKEN}",
+    "sessionToken": "$\{VIBEHERO_SESSION_TOKEN\}",
     "baseUrl": "https://vibehero.vercel.app"
   },
   "defaults": {
-    "projectId": "${VIBEHERO_PROJECT_ID}",
+    "projectId": "$\{VIBEHERO_PROJECT_ID\}",
     "autoFetchNext": true,
     "maxRetries": 3,
     "retryDelay": 1000
@@ -399,13 +399,13 @@ AI: "Found task: 'Implement user authentication'
                   </div>
 
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Continuous Development</h3>
-                  <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
-                    <h4 class="font-semibold text-green-900 dark:text-green-100">🚀 AI-Driven Development</h4>
-                    <p class="text-green-800 dark:text-green-200 text-sm mt-2">
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+                    <h4 className="font-semibold text-green-900 dark:text-green-100">🚀 AI-Driven Development</h4>
+                    <p className="text-green-800 dark:text-green-200 text-sm mt-2">
                       With MCP, your AI assistant can work continuously on your projects:
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs mt-3 overflow-x-auto">
-                      <pre class="text-slate-700 dark:text-slate-300">{`# Enable continuous development mode
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs mt-3 overflow-x-auto">
+                      <pre className="text-slate-700 dark:text-slate-300">{`# Enable continuous development mode
 > "Start dev mode for this project"
 
 # AI will:
@@ -440,8 +440,8 @@ AI: "Found task: 'Implement user authentication'
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Retrieve all projects accessible to the authenticated user
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <pre class="text-slate-700 dark:text-slate-300">Returns: Project list with IDs, names, and descriptions</pre>
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <pre className="text-slate-700 dark:text-slate-300">Returns: Project list with IDs, names, and descriptions</pre>
                     </div>
                   </div>
 
@@ -450,9 +450,9 @@ AI: "Found task: 'Implement user authentication'
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Get detailed information about a specific project
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
                     </div>
                   </div>
 
@@ -464,9 +464,9 @@ AI: "Found task: 'Implement user authentication'
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Fetch the next highest priority task that&apos;s ready for work
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
                     </div>
                   </div>
 
@@ -475,9 +475,9 @@ AI: "Found task: 'Implement user authentication'
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Start working on a specific task and update its status
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier
 card_id: string (required) - Task/issue identifier
 comment: string (optional) - Initial progress comment`}</pre>
                     </div>
@@ -488,9 +488,9 @@ comment: string (optional) - Initial progress comment`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Update task status and add progress comments
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier  
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier  
 card_id: string (required) - Task/issue identifier
 status: string (required) - New status (READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)
 comment: string (optional) - Progress update comment`}</pre>
@@ -502,9 +502,9 @@ comment: string (optional) - Progress update comment`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Add a comment to an issue for team communication
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`card_id: string (required) - Task/issue identifier
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`card_id: string (required) - Task/issue identifier
 content: string (required) - Comment text
 is_ai_comment: boolean (default: true) - Mark as AI-generated`}</pre>
                     </div>
@@ -518,9 +518,9 @@ is_ai_comment: boolean (default: true) - Mark as AI-generated`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Enter continuous development mode - automatically process tasks
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
                     </div>
                   </div>
 
@@ -529,9 +529,9 @@ is_ai_comment: boolean (default: true) - Mark as AI-generated`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Create a new issue in the project
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Parameters:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Parameters:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier
 title: string (required) - Issue title  
 description: string (optional) - Detailed description
 acceptance_criteria: string (optional) - Definition of done
@@ -567,9 +567,9 @@ is_ai_allowed_task: boolean (default: true) - Allow AI processing`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       This usually indicates the MCP server isn&apos;t running or isn&apos;t properly configured.
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Solutions:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`# Check if MCP server is installed
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Solutions:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`# Check if MCP server is installed
 npm list -g @vibehero/mcp-server
 
 # Reinstall if needed
@@ -588,9 +588,9 @@ claude-code mcp test vibehero`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Your session token may be expired or invalid.
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Solutions:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`# Re-authenticate with VibeHero
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Solutions:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`# Re-authenticate with VibeHero
 claude-code mcp connect vibehero
 
 # Check your session token
@@ -608,9 +608,9 @@ open https://vibehero.vercel.app/account`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       You don&apos;t have access to the requested project.
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Solutions:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`# List accessible projects
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Solutions:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`# List accessible projects
 > "Show me all my VibeHero projects"
 
 # Check project membership in VibeHero web app
@@ -625,9 +625,9 @@ open https://vibehero.vercel.app/account`}</pre>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
                       Network latency or server load may be causing delays.
                     </p>
-                    <div class="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
-                      <div class="text-slate-500 mb-1">Solutions:</div>
-                      <pre class="text-slate-700 dark:text-slate-300">{`# Check your internet connection
+                    <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
+                      <div className="text-slate-500 mb-1">Solutions:</div>
+                      <pre className="text-slate-700 dark:text-slate-300">{`# Check your internet connection
 ping vibehero.vercel.app
 
 # Reduce timeout in configuration

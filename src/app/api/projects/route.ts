@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get user ID from session (type assertion needed since we extended the session)
-    const userId = (session.user as any).id;
+    const userId = (session.user as { id: string }).id;
     if (!userId) {
       return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 });
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user ID from session (type assertion needed since we extended the session)
-    const userId = (session.user as any).id;
+    const userId = (session.user as { id: string }).id;
     if (!userId) {
       return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 });
     }
