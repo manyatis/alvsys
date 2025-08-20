@@ -61,13 +61,14 @@ export default function GitHubRepositorySelector({
         // User signed in with a different provider
         setNeedsGitHubConnection(true);
         setError('');
-      } else if (data.needsAuthorization && data.needsAppInstallation) {
-        // User signed in with GitHub but GitHub App needs authorization
-        // Show the GitHub App installation prompt, not the account connection prompt
+      } else if (data.needsAuthorization || data.needsAppInstallation) {
+        // User signed in with GitHub but GitHub App needs authorization/installation
+        // Show the GitHub App installation prompt
         setNeedsAppInstallation(true);
         setNeedsGitHubConnection(false);
         setError('');
-      } else if (data.error && data.installations.length === 0) {
+      } else if (data.error && data.installations.length === 0 && !data.needsAppInstallation) {
+        // Only show error if it's not an app installation issue
         setError(data.error);
       } else {
         setError('');
