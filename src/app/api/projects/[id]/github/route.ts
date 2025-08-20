@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
-import { validateApiAccess } from '@/lib/api-auth';
 import { ProjectGitHubService } from '@/services/github-sync-service';
 
 const prisma = new PrismaClient();
@@ -14,10 +15,20 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: projectId } = await params;
     
-    // Validate API access
-    const validation = await validateApiAccess(request);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 401 });
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     // Check project access
@@ -25,8 +36,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       where: {
         id: projectId,
         OR: [
-          { ownerId: validation.userId! },
-          { users: { some: { userId: validation.userId! } } },
+          { ownerId: user.id },
+          { users: { some: { userId: user.id } } },
         ],
       },
     });
@@ -53,17 +64,27 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: projectId } = await params;
     
-    // Validate API access
-    const validation = await validateApiAccess(request);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 401 });
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     // Check project ownership (only owners can link repositories)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
-        ownerId: validation.userId!,
+        ownerId: user.id,
       },
     });
 
@@ -109,17 +130,27 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: projectId } = await params;
     
-    // Validate API access
-    const validation = await validateApiAccess(request);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 401 });
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     // Check project ownership (only owners can unlink repositories)
     const project = await prisma.project.findFirst({
       where: {
         id: projectId,
-        ownerId: validation.userId!,
+        ownerId: user.id,
       },
     });
 

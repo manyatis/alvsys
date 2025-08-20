@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateApiAccess } from '@/lib/api-auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { GitHubService } from '@/lib/github';
 
 // GET /api/github/app-installations - Get GitHub App installations (using App authentication)
 export async function GET(request: NextRequest) {
   try {
-    // Validate API access
-    const validation = await validateApiAccess(request);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 401 });
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Try to get all installations using the GitHub App credentials

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { ProjectsAPI } from '@/lib/api/projects';
 import { handleApiError } from '@/lib/api/errors';
 
@@ -10,11 +11,19 @@ export async function GET(
 ) {
   const resolvedParams = await params;
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request);
-    if (!user) {
-      return createApiErrorResponse('Unauthorized', 401);
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get user ID from session (type assertion needed since we extended the session)
+    const userId = (session.user as any).id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 });
+    }
+    
+    const user = { id: userId, email: session.user.email };
 
     const project = await ProjectsAPI.getProjectById(resolvedParams.id, user.id);
     return NextResponse.json({ project });
@@ -31,11 +40,19 @@ export async function PUT(
 ) {
   const resolvedParams = await params;
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request);
-    if (!user) {
-      return createApiErrorResponse('Unauthorized', 401);
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get user ID from session (type assertion needed since we extended the session)
+    const userId = (session.user as any).id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 });
+    }
+    
+    const user = { id: userId, email: session.user.email };
 
     const body = await request.json();
     const project = await ProjectsAPI.updateProject(resolvedParams.id, user.id, body);
@@ -53,11 +70,19 @@ export async function DELETE(
 ) {
   const resolvedParams = await params;
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request);
-    if (!user) {
-      return createApiErrorResponse('Unauthorized', 401);
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get user ID from session (type assertion needed since we extended the session)
+    const userId = (session.user as any).id;
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found in session' }, { status: 401 });
+    }
+    
+    const user = { id: userId, email: session.user.email };
 
     await ProjectsAPI.deleteProject(resolvedParams.id, user.id);
     return NextResponse.json({ message: 'Project deleted successfully' }, { status: 200 });

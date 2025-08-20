@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
-import { validateApiAccess } from '@/lib/api-auth';
 import { GitHubService } from '@/lib/github';
 import { GitHubSyncService } from '@/services/github-sync-service';
 
@@ -9,10 +10,20 @@ const prisma = new PrismaClient();
 // POST /api/projects/github - Create a project from a GitHub repository
 export async function POST(request: NextRequest) {
   try {
-    // Validate API access
-    const validation = await validateApiAccess(request);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 401 });
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -28,7 +39,7 @@ export async function POST(request: NextRequest) {
     // Get the GitHub repository details
     const githubAccount = await prisma.account.findFirst({
       where: {
-        userId: validation.userId!,
+        userId: user.id,
         provider: 'github',
       },
     });
@@ -46,7 +57,7 @@ export async function POST(request: NextRequest) {
     const existingProject = await prisma.project.findFirst({
       where: {
         githubRepoName: repoName,
-        ownerId: validation.userId!,
+        ownerId: user.id,
       },
     });
 
@@ -83,7 +94,7 @@ export async function POST(request: NextRequest) {
       data: {
         name: repoDetails.name,
         description: repoDescription || repoDetails.description || `Project synced from GitHub repository ${repoName}`,
-        ownerId: validation.userId!,
+        ownerId: user.id,
         organizationId: organization.id,
         githubRepoId: repoDetails.id.toString(),
         githubRepoName: repoName,
@@ -106,7 +117,7 @@ export async function POST(request: NextRequest) {
     await prisma.projectUser.create({
       data: {
         projectId: project.id,
-        userId: validation.userId!,
+        userId: user.id,
         role: 'owner',
       },
     });

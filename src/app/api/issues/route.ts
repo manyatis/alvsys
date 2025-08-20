@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateHybridAuthForProject, createApiErrorResponse } from '@/lib/api-auth'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 import { IssuesAPI } from '@/lib/api/issues'
 import { handleApiError } from '@/lib/api/errors'
 
@@ -13,10 +15,34 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
     }
 
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuthForProject(request, projectId)
+    // Validate session authentication and project access
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, name: true, organizationId: true }
+    })
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401)
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Check if user has access to the project
+    const project = await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        OR: [
+          { ownerId: user.id },
+          { users: { some: { userId: user.id } } }
+        ]
+      }
+    })
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 })
     }
 
     const issues = await IssuesAPI.getIssues({
@@ -44,10 +70,34 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Project ID is required' }, { status: 400 })
     }
 
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuthForProject(request, projectId)
+    // Validate session authentication and project access
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, name: true, organizationId: true }
+    })
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401)
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Check if user has access to the project
+    const project = await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        OR: [
+          { ownerId: user.id },
+          { users: { some: { userId: user.id } } }
+        ]
+      }
+    })
+
+    if (!project) {
+      return NextResponse.json({ error: 'Project not found or access denied' }, { status: 403 })
     }
 
     const issue = await IssuesAPI.createIssue({

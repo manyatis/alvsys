@@ -1,16 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request);
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401);
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     const resolvedParams = await params;
@@ -76,10 +87,20 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request);
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401);
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     const resolvedParams = await params;

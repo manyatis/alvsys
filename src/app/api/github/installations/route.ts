@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
-import { validateApiAccess } from '@/lib/api-auth';
 import { GitHubService } from '@/lib/github';
 
 const prisma = new PrismaClient();
@@ -18,16 +19,26 @@ interface GitHubRepo {
 // GET /api/github/installations - Get GitHub installations for the authenticated user
 export async function GET(request: NextRequest) {
   try {
-    // Validate API access
-    const validation = await validateApiAccess(request);
-    if (!validation.isValid) {
-      return NextResponse.json({ error: validation.error }, { status: 401 });
+    // Validate session authentication
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Get user from session
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 401 });
     }
 
     // Get user's GitHub account (if connected via OAuth)
     const githubAccount = await prisma.account.findFirst({
       where: {
-        userId: validation.userId!,
+        userId: user.id,
         provider: 'github',
       },
     });

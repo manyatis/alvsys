@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateHybridAuth, createApiErrorResponse } from '@/lib/api-auth'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '@/lib/auth'
 import { IssuesAPI } from '@/lib/api/issues'
 import { handleApiError } from '@/lib/api/errors'
 import { prisma } from '@/lib/prisma'
@@ -11,10 +12,19 @@ export async function GET(
 ) {
   const resolvedParams = await params;
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request)
+    // Validate session authentication
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, name: true, organizationId: true }
+    })
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401)
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Get the issue to find its project
@@ -39,7 +49,7 @@ export async function GET(
     })
 
     if (!hasAccess) {
-      return createApiErrorResponse('Access denied', 403)
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
     const issue = await IssuesAPI.getIssueById(resolvedParams.id, issueWithProject.projectId)
@@ -57,10 +67,19 @@ export async function PUT(
 ) {
   const resolvedParams = await params;
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request)
+    // Validate session authentication
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, name: true, organizationId: true }
+    })
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401)
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Get the issue to find its project
@@ -85,7 +104,7 @@ export async function PUT(
     })
 
     if (!hasAccess) {
-      return createApiErrorResponse('Access denied', 403)
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
     const body = await request.json()
@@ -137,10 +156,19 @@ export async function DELETE(
 ) {
   const resolvedParams = await params;
   try {
-    // Validate authentication (API key or session)
-    const user = await validateHybridAuth(request)
+    // Validate session authentication
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true, email: true, name: true, organizationId: true }
+    })
+
     if (!user) {
-      return createApiErrorResponse('Unauthorized', 401)
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
     // Get the issue to find its project
@@ -165,7 +193,7 @@ export async function DELETE(
     })
 
     if (!hasAccess) {
-      return createApiErrorResponse('Access denied', 403)
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 })
     }
 
     await IssuesAPI.deleteIssue(resolvedParams.id, issueWithProject.projectId)
