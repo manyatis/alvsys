@@ -22,7 +22,7 @@ import {
 } from '@/utils/board-utils';
 import { useUsageStatus } from '@/hooks/useUsageStatus';
 import { useSprints } from '@/hooks/useSprints';
-import { GitHubFunctions } from '@/lib/github-functions';
+import { syncProject } from '@/lib/github-functions';
 
 interface NewCard {
   title: string;
@@ -453,7 +453,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       if (!currentUserId) {
         throw new Error('User not authenticated');
       }
-      const result = await GitHubFunctions.syncProject(resolvedParams.id, currentUserId);
+      const result = await syncProject(resolvedParams.id, currentUserId);
 
       if (result.success) {
         console.log('Manual GitHub sync completed successfully');

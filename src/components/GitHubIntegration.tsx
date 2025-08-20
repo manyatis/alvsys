@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getAllInstallations } from '@/lib/github-actions';
-import { GitHubFunctions } from '@/lib/github-functions';
+import { getProjectGitHubStatus, linkProjectToRepository, resetProjectSync, syncProject } from '@/lib/github-functions';
 
 interface GitHubRepository {
   id: number;
@@ -55,7 +55,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
 
   const loadSyncStatus = useCallback(async () => {
     try {
-      const result = await GitHubFunctions.getProjectGitHubStatus(projectId, currentUserId);
+      const result = await getProjectGitHubStatus(projectId, currentUserId);
       if (result.success) {
         const syncStatus: SyncStatus = {
           isLinked: result.isLinked,
@@ -126,7 +126,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
       setLoading(true);
       setError('');
 
-      const result = await GitHubFunctions.linkProjectToRepository(
+      const result = await linkProjectToRepository(
         projectId,
         selectedRepo,
         parseInt(selectedInstallation.toString()),
@@ -134,7 +134,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
       );
 
       if (result.success) {
-        const statusResult = await GitHubFunctions.getProjectGitHubStatus(projectId, currentUserId);
+        const statusResult = await getProjectGitHubStatus(projectId, currentUserId);
         if (statusResult.success) {
           const syncStatus: SyncStatus = {
             isLinked: statusResult.isLinked,
@@ -165,7 +165,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
       setLoading(true);
       setError('');
 
-      const result = await GitHubFunctions.resetProjectSync(projectId, currentUserId);
+      const result = await resetProjectSync(projectId, currentUserId);
 
       if (result.success) {
         const newStatus = {
@@ -192,7 +192,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
       setSyncing(true);
       setError('');
 
-      const result = await GitHubFunctions.syncProject(projectId, currentUserId);
+      const result = await syncProject(projectId, currentUserId);
 
       if (result.success) {
         console.log('Sync result:', result);

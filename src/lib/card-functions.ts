@@ -84,9 +84,9 @@ export async function syncCardToGitHub(cardId: string): Promise<SyncCardResult> 
       };
     }
 
-    // Import GitHubFunctions here to avoid circular dependency
-    const { GitHubFunctions } = await import('@/lib/github-functions');
-    const result = await GitHubFunctions.syncCardToGitHub(cardId, user.id);
+    // Import syncCardToGitHub here to avoid circular dependency
+    const { syncCardToGitHub } = await import('@/lib/github-functions');
+    const result = await syncCardToGitHub(cardId, user.id);
 
     if (!result.success) {
       return {
@@ -134,9 +134,9 @@ export async function disableCardGitHubSync(cardId: string): Promise<SyncCardRes
       };
     }
 
-    // Import GitHubFunctions here to avoid circular dependency
-    const { GitHubFunctions } = await import('@/lib/github-functions');
-    const result = await GitHubFunctions.disableCardSync(cardId, user.id);
+    // Import disableCardSync here to avoid circular dependency
+    const { disableCardSync } = await import('@/lib/github-functions');
+    const result = await disableCardSync(cardId, user.id);
 
     if (!result.success) {
       return {

@@ -3,7 +3,7 @@
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
-import { GitHubFunctions } from '@/lib/github-functions';
+import { getUserInstallations as getUserInstallationsFunc, getAppInstallations as getAppInstallationsFunc } from '@/lib/github-functions';
 import { prisma } from './prisma';
 
 
@@ -30,7 +30,7 @@ export async function getUserInstallations() {
     }
 
     // Use the consolidated GitHub functions
-    const result = await GitHubFunctions.getUserInstallations(user.id);
+    const result = await getUserInstallationsFunc(user.id);
     
     return result;
   } catch (error) {
@@ -51,7 +51,7 @@ export async function getAppInstallations() {
     }
 
     // Use the consolidated GitHub functions
-    const result = await GitHubFunctions.getAppInstallations();
+    const result = await getAppInstallationsFunc();
     
     return result;
   } catch (error) {
