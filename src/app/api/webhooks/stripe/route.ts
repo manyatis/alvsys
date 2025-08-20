@@ -76,8 +76,8 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
 
   // Determine plan from subscription items
-  let planId = 'free';
-  let planName = 'Free';
+  let planId = 'hobby';
+  let planName = 'Hobby';
   if (subscription.items.data.length > 0) {
     const priceId = subscription.items.data[0].price.id;
     console.debug('🔍 Looking up plan for price ID:', priceId);
@@ -131,11 +131,11 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
     // Don't change the plan yet, keep existing plan
     // Just update the subscription tracking info
   } else if (['canceled', 'unpaid', 'past_due', 'incomplete_expired'].includes(subscription.status)) {
-    // Downgrade to free if subscription is no longer active
-    updateData.plan = 'free';
-    updateData.subscriptionTier = 'free';
+    // Downgrade to hobby if subscription is no longer active
+    updateData.plan = 'hobby';
+    updateData.subscriptionTier = 'hobby';
     updateData.subscriptionEndDate = new Date();
-    console.debug('⬇️ Downgrading user to free plan due to status:', subscription.status);
+    console.debug('⬇️ Downgrading user to hobby plan due to status:', subscription.status);
   } else {
     console.log('❓ Unhandled subscription status:', subscription.status);
   }

@@ -57,8 +57,8 @@ model User {
   updatedAt         DateTime @updatedAt
   
   // Subscription management
-  subscriptionTier  String          @default("free") // "free", "indie", "professional"
-  plan              String          @default("free") // "free", "indie", "professional"
+  subscriptionTier  String          @default("hobby") // "hobby", "pro"
+  plan              String          @default("hobby") // "hobby", "pro"
   
   // Stripe subscription management
   subscriptionId        String?         // Stripe subscription ID

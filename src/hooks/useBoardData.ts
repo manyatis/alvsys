@@ -327,8 +327,15 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
     setIsUpdating(true);
     try {
       const result = await updateIssueWithAgentInstructions(card.id, projectId, {
-        ...card,
+        title: card.title,
+        description: card.description,
+        acceptanceCriteria: card.acceptanceCriteria,
+        priority: card.priority,
+        storyPoints: card.storyPoints,
+        status: card.status,
         assigneeId: selectedCardAssigneeId || undefined,
+        sprintId: card.sprintId,
+        isAiAllowedTask: card.isAiAllowedTask,
       });
 
       if (result.success) {
