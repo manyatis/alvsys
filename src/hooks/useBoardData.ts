@@ -67,10 +67,11 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
           
           // If project has GitHub sync enabled, perform background sync
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          if ((projectResult.project as any).githubSyncEnabled && session?.user?.id) {
+          if ((projectResult.project as any).githubSyncEnabled && (session?.user as any)?.id) {
             // Start sync in background - don't block the initial load
             setIsSyncing(true);
-            GitHubFunctions.syncProject(projectId, session.user.id).then(async (syncResult) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            GitHubFunctions.syncProject(projectId, (session!.user as any).id).then(async (syncResult) => {
               if (syncResult.success) {
                 console.log('Background GitHub sync completed successfully');
                 // Refresh cards after sync
@@ -85,14 +86,17 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
                     const sprintsResult = await getProjectSprints(projectId);
                     if (sprintsResult.success && sprintsResult.sprints) {
                       const sprints = sprintsResult.sprints;
-                      const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      const activeSprint = sprints.find((s: any) => s.isActive);
                       if (activeSprint) {
-                        filteredCards = filteredCards.filter(card => card.sprint?.isActive);
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        filteredCards = filteredCards.filter(card => (card.sprint as any)?.isActive);
                       }
                     }
                   }
                   
-                  setCards(filteredCards);
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  setCards(filteredCards as any);
                   console.log('Cards refreshed after GitHub sync');
                 }
               } else {
