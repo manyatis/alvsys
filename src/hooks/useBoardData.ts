@@ -14,7 +14,7 @@ import {
 import { getProjectById } from '@/lib/project-functions';
 import { getProjectSprints, createSprint } from '@/lib/sprint-functions';
 import { getProjectLabels, createLabel as createLabelAction } from '@/lib/label-functions';
-import { GitHubFunctions } from '@/lib/github-functions';
+import { syncProject } from '@/lib/github-functions';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, Comment, Label, CardStatus } from '@/types/card';
@@ -71,7 +71,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
             // Start sync in background - don't block the initial load
             setIsSyncing(true);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            GitHubFunctions.syncProject(projectId, (session!.user as any).id).then(async (syncResult) => {
+            syncProject(projectId, (session!.user as any).id).then(async (syncResult) => {
               if (syncResult.success) {
                 console.log('Background GitHub sync completed successfully');
                 // Refresh cards after sync

@@ -8,7 +8,7 @@ import GitHubRepositorySelector from '@/components/GitHubRepositorySelector';
 import { getUserUsage } from '@/lib/usage-functions';
 import { getUserProjects, createProject } from '@/lib/project-functions';
 import { getUserOrganizations } from '@/lib/organization-functions';
-import { GitHubFunctions } from '@/lib/github-functions';
+import { createProjectFromRepository } from '@/lib/github-functions';
 
 interface Project {
   id: string;
@@ -151,7 +151,7 @@ export default function ProjectsPage() {
   }, installationId: number) => {
     setCreating(true);
     try {
-      const result = await GitHubFunctions.createProjectFromRepository(
+      const result = await createProjectFromRepository(
         repo.full_name,
         repo.description || undefined,
         installationId,

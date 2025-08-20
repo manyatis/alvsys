@@ -174,7 +174,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
    * Get GitHub App installations using App authentication
    * Requires GitHub App credentials to be configured
    */
-export async function getAppInstallations(): Promise<GitHubInstallationsResponse> {
+  static async getAppInstallations(): Promise<GitHubInstallationsResponse> {
     try {
       const appGithubService = new GitHubService();
       const installations = await appGithubService.getInstallations();
@@ -232,7 +232,7 @@ export async function getAppInstallations(): Promise<GitHubInstallationsResponse
   /**
    * Link a project to a GitHub repository
    */
-export async function linkProjectToRepository(
+  static async linkProjectToRepository(
     projectId: string, 
     repositoryName: string, 
     installationId: number,
@@ -275,7 +275,7 @@ export async function linkProjectToRepository(
   /**
    * Sync a project with GitHub (bidirectional sync)
    */
-export async function syncProject(
+  static async syncProject(
     projectId: string, 
     userId: string, 
     options: SyncOptions = { syncComments: true, syncLabels: true }
@@ -324,7 +324,7 @@ export async function syncProject(
   /**
    * Sync a specific card to GitHub
    */
-export async function syncCardToGitHub(
+  static async syncCardToGitHub(
     cardId: string, 
     userId: string
   ): Promise<CardSyncResult> {
@@ -383,7 +383,7 @@ export async function syncCardToGitHub(
   /**
    * Disable GitHub sync for a specific card
    */
-export async function disableCardSync(
+  static async disableCardSync(
     cardId: string, 
     userId: string
   ): Promise<{ success: boolean; error?: string }> {
@@ -431,7 +431,7 @@ export async function disableCardSync(
   /**
    * Reset GitHub sync for a project
    */
-export async function resetProjectSync(
+  static async resetProjectSync(
     projectId: string, 
     userId: string
   ): Promise<{ success: boolean; error?: string }> {
@@ -486,7 +486,7 @@ export async function resetProjectSync(
   /**
    * Verify if a user has access to a project
    */
-export async function verifyProjectAccess(projectId: string, userId: string): Promise<boolean> {
+  static async verifyProjectAccess(projectId: string, userId: string): Promise<boolean> {
     try {
       const project = await prisma.project.findFirst({
         where: {
@@ -508,7 +508,7 @@ export async function verifyProjectAccess(projectId: string, userId: string): Pr
   /**
    * Sync a specific GitHub issue to VibeHero
    */
-export async function syncIssueToVibeHero(
+  static async syncIssueToVibeHero(
     projectId: string,
     issueNumber: number,
     userId: string
@@ -569,7 +569,7 @@ export async function syncIssueToVibeHero(
   /**
    * Get project GitHub status
    */
-export async function getProjectGitHubStatus(
+  static async getProjectGitHubStatus(
     projectId: string, 
     userId: string
   ): Promise<{
@@ -624,7 +624,7 @@ export async function getProjectGitHubStatus(
   /**
    * Handle GitHub webhook events
    */
-export async function handleWebhook(
+  static async handleWebhook(
     payload: Record<string, unknown>,
     eventType: string
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
@@ -632,11 +632,11 @@ export async function handleWebhook(
       // Handle different webhook event types
       switch (eventType) {
         case 'issues':
-          return await handleIssueWebhook(payload);
+          return await GitHubFunctions.handleIssueWebhook(payload);
         case 'issue_comment':
-          return await handleCommentWebhook(payload);
+          return await GitHubFunctions.handleCommentWebhook(payload);
         case 'installation':
-          return await handleInstallationWebhook(payload);
+          return await GitHubFunctions.handleInstallationWebhook(payload);
         default:
           return { success: true, processed: false };
       }
@@ -649,7 +649,7 @@ export async function handleWebhook(
   /**
    * Handle GitHub issue webhook events
    */
-async function handleIssueWebhook(
+  private static async handleIssueWebhook(
     payload: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
@@ -699,7 +699,7 @@ async function handleIssueWebhook(
   /**
    * Handle GitHub comment webhook events
    */
-async function handleCommentWebhook(
+  private static async handleCommentWebhook(
     payload: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
@@ -745,7 +745,7 @@ async function handleCommentWebhook(
   /**
    * Handle GitHub installation webhook events
    */
-async function handleInstallationWebhook(
+  private static async handleInstallationWebhook(
     payload: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
@@ -779,7 +779,7 @@ async function handleInstallationWebhook(
   /**
    * Unlink a project from its GitHub repository
    */
-export async function unlinkProjectFromRepository(
+  static async unlinkProjectFromRepository(
     projectId: string,
     userId: string
   ): Promise<{ success: boolean; error?: string }> {
@@ -822,7 +822,7 @@ export async function unlinkProjectFromRepository(
   /**
    * Create a new project from a GitHub repository
    */
-export async function createProjectFromRepository(
+  static async createProjectFromRepository(
     repoName: string,
     repoDescription: string | undefined,
     installationId: number,
@@ -984,4 +984,5 @@ export async function createProjectFromRepository(
       console.error('Error creating project from GitHub:', error);
       return { success: false, error: 'Internal server error' };
     }
+  }
 }
