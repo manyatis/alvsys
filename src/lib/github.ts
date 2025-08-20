@@ -83,6 +83,7 @@ export const STATUS_MAPPING = {
   BLOCKED: 'open',
   READY_FOR_REVIEW: 'open',
   COMPLETED: 'closed',
+  CANCELLED: 'closed',
 } as const;
 
 /**
@@ -94,6 +95,22 @@ export const GITHUB_STATUS_MAPPING = {
 } as const;
 
 /**
+ * Map GitHub issue state and state_reason to VibeHero status
+ */
+export function getVibeHeroStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null): string {
+  if (state === 'open') {
+    return 'READY';
+  } else if (state === 'closed') {
+    if (state_reason === 'not_planned') {
+      return 'CANCELLED';
+    } else {
+      return 'COMPLETED'; // Default for closed issues (completed, or null/undefined)
+    }
+  }
+  return 'READY'; // Fallback
+}
+
+/**
  * GitHub Issue and VibeHero Card types
  */
 export interface GitHubIssue {
@@ -103,6 +120,7 @@ export interface GitHubIssue {
   title: string;
   body: string | null | undefined;
   state: 'open' | 'closed';
+  state_reason: 'completed' | 'not_planned' | 'reopened' | null;
   labels: Array<{
     id: number;
     name: string;
@@ -298,6 +316,7 @@ export class GitHubService {
     title?: string;
     body?: string;
     state?: 'open' | 'closed';
+    state_reason?: 'completed' | 'not_planned' | 'reopened';
     labels?: string[];
     assignees?: string[];
   }): Promise<GitHubIssue> {

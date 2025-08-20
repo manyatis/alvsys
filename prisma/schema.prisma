@@ -433,6 +433,7 @@ enum Status {
   BLOCKED
   READY_FOR_REVIEW
   COMPLETED
+  CANCELLED
 }
 
 enum InstructionType {
