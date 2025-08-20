@@ -357,7 +357,8 @@ export async function updateIssueWithAgentInstructions(
         data: {
           agentInstructions: {
             create: updates.agentInstructions.map((instruction) => ({
-              instructionType: instruction.instructionType,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              instructionType: instruction.instructionType as any,
               branchName: instruction.branchName,
               createBranch: instruction.createBranch || false,
               webResearchPrompt: instruction.webResearchPrompt,

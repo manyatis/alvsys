@@ -97,7 +97,8 @@ export async function syncCardToGitHub(cardId: string): Promise<SyncCardResult> 
 
     return {
       success: true,
-      card: result.card
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      card: result.card as any
     };
   } catch (error) {
     console.error('Error syncing card to GitHub:', error);
