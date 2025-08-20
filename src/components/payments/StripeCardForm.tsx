@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createStripeSession } from '@/lib/subscription-functions';
 
 interface CheckoutButtonProps {
   onError: (error: string) => void;
@@ -16,23 +17,15 @@ export default function CheckoutButton({ onError, planName, planPrice, planId }:
     setIsLoading(true);
     
     try {
-      const response = await fetch('/api/subscriptions/create-stripe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ planId }),
-      });
+      const result = await createStripeSession(planId);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to create checkout session');
       }
 
-      if (data.sessionUrl) {
+      if (result.sessionUrl) {
         // Redirect to Stripe Checkout
-        window.location.href = data.sessionUrl;
+        window.location.href = result.sessionUrl;
       } else {
         throw new Error('No checkout URL returned');
       }

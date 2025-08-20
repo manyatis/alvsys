@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
+import { getInvitation, acceptInvitation } from '@/lib/invitation-functions';
 
 interface InvitationDetails {
   id: string;
@@ -45,15 +46,12 @@ export default function AcceptInvitationPage({
 
   const fetchInvitationDetails = async () => {
     try {
-      const response = await fetch(`/api/invite/${tokenParam}`);
+      const result = await getInvitation(tokenParam);
       
-      if (response.ok) {
-        const data = await response.json();
-        setInvitation(data.invitation);
-      } else if (response.status === 404) {
-        setError('Invitation not found or has expired');
+      if (result.success && result.invitation) {
+        setInvitation(result.invitation);
       } else {
-        setError('Failed to load invitation details');
+        setError(result.error || 'Failed to load invitation details');
       }
     } catch (error) {
       console.error('Error fetching invitation:', error);
@@ -82,16 +80,13 @@ export default function AcceptInvitationPage({
     setError('');
 
     try {
-      const response = await fetch(`/api/invite/${tokenParam}/accept`, {
-        method: 'POST',
-      });
+      const result = await acceptInvitation(tokenParam);
 
-      if (response.ok) {
+      if (result.success) {
         // Redirect to projects page after successful acceptance
         router.push('/projects');
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to accept invitation');
+        setError(result.error || 'Failed to accept invitation');
       }
     } catch (error) {
       console.error('Error accepting invitation:', error);

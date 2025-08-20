@@ -3,15 +3,16 @@
 import { useState, useEffect } from 'react';
 import { Check, ArrowLeft } from 'lucide-react';
 import CheckoutButton from './StripeCardForm';
+import { getSubscriptionPlans } from '@/lib/subscription-functions';
 
 interface SubscriptionPlan {
-  id: number;
+  id: string;
   planId: string;
   name: string;
   priceCents: number;
   billingPeriod: string;
   features: string[];
-  description: string;
+  description: string | null;
   isActive: boolean;
 }
 
@@ -28,14 +29,14 @@ export default function SubscriptionFlow() {
 
   const fetchPlans = async () => {
     try {
-      const response = await fetch('/api/subscriptions/plans');
-      if (!response.ok) {
-        throw new Error('Failed to fetch subscription plans');
-      }
+      const result = await getSubscriptionPlans();
       
-      const data = await response.json();
-      console.log('Fetched plans:', data.plans); // Debug log
-      setPlans(data.plans || []);
+      if (result.success && result.plans) {
+        console.log('Fetched plans:', result.plans); // Debug log
+        setPlans(result.plans);
+      } else {
+        setError(result.error || 'Failed to load subscription plans');
+      }
     } catch (error) {
       console.error('Error fetching plans:', error);
       setError('Failed to load subscription plans');
@@ -123,7 +124,7 @@ export default function SubscriptionFlow() {
             <div className="flex items-center space-x-3">
               <div>
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{selectedPlan.name} Plan</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">{selectedPlan.description}</p>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">{selectedPlan.description || 'No description available'}</p>
               </div>
             </div>
             <div className="text-right">
@@ -202,7 +203,7 @@ export default function SubscriptionFlow() {
                   </span>
                 </div>
                 <p className={`${isComingSoon ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}>
-                  {plan.description}
+                  {plan.description || 'No description available'}
                 </p>
               </div>
               

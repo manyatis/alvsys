@@ -4,24 +4,8 @@ import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Calendar, Flag } from 'lucide-react';
 import { useSprints } from '@/hooks/useSprints';
-
-interface Card {
-  id: string;
-  title: string;
-  description: string | null;
-  acceptanceCriteria: string | null;
-  status: string;
-  priority: number;
-  storyPoints: number | null;
-  sprintId: string | null;
-  isAiAllowedTask: boolean;
-  createdAt: string;
-  assignee?: {
-    id: string;
-    name: string | null;
-    email: string;
-  } | null;
-}
+import { getProjectCards } from '@/lib/card-functions';
+import { Card } from '@/types/card';
 
 export default function BacklogPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
@@ -34,10 +18,9 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const response = await fetch(`/api/projects/${resolvedParams.id}/cards`);
-        if (response.ok) {
-          const data = await response.json();
-          setCards(data);
+        const result = await getProjectCards(resolvedParams.id);
+        if (result.success && result.cards) {
+          setCards(result.cards);
         }
       } catch (error) {
         console.error('Error fetching cards:', error);
@@ -246,7 +229,7 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
                             
                             <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                               <span>
-                                {new Date(card.createdAt).toLocaleDateString()}
+                                {card.createdAt.toLocaleDateString()}
                               </span>
                               {card.storyPoints && (
                                 <span>
@@ -255,7 +238,7 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
                               )}
                               {card.assignee && (
                                 <span>
-                                  {card.assignee.name || card.assignee.email.split('@')[0]}
+                                  {card.assignee.name || card.assignee.email?.split('@')[0]}
                                 </span>
                               )}
                             </div>

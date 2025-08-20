@@ -10,9 +10,10 @@ export interface FilterState {
 
 export interface OrganizationMember {
   id: string;
-  name?: string;
-  email?: string;
-  image?: string;
+  name: string | null;
+  email: string;
+  image: string | null;
+  createdAt: Date;
 }
 
 export const getCardsByStatus = (

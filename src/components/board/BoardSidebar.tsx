@@ -28,7 +28,7 @@ interface UsageStatus {
     dailyCardsLimit: number;
     projectsUsed: number;
     projectsLimit: number;
-    resetTime: Date;
+    resetTime: Date | null;
   };
   isAtCardLimit: boolean;
   isAtProjectLimit: boolean;
@@ -44,6 +44,7 @@ interface BoardSidebarProps {
   copyFeedback: boolean;
   setCopyFeedback: (feedback: boolean) => void;
   projectId: string;
+  currentUserId: string;
   onCreateIssue: () => void;
   labels: Label[];
   cards: Card[];
@@ -60,6 +61,7 @@ export default function BoardSidebar({
   copyFeedback,
   setCopyFeedback,
   projectId,
+  currentUserId,
   onCreateIssue,
   labels,
   cards,
@@ -288,7 +290,7 @@ export default function BoardSidebar({
       {showGitHubIntegration && !sidebarCollapsed && (
         <div className="border-t border-gray-200 dark:border-gray-700">
           <div className="p-2 md:p-3">
-            <GitHubIntegration projectId={projectId} />
+            <GitHubIntegration projectId={projectId} currentUserId={currentUserId} />
           </div>
         </div>
       )}

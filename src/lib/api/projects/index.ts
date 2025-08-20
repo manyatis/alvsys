@@ -1,6 +1,5 @@
 import { prisma } from '@/lib/prisma';
 import { UsageService } from '@/services/usage-service';
-import { ApiUser } from '@/lib/api-auth';
 import { ApiError } from '@/lib/api/errors';
 
 export interface GetProjectsParams {

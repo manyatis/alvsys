@@ -1,7 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+
+export interface Label {
+  id: string;
+  name: string;
+  color: string;
+  projectId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LabelsResult {
+  success: boolean;
+  error?: string;
+  labels?: Label[];
+}
+
+export interface CreateLabelResult {
+  success: boolean;
+  error?: string;
+  label?: Label;
+}
 
 // Generate a random hex color
 function generateRandomColor(): string {
@@ -26,18 +48,18 @@ function generateRandomColor(): string {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+/**
+ * Get labels for a project
+ */
+export async function getProjectLabels(projectId: string): Promise<LabelsResult> {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return {
+        success: false,
+        error: 'Unauthorized'
+      };
     }
-
-    const resolvedParams = await params;
-    const projectId = resolvedParams.id;
 
     // Check if user has access to this project
     const project = await prisma.project.findUnique({
@@ -53,7 +75,10 @@ export async function GET(
     });
 
     if (!project) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      return {
+        success: false,
+        error: 'Project not found'
+      };
     }
 
     const user = await prisma.user.findUnique({
@@ -61,14 +86,20 @@ export async function GET(
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return {
+        success: false,
+        error: 'User not found'
+      };
     }
 
     const hasAccess = project.ownerId === user.id || 
                      project.users.some(pu => pu.userId === user.id);
 
     if (!hasAccess) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return {
+        success: false,
+        error: 'Access denied'
+      };
     }
 
     // Get all labels for the project
@@ -77,32 +108,45 @@ export async function GET(
       orderBy: { name: 'asc' }
     });
 
-    return NextResponse.json(labels);
+    return {
+      success: true,
+      labels
+    };
   } catch (error) {
     console.error('Error fetching labels:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return {
+      success: false,
+      error: 'Failed to fetch labels'
+    };
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+/**
+ * Create a new label
+ */
+export async function createLabel(
+  projectId: string,
+  data: {
+    name: string;
+    color?: string;
+  }
+): Promise<CreateLabelResult> {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return {
+        success: false,
+        error: 'Unauthorized'
+      };
     }
 
-    const resolvedParams = await params;
-    const projectId = resolvedParams.id;
-    const { name, color } = await request.json();
+    const { name, color } = data;
 
     if (!name || name.trim() === '') {
-      return NextResponse.json({ error: 'Label name is required' }, { status: 400 });
+      return {
+        success: false,
+        error: 'Label name is required'
+      };
     }
 
     // Check if user has access to this project
@@ -119,7 +163,10 @@ export async function POST(
     });
 
     if (!project) {
-      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+      return {
+        success: false,
+        error: 'Project not found'
+      };
     }
 
     const user = await prisma.user.findUnique({
@@ -127,14 +174,20 @@ export async function POST(
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return {
+        success: false,
+        error: 'User not found'
+      };
     }
 
     const hasAccess = project.ownerId === user.id || 
                      project.users.some(pu => pu.userId === user.id);
 
     if (!hasAccess) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return {
+        success: false,
+        error: 'Access denied'
+      };
     }
 
     // Check if label already exists in this project
@@ -148,7 +201,10 @@ export async function POST(
     });
 
     if (existingLabel) {
-      return NextResponse.json({ error: 'Label already exists' }, { status: 409 });
+      return {
+        success: false,
+        error: 'Label already exists'
+      };
     }
 
     // Create the label with provided color or random if not provided
@@ -160,12 +216,15 @@ export async function POST(
       }
     });
 
-    return NextResponse.json(label);
+    return {
+      success: true,
+      label
+    };
   } catch (error) {
     console.error('Error creating label:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return {
+      success: false,
+      error: 'Failed to create label'
+    };
   }
 }

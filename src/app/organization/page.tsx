@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { getUserOrganizations, getOrganizationMembers, inviteUserToOrganization } from '@/lib/organization-functions';
 
 interface Organization {
   id: string;
@@ -12,19 +13,20 @@ interface Organization {
 
 interface OrganizationMember {
   id: string;
-  name: string;
+  name: string | null;
   email: string;
-  image: string;
+  image: string | null;
+  createdAt: Date;
 }
 
 interface PendingInvitation {
   id: string;
   email: string;
   role: string;
-  createdAt: string;
-  expiresAt: string;
+  createdAt: Date;
+  expiresAt: Date;
   inviter: {
-    name: string;
+    name: string | null;
     email: string;
   };
 }
@@ -56,13 +58,14 @@ export default function OrganizationSettings() {
 
   const fetchOrganizations = async () => {
     try {
-      const response = await fetch('/api/organizations');
-      if (response.ok) {
-        const data = await response.json();
-        setOrganizations(data.organizations);
-        if (data.organizations.length > 0) {
-          setSelectedOrg(data.organizations[0].id);
+      const result = await getUserOrganizations();
+      if (result.success && result.organizations) {
+        setOrganizations(result.organizations);
+        if (result.organizations.length > 0) {
+          setSelectedOrg(result.organizations[0].id);
         }
+      } else {
+        setError(result.error || 'Failed to load organizations');
       }
     } catch (error) {
       console.error('Error fetching organizations:', error);
@@ -77,13 +80,12 @@ export default function OrganizationSettings() {
     
     setMemberLoading(true);
     try {
-      const response = await fetch(`/api/organizations/${orgId}/members`);
-      if (response.ok) {
-        const data = await response.json();
-        setMembers(data.members);
-        setPendingInvitations(data.pendingInvitations || []);
+      const result = await getOrganizationMembers(orgId);
+      if (result.success) {
+        setMembers(result.members || []);
+        setPendingInvitations(result.pendingInvitations || []);
       } else {
-        setError('Failed to load organization members');
+        setError(result.error || 'Failed to load organization members');
       }
     } catch (error) {
       console.error('Error fetching members:', error);
@@ -108,23 +110,19 @@ export default function OrganizationSettings() {
     setSuccessMessage('');
 
     try {
-      const response = await fetch(`/api/organizations/${selectedOrg}/invite`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: newMemberEmail.trim() }),
-      });
+      const result = await inviteUserToOrganization(selectedOrg, newMemberEmail.trim());
 
-      if (response.ok) {
-        const data = await response.json();
-        setSuccessMessage(`Invitation sent successfully! Share this link with ${newMemberEmail}: ${window.location.origin}${data.invitation.invitationLink}`);
+      if (result.success) {
+        if (result.user) {
+          setSuccessMessage(`User ${newMemberEmail} successfully added to organization!`);
+        } else if (result.invitation) {
+          setSuccessMessage(`Invitation sent successfully! Share this link with ${newMemberEmail}: ${window.location.origin}${result.invitation.invitationLink}`);
+        }
         setNewMemberEmail('');
         // Refresh members list
         fetchMembers(selectedOrg);
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to send invitation');
+        setError(result.error || 'Failed to send invitation');
       }
     } catch (error) {
       console.error('Error inviting member:', error);
@@ -233,7 +231,7 @@ export default function OrganizationSettings() {
                       <div className="w-10 h-10 rounded-full overflow-hidden">
                         <Image
                           src={member.image}
-                          alt={member.name}
+                          alt={member.name || 'Member'}
                           width={40}
                           height={40}
                           className="w-full h-full object-cover"
@@ -280,7 +278,7 @@ export default function OrganizationSettings() {
                           {invitation.email}
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Invited by {invitation.inviter.name || invitation.inviter.email} • Expires {new Date(invitation.expiresAt).toLocaleDateString()}
+                          Invited by {invitation.inviter.name || invitation.inviter.email} • Expires {invitation.expiresAt.toLocaleDateString()}
                         </p>
                       </div>
                       <span className="text-xs px-2 py-1 bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 rounded-full">

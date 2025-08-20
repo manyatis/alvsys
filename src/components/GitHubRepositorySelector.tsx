@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Github, ExternalLink, Folder } from 'lucide-react';
+import { getAllInstallations } from '@/lib/github-actions';
 
 interface GitHubRepository {
   id: number;
@@ -51,30 +52,16 @@ export default function GitHubRepositorySelector({
   const loadInstallations = async () => {
     try {
       setLoadingInstallations(true);
-      // Try the app-based endpoint first (doesn't require OAuth authorization)
-      let response = await fetch('/api/github/app-installations');
-      
-      // If that fails, fall back to user-based endpoint
-      if (!response.ok) {
-        response = await fetch('/api/github/installations');
-      }
-      if (response.ok) {
-        const data = await response.json();
-        setInstallations(data.installations || []);
-        setNeedsAppInstallation(data.needsAppInstallation || false);
-        if (data.error && data.installations.length === 0) {
-          setError(data.error);
-        } else {
-          setError('');
-        }
+      const data = await getAllInstallations();
+      setInstallations(data.installations || []);
+      setNeedsAppInstallation(data.needsAppInstallation || false);
+      if (data.needsAuthorization || data.error === 'GitHub account not connected') {
+        setNeedsGitHubConnection(true);
+        setError('');
+      } else if (data.error && data.installations.length === 0) {
+        setError(data.error);
       } else {
-        const errorData = await response.json();
-        if (response.status === 400 && errorData.error === 'GitHub account not connected') {
-          setNeedsGitHubConnection(true);
-          setError('');
-        } else {
-          setError(errorData.error || 'Failed to load GitHub repositories');
-        }
+        setError('');
       }
     } catch (error) {
       console.error('Error loading installations:', error);

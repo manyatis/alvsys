@@ -22,6 +22,7 @@ import {
 } from '@/utils/board-utils';
 import { useUsageStatus } from '@/hooks/useUsageStatus';
 import { useSprints } from '@/hooks/useSprints';
+import { GitHubFunctions } from '@/lib/github-functions';
 
 interface NewCard {
   title: string;
@@ -449,24 +450,17 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     
     setIsManualSyncing(true);
     try {
-      const response = await fetch(`/api/projects/${resolvedParams.id}/github/sync`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          syncComments: true,
-          syncLabels: true,
-        }),
-      });
+      if (!currentUserId) {
+        throw new Error('User not authenticated');
+      }
+      const result = await GitHubFunctions.syncProject(resolvedParams.id, currentUserId);
 
-      if (response.ok) {
+      if (result.success) {
         console.log('Manual GitHub sync completed successfully');
         await refreshCards();
       } else {
-        const errorData = await response.json();
-        console.error('Manual GitHub sync failed:', errorData);
-        alert(`Sync failed: ${errorData.error || 'Unknown error'}`);
+        console.error('Manual GitHub sync failed:', result.error);
+        alert(`Sync failed: ${result.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Manual GitHub sync error:', error);
@@ -821,6 +815,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           copyFeedback={copyFeedback}
           setCopyFeedback={setCopyFeedback}
           projectId={resolvedParams.id}
+          currentUserId={currentUserId || ''}
           onCreateIssue={() => openCreateModal()}
           labels={labels}
           cards={cards}

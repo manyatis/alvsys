@@ -3,15 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { getAllInstallations } from '@/lib/github-actions';
 
-interface UserKey {
-  id: string;
-  keyPrefix: string;
-  name: string | null;
-  isActive: boolean;
-  lastUsed: string | null;
-  createdAt: string;
-}
 
 interface GitHubInstallation {
   id: number;
@@ -32,14 +25,8 @@ interface GitHubInstallation {
 export default function AccountSettings() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [userKeys, setUserKeys] = useState<UserKey[]>([]);
   const [loading, setLoading] = useState(true);
-  const [generating, setGenerating] = useState(false);
-  const [newKeyName, setNewKeyName] = useState('');
-  const [showNewKeyForm, setShowNewKeyForm] = useState(false);
-  const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [copySuccess, setCopySuccess] = useState<string | null>(null);
   const [githubInstallations, setGithubInstallations] = useState<GitHubInstallation[]>([]);
   const [githubConnected, setGithubConnected] = useState(false);
   const [loadingGithub, setLoadingGithub] = useState(true);
@@ -50,47 +37,23 @@ export default function AccountSettings() {
       router.push('/');
       return;
     }
-    fetchUserKeys();
     fetchGitHubData();
+    setLoading(false);
   }, [session, status, router]);
 
-  const fetchUserKeys = async () => {
-    try {
-      const response = await fetch('/api/user/keys');
-      if (response.ok) {
-        const data = await response.json();
-        setUserKeys(data.keys || []);
-      } else {
-        setError('Failed to fetch API keys');
-      }
-    } catch {
-      setError('Failed to fetch API keys');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const fetchGitHubData = async () => {
     try {
       setLoadingGithub(true);
       // Check if user is connected via GitHub
       if (session?.user?.email && session?.user?.name) {
-        // Try to fetch GitHub installations
-        const response = await fetch('/api/github/app-installations');
-        if (response.ok) {
-          const data = await response.json();
+        try {
+          const data = await getAllInstallations();
           setGithubInstallations(data.installations || []);
           setGithubConnected(true);
-        } else {
-          // Fallback to user installations
-          const userResponse = await fetch('/api/github/installations');
-          if (userResponse.ok) {
-            const userData = await userResponse.json();
-            setGithubInstallations(userData.installations || []);
-            setGithubConnected(true);
-          } else {
-            setGithubConnected(false);
-          }
+        } catch (error) {
+          console.error('Error fetching GitHub installations:', error);
+          setGithubConnected(false);
         }
       }
     } catch (error) {
@@ -101,88 +64,6 @@ export default function AccountSettings() {
     }
   };
 
-  const generateApiKey = async () => {
-    setGenerating(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/user/keys', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: newKeyName || null }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setGeneratedKey(data.apiKey);
-        setNewKeyName('');
-        setShowNewKeyForm(false);
-        await fetchUserKeys();
-      } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to generate API key');
-      }
-    } catch {
-      setError('Failed to generate API key');
-    } finally {
-      setGenerating(false);
-    }
-  };
-
-  const toggleKeyStatus = async (keyId: string, isActive: boolean) => {
-    try {
-      const response = await fetch(`/api/user/keys/${keyId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ isActive }),
-      });
-
-      if (response.ok) {
-        await fetchUserKeys();
-      } else {
-        setError('Failed to update API key status');
-      }
-    } catch {
-      setError('Failed to update API key status');
-    }
-  };
-
-  const deleteKey = async (keyId: string) => {
-    if (!confirm('Are you sure you want to delete this API key? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/user/keys/${keyId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        await fetchUserKeys();
-      } else {
-        setError('Failed to delete API key');
-      }
-    } catch {
-      setError('Failed to delete API key');
-    }
-  };
-
-  const copyToClipboard = (text: string, context: string = 'Key') => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopySuccess(`${context} copied to clipboard!`);
-      setTimeout(() => {
-        setCopySuccess(null);
-      }, 3000);
-    }).catch(() => {
-      setError('Failed to copy to clipboard');
-      setTimeout(() => {
-        setError(null);
-      }, 3000);
-    });
-  };
 
   if (status === 'loading' || loading) {
     return (
@@ -208,7 +89,7 @@ export default function AccountSettings() {
           <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Account Settings</h1>
             <p className="text-slate-600 dark:text-slate-300 mt-1">
-              Manage your account settings and API keys
+              Manage your account settings and MCP integration
             </p>
           </div>
 
@@ -230,158 +111,53 @@ export default function AccountSettings() {
             </div>
           </div>
 
-          {/* API Keys Section */}
+          {/* MCP Section */}
           <div className="px-6 py-6">
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">API Keys</h2>
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">MCP Integration</h2>
                 <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-                  Generate and manage API keys for programmatic access
+                  VibeHero uses Model Context Protocol (MCP) for AI integrations
                 </p>
               </div>
-              <button
-                onClick={() => setShowNewKeyForm(true)}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
-              >
-                Generate New Key
-              </button>
             </div>
 
-            {error && (
-              <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg">
-                <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
+              <h3 className="text-blue-800 dark:text-blue-300 font-medium mb-2">MCP Integration Active</h3>
+              <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
+                This instance of VibeHero is integrated with Claude Code via MCP. No API keys are needed.
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-sm text-blue-700 dark:text-blue-300">Connected via MCP</span>
               </div>
-            )}
+            </div>
 
-            {copySuccess && (
-              <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-                <p className="text-green-700 dark:text-green-300 text-sm">{copySuccess}</p>
-              </div>
-            )}
-
-            {generatedKey && (
-              <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-                <h3 className="text-green-800 dark:text-green-300 font-medium mb-2">New API Key Generated</h3>
-                <p className="text-green-700 dark:text-green-300 text-sm mb-3">
-                  Please copy this key now. You won&apos;t be able to see it again.
+            <div className="space-y-4">
+              <div className="p-4 border border-slate-200 dark:border-slate-600 rounded-lg">
+                <h4 className="font-medium text-slate-900 dark:text-white mb-2">About MCP</h4>
+                <p className="text-slate-600 dark:text-slate-300 text-sm mb-3">
+                  Model Context Protocol (MCP) is an open standard that enables secure, controlled connections between AI applications and external systems.
                 </p>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 p-3 bg-white dark:bg-slate-800 border border-green-200 dark:border-green-600 rounded">
-                  <code className="flex-1 text-sm text-slate-900 dark:text-white font-mono break-all min-w-0">
-                    {generatedKey}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(generatedKey, 'API Key')}
-                    className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded transition-colors whitespace-nowrap self-start sm:self-center"
-                  >
-                    Copy
-                  </button>
-                </div>
+                <a 
+                  href="https://modelcontextprotocol.io" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 text-sm underline"
+                >
+                  Learn more about MCP →
+                </a>
               </div>
-            )}
 
-            {showNewKeyForm && (
-              <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg">
-                <h3 className="font-medium text-slate-900 dark:text-white mb-3">Generate New API Key</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-                      Key Name (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={newKeyName}
-                      onChange={(e) => setNewKeyName(e.target.value)}
-                      placeholder="e.g., Production API, Development Key"
-                      className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                  </div>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <button
-                      onClick={generateApiKey}
-                      disabled={generating}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-medium rounded-lg transition-colors"
-                    >
-                      {generating ? 'Generating...' : 'Generate Key'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowNewKeyForm(false);
-                        setNewKeyName('');
-                        setError(null);
-                      }}
-                      className="px-4 py-2 bg-slate-500 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+              <div className="p-4 border border-slate-200 dark:border-slate-600 rounded-lg">
+                <h4 className="font-medium text-slate-900 dark:text-white mb-2">MCP Features</h4>
+                <ul className="text-slate-600 dark:text-slate-300 text-sm space-y-1">
+                  <li>• Secure, token-based authentication</li>
+                  <li>• Real-time bidirectional communication</li>
+                  <li>• Structured data exchange</li>
+                  <li>• No API key management required</li>
+                </ul>
               </div>
-            )}
-
-            {/* API Keys List */}
-            <div className="space-y-3">
-              {userKeys.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-500 dark:text-slate-400">
-                    No API keys found. Generate your first key to get started.
-                  </p>
-                </div>
-              ) : (
-                userKeys.map((key) => (
-                  <div
-                    key={key.id}
-                    className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border border-slate-200 dark:border-slate-600 rounded-lg gap-3"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                        <code className="text-sm font-mono text-slate-900 dark:text-white break-all">
-                          {key.keyPrefix}...
-                        </code>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          {key.name && (
-                            <span className="text-sm text-slate-600 dark:text-slate-300">
-                              ({key.name})
-                            </span>
-                          )}
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full whitespace-nowrap ${
-                              key.isActive
-                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                                : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                            }`}
-                          >
-                            {key.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mt-2 text-sm text-slate-500 dark:text-slate-400">
-                        <span>Created {new Date(key.createdAt).toLocaleDateString()}</span>
-                        {key.lastUsed && (
-                          <span>Last used {new Date(key.lastUsed).toLocaleDateString()}</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                      <button
-                        onClick={() => toggleKeyStatus(key.id, !key.isActive)}
-                        className={`px-3 py-2 text-sm font-medium rounded transition-colors min-w-[90px] ${
-                          key.isActive
-                            ? 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-800/40 dark:text-yellow-300'
-                            : 'bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-800/40 dark:text-green-300'
-                        }`}
-                      >
-                        {key.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-                      <button
-                        onClick={() => deleteKey(key.id)}
-                        className="px-3 py-2 text-sm font-medium bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-800/40 dark:text-red-300 rounded transition-colors min-w-[70px]"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
             </div>
           </div>
 
