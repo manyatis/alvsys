@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 export interface SyncOptions {
   syncComments: boolean;
   syncLabels: boolean;
+  initialSync?: boolean; // If true, only sync FROM GitHub TO VibeHero
 }
 
 export interface SyncResult {
@@ -94,9 +95,13 @@ export class GitHubSyncService {
       const syncByCardId = new Map(existingSyncs.map(sync => [sync.cardId, sync]));
       const syncByIssueId = new Map(existingSyncs.map(sync => [sync.githubIssueId, sync]));
 
-      // Sync both directions - last writer wins
+      // Sync from GitHub to VibeHero
       await this.syncFromGitHub(owner, repo, syncByIssueId, result, options);
-      await this.syncToGitHub(owner, repo, syncByCardId, result, options);
+      
+      // Only sync back to GitHub if not an initial sync
+      if (!options.initialSync) {
+        await this.syncToGitHub(owner, repo, syncByCardId, result, options);
+      }
 
       // Update project last sync time
       await prisma.project.update({
@@ -301,7 +306,7 @@ export class GitHubSyncService {
         
         // Only update status if GitHub issue is closed (to mark as completed or cancelled)
         if (githubIssue.state === 'closed') {
-          updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status;
+          updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status;
         }
         
         card = await prisma.card.update({
@@ -314,7 +319,7 @@ export class GitHubSyncService {
           data: {
             title: githubIssue.title,
             description: githubIssue.body || '',
-            status: getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status,
+            status: getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status,
             projectId: this.project.id,
             assigneeId,
             githubIssueId: githubIssue.number,
@@ -366,9 +371,11 @@ export class GitHubSyncService {
   ) {
     console.log('Syncing from GitHub...', { owner, repo, lastSyncAt: this.project.githubLastSyncAt });
     
-    // For initial sync (when githubLastSyncAt is null), don't use 'since' parameter to get all issues
-    const issueOptions: { state: 'open' | 'closed' | 'all'; since?: string } = { state: 'all' };
-    if (this.project.githubLastSyncAt) {
+    // For initial sync, only get open issues. For regular syncs, get all issues since last sync
+    const issueOptions: { state: 'open' | 'closed' | 'all'; since?: string } = { 
+      state: options.initialSync ? 'open' : 'all' 
+    };
+    if (this.project.githubLastSyncAt && !options.initialSync) {
       issueOptions.since = this.project.githubLastSyncAt.toISOString();
     }
     
@@ -411,7 +418,7 @@ export class GitHubSyncService {
           
           // Only update status if GitHub issue is closed (to mark as completed or cancelled)
           if (githubIssue.state === 'closed') {
-            updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status;
+            updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status;
           }
           
           await prisma.card.update({
@@ -445,7 +452,7 @@ export class GitHubSyncService {
             data: {
               title: githubIssue.title,
               description: githubIssue.body || '',
-              status: getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status,
+              status: getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status,
               projectId: this.project.id,
               assigneeId,
               githubIssueId: githubIssue.number,

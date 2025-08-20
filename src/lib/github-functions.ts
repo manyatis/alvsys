@@ -951,6 +951,7 @@ export async function createProjectFromRepository(
           const syncResult = await syncService.syncProject({
             syncComments: true,
             syncLabels: true,
+            initialSync: true, // Only sync FROM GitHub TO VibeHero during project creation
           });
 
           console.log('Sync result:', syncResult);
