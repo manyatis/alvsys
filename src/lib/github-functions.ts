@@ -1,3 +1,5 @@
+'use server';
+
 import { PrismaClient, Card, Project, Status } from '@/generated/prisma';
 import { GitHubService } from '@/lib/github';
 import { GitHubSyncService, SyncOptions, SyncResult } from '@/services/github-sync-service';
