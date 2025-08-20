@@ -6,45 +6,36 @@ async function main() {
   // Create subscription plans
   const plans = [
     {
-      planId: 'free',
-      name: 'Free',
+      planId: 'hobby',
+      name: 'Hobby',
       priceCents: 0,
-      billingPeriod: 'month',
+      billingPeriod: 'forever',
       features: [
-        '1 Project',
-        'Unlimited AI tasks',
-        'Basic API access',
+        'Self hosting available',
+        'Hosted 1 project free',
+        'AI-powered issue tracking',
+        'Sprint management',
+        'Basic reporting',
         'Community support'
       ],
-      description: 'Perfect for getting started',
+      description: 'Perfect for individual developers and hobbyists',
       isActive: true
     },
     {
-      planId: 'indie',
-      name: 'Indie',
-      priceCents: 1000, // $10
+      planId: 'pro',
+      name: 'Pro',
+      priceCents: 2900, // $29
       billingPeriod: 'month',
       features: [
-        '3 Projects',
-        'Unlimited AI tasks',
-        'Priority API access',
-        'Email support'
+        'Self hosting available',
+        'Hosted unlimited projects free',
+        'Full collaboration tooling',
+        'Advanced sprint planning',
+        'Team management',
+        'Priority support',
+        'Advanced analytics'
       ],
-      description: 'For independent developers',
-      isActive: true
-    },
-    {
-      planId: 'professional',
-      name: 'Professional',
-      priceCents: 9900, // $99
-      billingPeriod: 'month',
-      features: [
-        'Unlimited projects',
-        'Unlimited AI tasks',
-        'Advanced analytics',
-        'Priority support'
-      ],
-      description: 'For teams and agencies',
+      description: 'For professional developers and small teams',
       isActive: true
     }
   ];

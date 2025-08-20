@@ -15,14 +15,12 @@ export class UsageService {
    */
   static getUsageLimits(tierType: SubscriptionTierType): UsageLimits {
     switch (tierType) {
-      case SubscriptionTierType.FREE:
-        return { dailyCardProcessLimit: 5, projectLimit: 1 };
-      case SubscriptionTierType.COLLABORATIVE:
-        return { dailyCardProcessLimit: 50, projectLimit: 10 };
-      case SubscriptionTierType.ENTERPRISE:
+      case SubscriptionTierType.HOBBY:
+        return { dailyCardProcessLimit: -1, projectLimit: 1 };
+      case SubscriptionTierType.PRO:
         return { dailyCardProcessLimit: -1, projectLimit: -1 }; // unlimited
       default:
-        return { dailyCardProcessLimit: 5, projectLimit: 1 };
+        return { dailyCardProcessLimit: -1, projectLimit: 1 };
     }
   }
 

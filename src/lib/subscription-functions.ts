@@ -229,58 +229,41 @@ export async function seedSubscriptionPlans(): Promise<SeedPlansResult> {
     // Create new pricing structure
     const plans = [
       {
-        planId: 'free',
-        name: 'Individual',
+        planId: 'hobby',
+        name: 'Hobby',
         priceCents: 0,
         billingPeriod: 'forever',
         features: [
-          'Unlimited projects',
-          'Unlimited AI-powered cards',
-          'Issue tracking',
+          'Self hosting available',
+          'Hosted 1 project free',
+          'AI-powered issue tracking',
           'Sprint management',
           'Basic reporting',
           'Community support'
         ],
-        description: 'Perfect for individual developers and small personal projects',
+        description: 'Perfect for individual developers and hobbyists',
         stripePriceId: null,
         stripeProductId: null,
         isActive: true
       },
       {
-        planId: 'collaborative',
-        name: 'Collaborative',
-        priceCents: 4000, // $40/month
+        planId: 'pro',
+        name: 'Pro',
+        priceCents: 2900, // $29/month
         billingPeriod: 'month',
         features: [
-          'Everything in Individual',
-          'Team collaboration tools',
+          'Self hosting available',
+          'Hosted unlimited projects free',
+          'Full collaboration tooling',
           'Advanced sprint planning',
-          'Custom workflows',
+          'Team management',
           'Priority support',
           'Advanced analytics'
         ],
-        description: 'For small teams working together on projects',
+        description: 'For professional developers and small teams',
         stripePriceId: null,
         stripeProductId: null,
-        isActive: false // Disabled for now
-      },
-      {
-        planId: 'enterprise',
-        name: 'Enterprise',
-        priceCents: 10000, // $100/month
-        billingPeriod: 'month',
-        features: [
-          'Everything in Collaborative',
-          'Enterprise security',
-          'Custom integrations',
-          'Dedicated support',
-          'SLA guarantees',
-          'On-premise deployment options'
-        ],
-        description: 'For large organizations with advanced needs',
-        stripePriceId: null,
-        stripeProductId: null,
-        isActive: false // Disabled for now
+        isActive: true
       }
     ];
 

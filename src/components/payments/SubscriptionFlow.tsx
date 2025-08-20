@@ -47,8 +47,8 @@ export default function SubscriptionFlow() {
 
   const handlePlanSelect = (plan: SubscriptionPlan) => {
     // Allow subscription to any active paid plan
-    if (plan.planId === 'free' || !plan.isActive) {
-      return; // Do nothing for free plan or inactive plans
+    if (plan.planId === 'hobby' || !plan.isActive) {
+      return; // Do nothing for hobby plan or inactive plans
     }
     setSelectedPlan(plan);
     setStep('payment');
@@ -166,23 +166,23 @@ export default function SubscriptionFlow() {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
         {plans.map((plan) => {
-          const isFree = plan.planId === 'free';
-          const isComingSoon = !plan.isActive;
+          const isHobby = plan.planId === 'hobby';
+          const isPro = plan.planId === 'pro';
           
           return (
             <div
               key={plan.id}
               className={`relative p-8 rounded-2xl ${
-                isFree
+                isHobby
                   ? 'bg-gradient-to-b from-green-50 to-white dark:from-green-950/20 dark:to-slate-800 border-2 border-green-500'
-                  : isComingSoon
-                  ? 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 opacity-60'
+                  : isPro
+                  ? 'bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500'
                   : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
               }`}
             >
-              {isFree && (
+              {isHobby && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">
                     Free Forever
@@ -190,19 +190,27 @@ export default function SubscriptionFlow() {
                 </div>
               )}
               
+              {isPro && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
+                    Most Popular
+                  </span>
+                </div>
+              )}
+              
               <div className="mb-8">
-                <h3 className={`text-2xl font-bold mb-2 ${isComingSoon ? 'text-slate-500 dark:text-slate-400' : 'text-slate-900 dark:text-white'}`}>
+                <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">
                   {plan.name}
                 </h3>
                 <div className="flex items-baseline gap-1 mb-4">
-                  <span className={`text-4xl font-bold ${isComingSoon ? 'text-slate-500 dark:text-slate-400' : 'text-slate-900 dark:text-white'}`}>
-                    {isFree ? 'Free' : formatPrice(plan.priceCents)}
+                  <span className="text-4xl font-bold text-slate-900 dark:text-white">
+                    {isHobby ? 'Free' : formatPrice(plan.priceCents)}
                   </span>
-                  <span className={`${isComingSoon ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}>
-                    {isFree ? '(no limits)' : `/${plan.billingPeriod}`}
+                  <span className="text-slate-600 dark:text-slate-300">
+                    {isHobby ? '' : `/${plan.billingPeriod}`}
                   </span>
                 </div>
-                <p className={`${isComingSoon ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}>
+                <p className="text-slate-600 dark:text-slate-300">
                   {plan.description || 'No description available'}
                 </p>
               </div>
@@ -210,20 +218,27 @@ export default function SubscriptionFlow() {
               <ul className="space-y-4 mb-8">
                 {plan.features.map((feature, index) => (
                   <li key={index} className="flex items-start gap-3">
-                    <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${isComingSoon ? 'text-slate-400' : 'text-green-500'}`} />
-                    <span className={`${isComingSoon ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-300'}`}>
+                    <Check className="w-5 h-5 mt-0.5 flex-shrink-0 text-green-500" />
+                    <span className="text-slate-600 dark:text-slate-300">
                       {feature}
                     </span>
                   </li>
                 ))}
               </ul>
               
-              {plan.planId === 'free' ? (
+              {plan.planId === 'hobby' ? (
                 <button 
                   onClick={() => window.location.href = '/projects'}
                   className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
                 >
                   Get Started Free
+                </button>
+              ) : plan.planId === 'pro' ? (
+                <button 
+                  onClick={() => handlePlanSelect(plan)}
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Upgrade to Pro
                 </button>
               ) : (
                 <button 

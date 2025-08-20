@@ -1,9 +1,8 @@
 import { prisma } from '@/lib/prisma';
 
 export enum SubscriptionTierType {
-  FREE = 'FREE',
-  COLLABORATIVE = 'COLLABORATIVE', 
-  ENTERPRISE = 'ENTERPRISE'
+  HOBBY = 'HOBBY',
+  PRO = 'PRO'
 }
 
 export interface SubscriptionTierData {
@@ -13,22 +12,17 @@ export interface SubscriptionTierData {
 }
 
 export class SubscriptionService {
-  // Default tiers - Free is unlimited for individuals, paid plans disabled for now
+  // Default tiers - Hobby has 1 hosted project, Pro has unlimited
   static readonly TIERS: Record<SubscriptionTierType, SubscriptionTierData> = {
-    [SubscriptionTierType.FREE]: {
-      tier: SubscriptionTierType.FREE,
-      projectLimit: -1, // unlimited for individuals
-      dailyCardProcessLimit: -1, // unlimited for individuals
+    [SubscriptionTierType.HOBBY]: {
+      tier: SubscriptionTierType.HOBBY,
+      projectLimit: 1, // 1 hosted project free
+      dailyCardProcessLimit: -1, // unlimited for hobby users
     },
-    [SubscriptionTierType.COLLABORATIVE]: {
-      tier: SubscriptionTierType.COLLABORATIVE,
-      projectLimit: -1, // unlimited
-      dailyCardProcessLimit: -1, // unlimited
-    },
-    [SubscriptionTierType.ENTERPRISE]: {
-      tier: SubscriptionTierType.ENTERPRISE,
-      projectLimit: -1, // unlimited
-      dailyCardProcessLimit: -1, // unlimited
+    [SubscriptionTierType.PRO]: {
+      tier: SubscriptionTierType.PRO,
+      projectLimit: -1, // unlimited hosted projects
+      dailyCardProcessLimit: -1, // unlimited for pro users
     },
   };
 
@@ -67,12 +61,12 @@ export class SubscriptionService {
   }
 
   /**
-   * Get user's current subscription info (returns default FREE tier)
+   * Get user's current subscription info (returns default HOBBY tier)
    */
   static async getUserSubscriptionInfo(userId: string) {
     return {
       userId,
-      tier: this.TIERS[SubscriptionTierType.FREE],
+      tier: this.TIERS[SubscriptionTierType.HOBBY],
       subscriptionId: null,
       status: 'active',
       currentPeriodEnd: null,
