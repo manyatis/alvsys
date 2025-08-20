@@ -189,8 +189,16 @@ export class GitHubSyncService {
         });
 
         // Create sync record
-        await prisma.gitHubIssueSync.create({
-          data: {
+        await prisma.gitHubIssueSync.upsert({
+          where: {
+            cardId: card.id,
+          },
+          update: {
+            githubIssueId: githubIssue.number,
+            githubIssueNodeId: githubIssue.node_id,
+            lastSyncAt: new Date(),
+          },
+          create: {
             cardId: card.id,
             projectId: this.project.id,
             githubIssueId: githubIssue.number,
@@ -305,8 +313,16 @@ export class GitHubSyncService {
         });
 
         // Create sync record
-        await prisma.gitHubIssueSync.create({
-          data: {
+        await prisma.gitHubIssueSync.upsert({
+          where: {
+            cardId: card.id,
+          },
+          update: {
+            githubIssueId: githubIssue.number,
+            githubIssueNodeId: githubIssue.node_id,
+            lastSyncAt: new Date(),
+          },
+          create: {
             cardId: card.id,
             projectId: this.project.id,
             githubIssueId: githubIssue.number,
@@ -427,8 +443,16 @@ export class GitHubSyncService {
             },
           });
 
-          await prisma.gitHubIssueSync.create({
-            data: {
+          await prisma.gitHubIssueSync.upsert({
+            where: {
+              cardId: card.id,
+            },
+            update: {
+              githubIssueId: githubIssue.number,
+              githubIssueNodeId: githubIssue.node_id,
+              lastSyncAt: new Date(),
+            },
+            create: {
               cardId: card.id,
               projectId: this.project.id,
               githubIssueId: githubIssue.number,
@@ -541,8 +565,16 @@ export class GitHubSyncService {
             assignees,
           });
 
-          await prisma.gitHubIssueSync.create({
-            data: {
+          await prisma.gitHubIssueSync.upsert({
+            where: {
+              cardId: card.id,
+            },
+            update: {
+              githubIssueId: githubIssue.number,
+              githubIssueNodeId: githubIssue.node_id,
+              lastSyncAt: new Date(),
+            },
+            create: {
               cardId: card.id,
               projectId: this.project.id,
               githubIssueId: githubIssue.number,
