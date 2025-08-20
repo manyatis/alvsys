@@ -1,6 +1,6 @@
 'use server';
 
-// Authentication imports removed - will be handled at a higher layer
+import { withAuth } from '@/lib/services/auth-service';
 import { ProjectsAPI } from '@/lib/api/projects/index';
 
 export interface Project {
@@ -61,23 +61,22 @@ export interface DeleteProjectResult {
  * Get user's projects
  */
 export async function getUserProjects(): Promise<ProjectsResult> {
-  try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
+  const result = await withAuth(async (user) => {
+    const apiResult = await ProjectsAPI.getProjects({ userId: user.id });
+    return apiResult.projects;
+  });
 
-    const result = await ProjectsAPI.getProjects({ userId });
-    return {
-      success: true,
-      projects: result.projects
-    };
-  } catch (error: unknown) {
-    console.error('Error getting user projects:', error);
+  if (!result.success) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      error: result.error
     };
   }
+
+  return {
+    success: true,
+    projects: result.data || []
+  };
 }
 
 /**
@@ -88,50 +87,47 @@ export async function createProject(data: {
   organizationName?: string;
   organizationId?: string;
 }): Promise<CreateProjectResult> {
-  try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
-    const result = await ProjectsAPI.createProject({
-      userId,
+  const result = await withAuth(async (user) => {
+    const apiResult = await ProjectsAPI.createProject({
+      userId: user.id,
       ...data
     });
+    return apiResult.project;
+  });
 
-    return {
-      success: true,
-      project: result.project
-    };
-  } catch (error: unknown) {
-    console.error('Error creating project:', error);
+  if (!result.success) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      error: result.error
     };
   }
+
+  return {
+    success: true,
+    project: result.data
+  };
 }
 
 /**
  * Get project by ID
  */
 export async function getProjectById(projectId: string): Promise<GetProjectResult> {
-  try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
+  const result = await withAuth(async (user) => {
+    const project = await ProjectsAPI.getProjectById(projectId, user.id);
+    return project;
+  });
 
-    const project = await ProjectsAPI.getProjectById(projectId, userId);
-    return {
-      success: true,
-      project
-    };
-  } catch (error: unknown) {
-    console.error('Error getting project by ID:', error);
+  if (!result.success) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      error: result.error
     };
   }
+
+  return {
+    success: true,
+    project: result.data
+  };
 }
 
 /**
@@ -141,43 +137,41 @@ export async function updateProject(
   projectId: string, 
   updates: { name?: string }
 ): Promise<UpdateProjectResult> {
-  try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
+  const result = await withAuth(async (user) => {
+    const project = await ProjectsAPI.updateProject(projectId, user.id, updates);
+    return project;
+  });
 
-    const project = await ProjectsAPI.updateProject(projectId, userId, updates);
-    return {
-      success: true,
-      project
-    };
-  } catch (error: unknown) {
-    console.error('Error updating project:', error);
+  if (!result.success) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      error: result.error
     };
   }
+
+  return {
+    success: true,
+    project: result.data
+  };
 }
 
 /**
  * Delete project
  */
 export async function deleteProject(projectId: string): Promise<DeleteProjectResult> {
-  try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
+  const result = await withAuth(async (user) => {
+    await ProjectsAPI.deleteProject(projectId, user.id);
+    return true;
+  });
 
-    await ProjectsAPI.deleteProject(projectId, userId);
-    return {
-      success: true
-    };
-  } catch (error: unknown) {
-    console.error('Error deleting project:', error);
+  if (!result.success) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Internal server error'
+      error: result.error
     };
   }
+
+  return {
+    success: true
+  };
 }
