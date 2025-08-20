@@ -1,5 +1,5 @@
 import { PrismaClient, Card, Project, Status, GitHubIssueSync } from '@prisma/client';
-import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
+import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, getVibeHeroStatusFromGitHub, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 
 // const prisma = new PrismaClient();
@@ -158,13 +158,25 @@ export class GitHubSyncService {
 
       if (card.githubSync) {
         // Update existing issue
-        const updateData = {
+        const updateData: {
+          title: string;
+          body: string;
+          state: 'open' | 'closed';
+          state_reason?: 'completed' | 'not_planned';
+          labels: string[];
+          assignees: string[];
+        } = {
           title: card.title,
           body: card.description || '',
           state: STATUS_MAPPING[card.status],
           labels: card.labels.map(l => l.label.name),
           assignees,
         };
+        
+        // Set state_reason for closed issues
+        if (updateData.state === 'closed') {
+          updateData.state_reason = card.status === 'CANCELLED' ? 'not_planned' : 'completed';
+        }
         console.log('Updating GitHub issue with data:', {
           ...updateData,
           cardId: card.id,
@@ -287,9 +299,9 @@ export class GitHubSyncService {
           githubLastSyncAt: new Date(),
         };
         
-        // Only update status if GitHub issue is closed (to mark as completed)
+        // Only update status if GitHub issue is closed (to mark as completed or cancelled)
         if (githubIssue.state === 'closed') {
-          updateData.status = GITHUB_STATUS_MAPPING.closed as Status;
+          updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status;
         }
         
         card = await prisma.card.update({
@@ -302,7 +314,7 @@ export class GitHubSyncService {
           data: {
             title: githubIssue.title,
             description: githubIssue.body || '',
-            status: GITHUB_STATUS_MAPPING[githubIssue.state as keyof typeof GITHUB_STATUS_MAPPING] as Status,
+            status: getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status,
             projectId: this.project.id,
             assigneeId,
             githubIssueId: githubIssue.number,
@@ -397,9 +409,9 @@ export class GitHubSyncService {
             githubLastSyncAt: new Date(),
           };
           
-          // Only update status if GitHub issue is closed (to mark as completed)
+          // Only update status if GitHub issue is closed (to mark as completed or cancelled)
           if (githubIssue.state === 'closed') {
-            updateData.status = GITHUB_STATUS_MAPPING.closed as Status;
+            updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status;
           }
           
           await prisma.card.update({
@@ -433,7 +445,7 @@ export class GitHubSyncService {
             data: {
               title: githubIssue.title,
               description: githubIssue.body || '',
-              status: GITHUB_STATUS_MAPPING[githubIssue.state as keyof typeof GITHUB_STATUS_MAPPING] as Status,
+              status: getVibeHeroStatusFromGitHub(githubIssue.state, githubIssue.state_reason) as Status,
               projectId: this.project.id,
               assigneeId,
               githubIssueId: githubIssue.number,
@@ -527,13 +539,27 @@ export class GitHubSyncService {
             }
           }
 
-          const githubIssue = await this.githubService.updateIssue(owner, repo, existingSync.githubIssueId, {
+          const updateData: {
+            title: string;
+            body: string;
+            state: 'open' | 'closed';
+            state_reason?: 'completed' | 'not_planned';
+            labels: string[];
+            assignees: string[];
+          } = {
             title: card.title,
             body: card.description || '',
             state: STATUS_MAPPING[card.status],
             labels: card.labels.map(l => l.label.name),
             assignees,
-          });
+          };
+          
+          // Set state_reason for closed issues
+          if (updateData.state === 'closed') {
+            updateData.state_reason = card.status === 'CANCELLED' ? 'not_planned' : 'completed';
+          }
+          
+          const githubIssue = await this.githubService.updateIssue(owner, repo, existingSync.githubIssueId, updateData);
 
           await prisma.gitHubIssueSync.update({
             where: { id: existingSync.id },
