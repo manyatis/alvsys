@@ -81,11 +81,12 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
       });
 
       if (!githubAccount?.access_token) {
+        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
         return {
           installations: [],
           needsAppInstallation: true,
           error: 'GitHub account not connected',
-          authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`,
+          authorizationUrl: `https://github.com/apps/${appName}/installations/new`,
         };
       }
 
@@ -145,20 +146,22 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         
         // If it's a 403, the user needs to authorize the app
         if (errorStatus === 403) {
+          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
           return {
             installations: [],
             needsAppInstallation: true,
             needsAuthorization: true,
-            authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`,
+            authorizationUrl: `https://github.com/apps/${appName}/installations/new`,
             error: 'GitHub App requires authorization. Please authorize the app to access your installations.',
           };
         }
         
+        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
         return {
           installations: [],
           needsAppInstallation: true,
           error: errorMessage,
-          authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`,
+          authorizationUrl: `https://github.com/apps/${appName}/installations/new`,
         };
       }
     } catch (error) {
