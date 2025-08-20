@@ -1,8 +1,0 @@
-{
-  "buildCommand": "npx prisma generate && next build",
-  "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": {
-    "PRISMA_GENERATE_DATAPROXY": "@prisma_generate_dataproxy"
-  }
-}
