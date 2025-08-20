@@ -27,35 +27,44 @@ export async function middleware(request: NextRequest) {
   })
 
   if (!user) {
-    // User doesn't exist in database, redirect to onboarding
-    const onboardingUrl = new URL('/onboarding', request.url)
-    return NextResponse.redirect(onboardingUrl)
+    // User doesn't exist in database, redirect to home
+    const homeUrl = new URL('/', request.url)
+    return NextResponse.redirect(homeUrl)
   }
 
-  // Check project access for project-specific routes
+  // Handle route-specific validation
   const pathname = request.nextUrl.pathname
-  const projectMatch = pathname.match(/^\/projects\/([^\/]+)/)
   
-  if (projectMatch) {
-    const projectId = projectMatch[1]
+  // For account pages, just ensure user exists (already checked above)
+  if (pathname.startsWith('/account')) {
+    // User is authenticated and exists, allow access
+  }
+  
+  // For project pages, check project access
+  else if (pathname.startsWith('/projects')) {
+    const projectMatch = pathname.match(/^\/projects\/([^\/]+)/)
     
-    // Check if user has access to this project
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: user.id },
-          { users: { some: { userId: user.id } } },
-          // Allow access if project belongs to user's organization
-          { organizationId: user.organizationId }
-        ]
-      }
-    })
+    if (projectMatch) {
+      const projectId = projectMatch[1]
+      
+      // Check if user has access to this project
+      const project = await prisma.project.findFirst({
+        where: {
+          id: projectId,
+          OR: [
+            { ownerId: user.id },
+            { users: { some: { userId: user.id } } },
+            // Allow access if project belongs to user's organization
+            { organizationId: user.organizationId }
+          ]
+        }
+      })
 
-    if (!project) {
-      // User doesn't have access to this project
-      const forbiddenUrl = new URL('/dashboard', request.url)
-      return NextResponse.redirect(forbiddenUrl)
+      if (!project) {
+        // User doesn't have access to this project, redirect to projects list
+        const projectsUrl = new URL('/projects', request.url)
+        return NextResponse.redirect(projectsUrl)
+      }
     }
   }
 
@@ -73,14 +82,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (auth API routes)
-     * - auth (auth pages)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
+     * Only protect specific routes that require authentication and authorization:
+     * - /projects/* (requires project access validation)
+     * - /account/* (requires user authentication)
      */
-    '/((?!api/auth|auth|_next/static|_next/image|favicon.ico|public).*)',
+    '/projects/:path*',
+    '/account/:path*',
   ],
 }
