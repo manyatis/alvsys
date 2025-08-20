@@ -264,7 +264,7 @@ export class GitHubFunctions {
         where: { id: projectId },
         data: {
           githubRepoName: repositoryName,
-          githubInstallationId: installationId,
+          githubInstallationId: installationId.toString(),
           githubSyncEnabled: true,
           githubLastSyncAt: new Date(),
         },
@@ -465,12 +465,21 @@ export class GitHubFunctions {
         };
       }
 
-      // Reset sync
-      const result = await syncService.resetSync();
+      // Reset sync data - clear GitHub sync records
+      await prisma.gitHubIssueSync.deleteMany({
+        where: { projectId }
+      });
 
-      if (!result.success) {
-        return { success: false, error: result.error };
-      }
+      // Reset project sync status
+      await prisma.project.update({
+        where: { id: projectId },
+        data: {
+          githubSyncEnabled: false,
+          githubLastSyncAt: null,
+          githubRepoName: null,
+          githubInstallationId: null
+        }
+      });
 
       return { success: true };
     } catch (error) {
@@ -602,7 +611,7 @@ export class GitHubFunctions {
         success: true,
         isLinked: !!(project.githubRepoName && project.githubInstallationId),
         repositoryName: project.githubRepoName || undefined,
-        installationId: project.githubInstallationId || undefined,
+        installationId: project.githubInstallationId ? parseInt(project.githubInstallationId) : undefined,
         syncEnabled: project.githubSyncEnabled || false,
         lastSyncAt: project.githubLastSyncAt || undefined,
       };
@@ -621,7 +630,7 @@ export class GitHubFunctions {
    * Handle GitHub webhook events
    */
   static async handleWebhook(
-    payload: any,
+    payload: Record<string, unknown>,
     eventType: string
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
@@ -646,20 +655,20 @@ export class GitHubFunctions {
    * Handle GitHub issue webhook events
    */
   private static async handleIssueWebhook(
-    payload: any
+    payload: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
       const { action, issue, repository, installation } = payload;
       
-      if (!installation?.id) {
+      if (!(installation as { id?: number })?.id) {
         return { success: true, processed: false };
       }
 
       // Find the project linked to this repository
       const project = await prisma.project.findFirst({
         where: {
-          githubInstallationId: installation.id,
-          githubRepoName: repository.full_name,
+          githubInstallationId: (installation as { id: number }).id.toString(),
+          githubRepoName: (repository as { full_name: string }).full_name,
         },
       });
 
@@ -679,7 +688,7 @@ export class GitHubFunctions {
         case 'edited':
         case 'closed':
         case 'reopened':
-          await syncService.syncIssueToVibeHero(issue.number);
+          await syncService.syncIssueToVibeHero((issue as { number: number }).number);
           break;
         default:
           return { success: true, processed: false };
@@ -696,20 +705,20 @@ export class GitHubFunctions {
    * Handle GitHub comment webhook events
    */
   private static async handleCommentWebhook(
-    payload: any
+    payload: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
       const { action, comment, issue, repository, installation } = payload;
       
-      if (!installation?.id || action !== 'created') {
+      if (!(installation as { id?: number })?.id || action !== 'created') {
         return { success: true, processed: false };
       }
 
       // Find the project and sync record
       const syncRecord = await prisma.gitHubIssueSync.findFirst({
         where: {
-          githubIssueId: issue.number,
-          githubRepoName: repository.full_name,
+          githubIssueId: (issue as { number: number }).number,
+          githubRepoName: (repository as { full_name: string }).full_name,
         },
         include: {
           project: true,
@@ -723,11 +732,11 @@ export class GitHubFunctions {
       // Create comment in VibeHero
       await prisma.comment.create({
         data: {
-          content: comment.body,
+          content: (comment as { body: string }).body,
           cardId: syncRecord.cardId,
-          userId: null, // External comment
+          authorId: syncRecord.project.ownerId, // Use project owner for external comments
           isAiComment: false,
-          githubCommentId: comment.id,
+          githubCommentId: (comment as { id: number }).id,
         },
       });
 
@@ -742,7 +751,7 @@ export class GitHubFunctions {
    * Handle GitHub installation webhook events
    */
   private static async handleInstallationWebhook(
-    payload: any
+    payload: Record<string, unknown>
   ): Promise<{ success: boolean; error?: string; processed?: boolean }> {
     try {
       const { action, installation } = payload;
@@ -752,7 +761,7 @@ export class GitHubFunctions {
           // Remove GitHub configuration from projects
           await prisma.project.updateMany({
             where: {
-              githubInstallationId: installation.id,
+              githubInstallationId: (installation as { id: number }).id.toString(),
             },
             data: {
               githubInstallationId: null,
@@ -831,8 +840,13 @@ export class GitHubFunctions {
       id: string;
       name: string;
       description: string;
-      organization: any;
-      _count: any;
+      organization: {
+        id: string;
+        name: string;
+      };
+      _count: {
+        cards: number;
+      };
       createdAt: Date;
       githubRepoName: string | null;
       githubRepoUrl: string | null;
@@ -905,7 +919,7 @@ export class GitHubFunctions {
           githubRepoId: repoDetails.id.toString(),
           githubRepoName: repoName,
           githubRepoUrl: repoDetails.html_url,
-          githubInstallationId: installationId,
+          githubInstallationId: installationId.toString(),
           githubSyncEnabled: syncIssues,
           githubLastSyncAt: null,
         },
@@ -960,8 +974,8 @@ export class GitHubFunctions {
         project: {
           id: project.id,
           name: project.name,
-          description: project.description,
-          organization: project.organization,
+          description: project.description || '',
+          organization: project.organization || { id: '', name: '' },
           _count: project._count,
           createdAt: project.createdAt,
           githubRepoName: project.githubRepoName,

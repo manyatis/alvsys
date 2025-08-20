@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getUserProjects } from '@/lib/project-functions';
 
 interface Project {
   id: string;
@@ -52,10 +53,19 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
   const fetchProjects = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/projects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data.projects || []);
+      const result = await getUserProjects();
+      if (result.success && result.projects) {
+        const mappedProjects = result.projects
+          .filter(project => project.organization !== null)
+          .map(project => ({
+            id: project.id,
+            name: project.name,
+            organization: {
+              id: project.organization!.id,
+              name: project.organization!.name
+            }
+          }));
+        setProjects(mappedProjects);
       }
     } catch (error) {
       console.error('Error fetching projects:', error);

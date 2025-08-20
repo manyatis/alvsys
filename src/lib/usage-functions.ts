@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+'use server';
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { PrismaClient } from '@/generated/prisma';
@@ -6,13 +7,39 @@ import { UsageService } from '@/services/usage-service';
 
 const prisma = new PrismaClient();
 
-// GET /api/user/usage - Get user's current usage status
-export async function GET() {
+export interface UsageStatus {
+  tier: 'FREE';
+  usage: {
+    canCreateCard: boolean;
+    canCreateProject: boolean;
+    dailyCardsUsed: number;
+    dailyCardsLimit: number;
+    projectsUsed: number;
+    projectsLimit: number;
+    resetTime: Date | null;
+  };
+  isAtCardLimit: boolean;
+  isAtProjectLimit: boolean;
+}
+
+export interface UsageResult {
+  success: boolean;
+  error?: string;
+  usage?: UsageStatus;
+}
+
+/**
+ * Get user's current usage status
+ */
+export async function getUserUsage(): Promise<UsageResult> {
   try {
     const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return {
+        success: false,
+        error: 'Unauthorized'
+      };
     }
 
     const user = await prisma.user.findUnique({
@@ -20,14 +47,17 @@ export async function GET() {
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      return {
+        success: false,
+        error: 'User not found'
+      };
     }
 
     // Get usage summary
     const usageStats = await UsageService.getUserUsageStats(user.id);
     
     // Transform to expected format
-    const usageStatus = {
+    const usageStatus: UsageStatus = {
       tier: 'FREE' as const,
       usage: {
         canCreateCard: !(await UsageService.hasReachedDailyCardLimit(user.id)),
@@ -42,9 +72,15 @@ export async function GET() {
       isAtProjectLimit: await UsageService.hasReachedProjectLimit(user.id),
     };
 
-    return NextResponse.json(usageStatus);
+    return {
+      success: true,
+      usage: usageStatus
+    };
   } catch (error) {
     console.error('Error fetching user usage:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return {
+      success: false,
+      error: 'Internal server error'
+    };
   }
 }

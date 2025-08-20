@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getAllInstallations } from '@/lib/github-actions';
+import { GitHubFunctions } from '@/lib/github-functions';
 
 interface GitHubRepository {
   id: number;
@@ -37,10 +38,11 @@ interface SyncStatus {
 
 interface GitHubIntegrationProps {
   projectId: string;
+  currentUserId: string;
   onSyncStatusChange?: (status: SyncStatus) => void;
 }
 
-export default function GitHubIntegration({ projectId, onSyncStatusChange }: GitHubIntegrationProps) {
+export default function GitHubIntegration({ projectId, currentUserId, onSyncStatusChange }: GitHubIntegrationProps) {
   const [installations, setInstallations] = useState<GitHubInstallation[]>([]);
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,16 +55,23 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
 
   const loadSyncStatus = useCallback(async () => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/github`);
-      if (response.ok) {
-        const data = await response.json();
-        setSyncStatus(data.syncStatus);
-        onSyncStatusChange?.(data.syncStatus);
+      const result = await GitHubFunctions.getProjectGitHubStatus(projectId, currentUserId);
+      if (result.success) {
+        const syncStatus: SyncStatus = {
+          isLinked: result.isLinked,
+          repoName: result.repositoryName,
+          syncEnabled: result.syncEnabled,
+          lastSyncAt: result.lastSyncAt,
+          totalCards: 0,  // Will be populated from project cards
+          syncedCards: 0, // Will be populated from project cards
+        };
+        setSyncStatus(syncStatus);
+        onSyncStatusChange?.(syncStatus);
       }
     } catch (error) {
       console.error('Error loading sync status:', error);
     }
-  }, [projectId, onSyncStatusChange]);
+  }, [projectId, currentUserId, onSyncStatusChange]);
 
   const loadData = useCallback(async () => {
     try {
@@ -117,26 +126,31 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
       setLoading(true);
       setError('');
 
-      const response = await fetch(`/api/projects/${projectId}/github/link`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          repoName: selectedRepo,
-          installationId: selectedInstallation.toString(),
-        }),
-      });
+      const result = await GitHubFunctions.linkProjectToRepository(
+        projectId,
+        selectedRepo,
+        parseInt(selectedInstallation.toString()),
+        currentUserId
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        setSyncStatus(data.syncStatus);
-        onSyncStatusChange?.(data.syncStatus);
+      if (result.success) {
+        const statusResult = await GitHubFunctions.getProjectGitHubStatus(projectId, currentUserId);
+        if (statusResult.success) {
+          const syncStatus: SyncStatus = {
+            isLinked: statusResult.isLinked,
+            repoName: statusResult.repositoryName,
+            syncEnabled: statusResult.syncEnabled,
+            lastSyncAt: statusResult.lastSyncAt,
+            totalCards: 0,
+            syncedCards: 0,
+          };
+          setSyncStatus(syncStatus);
+          onSyncStatusChange?.(syncStatus);
+        }
         setSelectedInstallation(null);
         setSelectedRepo('');
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to link repository');
+        setError(result.error || 'Failed to link repository');
       }
     } catch (error) {
       console.error('Error linking repository:', error);
@@ -151,11 +165,9 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
       setLoading(true);
       setError('');
 
-      const response = await fetch(`/api/projects/${projectId}/github/link`, {
-        method: 'DELETE',
-      });
+      const result = await GitHubFunctions.resetProjectSync(projectId, currentUserId);
 
-      if (response.ok) {
+      if (result.success) {
         const newStatus = {
           isLinked: false,
           syncEnabled: false,
@@ -165,8 +177,7 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
         setSyncStatus(newStatus);
         onSyncStatusChange?.(newStatus);
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to unlink repository');
+        setError(result.error || 'Failed to unlink repository');
       }
     } catch (error) {
       console.error('Error unlinking repository:', error);
@@ -181,24 +192,13 @@ export default function GitHubIntegration({ projectId, onSyncStatusChange }: Git
       setSyncing(true);
       setError('');
 
-      const response = await fetch(`/api/projects/${projectId}/github/sync`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          syncComments: true,
-          syncLabels: true,
-        }),
-      });
+      const result = await GitHubFunctions.syncProject(projectId, currentUserId);
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Sync result:', data.result);
+      if (result.success) {
+        console.log('Sync result:', result);
         await loadSyncStatus(); // Refresh status
       } else {
-        const errorData = await response.json();
-        setError(errorData.error || 'Failed to sync');
+        setError(result.error || 'Failed to sync');
       }
     } catch (error) {
       console.error('Error syncing:', error);

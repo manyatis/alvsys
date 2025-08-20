@@ -1,19 +1,5 @@
 import { useState, useEffect } from 'react';
-
-interface UsageStatus {
-  tier: 'FREE' | 'INDIE' | 'PROFESSIONAL';
-  usage: {
-    canCreateCard: boolean;
-    canCreateProject: boolean;
-    dailyCardsUsed: number;
-    dailyCardsLimit: number;
-    projectsUsed: number;
-    projectsLimit: number;
-    resetTime: Date;
-  };
-  isAtCardLimit: boolean;
-  isAtProjectLimit: boolean;
-}
+import { getUserUsage, UsageStatus } from '@/lib/usage-functions';
 
 export function useUsageStatus() {
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
@@ -21,10 +7,9 @@ export function useUsageStatus() {
 
   const fetchUsageStatus = async () => {
     try {
-      const response = await fetch('/api/user/usage');
-      if (response.ok) {
-        const data = await response.json();
-        setUsageStatus(data);
+      const result = await getUserUsage();
+      if (result.success && result.usage) {
+        setUsageStatus(result.usage);
       }
     } catch (error) {
       console.error('Error fetching usage status:', error);

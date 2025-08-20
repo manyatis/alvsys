@@ -5,6 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
+import { getUserProjects } from '@/lib/project-functions';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -70,10 +71,14 @@ export default function Navbar() {
     
     setProjectsLoading(true);
     try {
-      const response = await fetch('/api/projects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data.projects || []);
+      const result = await getUserProjects();
+      if (result.success && result.projects) {
+        const mappedProjects = result.projects.map(project => ({
+          id: project.id,
+          name: project.name,
+          organization: project.organization ? { name: project.organization.name } : undefined
+        }));
+        setProjects(mappedProjects);
       }
     } catch (error) {
       console.error('Error fetching projects:', error);

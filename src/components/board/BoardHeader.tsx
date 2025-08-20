@@ -12,7 +12,7 @@ interface Project {
   organization: {
     id: string;
     name: string;
-  };
+  } | null;
 }
 
 interface BoardHeaderProps {
@@ -87,9 +87,13 @@ export default function BoardHeader({
     <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 sm:px-4 py-3">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-full">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 flex-1 min-w-0">
-          {project && (
+          {project && project.organization && (
             <ProjectSelector 
-              currentProject={project} 
+              currentProject={{
+                id: project.id,
+                name: project.name,
+                organization: project.organization
+              }} 
               currentProjectId={currentProjectId}
             />
           )}

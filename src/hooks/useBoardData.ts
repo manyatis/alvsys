@@ -1,6 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getOrganizationMembers } from '@/lib/organization-functions';
+import { 
+  getProjectIssues, 
+  createIssue, 
+  updateIssueWithAgentInstructions,
+  addLabelToIssue,
+  removeLabelFromIssue,
+  getIssueComments,
+  createIssueComment
+} from '@/lib/issue-functions';
+import { getProjectById } from '@/lib/project-functions';
+import { getProjectSprints, createSprint } from '@/lib/sprint-functions';
+import { getProjectLabels, createLabel as createLabelAction } from '@/lib/label-functions';
+import { GitHubFunctions } from '@/lib/github-functions';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Card, Comment, Label, CardStatus } from '@/types/card';
@@ -12,7 +26,8 @@ interface Project {
   organization: {
     id: string;
     name: string;
-  };
+  } | null;
+  githubSyncEnabled?: boolean;
 }
 
 interface NewCard {
@@ -46,53 +61,42 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
     const loadData = async () => {
       try {
         // Fetch project details
-        const projectRes = await fetch(`/api/projects/${projectId}`);
-        if (projectRes.ok) {
-          const projectData = await projectRes.json();
-          setProject(projectData.project);
+        const projectResult = await getProjectById(projectId);
+        if (projectResult.success && projectResult.project) {
+          setProject(projectResult.project);
           
           // If project has GitHub sync enabled, perform background sync
-          if (projectData.project.githubSyncEnabled) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          if ((projectResult.project as any).githubSyncEnabled && session?.user?.id) {
             // Start sync in background - don't block the initial load
             setIsSyncing(true);
-            fetch(`/api/projects/${projectId}/github/sync`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                syncComments: true,
-                syncLabels: true,
-              }),
-            }).then(async (syncRes) => {
-              if (syncRes.ok) {
+            GitHubFunctions.syncProject(projectId, session.user.id).then(async (syncResult) => {
+              if (syncResult.success) {
                 console.log('Background GitHub sync completed successfully');
                 // Refresh cards after sync
                 // Only filter by active sprint if there actually is an active sprint
-                let cardsUrl = `/api/issues?projectId=${projectId}`;
-                if (selectedSprintId) {
-                  cardsUrl += `&sprintId=${selectedSprintId}`;
-                } else if (showOnlyActiveSprint) {
-                  // Check if there's an active sprint before filtering
-                  const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`);
-                  if (sprintsRes.ok) {
-                    const sprints = await sprintsRes.json();
-                    const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
-                    if (activeSprint) {
-                      cardsUrl += `&activeSprint=true`;
+                const issuesResult = await getProjectIssues(projectId);
+                if (issuesResult.success && issuesResult.issues) {
+                  let filteredCards = issuesResult.issues;
+                  if (selectedSprintId) {
+                    filteredCards = filteredCards.filter(card => card.sprint?.id === selectedSprintId);
+                  } else if (showOnlyActiveSprint) {
+                    // Check if there's an active sprint before filtering
+                    const sprintsResult = await getProjectSprints(projectId);
+                    if (sprintsResult.success && sprintsResult.sprints) {
+                      const sprints = sprintsResult.sprints;
+                      const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+                      if (activeSprint) {
+                        filteredCards = filteredCards.filter(card => card.sprint?.isActive);
+                      }
                     }
-                    // If no active sprint, show all cards
                   }
-                }
-                
-                const cardsRes = await fetch(cardsUrl);
-                if (cardsRes.ok) {
-                  const cardsData = await cardsRes.json();
-                  setCards(cardsData);
+                  
+                  setCards(filteredCards);
                   console.log('Cards refreshed after GitHub sync');
                 }
               } else {
-                console.warn('Background GitHub sync failed:', await syncRes.text());
+                console.warn('Background GitHub sync failed:', syncResult.error);
               }
               setIsSyncing(false);
             }).catch(syncError => {
@@ -102,14 +106,13 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
           }
           
           // Fetch organization members
-          const membersRes = await fetch(`/api/organizations/${projectData.project.organization.id}/members`);
-          if (membersRes.ok) {
-            const membersData = await membersRes.json();
-            setOrganizationMembers(membersData.members);
+          const membersResult = await getOrganizationMembers(projectResult.project.organization.id);
+          if (membersResult.success && membersResult.members) {
+            setOrganizationMembers(membersResult.members);
             
             // Find current user ID
             if (session?.user?.email) {
-              const currentUser = membersData.members.find((member: OrganizationMember) => 
+              const currentUser = membersResult.members.find((member: OrganizationMember) => 
                 member.email === session.user!.email
               );
               if (currentUser) {
@@ -117,7 +120,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
               } else {
                 console.warn('Current user not found in organization members:', {
                   sessionEmail: session.user.email,
-                  memberEmails: membersData.members.map((m: OrganizationMember) => m.email)
+                  memberEmails: membersResult.members?.map((m: OrganizationMember) => m.email)
                 });
               }
             }
@@ -125,32 +128,31 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         }
 
         // Fetch cards
-        let cardsUrl = `/api/issues?projectId=${projectId}`;
-        if (selectedSprintId) {
-          cardsUrl += `&sprintId=${selectedSprintId}`;
-        } else if (showOnlyActiveSprint) {
-          // Check if there's an active sprint before filtering
-          const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`);
-          if (sprintsRes.ok) {
-            const sprints = await sprintsRes.json();
-            const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
-            if (activeSprint) {
-              cardsUrl += `&activeSprint=true`;
+        const issuesResult = await getProjectIssues(projectId);
+        let filteredCards: Card[] = [];
+        if (issuesResult.success && issuesResult.issues) {
+          filteredCards = issuesResult.issues;
+          if (selectedSprintId) {
+            filteredCards = filteredCards.filter(card => card.sprint?.id === selectedSprintId);
+          } else if (showOnlyActiveSprint) {
+            // Check if there's an active sprint before filtering
+            const sprintsResult = await getProjectSprints(projectId);
+            if (sprintsResult.success && sprintsResult.sprints) {
+              const sprints = sprintsResult.sprints;
+              const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+              if (activeSprint) {
+                filteredCards = filteredCards.filter(card => card.sprint?.isActive);
+              }
+              // If no active sprint, show all cards
             }
-            // If no active sprint, show all cards
           }
         }
-        const cardsRes = await fetch(cardsUrl);
-        if (cardsRes.ok) {
-          const cardsData = await cardsRes.json();
-          setCards(cardsData);
-        }
+        setCards(filteredCards);
 
         // Fetch labels
-        const labelsRes = await fetch(`/api/projects/${projectId}/labels`);
-        if (labelsRes.ok) {
-          const labelsData = await labelsRes.json();
-          setLabels(labelsData);
+        const labelsResult = await getProjectLabels(projectId);
+        if (labelsResult.success && labelsResult.labels) {
+          setLabels(labelsResult.labels);
         }
       } catch (error) {
         console.error('Error fetching project data:', error);
@@ -180,41 +182,33 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         const controller = new AbortController();
         
         // Fetch cards
-        let cardsUrl = `/api/issues?projectId=${projectId}`;
-        if (selectedSprintId) {
-          cardsUrl += `&sprintId=${selectedSprintId}`;
-        } else if (showOnlyActiveSprint) {
-          // Check if there's an active sprint before filtering
-          const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`, {
-            signal: controller.signal,
-            headers: { 'Connection': 'close' }
-          });
-          if (sprintsRes.ok && isComponentMounted) {
-            const sprints = await sprintsRes.json();
-            const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
-            if (activeSprint) {
-              cardsUrl += `&activeSprint=true`;
+        const issuesResult = await getProjectIssues(projectId);
+        let filteredCards: Card[] = [];
+        if (issuesResult.success && issuesResult.issues) {
+          filteredCards = issuesResult.issues;
+          if (selectedSprintId) {
+            filteredCards = filteredCards.filter(card => card.sprint?.id === selectedSprintId);
+          } else if (showOnlyActiveSprint) {
+            // Check if there's an active sprint before filtering
+            const sprintsResult = await getProjectSprints(projectId);
+            if (sprintsResult.success && sprintsResult.sprints && isComponentMounted) {
+              const sprints = sprintsResult.sprints;
+              const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+              if (activeSprint) {
+                filteredCards = filteredCards.filter(card => card.sprint?.isActive);
+              }
+              // If no active sprint, show all cards
             }
-            // If no active sprint, show all cards
           }
         }
-        const cardsRes = await fetch(cardsUrl, { 
-          signal: controller.signal,
-          headers: { 'Connection': 'close' } 
-        });
-        if (cardsRes.ok && isComponentMounted) {
-          const cardsData = await cardsRes.json();
-          setCards(cardsData);
+        if (isComponentMounted) {
+          setCards(filteredCards);
         }
 
         // Fetch labels
-        const labelsRes = await fetch(`/api/projects/${projectId}/labels`, { 
-          signal: controller.signal,
-          headers: { 'Connection': 'close' } 
-        });
-        if (labelsRes.ok && isComponentMounted) {
-          const labelsData = await labelsRes.json();
-          setLabels(labelsData);
+        const labelsResult = await getProjectLabels(projectId);
+        if (labelsResult.success && labelsResult.labels && isComponentMounted) {
+          setLabels(labelsResult.labels);
         }
       } catch (error) {
         if (error instanceof Error && error.name !== 'AbortError') {
@@ -242,28 +236,26 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
 
   const refreshCards = async () => {
     try {
-      let cardsUrl = `/api/issues?projectId=${projectId}`;
-      if (selectedSprintId) {
-        cardsUrl += `&sprintId=${selectedSprintId}`;
-      } else if (showOnlyActiveSprint) {
-        // Check if there's an active sprint before filtering
-        const sprintsRes = await fetch(`/api/projects/${projectId}/sprints`);
-        if (sprintsRes.ok) {
-          const sprints = await sprintsRes.json();
-          const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
-          if (activeSprint) {
-            cardsUrl += `&activeSprint=true`;
+      const issuesResult = await getProjectIssues(projectId);
+      let filteredCards: Card[] = [];
+      if (issuesResult.success && issuesResult.issues) {
+        filteredCards = issuesResult.issues;
+        if (selectedSprintId) {
+          filteredCards = filteredCards.filter(card => card.sprint?.id === selectedSprintId);
+        } else if (showOnlyActiveSprint) {
+          // Check if there's an active sprint before filtering
+          const sprintsResult = await getProjectSprints(projectId);
+          if (sprintsResult.success && sprintsResult.sprints) {
+            const sprints = sprintsResult.sprints;
+            const activeSprint = sprints.find((s: { isActive: boolean }) => s.isActive);
+            if (activeSprint) {
+              filteredCards = filteredCards.filter(card => card.sprint?.isActive);
+            }
+            // If no active sprint, show all cards
           }
-          // If no active sprint, show all cards
         }
       }
-      const cardsRes = await fetch(cardsUrl, {
-        headers: { 'Connection': 'close' }
-      });
-      if (cardsRes.ok) {
-        const cardsData = await cardsRes.json();
-        setCards(cardsData);
-      }
+      setCards(filteredCards);
     } catch (error) {
       console.error('Error refreshing cards:', error);
     }
@@ -290,46 +282,31 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
   const createCard = async (newCard: NewCard) => {
     setIsCreatingIssue(true);
     try {
-      const response = await fetch('/api/issues', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: newCard.title,
-          description: newCard.description,
-          acceptanceCriteria: newCard.acceptanceCriteria,
-          status: newCard.status,
-          priority: newCard.priority,
-          effortPoints: newCard.effortPoints,
-          isAiAllowedTask: newCard.isAiAllowedTask,
-          assigneeId: newCard.assigneeId || null,
-          labelIds: newCard.labelIds,
-          sprintId: newCard.sprintId,
-          projectId,
-        }),
+      const result = await createIssue({
+        title: newCard.title,
+        description: newCard.description,
+        acceptanceCriteria: newCard.acceptanceCriteria,
+        status: newCard.status,
+        priority: newCard.priority,
+        storyPoints: newCard.effortPoints,
+        isAiAllowedTask: newCard.isAiAllowedTask,
+        assigneeId: newCard.assigneeId || undefined,
+        sprintId: newCard.sprintId,
+        projectId,
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        
+      if (result.success && result.issue) {
         // Assign labels to the new card
         if (newCard.labelIds.length > 0) {
           for (const labelId of newCard.labelIds) {
-            await fetch(`/api/issues/${data.id}/labels`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ labelId }),
-            });
+            await addLabelToIssue(result.issue.id, labelId);
           }
         }
         
         await refreshCards();
-        return data;
+        return result.issue;
       }
-      throw new Error('Failed to create card');
+      throw new Error(result.error || 'Failed to create card');
     } catch (error) {
       console.error('Error creating card:', error);
       throw error;
@@ -341,45 +318,32 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
   const updateCard = async (card: Card, selectedCardLabelIds: string[], selectedCardAssigneeId: string | null) => {
     setIsUpdating(true);
     try {
-      const response = await fetch(`/api/issues/${card.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ...card, assigneeId: selectedCardAssigneeId }),
+      const result = await updateIssueWithAgentInstructions(card.id, projectId, {
+        ...card,
+        assigneeId: selectedCardAssigneeId || undefined,
       });
 
-      if (response.ok) {
+      if (result.success) {
         // Update labels if they changed
         const currentLabelIds = card.labels?.map(cl => cl.labelId) || [];
         
         // Remove labels that are no longer selected
         for (const labelId of currentLabelIds) {
           if (!selectedCardLabelIds.includes(labelId)) {
-            await fetch(`/api/issues/${card.id}/labels`, {
-              method: 'DELETE',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ labelId }),
-            });
+            await removeLabelFromIssue(card.id, labelId);
           }
         }
         
         // Add new labels
         for (const labelId of selectedCardLabelIds) {
           if (!currentLabelIds.includes(labelId)) {
-            await fetch(`/api/issues/${card.id}/labels`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ labelId }),
-            });
+            await addLabelToIssue(card.id, labelId);
           }
         }
         
         await refreshCards();
+      } else {
+        throw new Error(result.error || 'Failed to update card');
       }
     } catch (error) {
       console.error('Error updating card:', error);
@@ -391,20 +355,12 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
 
   const createLabel = async (name: string, color: string) => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/labels`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, color }),
-      });
+      const result = await createLabelAction(projectId, { name, color });
 
-      if (response.ok) {
-        const newLabel = await response.json();
-        return newLabel;
+      if (result.success && result.label) {
+        return result.label;
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || `Failed to create label: ${response.status}`);
+        throw new Error(result.error || 'Failed to create label');
       }
     } catch (error) {
       console.error('Error creating label:', error);
@@ -430,13 +386,11 @@ export function useComments() {
   const loadComments = async (cardId: string) => {
     setLoadingComments(true);
     try {
-      const response = await fetch(`/api/issues/${cardId}/comments`);
-      if (response.ok) {
-        const commentsData = await response.json();
-        setComments(commentsData);
+      const result = await getIssueComments(cardId);
+      if (result.success && result.comments) {
+        setComments(result.comments);
       } else {
-        const errorData = await response.json();
-        console.error('Failed to load comments:', errorData.error || 'Unknown error');
+        console.error('Failed to load comments:', result.error || 'Unknown error');
         setComments([]);
       }
     } catch (error) {
@@ -452,24 +406,13 @@ export function useComments() {
     
     setIsAddingComment(true);
     try {
-      const response = await fetch(`/api/issues/${cardId}/comments`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: newComment.trim(),
-        }),
-      });
-
-      if (response.ok) {
-        const comment = await response.json();
-        setComments([...comments, comment]);
+      const result = await createIssueComment(cardId, newComment.trim());
+      if (result.success && result.comment) {
+        setComments([...comments, result.comment]);
         setNewComment('');
       } else {
-        const errorData = await response.json();
-        console.error('Failed to add comment:', errorData.error || 'Unknown error');
-        alert(`Failed to add comment: ${errorData.error || 'Unknown error'}`);
+        console.error('Failed to add comment:', result.error || 'Unknown error');
+        alert(`Failed to add comment: ${result.error || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error adding comment:', error);

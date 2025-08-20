@@ -1,16 +1,23 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { 
+  getProjectSprints, 
+  createSprint as createSprintAction,
+  updateSprint as updateSprintAction,
+  deleteSprint as deleteSprintAction,
+  closeSprint as closeSprintAction
+} from '@/lib/sprint-functions';
 
 export interface Sprint {
   id: string;
   name: string;
   projectId: string;
-  startDate: string | null;
-  endDate: string | null;
+  startDate: Date;
+  endDate: Date;
   isActive: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   _count?: {
     cards: number;
   };
@@ -23,11 +30,10 @@ export function useSprints(projectId: string) {
 
   const fetchSprints = useCallback(async () => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/sprints`);
-      if (response.ok) {
-        const data = await response.json();
-        setSprints(data);
-        const active = data.find((sprint: Sprint) => sprint.isActive);
+      const result = await getProjectSprints(projectId);
+      if (result.success && result.sprints) {
+        setSprints(result.sprints);
+        const active = result.sprints.find((sprint: Sprint) => sprint.isActive);
         setActiveSprint(active || null);
       }
     } catch (error) {
@@ -45,19 +51,13 @@ export function useSprints(projectId: string) {
 
   const createSprint = async (name: string, startDate?: Date, endDate?: Date) => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/sprints`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name,
-          startDate: startDate?.toISOString(),
-          endDate: endDate?.toISOString(),
-        }),
+      const result = await createSprintAction(projectId, {
+        name,
+        startDate: startDate?.toISOString(),
+        endDate: endDate?.toISOString(),
       });
 
-      if (response.ok) {
+      if (result.success) {
         await fetchSprints();
         return true;
       }
@@ -70,15 +70,14 @@ export function useSprints(projectId: string) {
 
   const updateSprint = async (sprintId: string, updates: Partial<Sprint>) => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
+      const result = await updateSprintAction(projectId, sprintId, {
+        name: updates.name,
+        startDate: updates.startDate?.toISOString(),
+        endDate: updates.endDate?.toISOString(),
+        isActive: updates.isActive,
       });
 
-      if (response.ok) {
+      if (result.success) {
         await fetchSprints();
         return true;
       }
@@ -91,14 +90,9 @@ export function useSprints(projectId: string) {
 
   const closeSprint = async (sprintId: string) => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/sprints/${sprintId}/close`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const result = await closeSprintAction(projectId, sprintId);
 
-      if (response.ok) {
+      if (result.success) {
         await fetchSprints();
         return true;
       }
@@ -111,11 +105,9 @@ export function useSprints(projectId: string) {
 
   const deleteSprint = async (sprintId: string) => {
     try {
-      const response = await fetch(`/api/projects/${projectId}/sprints/${sprintId}`, {
-        method: 'DELETE',
-      });
+      const result = await deleteSprintAction(projectId, sprintId);
 
-      if (response.ok) {
+      if (result.success) {
         await fetchSprints();
         return true;
       }

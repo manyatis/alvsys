@@ -14,8 +14,10 @@ interface AssigneeSelectorProps {
   currentUserId?: string;
   organizationMembers: Array<{
     id: string;
-    name?: string;
-    email?: string;
+    name: string | null;
+    email: string;
+    image: string | null;
+    createdAt: Date;
   }>;
   selectedAssigneeId?: string;
   onSelectionChange: (assigneeId: string | null) => void;
@@ -83,7 +85,7 @@ export default function AssigneeSelector({
       if (member.id !== currentUserId) {
         options.push({
           id: member.id,
-          name: member.name || member.email?.split('@')[0] || 'Unknown User',
+          name: member.name || member.email.split('@')[0] || 'Unknown User',
           email: member.email,
           type: 'user'
         });

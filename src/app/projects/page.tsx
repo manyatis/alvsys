@@ -5,6 +5,10 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Plus, Folder, Users, Calendar, Github, Zap } from 'lucide-react';
 import GitHubRepositorySelector from '@/components/GitHubRepositorySelector';
+import { getUserUsage } from '@/lib/usage-functions';
+import { getUserProjects, createProject } from '@/lib/project-functions';
+import { getUserOrganizations } from '@/lib/organization-functions';
+import { GitHubFunctions } from '@/lib/github-functions';
 
 interface Project {
   id: string;
@@ -12,11 +16,11 @@ interface Project {
   organization: {
     id: string;
     name: string;
-  };
+  } | null;
   _count?: {
     cards: number;
   };
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface UsageStatus {
@@ -28,7 +32,7 @@ interface UsageStatus {
     dailyCardsLimit: number;
     projectsUsed: number;
     projectsLimit: number;
-    resetTime: Date;
+    resetTime: Date | null;
   };
   isAtCardLimit: boolean;
   isAtProjectLimit: boolean;
@@ -69,10 +73,9 @@ export default function ProjectsPage() {
 
   const fetchProjects = async () => {
     try {
-      const response = await fetch('/api/projects');
-      if (response.ok) {
-        const data = await response.json();
-        setProjects(data.projects);
+      const result = await getUserProjects();
+      if (result.success && result.projects) {
+        setProjects(result.projects);
       }
     } catch (error) {
       console.error('Error fetching projects:', error);
@@ -83,10 +86,9 @@ export default function ProjectsPage() {
 
   const fetchOrganizations = async () => {
     try {
-      const response = await fetch('/api/organizations');
-      if (response.ok) {
-        const data = await response.json();
-        setOrganizations(data.organizations);
+      const result = await getUserOrganizations();
+      if (result.success && result.organizations) {
+        setOrganizations(result.organizations);
       }
     } catch (error) {
       console.error('Error fetching organizations:', error);
@@ -95,10 +97,9 @@ export default function ProjectsPage() {
 
   const fetchUsageStatus = async () => {
     try {
-      const response = await fetch('/api/user/usage');
-      if (response.ok) {
-        const data = await response.json();
-        setUsageStatus(data);
+      const result = await getUserUsage();
+      if (result.success && result.usage) {
+        setUsageStatus(result.usage);
       }
     } catch (error) {
       console.error('Error fetching usage status:', error);
@@ -110,20 +111,13 @@ export default function ProjectsPage() {
     setCreating(true);
 
     try {
-      const response = await fetch('/api/projects', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          organizationName: formData.useExistingOrg ? undefined : formData.organizationName,
-          organizationId: formData.useExistingOrg ? formData.organizationId : undefined,
-          projectName: formData.projectName,
-        }),
+      const result = await createProject({
+        organizationName: formData.useExistingOrg ? undefined : formData.organizationName,
+        organizationId: formData.useExistingOrg ? formData.organizationId : undefined,
+        projectName: formData.projectName,
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (result.success && result.project) {
         setShowCreateModal(false);
         setCreationMode('select');
         setFormData({
@@ -134,14 +128,9 @@ export default function ProjectsPage() {
           githubRepo: '',
           githubInstallationId: ''
         });
-        router.push(`/projects/${data.project.id}/board`);
+        router.push(`/projects/${result.project.id}/board`);
       } else {
-        const error = await response.json();
-        if (response.status === 429) {
-          alert(`${error.error}\nYou have ${error.usageLimit.used}/${error.usageLimit.limit} projects.`);
-        } else {
-          alert(error.error || 'Failed to create project');
-        }
+        alert(result.error || 'Failed to create project');
       }
     } catch (error) {
       console.error('Error creating project:', error);
@@ -162,25 +151,18 @@ export default function ProjectsPage() {
   }, installationId: number) => {
     setCreating(true);
     try {
-      const response = await fetch('/api/projects/github', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          repoName: repo.full_name,
-          repoDescription: repo.description,
-          installationId: installationId.toString(),
-          syncIssues: true,
-        }),
-      });
+      const result = await GitHubFunctions.createProjectFromRepository(
+        repo.full_name,
+        repo.description || undefined,
+        installationId,
+        true, // syncIssues
+        '' // userId will be extracted from session inside the function
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        router.push(`/projects/${data.project.id}/board`);
+      if (result.success && result.project) {
+        router.push(`/projects/${result.project.id}/board`);
       } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to create project from GitHub repository');
+        alert(result.error || 'Failed to create project from GitHub repository');
       }
     } catch (error) {
       console.error('Error creating project from GitHub:', error);
@@ -279,11 +261,11 @@ export default function ProjectsPage() {
                 </h3>
                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
                   <Users className="h-4 w-4" />
-                  {project.organization.name}
+                  {project.organization?.name || 'No Organization'}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                   <Calendar className="h-4 w-4" />
-                  {new Date(project.createdAt).toLocaleDateString()}
+                  {project.createdAt.toLocaleDateString()}
                 </div>
               </div>
             ))}
