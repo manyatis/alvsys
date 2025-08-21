@@ -18,7 +18,7 @@ export default function BacklogPage({ params }: { params: Promise<{ id: string }
   useEffect(() => {
     const fetchCards = async () => {
       try {
-        const result = await getProjectCards(resolvedParams.id);
+        const result = await getProjectCards(resolvedParams.id, 'anonymous');
         if (result.success && result.cards) {
           setCards(result.cards);
         }

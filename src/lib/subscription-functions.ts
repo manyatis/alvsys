@@ -74,18 +74,16 @@ export async function getSubscriptionPlans(): Promise<SubscriptionPlansResult> {
 /**
  * Create Stripe checkout session for subscription
  */
-export async function createStripeSession(planId: string): Promise<CreateStripeSessionResult> {
+export async function createStripeSession(
+  planId: string,
+  userId: string,
+  userEmail: string,
+  userName?: string | null,
+  stripeCustomerId?: string | null,
+  subscriptionId?: string | null,
+  subscriptionStatus?: string | null
+): Promise<CreateStripeSessionResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = {
-      id: userId,
-      email: 'placeholder@example.com',
-      name: 'Placeholder User',
-      stripeCustomerId: null as string | null,
-      subscriptionId: null as string | null,
-      subscriptionStatus: null as string | null
-    };
 
     // Validate required fields
     if (!planId) {
@@ -96,7 +94,7 @@ export async function createStripeSession(planId: string): Promise<CreateStripeS
     }
 
     // Check if user already has an active subscription
-    if (user.subscriptionId && user.subscriptionStatus === 'active') {
+    if (subscriptionId && subscriptionStatus === 'active') {
       return {
         success: false,
         error: 'User already has an active subscription'
@@ -115,27 +113,30 @@ export async function createStripeSession(planId: string): Promise<CreateStripeS
       };
     }
 
-    console.debug(`🔄 Creating Stripe subscription for ${user.email}: ${subscriptionPlan.name} plan`);
+    console.debug(`🔄 Creating Stripe subscription for ${userEmail}: ${subscriptionPlan.name} plan`);
 
     // Create or get existing Stripe customer
-    let stripeCustomerId = user.stripeCustomerId;
+    let customerIdToUse = stripeCustomerId;
     
-    if (!stripeCustomerId) {
+    if (!customerIdToUse) {
       console.debug('👤 Creating Stripe customer...');
       const customer = await getStripe().customers.create({
-        email: user.email,
-        name: user.name || undefined,
+        email: userEmail,
+        name: userName || undefined,
         metadata: {
           userId: userId,
         }
       });
       
-      stripeCustomerId = customer.id;
+      customerIdToUse = customer.id;
       
-      // Update user with Stripe customer ID (placeholder - would update in real app)
-      console.log(`Would update user ${user.id} with Stripe customer ID: ${stripeCustomerId}`);
+      // Update user with Stripe customer ID
+      await prisma.user.update({
+        where: { id: userId },
+        data: { stripeCustomerId: customerIdToUse }
+      });
       
-      console.debug('✅ Stripe customer created:', stripeCustomerId);
+      console.debug('✅ Stripe customer created:', customerIdToUse);
     }
 
     // For now, we'll use a test price ID. In production, you would create prices in Stripe dashboard
@@ -179,7 +180,7 @@ export async function createStripeSession(planId: string): Promise<CreateStripeS
     console.debug('📋 Creating Stripe Checkout Session...');
     const checkoutSession = await getStripe().checkout.sessions.create({
       mode: 'subscription',
-      customer: stripeCustomerId,
+      customer: customerIdToUse,
       line_items: [{
         price: stripePriceId,
         quantity: 1,

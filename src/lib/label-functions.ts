@@ -52,11 +52,7 @@ function generateRandomColor(): string {
  */
 export async function getProjectLabels(projectId: string): Promise<LabelsResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
-    // Basic validation - project should exist (placeholder logic)
+    // Basic validation - project should exist
     const project = await prisma.project.findUnique({
       where: { id: projectId }
     });
@@ -98,10 +94,6 @@ export async function createLabel(
   }
 ): Promise<CreateLabelResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
     const { name, color } = data;
 
     if (!name || name.trim() === '') {
@@ -111,7 +103,7 @@ export async function createLabel(
       };
     }
 
-    // Basic validation - project should exist (placeholder logic)
+    // Basic validation - project should exist
     const project = await prisma.project.findUnique({
       where: { id: projectId }
     });

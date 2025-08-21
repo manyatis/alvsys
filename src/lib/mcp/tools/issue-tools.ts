@@ -10,6 +10,9 @@ import {
   getIssueComments
 } from '@/lib/issue-functions';
 import { AiAPI } from '@/lib/api/ai';
+
+// MCP tools use a system user ID
+const MCP_USER_ID = 'mcp-system';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
@@ -65,7 +68,7 @@ export function registerIssueTools(server: Server) {
         };
       }
       
-      const result = await getProjectIssues(projectId, { status, sprintId: sprint_id });
+      const result = await getProjectIssues(projectId, MCP_USER_ID, { status, sprintId: sprint_id });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
@@ -130,7 +133,7 @@ export function registerIssueTools(server: Server) {
         };
       }
       
-      const result = await createIssue({
+      const result = await createIssue(MCP_USER_ID, {
         projectId,
         title,
         description,

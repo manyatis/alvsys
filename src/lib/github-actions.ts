@@ -1,25 +1,17 @@
 'use server';
 
 // Authentication imports removed - will be handled at a higher layer
-import { PrismaClient } from '@prisma/client';
 import { getUserInstallations as getUserInstallationsFunc, getAppInstallations as getAppInstallationsFunc } from '@/lib/github-functions';
-import { prisma } from './prisma';
 
 
 
 /**
  * Get GitHub installations for the authenticated user
  */
-export async function getUserInstallations() {
+export async function getUserInstallations(userId: string) {
   try {
-    // Validate session authentication
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
-
     // Use the consolidated GitHub functions
-    const result = await getUserInstallationsFunc(user.id);
+    const result = await getUserInstallationsFunc(userId);
     
     return result;
   } catch (error) {
@@ -33,11 +25,6 @@ export async function getUserInstallations() {
  */
 export async function getAppInstallations() {
   try {
-    // Validate session authentication
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
     // Use the consolidated GitHub functions
     const result = await getAppInstallationsFunc();
     
@@ -51,28 +38,13 @@ export async function getAppInstallations() {
 /**
  * Get both user and app installations, with fallback logic
  */
-export async function getAllInstallations() {
+export async function getAllInstallations(userId: string) {
   try {
-    // Always check if user has GitHub OAuth connection first
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
-    // Check if user has GitHub OAuth token (placeholder logic)
-    const githubAccount = { access_token: 'placeholder-token' };
 
     // Try app installations first
     try {
       const appResult = await getAppInstallations();
       if (appResult.installations && appResult.installations.length > 0) {
-        // If we have app installations but no OAuth token, indicate OAuth is needed for project creation
-        if (!githubAccount?.access_token) {
-          return {
-            ...appResult,
-            error: 'GitHub account not connected',
-            needsGitHubConnection: true,
-          };
-        }
         return appResult;
       }
     } catch (error) {
@@ -80,7 +52,7 @@ export async function getAllInstallations() {
     }
 
     // Fall back to user installations
-    return await getUserInstallations();
+    return await getUserInstallations(userId);
   } catch (error) {
     console.error('Error in getAllInstallations server action:', error);
     throw error;
@@ -94,18 +66,13 @@ export async function createProjectFromRepository(
   repoName: string,
   repoDescription: string | undefined,
   installationId: number,
-  syncIssues: boolean
+  syncIssues: boolean,
+  username: string
 ) {
   try {
-    // Validate session authentication
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
-
     // Use the consolidated GitHub functions
     const result = await import('@/lib/github-functions').then(module => 
-      module.createProjectFromRepository(repoName, repoDescription, installationId, syncIssues, user.id)
+      module.createProjectFromRepository(repoName, repoDescription, installationId, syncIssues, username)
     );
     
     return result;

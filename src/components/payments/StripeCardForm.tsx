@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { createStripeSession } from '@/lib/subscription-functions';
 
 interface CheckoutButtonProps {
@@ -11,13 +12,19 @@ interface CheckoutButtonProps {
 }
 
 export default function CheckoutButton({ onError, planName, planPrice, planId }: CheckoutButtonProps) {
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleCheckout = async () => {
     setIsLoading(true);
     
     try {
-      const result = await createStripeSession(planId);
+      const result = await createStripeSession(
+        planId,
+        session?.user?.id || 'anonymous',
+        session?.user?.email || '',
+        session?.user?.name
+      );
 
       if (!result.success) {
         throw new Error(result.error || 'Failed to create checkout session');

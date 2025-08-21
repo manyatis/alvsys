@@ -56,7 +56,7 @@ export function useSprints(projectId: string, userId?: string | null) {
         return false;
       }
 
-      const result = await createSprintAction(projectId, userId, {
+      const result = await createSprintAction(projectId, {
         name,
         startDate: startDate?.toISOString(),
         endDate: endDate?.toISOString(),
@@ -81,7 +81,7 @@ export function useSprints(projectId: string, userId?: string | null) {
         return false;
       }
 
-      const result = await updateSprintAction(projectId, userId, sprintId, {
+      const result = await updateSprintAction(projectId, sprintId, {
         name: updates.name,
         startDate: updates.startDate?.toISOString(),
         endDate: updates.endDate?.toISOString(),
@@ -106,7 +106,7 @@ export function useSprints(projectId: string, userId?: string | null) {
         return false;
       }
 
-      const result = await closeSprintAction(projectId, userId, sprintId);
+      const result = await closeSprintAction(projectId, sprintId);
 
       if (result.success) {
         await fetchSprints();
@@ -126,7 +126,7 @@ export function useSprints(projectId: string, userId?: string | null) {
         return false;
       }
 
-      const result = await deleteSprintAction(projectId, userId, sprintId);
+      const result = await deleteSprintAction(projectId, sprintId);
 
       if (result.success) {
         await fetchSprints();

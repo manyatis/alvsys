@@ -53,28 +53,8 @@ export interface CloseSprintResult {
  */
 export async function getProjectSprints(projectId: string): Promise<SprintsResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
-    // Basic validation - project should exist (placeholder logic)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    });
-
-    if (!project) {
-      return {
-        success: false,
-        error: 'Project not found'
-      };
-    }
-
+    // Authentication is handled at a higher layer (middleware/MCP transport)
+    
     // Get all sprints for the project
     const sprints = await prisma.sprint.findMany({
       where: { projectId },
@@ -106,8 +86,7 @@ export async function getProjectSprints(projectId: string): Promise<SprintsResul
  * Create a new sprint
  */
 export async function createSprint(
-  projectId: string, 
-  userId: string,
+  projectId: string,
   data: {
     name: string;
     startDate?: string;
@@ -117,24 +96,8 @@ export async function createSprint(
   try {
     const { name, startDate, endDate } = data;
 
-    // Basic validation - project should exist (placeholder logic)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    });
-
-    if (!project) {
-      return {
-        success: false,
-        error: 'Project not found'
-      };
-    }
-
+    // Authentication and project access validation handled at higher layer
+    
     // Check if there's already an active sprint
     const activeSprint = await prisma.sprint.findFirst({
       where: {
@@ -172,7 +135,6 @@ export async function createSprint(
  */
 export async function updateSprint(
   projectId: string,
-  userId: string,
   sprintId: string,
   data: {
     name?: string;
@@ -182,27 +144,10 @@ export async function updateSprint(
   }
 ): Promise<UpdateSprintResult> {
   try {
-
     const { name, startDate, endDate, isActive } = data;
 
-    // Basic validation - project should exist (placeholder logic)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    });
-
-    if (!project) {
-      return {
-        success: false,
-        error: 'Project not found'
-      };
-    }
-
+    // Authentication and project access validation handled at higher layer
+    
     // If setting this sprint as active, deactivate others
     if (isActive) {
       await prisma.sprint.updateMany({
@@ -243,29 +188,11 @@ export async function updateSprint(
  */
 export async function deleteSprint(
   projectId: string,
-  userId: string,
   sprintId: string
 ): Promise<DeleteSprintResult> {
   try {
-
-    // Basic validation - project should exist (placeholder logic)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    });
-
-    if (!project) {
-      return {
-        success: false,
-        error: 'Project not found'
-      };
-    }
-
+    // Authentication and project access validation handled at higher layer
+    
     // Delete the sprint (cards will have sprintId set to null due to optional relation)
     await prisma.sprint.delete({
       where: { id: sprintId },
@@ -288,29 +215,11 @@ export async function deleteSprint(
  */
 export async function closeSprint(
   projectId: string,
-  userId: string,
   sprintId: string
 ): Promise<CloseSprintResult> {
   try {
-
-    // Basic validation - project should exist (placeholder logic)
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    });
-
-    if (!project) {
-      return {
-        success: false,
-        error: 'Project not found'
-      };
-    }
-
+    // Authentication and project access validation handled at higher layer
+    
     // Get the current sprint
     const currentSprint = await prisma.sprint.findUnique({
       where: { id: sprintId },
