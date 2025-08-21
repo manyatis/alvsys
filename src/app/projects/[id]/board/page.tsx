@@ -15,6 +15,7 @@ import BoardHeader from '@/components/board/BoardHeader';
 import CreateIssueModal from '@/components/board/CreateIssueModal';
 import EditIssueModal from '@/components/board/EditIssueModal';
 import CreateSprintModal from '@/components/board/CreateSprintModal';
+import MCPGuideModal from '@/components/board/MCPGuideModal';
 import { useBoardData, useCardOperations, useComments } from '@/hooks/useBoardData';
 import { 
   getCardsByStatus, 
@@ -159,6 +160,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showSprintModal, setShowSprintModal] = useState(false);
   const [sprintModalVisible, setSprintModalVisible] = useState(false);
+  const [showMCPGuideModal, setShowMCPGuideModal] = useState(false);
+  const [mcpGuideModalVisible, setMCPGuideModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
@@ -442,6 +445,16 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const closeSprintModal = () => {
     setSprintModalVisible(false);
     setTimeout(() => setShowSprintModal(false), 300);
+  };
+
+  const openMCPGuideModal = () => {
+    setShowMCPGuideModal(true);
+    setTimeout(() => setMCPGuideModalVisible(true), 10);
+  };
+
+  const closeMCPGuideModal = () => {
+    setMCPGuideModalVisible(false);
+    setTimeout(() => setShowMCPGuideModal(false), 300);
   };
 
   const handleManualSync = async () => {
@@ -836,6 +849,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             showOnlyActiveSprint={showOnlyActiveSprint}
             onCreateSprint={openSprintModal}
             onManualSync={handleManualSync}
+            onOpenMCPGuide={openMCPGuideModal}
           />
 
         {/* Board */}
@@ -936,6 +950,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         onClose={closeSprintModal}
         onCreate={handleCreateSprint}
         isCreating={isCreatingSprint}
+      />
+
+      {/* MCP Guide Modal */}
+      <MCPGuideModal
+        showModal={showMCPGuideModal}
+        modalVisible={mcpGuideModalVisible}
+        projectId={resolvedParams.id}
+        onClose={closeMCPGuideModal}
       />
 
 

@@ -1,7 +1,7 @@
 'use client';
 
 
-import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, GitBranch } from 'lucide-react';
+import { MoreVertical, RefreshCw, Calendar, ChevronDown, Plus, GitBranch, Bot } from 'lucide-react';
 import ProjectSelector from '@/components/ProjectSelector';
 import { Sprint } from '@/hooks/useSprints';
 import { useState, useEffect, useRef } from 'react';
@@ -29,6 +29,7 @@ interface BoardHeaderProps {
   showOnlyActiveSprint?: boolean;
   onCreateSprint?: () => void;
   onManualSync?: () => void;
+  onOpenMCPGuide?: () => void;
 }
 
 export default function BoardHeader({
@@ -45,6 +46,7 @@ export default function BoardHeader({
   showOnlyActiveSprint: _showOnlyActiveSprint = true,
   onCreateSprint,
   onManualSync,
+  onOpenMCPGuide,
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
   const [showEllipsisMenu, setShowEllipsisMenu] = useState(false);
@@ -190,6 +192,15 @@ export default function BoardHeader({
                 </div>
               )}
             </div>
+            
+            {/* MCP Guide Button */}
+            <button
+              onClick={onOpenMCPGuide}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+            >
+              <Bot className="h-4 w-4" />
+              <span className="hidden sm:inline">MCP Guide</span>
+            </button>
           </div>
         </div>
         
