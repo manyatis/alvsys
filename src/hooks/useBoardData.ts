@@ -393,6 +393,7 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
 }
 
 export function useComments() {
+  const { data: session } = useSession();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -422,7 +423,8 @@ export function useComments() {
     
     setIsAddingComment(true);
     try {
-      const result = await createIssueComment(cardId, newComment.trim());
+      const userId = (session?.user as { id?: string })?.id;
+      const result = await createIssueComment(cardId, newComment.trim(), userId);
       if (result.success && result.comment) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setComments([...comments, result.comment as any]);
