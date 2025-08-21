@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { CheckCircle, GitBranch, Zap, Bot, ArrowRight, ChevronRight } from 'lucide-react';
 
 interface Feature {
@@ -74,27 +74,6 @@ const features: Feature[] = [
 
 export default function FeatureViewer() {
   const [activeFeature, setActiveFeature] = useState(0);
-  const [videosLoaded, setVideosLoaded] = useState({ board: false, github: false });
-  const boardVideoRef = useRef<HTMLVideoElement>(null);
-  const githubVideoRef = useRef<HTMLVideoElement>(null);
-
-  // Pause inactive videos to save resources
-  useEffect(() => {
-    if (boardVideoRef.current) {
-      if (activeFeature === 0) {
-        boardVideoRef.current.play();
-      } else {
-        boardVideoRef.current.pause();
-      }
-    }
-    if (githubVideoRef.current) {
-      if (activeFeature === 1) {
-        githubVideoRef.current.play();
-      } else {
-        githubVideoRef.current.pause();
-      }
-    }
-  }, [activeFeature]);
 
   return (
     <div className="grid lg:grid-cols-2 gap-12 items-start">
@@ -164,57 +143,51 @@ export default function FeatureViewer() {
           <div className="p-6">
             {/* Feature demo video */}
             <div className="aspect-video bg-gray-100 dark:bg-gray-900 rounded-lg overflow-hidden relative">
-              {/* Loading indicator */}
-              {(!videosLoaded.board || !videosLoaded.github) && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-900 z-10">
+              {/* Board Management Video */}
+              {activeFeature === 0 && (
+                <video 
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  autoPlay
+                >
+                  <source src="/Board Clip.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+              
+              {/* GitHub Integration Video */}
+              {activeFeature === 1 && (
+                <video 
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  autoPlay
+                >
+                  <source src="/Github_Integration.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              )}
+              
+              {/* Placeholder for other features */}
+              {(activeFeature === 2 || activeFeature === 3) && (
+                <div className="w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Loading videos...</p>
+                    <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      {React.createElement(features[activeFeature].icon, { 
+                        className: "h-8 w-8 text-white" 
+                      })}
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      {features[activeFeature].title} Demo
+                    </p>
                   </div>
                 </div>
               )}
-              
-              {/* Board Management Video - always mounted */}
-              <video 
-                ref={boardVideoRef}
-                className={`w-full h-full object-cover absolute inset-0 ${activeFeature === 0 ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-                muted
-                loop
-                playsInline
-                preload="auto"
-                onLoadedData={() => setVideosLoaded(prev => ({ ...prev, board: true }))}
-              >
-                <source src="/Board Clip.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              
-              {/* GitHub Integration Video - always mounted */}
-              <video 
-                ref={githubVideoRef}
-                className={`w-full h-full object-cover absolute inset-0 ${activeFeature === 1 ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-                muted
-                loop
-                playsInline
-                preload="auto"
-                onLoadedData={() => setVideosLoaded(prev => ({ ...prev, github: true }))}
-              >
-                <source src="/Github_Integration.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-              
-              {/* Placeholder for other features */}
-              <div className={`w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 flex items-center justify-center absolute inset-0 ${(activeFeature === 2 || activeFeature === 3) ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    {activeFeature >= 2 && React.createElement(features[activeFeature].icon, { 
-                      className: "h-8 w-8 text-white" 
-                    })}
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {activeFeature >= 2 ? features[activeFeature].title : ''} Demo
-                  </p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
