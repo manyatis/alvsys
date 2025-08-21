@@ -107,6 +107,7 @@ export async function getProjectSprints(projectId: string): Promise<SprintsResul
  */
 export async function createSprint(
   projectId: string, 
+  userId: string,
   data: {
     name: string;
     startDate?: string;
@@ -114,10 +115,6 @@ export async function createSprint(
   }
 ): Promise<CreateSprintResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
     const { name, startDate, endDate } = data;
 
     // Basic validation - project should exist (placeholder logic)
@@ -175,6 +172,7 @@ export async function createSprint(
  */
 export async function updateSprint(
   projectId: string,
+  userId: string,
   sprintId: string,
   data: {
     name?: string;
@@ -184,9 +182,6 @@ export async function updateSprint(
   }
 ): Promise<UpdateSprintResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     const { name, startDate, endDate, isActive } = data;
 
@@ -248,12 +243,10 @@ export async function updateSprint(
  */
 export async function deleteSprint(
   projectId: string,
+  userId: string,
   sprintId: string
 ): Promise<DeleteSprintResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({
@@ -295,12 +288,10 @@ export async function deleteSprint(
  */
 export async function closeSprint(
   projectId: string,
+  userId: string,
   sprintId: string
 ): Promise<CloseSprintResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Basic validation - project should exist (placeholder logic)
     const project = await prisma.project.findFirst({

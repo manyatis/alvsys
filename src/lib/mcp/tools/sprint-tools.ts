@@ -129,8 +129,13 @@ export function registerSprintTools(server: Server) {
         };
       }
       
+      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
+      // TODO: In a real implementation, this should get the actual user ID from the session
+      const userId = 'mcp-agent';
+      
       const result = await createSprint(
         projectId,
+        userId,
         {
           name,
           startDate: start_date,
@@ -168,9 +173,13 @@ export function registerSprintTools(server: Server) {
         };
       }
       
+      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
+      const userId = 'mcp-agent';
+      
       const result = await updateSprint(
-        sprint_id,
         projectId,
+        userId,
+        sprint_id,
         {
           name,
           startDate: start_date,
@@ -205,7 +214,10 @@ export function registerSprintTools(server: Server) {
         };
       }
       
-      const result = await closeSprint(sprint_id, projectId);
+      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
+      const userId = 'mcp-agent';
+      
+      const result = await closeSprint(projectId, userId, sprint_id);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
@@ -233,7 +245,10 @@ export function registerSprintTools(server: Server) {
         };
       }
       
-      const result = await deleteSprint(sprint_id, projectId);
+      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
+      const userId = 'mcp-agent';
+      
+      const result = await deleteSprint(projectId, userId, sprint_id);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };

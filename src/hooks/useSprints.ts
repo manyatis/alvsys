@@ -23,7 +23,7 @@ export interface Sprint {
   };
 }
 
-export function useSprints(projectId: string) {
+export function useSprints(projectId: string, userId?: string | null) {
   const [sprints, setSprints] = useState<Sprint[]>([]);
   const [activeSprint, setActiveSprint] = useState<Sprint | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,7 +51,12 @@ export function useSprints(projectId: string) {
 
   const createSprint = async (name: string, startDate?: Date, endDate?: Date) => {
     try {
-      const result = await createSprintAction(projectId, {
+      if (!userId) {
+        console.error('useSprints: No userId provided for sprint creation');
+        return false;
+      }
+
+      const result = await createSprintAction(projectId, userId, {
         name,
         startDate: startDate?.toISOString(),
         endDate: endDate?.toISOString(),
@@ -61,6 +66,7 @@ export function useSprints(projectId: string) {
         await fetchSprints();
         return true;
       }
+      console.error('useSprints: Sprint creation failed:', result.error);
       return false;
     } catch (error) {
       console.error('Error creating sprint:', error);
@@ -70,7 +76,12 @@ export function useSprints(projectId: string) {
 
   const updateSprint = async (sprintId: string, updates: Partial<Sprint>) => {
     try {
-      const result = await updateSprintAction(projectId, sprintId, {
+      if (!userId) {
+        console.error('useSprints: No userId provided for sprint update');
+        return false;
+      }
+
+      const result = await updateSprintAction(projectId, userId, sprintId, {
         name: updates.name,
         startDate: updates.startDate?.toISOString(),
         endDate: updates.endDate?.toISOString(),
@@ -90,7 +101,12 @@ export function useSprints(projectId: string) {
 
   const closeSprint = async (sprintId: string) => {
     try {
-      const result = await closeSprintAction(projectId, sprintId);
+      if (!userId) {
+        console.error('useSprints: No userId provided for sprint closure');
+        return false;
+      }
+
+      const result = await closeSprintAction(projectId, userId, sprintId);
 
       if (result.success) {
         await fetchSprints();
@@ -105,7 +121,12 @@ export function useSprints(projectId: string) {
 
   const deleteSprint = async (sprintId: string) => {
     try {
-      const result = await deleteSprintAction(projectId, sprintId);
+      if (!userId) {
+        console.error('useSprints: No userId provided for sprint deletion');
+        return false;
+      }
+
+      const result = await deleteSprintAction(projectId, userId, sprintId);
 
       if (result.success) {
         await fetchSprints();
