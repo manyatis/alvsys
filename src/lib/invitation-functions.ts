@@ -89,12 +89,8 @@ export async function getInvitation(token: string): Promise<InvitationResult> {
 /**
  * Accept an invitation
  */
-export async function acceptInvitation(token: string): Promise<AcceptInvitationResult> {
+export async function acceptInvitation(token: string, userId: string, userEmail: string, userOrganizationId?: string | null): Promise<AcceptInvitationResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User', organizationId: null };
-
     // Find the invitation
     const invitation = await prisma.organizationInvitation.findUnique({
       where: { token },
@@ -126,8 +122,8 @@ export async function acceptInvitation(token: string): Promise<AcceptInvitationR
       };
     }
 
-    // Check if the invitation is for the current user (placeholder logic)
-    if (invitation.email !== user.email) {
+    // Check if the invitation is for the current user
+    if (invitation.email !== userEmail) {
       return {
         success: false,
         error: 'This invitation is for a different email address'
@@ -135,16 +131,25 @@ export async function acceptInvitation(token: string): Promise<AcceptInvitationR
     }
 
     // Check if user already belongs to an organization
-    if (user.organizationId && user.organizationId !== invitation.organizationId) {
+    if (userOrganizationId && userOrganizationId !== invitation.organizationId) {
       return {
         success: false,
         error: 'You already belong to another organization'
       };
     }
 
-    // Update user's organization and mark invitation as accepted (placeholder - would update in real app)
-    console.log(`Would update user ${userId} with organizationId: ${invitation.organizationId}`);
-    console.log(`Would mark invitation ${invitation.id} as accepted`);
+    // Update user's organization and mark invitation as accepted
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: { id: userId },
+        data: { organizationId: invitation.organizationId }
+      });
+      
+      await tx.organizationInvitation.update({
+        where: { id: invitation.id },
+        data: { acceptedAt: new Date() }
+      });
+    });
 
     return {
       success: true,

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
 import { getAllInstallations } from '@/lib/github-actions';
 import { getProjectGitHubStatus, linkProjectToRepository, resetProjectSync, syncProject } from '@/lib/github-functions';
 
@@ -43,6 +44,7 @@ interface GitHubIntegrationProps {
 }
 
 export default function GitHubIntegration({ projectId, currentUserId, onSyncStatusChange }: GitHubIntegrationProps) {
+  const { data: session } = useSession();
   const [installations, setInstallations] = useState<GitHubInstallation[]>([]);
   const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,7 +96,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
 
   const loadInstallations = async () => {
     try {
-      const data = await getAllInstallations();
+      const data = await getAllInstallations(session?.user?.id || currentUserId || 'anonymous');
       setInstallations(data.installations || []);
       setNeedsAppInstallation(data.needsAppInstallation || false);
       if (data.needsAuthorization || data.error === 'GitHub account not connected' || data.needsGitHubConnection) {

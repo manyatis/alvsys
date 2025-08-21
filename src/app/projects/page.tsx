@@ -41,7 +41,7 @@ interface UsageStatus {
 type CreationMode = 'select' | 'vibes' | 'github';
 
 export default function ProjectsPage() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,7 +86,7 @@ export default function ProjectsPage() {
 
   const fetchOrganizations = async () => {
     try {
-      const result = await getUserOrganizations();
+      const result = await getUserOrganizations(session?.user?.id || 'anonymous');
       if (result.success && result.organizations) {
         setOrganizations(result.organizations);
       }
@@ -97,7 +97,7 @@ export default function ProjectsPage() {
 
   const fetchUsageStatus = async () => {
     try {
-      const result = await getUserUsage();
+      const result = await getUserUsage(session?.user?.id || 'anonymous');
       if (result.success && result.usage) {
         setUsageStatus(result.usage);
       }
@@ -149,13 +149,19 @@ export default function ProjectsPage() {
     html_url: string; 
     default_branch: string; 
   }, installationId: number) => {
+    if (!session?.user?.id) {
+      alert('You must be logged in to create a project');
+      return;
+    }
+    
     setCreating(true);
     try {
       const result = await createProjectFromRepository(
         repo.full_name,
         repo.description || undefined,
         installationId,
-        true // syncIssues
+        true, // syncIssues
+        session.user.id
       );
 
       if (result.success && result.project) {

@@ -53,7 +53,7 @@ export default function AccountSettings() {
       // Check if user is connected via GitHub
       if (session?.user?.email && session?.user?.name) {
         try {
-          const data = await getAllInstallations();
+          const data = await getAllInstallations(session.user.id || 'anonymous');
           setGithubInstallations(data.installations || []);
           setGithubConnected(true);
         } catch (error) {

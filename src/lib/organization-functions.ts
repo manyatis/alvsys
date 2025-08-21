@@ -69,17 +69,13 @@ const inviteSchema = z.object({
 /**
  * Get user's organizations
  */
-export async function getUserOrganizations(): Promise<OrganizationsResult> {
+export async function getUserOrganizations(userId: string, userOrganizationId?: string | null): Promise<OrganizationsResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User', organizationId: 'placeholder-org-id' };
-
     // Get all organizations where user has projects
     const organizations = await prisma.organization.findMany({
       where: {
         OR: [
-          { id: user.organizationId || undefined },
+          { id: userOrganizationId || undefined },
           {
             projects: {
               some: {
@@ -112,13 +108,11 @@ export async function getUserOrganizations(): Promise<OrganizationsResult> {
  */
 export async function inviteUserToOrganization(
   organizationId: string,
-  email: string
+  email: string,
+  inviterId: string,
+  inviterName?: string | null
 ): Promise<InviteUserResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
     // Validate email
     try {
       inviteSchema.parse({ email });
@@ -132,11 +126,11 @@ export async function inviteUserToOrganization(
       throw error;
     }
     
-    // Verify user has access to this organization (placeholder logic)
-    const userOrganization = {
-      id: userId,
-      organizationId: organizationId
-    };
+    // Verify inviter has access to this organization
+    const userOrganization = await prisma.user.findUnique({
+      where: { id: inviterId },
+      select: { organizationId: true }
+    });
 
     if (!userOrganization || userOrganization.organizationId !== organizationId) {
       return {
@@ -182,7 +176,7 @@ export async function inviteUserToOrganization(
       data: {
         email,
         organizationId,
-        invitedBy: userId,
+        invitedBy: inviterId,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
       },
       include: {
@@ -215,16 +209,13 @@ export async function inviteUserToOrganization(
 /**
  * Get organization members and pending invitations
  */
-export async function getOrganizationMembers(organizationId: string): Promise<OrganizationMembersResult> {
+export async function getOrganizationMembers(organizationId: string, userId: string): Promise<OrganizationMembersResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-    
-    // Verify user has access to this organization (placeholder logic)
-    const userOrganization = {
-      organizationId: organizationId
-    };
+    // Verify user has access to this organization
+    const userOrganization = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { organizationId: true }
+    });
 
     if (!userOrganization || userOrganization.organizationId !== organizationId) {
       return {

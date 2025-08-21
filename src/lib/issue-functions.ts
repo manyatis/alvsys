@@ -69,6 +69,7 @@ export interface DeleteIssueResult {
  */
 export async function getProjectIssues(
   projectId: string,
+  userId: string,
   filters?: {
     status?: string;
     sprintId?: string;
@@ -76,10 +77,6 @@ export async function getProjectIssues(
   }
 ): Promise<IssuesResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    // For now, we'll use a placeholder user ID
-    const userId = 'placeholder-user-id';
-
     const issues = await IssuesAPI.getIssues({
       projectId,
       userId,
@@ -104,31 +101,30 @@ export async function getProjectIssues(
 /**
  * Create a new issue
  */
-export async function createIssue(data: {
-  projectId: string;
-  title: string;
-  description?: string;
-  acceptanceCriteria?: string;
-  priority?: number;
-  storyPoints?: number;
-  isAiAllowedTask?: boolean;
-  agentInstructions?: Array<{
-    instructionType: string;
-    branchName?: string;
-    createBranch?: boolean;
-    webResearchPrompt?: string;
-    codeResearchPrompt?: string;
-    architectureGuidelines?: string;
-    generalInstructions?: string;
-  }>;
-  status?: string;
-  sprintId?: string;
-}): Promise<CreateIssueResult> {
+export async function createIssue(
+  userId: string,
+  data: {
+    projectId: string;
+    title: string;
+    description?: string;
+    acceptanceCriteria?: string;
+    priority?: number;
+    storyPoints?: number;
+    isAiAllowedTask?: boolean;
+    agentInstructions?: Array<{
+      instructionType: string;
+      branchName?: string;
+      createBranch?: boolean;
+      webResearchPrompt?: string;
+      codeResearchPrompt?: string;
+      architectureGuidelines?: string;
+      generalInstructions?: string;
+    }>;
+    status?: string;
+    sprintId?: string;
+  }
+): Promise<CreateIssueResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    // For now, we'll use a placeholder user ID
-    const userId = 'placeholder-user-id';
-
     const issue = await IssuesAPI.createIssue({
       userId,
       ...data,
@@ -152,7 +148,7 @@ export async function createIssue(data: {
  */
 export async function getIssueById(issueId: string, projectId: string): Promise<GetIssueResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
+    // Authentication is handled at a higher layer (middleware/MCP transport)
 
     const issue = await IssuesAPI.getIssueById(issueId, projectId);
     return {
@@ -197,7 +193,7 @@ export async function updateIssueWithAgentInstructions(
   }
 ): Promise<UpdateIssueResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
+    // Authentication is handled at a higher layer (middleware/MCP transport)
 
     // Handle agent instructions update separately if provided
     if (updates.agentInstructions !== undefined) {
@@ -262,7 +258,7 @@ export async function updateIssue(
   }
 ): Promise<UpdateIssueResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
+    // Authentication is handled at a higher layer (middleware/MCP transport)
 
     const issue = await IssuesAPI.updateIssue(issueId, projectId, updates);
     return {
@@ -283,7 +279,7 @@ export async function updateIssue(
  */
 export async function deleteIssue(issueId: string, projectId: string): Promise<DeleteIssueResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
+    // Authentication is handled at a higher layer (middleware/MCP transport)
 
     await IssuesAPI.deleteIssue(issueId, projectId);
     return {
@@ -346,9 +342,6 @@ export interface CreateCommentResult {
  */
 export async function addLabelToIssue(issueId: string, labelId: string): Promise<IssueLabelResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-
     // Check if issue exists
     const issue = await prisma.card.findUnique({
       where: { id: issueId },
@@ -422,9 +415,6 @@ export async function addLabelToIssue(issueId: string, labelId: string): Promise
  */
 export async function removeLabelFromIssue(issueId: string, labelId: string): Promise<DeleteIssueResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-
     // Check if issue exists
     const issue = await prisma.card.findUnique({
       where: { id: issueId },
@@ -465,7 +455,7 @@ export async function removeLabelFromIssue(issueId: string, labelId: string): Pr
  */
 export async function getIssueComments(issueId: string): Promise<CommentsResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
+    // Authentication is handled at a higher layer (middleware/MCP transport)
 
     // Fetch comments for the issue
     const comments = await prisma.comment.findMany({

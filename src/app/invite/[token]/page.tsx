@@ -80,7 +80,12 @@ export default function AcceptInvitationPage({
     setError('');
 
     try {
-      const result = await acceptInvitation(tokenParam);
+      const result = await acceptInvitation(
+        tokenParam, 
+        session?.user?.id || 'anonymous',
+        session?.user?.email || '',
+        null
+      );
 
       if (result.success) {
         // Redirect to projects page after successful acceptance

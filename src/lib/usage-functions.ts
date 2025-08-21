@@ -30,11 +30,8 @@ export interface UsageResult {
 /**
  * Get user's current usage status
  */
-export async function getUserUsage(): Promise<UsageResult> {
+export async function getUserUsage(userId: string): Promise<UsageResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Get usage summary
     const usageStats = await UsageService.getUserUsageStats(userId);

@@ -7,7 +7,7 @@ export function useUsageStatus() {
 
   const fetchUsageStatus = async () => {
     try {
-      const result = await getUserUsage();
+      const result = await getUserUsage('anonymous');
       if (result.success && result.usage) {
         setUsageStatus(result.usage);
       }

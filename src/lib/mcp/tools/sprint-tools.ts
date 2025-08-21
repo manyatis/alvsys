@@ -6,6 +6,9 @@ import {
   closeSprint,
   deleteSprint
 } from '@/lib/sprint-functions';
+
+// MCP tools use a system user ID
+const MCP_USER_ID = 'mcp-system';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
@@ -99,7 +102,7 @@ export function registerSprintTools(server: Server) {
       
       // Import getProjectIssues here to avoid circular dependency
       const { getProjectIssues } = await import('@/lib/issue-functions');
-      const result = await getProjectIssues(projectId, { sprintId: sprint_id });
+      const result = await getProjectIssues(projectId, MCP_USER_ID, { sprintId: sprint_id });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
@@ -129,13 +132,8 @@ export function registerSprintTools(server: Server) {
         };
       }
       
-      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
-      // TODO: In a real implementation, this should get the actual user ID from the session
-      const userId = 'mcp-agent';
-      
       const result = await createSprint(
         projectId,
-        userId,
         {
           name,
           startDate: start_date,
@@ -173,12 +171,8 @@ export function registerSprintTools(server: Server) {
         };
       }
       
-      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
-      const userId = 'mcp-agent';
-      
       const result = await updateSprint(
         projectId,
-        userId,
         sprint_id,
         {
           name,
@@ -214,10 +208,7 @@ export function registerSprintTools(server: Server) {
         };
       }
       
-      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
-      const userId = 'mcp-agent';
-      
-      const result = await closeSprint(projectId, userId, sprint_id);
+      const result = await closeSprint(projectId, sprint_id);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
@@ -245,10 +236,7 @@ export function registerSprintTools(server: Server) {
         };
       }
       
-      // For MCP tools, use a placeholder user ID since these are typically called by AI agents
-      const userId = 'mcp-agent';
-      
-      const result = await deleteSprint(projectId, userId, sprint_id);
+      const result = await deleteSprint(projectId, sprint_id);
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };

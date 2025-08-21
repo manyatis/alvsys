@@ -76,7 +76,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
                 console.log('Background GitHub sync completed successfully');
                 // Refresh cards after sync
                 // Only filter by active sprint if there actually is an active sprint
-                const issuesResult = await getProjectIssues(projectId);
+                const issuesResult = await getProjectIssues(projectId, 'anonymous');
                 if (issuesResult.success && issuesResult.issues) {
                   let filteredCards = issuesResult.issues;
                   if (selectedSprintId) {
@@ -111,7 +111,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
           
           // Fetch organization members
           if (projectResult.project.organization) {
-            const membersResult = await getOrganizationMembers(projectResult.project.organization.id);
+            const membersResult = await getOrganizationMembers(projectResult.project.organization.id, 'anonymous');
             if (membersResult.success && membersResult.members) {
               setOrganizationMembers(membersResult.members);
               
@@ -138,7 +138,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         }
 
         // Fetch cards
-        const issuesResult = await getProjectIssues(projectId);
+        const issuesResult = await getProjectIssues(projectId, 'anonymous');
         let filteredCards: Card[] = [];
         if (issuesResult.success && issuesResult.issues) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -193,7 +193,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
         const controller = new AbortController();
         
         // Fetch cards
-        const issuesResult = await getProjectIssues(projectId);
+        const issuesResult = await getProjectIssues(projectId, 'anonymous');
         let filteredCards: Card[] = [];
         if (issuesResult.success && issuesResult.issues) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -248,7 +248,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
 
   const refreshCards = async () => {
     try {
-      const issuesResult = await getProjectIssues(projectId);
+      const issuesResult = await getProjectIssues(projectId, 'anonymous');
       let filteredCards: Card[] = [];
       if (issuesResult.success && issuesResult.issues) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -295,7 +295,7 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
   const createCard = async (newCard: NewCard) => {
     setIsCreatingIssue(true);
     try {
-      const result = await createIssue({
+      const result = await createIssue('anonymous', {
         title: newCard.title,
         description: newCard.description,
         acceptanceCriteria: newCard.acceptanceCriteria,

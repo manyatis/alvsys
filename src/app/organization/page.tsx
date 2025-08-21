@@ -32,7 +32,7 @@ interface PendingInvitation {
 }
 
 export default function OrganizationSettings() {
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [selectedOrg, setSelectedOrg] = useState<string>('');
@@ -58,7 +58,7 @@ export default function OrganizationSettings() {
 
   const fetchOrganizations = async () => {
     try {
-      const result = await getUserOrganizations();
+      const result = await getUserOrganizations(session?.user?.id || 'anonymous');
       if (result.success && result.organizations) {
         setOrganizations(result.organizations);
         if (result.organizations.length > 0) {
@@ -80,7 +80,7 @@ export default function OrganizationSettings() {
     
     setMemberLoading(true);
     try {
-      const result = await getOrganizationMembers(orgId);
+      const result = await getOrganizationMembers(orgId, session?.user?.id || 'anonymous');
       if (result.success) {
         setMembers(result.members || []);
         setPendingInvitations(result.pendingInvitations || []);
@@ -110,7 +110,7 @@ export default function OrganizationSettings() {
     setSuccessMessage('');
 
     try {
-      const result = await inviteUserToOrganization(selectedOrg, newMemberEmail.trim());
+      const result = await inviteUserToOrganization(selectedOrg, newMemberEmail.trim(), session?.user?.id || 'anonymous', session?.user?.name);
 
       if (result.success) {
         if (result.user) {

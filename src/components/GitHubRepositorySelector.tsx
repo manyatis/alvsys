@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { Github, ExternalLink, Folder } from 'lucide-react';
 import { getAllInstallations } from '@/lib/github-actions';
 
@@ -37,6 +38,7 @@ export default function GitHubRepositorySelector({
   onCancel, 
   loading = false 
 }: GitHubRepositorySelectorProps) {
+  const { data: session } = useSession();
   const [installations, setInstallations] = useState<GitHubInstallation[]>([]);
   const [loadingInstallations, setLoadingInstallations] = useState(true);
   const [error, setError] = useState<string>('');
@@ -53,7 +55,7 @@ export default function GitHubRepositorySelector({
   const loadInstallations = async () => {
     try {
       setLoadingInstallations(true);
-      const data = await getAllInstallations();
+      const data = await getAllInstallations(session?.user?.id || 'anonymous');
       setInstallations(data.installations || []);
       setNeedsAppInstallation(data.needsAppInstallation || false);
       

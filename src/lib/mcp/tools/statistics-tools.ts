@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { getProjectIssues } from '@/lib/issue-functions';
 import { getProjectSprints } from '@/lib/sprint-functions';
+
+// MCP tools use a system user ID
+const MCP_USER_ID = 'mcp-system';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
@@ -25,7 +28,7 @@ export function registerStatisticsTools(server: Server) {
         };
       }
       
-      const issuesResult = await getProjectIssues(projectId, {});
+      const issuesResult = await getProjectIssues(projectId, MCP_USER_ID, {});
       const sprintsResult = await getProjectSprints(projectId);
       
       if (!issuesResult.success || !issuesResult.issues) {
@@ -106,7 +109,7 @@ export function registerStatisticsTools(server: Server) {
         };
       }
       
-      const result = await getProjectIssues(projectId, {});
+      const result = await getProjectIssues(projectId, MCP_USER_ID, {});
       
       if (!result.success || !result.issues) {
         return {
@@ -161,7 +164,7 @@ export function registerStatisticsTools(server: Server) {
         };
       }
       
-      const result = await getProjectIssues(projectId, { status });
+      const result = await getProjectIssues(projectId, MCP_USER_ID, { status });
       return {
         content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
       };
@@ -188,7 +191,7 @@ export function registerStatisticsTools(server: Server) {
         };
       }
       
-      const result = await getProjectIssues(projectId, {});
+      const result = await getProjectIssues(projectId, MCP_USER_ID, {});
       
       if (!result.success || !result.issues) {
         return {

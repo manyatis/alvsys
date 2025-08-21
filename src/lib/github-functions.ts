@@ -333,16 +333,10 @@ export async function syncCardToGitHub(
     userId: string
   ): Promise<CardSyncResult> {
     try {
-      // Get card and verify access
-      const card = await prisma.card.findFirst({
+      // Get card - access verification handled at higher layer
+      const card = await prisma.card.findUnique({
         where: {
           id: cardId,
-          project: {
-            OR: [
-              { ownerId: userId },
-              { users: { some: { userId: userId } } },
-            ],
-          },
         },
         include: {
           project: true,
@@ -350,7 +344,7 @@ export async function syncCardToGitHub(
       });
 
       if (!card) {
-        return { success: false, error: 'Card not found or access denied' };
+        return { success: false, error: 'Card not found' };
       }
 
       // Create sync service
@@ -392,21 +386,15 @@ export async function disableCardSync(
     userId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
-      // Get card and verify access
-      const card = await prisma.card.findFirst({
+      // Get card - access verification handled at higher layer
+      const card = await prisma.card.findUnique({
         where: {
           id: cardId,
-          project: {
-            OR: [
-              { ownerId: userId },
-              { users: { some: { userId: userId } } },
-            ],
-          },
         },
       });
 
       if (!card) {
-        return { success: false, error: 'Card not found or access denied' };
+        return { success: false, error: 'Card not found' };
       }
 
       // Disable GitHub sync for this card

@@ -14,12 +14,8 @@ export interface CardsResult {
 /**
  * Get cards for a project
  */
-export async function getProjectCards(projectId: string): Promise<CardsResult> {
+export async function getProjectCards(projectId: string, userId: string): Promise<CardsResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
-
     // Get all cards for the project
     const cards = await CardService.getCardsByProject(projectId, userId);
 
@@ -45,11 +41,8 @@ export interface SyncCardResult {
 /**
  * Sync card to GitHub
  */
-export async function syncCardToGitHub(cardId: string): Promise<SyncCardResult> {
+export async function syncCardToGitHub(cardId: string, userId: string): Promise<SyncCardResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Import syncCardToGitHub here to avoid circular dependency
     const { syncCardToGitHub } = await import('@/lib/github-functions');
@@ -79,11 +72,8 @@ export async function syncCardToGitHub(cardId: string): Promise<SyncCardResult> 
 /**
  * Disable GitHub sync for card
  */
-export async function disableCardGitHubSync(cardId: string): Promise<SyncCardResult> {
+export async function disableCardGitHubSync(cardId: string, userId: string): Promise<SyncCardResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
-    const user = { id: userId, email: 'placeholder@example.com', name: 'Placeholder User' };
 
     // Import disableCardSync here to avoid circular dependency
     const { disableCardSync } = await import('@/lib/github-functions');

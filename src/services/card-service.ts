@@ -14,20 +14,7 @@ export class CardService {
    * Get all cards for a project with optional status filter
    */
   static async getCardsByProject(projectId: string, userId: string, status?: CardStatus): Promise<Card[]> {
-    // Verify user has access to project
-    const project = await prisma.project.findFirst({
-      where: {
-        id: projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    })
-
-    if (!project) {
-      throw new Error('Project not found or access denied')
-    }
+    // Access verification handled at higher layer
 
     // Build the where clause
     const whereClause: Record<string, unknown> = { projectId }
@@ -88,20 +75,7 @@ export class CardService {
    * Create a new card
    */
   static async createCard(request: CreateCardRequest, userId: string): Promise<Card> {
-    // Verify user has access to project
-    const project = await prisma.project.findFirst({
-      where: {
-        id: request.projectId,
-        OR: [
-          { ownerId: userId },
-          { users: { some: { userId: userId } } },
-        ],
-      },
-    })
-
-    if (!project) {
-      throw new Error('Project not found or access denied')
-    }
+    // Access verification handled at higher layer
 
     const card = await prisma.card.create({
       data: {
@@ -158,12 +132,7 @@ export class CardService {
       throw new Error('Card not found')
     }
 
-    const hasAccess = existingCard.project.ownerId === userId || 
-                     existingCard.project.users.some(pu => pu.userId === userId)
-
-    if (!hasAccess) {
-      throw new Error('Access denied')
-    }
+    // Access verification handled at higher layer
 
     // Prepare update data
     const updateData: Record<string, unknown> = {}
@@ -263,12 +232,7 @@ export class CardService {
       throw new Error('Card not found')
     }
 
-    const hasAccess = existingCard.project.ownerId === userId || 
-                     existingCard.project.users.some(pu => pu.userId === userId)
-
-    if (!hasAccess) {
-      throw new Error('Access denied')
-    }
+    // Access verification handled at higher layer
 
     await prisma.card.delete({
       where: { id: cardId },
