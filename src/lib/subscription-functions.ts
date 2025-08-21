@@ -249,7 +249,7 @@ export async function seedSubscriptionPlans(): Promise<SeedPlansResult> {
       {
         planId: 'pro',
         name: 'Pro',
-        priceCents: 2900, // $29/month
+        priceCents: 1000, // $10/month
         billingPeriod: 'month',
         features: [
           'Self hosting available',

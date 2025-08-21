@@ -29,7 +29,7 @@ export default function Footer() {
     <>
       <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
         <div className="container mx-auto px-6 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             {/* Logo and Description */}
             <div className="md:col-span-1">
@@ -46,32 +46,6 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Features */}
-            <div className="md:col-span-1">
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Features</h3>
-              <ul className="space-y-3">
-                <li>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    Visual board for mobile/desktop
-                  </span>
-                </li>
-                <li>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    Manage features by sprints
-                  </span>
-                </li>
-                <li>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    AI-native for independent agents
-                  </span>
-                </li>
-                <li>
-                  <span className="text-sm text-slate-600 dark:text-slate-400">
-                    No code or AI key access needed
-                  </span>
-                </li>
-              </ul>
-            </div>
 
             {/* Navigation Links */}
             <div className="md:col-span-1">

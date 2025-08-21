@@ -115,8 +115,12 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
             if (membersResult.success && membersResult.members) {
               setOrganizationMembers(membersResult.members);
               
-              // Find current user ID
-              if (session?.user?.email) {
+              // Find current user ID from session
+              const sessionUserId = (session?.user as { id?: string })?.id;
+              if (sessionUserId) {
+                setCurrentUserId(sessionUserId);
+              } else if (session?.user?.email) {
+                // Fallback: try to find user by email in organization members
                 const currentUser = membersResult.members.find((member: OrganizationMember) => 
                   member.email === session.user!.email
                 );
@@ -393,6 +397,7 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
 }
 
 export function useComments() {
+  const { data: session } = useSession();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState('');
@@ -422,7 +427,8 @@ export function useComments() {
     
     setIsAddingComment(true);
     try {
-      const result = await createIssueComment(cardId, newComment.trim());
+      const userId = (session?.user as { id?: string })?.id;
+      const result = await createIssueComment(cardId, newComment.trim(), userId);
       if (result.success && result.comment) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         setComments([...comments, result.comment as any]);
