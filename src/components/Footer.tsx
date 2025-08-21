@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
+import VibeHeroLogo from '@/components/vibehero-logo';
 
 export default function Footer() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -33,8 +34,11 @@ export default function Footer() {
             
             {/* Logo and Description */}
             <div className="md:col-span-1">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent mb-4 block">
-                VibeHero
+              <Link href="/" className="flex items-center gap-2 mb-4 w-fit">
+                <VibeHeroLogo gradientId="gradient-footer" />
+                <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
+                  VibeHero
+                </span>
               </Link>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                 Your AI Native Project Management. Set up tasks, walk away, and let your AI agents get to work.

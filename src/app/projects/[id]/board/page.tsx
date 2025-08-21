@@ -146,7 +146,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     activeSprint,
     createSprint,
     closeSprint,
-  } = useSprints(resolvedParams.id);
+  } = useSprints(resolvedParams.id, currentUserId);
   
   // Set active sprint as default when loaded
   useEffect(() => {
