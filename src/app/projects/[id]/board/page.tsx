@@ -281,14 +281,14 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       await createCard(newCard);
       
       if (createAnother) {
-        // Keep modal open and retain labels
+        // Keep modal open and retain labels, status, priority, effort
         setNewCard({
           title: '',
           description: '',
           acceptanceCriteria: '',
-          status: CardStatus.REFINEMENT,
-          priority: 3,
-          effortPoints: 5,
+          status: newCard.status, // Retain status
+          priority: newCard.priority, // Retain priority
+          effortPoints: newCard.effortPoints, // Retain effort points
           isAiAllowedTask: true,
           assigneeId: null,
           labelIds: newCard.labelIds, // Retain labels
