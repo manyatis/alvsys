@@ -115,8 +115,12 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
             if (membersResult.success && membersResult.members) {
               setOrganizationMembers(membersResult.members);
               
-              // Find current user ID
-              if (session?.user?.email) {
+              // Find current user ID from session
+              const sessionUserId = (session?.user as { id?: string })?.id;
+              if (sessionUserId) {
+                setCurrentUserId(sessionUserId);
+              } else if (session?.user?.email) {
+                // Fallback: try to find user by email in organization members
                 const currentUser = membersResult.members.find((member: OrganizationMember) => 
                   member.email === session.user!.email
                 );
