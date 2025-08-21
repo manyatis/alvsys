@@ -196,16 +196,15 @@ function HomeContent() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
-              {/* Free Tier */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+              {/* Hobby Tier */}
               <div className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Free</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Hobby</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$0</span>
-                    <span className="text-slate-600 dark:text-slate-300">/month</span>
+                    <span className="text-4xl font-bold text-slate-900 dark:text-white">Free</span>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300">Perfect for getting started</p>
+                  <p className="text-slate-600 dark:text-slate-300">Free self hosting or 1 project cloud hosting</p>
                 </div>
 
                 <ul className="space-y-4 mb-8">
@@ -213,25 +212,31 @@ function HomeContent() {
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">1 Project</span>
+                    <span className="text-slate-600 dark:text-slate-300">1 Cloud Project</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Unlimited AI tasks</span>
+                    <span className="text-slate-600 dark:text-slate-300">Unlimited Self-Hosted</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Basic MCP access</span>
+                    <span className="text-slate-600 dark:text-slate-300">Full MCP Access</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Community support</span>
+                    <span className="text-slate-600 dark:text-slate-300">GitHub Integration</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Community Support</span>
                   </li>
                 </ul>
 
@@ -243,7 +248,7 @@ function HomeContent() {
                 </button>
               </div>
 
-              {/* Indie Tier */}
+              {/* Pro Tier */}
               <div className="relative p-8 rounded-2xl bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500">
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
@@ -252,59 +257,12 @@ function HomeContent() {
                 </div>
 
                 <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Indie</h3>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Pro</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$10</span>
+                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$29</span>
                     <span className="text-slate-600 dark:text-slate-300">/month</span>
                   </div>
-                  <p className="text-slate-600 dark:text-slate-300">For independent developers</p>
-                </div>
-
-                <ul className="space-y-4 mb-8">
-
-                  <li className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-slate-600 dark:text-slate-300 font-semibold">3 Projects</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Unlimited AI tasks</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Priority MCP access</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Email support</span>
-                  </li>
-                </ul>
-
-                <button
-                  onClick={() => window.location.href = '/subscribe'}
-                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
-                >
-                  Subscribe Now
-                </button>
-              </div>
-
-              {/* Professional Tier */}
-              <div className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
-                <div className="mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Professional</h3>
-                  <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$99</span>
-                    <span className="text-slate-600 dark:text-slate-300">/month</span>
-                  </div>
-                  <p className="text-slate-600 dark:text-slate-300">For teams and agencies</p>
+                  <p className="text-slate-600 dark:text-slate-300">Unlimited cloud hosting, collaboration tooling, priority support</p>
                 </div>
 
                 <ul className="space-y-4 mb-8">
@@ -312,25 +270,31 @@ function HomeContent() {
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited projects</span>
+                    <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited Cloud Projects</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300 font-semibold">Unlimited AI tasks</span>
+                    <span className="text-slate-600 dark:text-slate-300">Team Collaboration</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Advanced analytics</span>
+                    <span className="text-slate-600 dark:text-slate-300">Advanced MCP Features</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Priority support</span>
+                    <span className="text-slate-600 dark:text-slate-300">Priority Support</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Advanced Analytics</span>
                   </li>
                 </ul>
 

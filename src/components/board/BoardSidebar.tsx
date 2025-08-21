@@ -7,13 +7,11 @@ import {
   ChevronRight, 
   Filter, 
   Search, 
-  Copy, 
-  Check,
   Archive,
   Key,
   Github
 } from 'lucide-react';
-import { FilterState, hasActiveFilters, copyOnboardLink } from '@/utils/board-utils';
+import { FilterState, hasActiveFilters } from '@/utils/board-utils';
 import FilterMenu from './FilterMenu';
 import GitHubIntegration from '@/components/GitHubIntegration';
 import { Card, Label } from '@/types/card';
@@ -41,8 +39,6 @@ interface BoardSidebarProps {
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   showFilterMenu: boolean;
   setShowFilterMenu: (show: boolean) => void;
-  copyFeedback: boolean;
-  setCopyFeedback: (feedback: boolean) => void;
   projectId: string;
   currentUserId: string;
   onCreateIssue: () => void;
@@ -58,8 +54,6 @@ export default function BoardSidebar({
   setFilters,
   showFilterMenu,
   setShowFilterMenu,
-  copyFeedback,
-  setCopyFeedback,
   projectId,
   currentUserId,
   onCreateIssue,
@@ -113,21 +107,6 @@ export default function BoardSidebar({
             >
               <Archive className="h-4 w-4 sm:h-3 sm:w-3" />
               Backlog
-            </button>
-            
-            <button
-              onClick={() => copyOnboardLink(projectId, () => {
-                setCopyFeedback(true);
-                setTimeout(() => setCopyFeedback(false), 2000);
-              })}
-              className="flex-1 sm:flex-initial sm:w-full flex items-center gap-2 px-3 py-2 text-left text-sm sm:text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              {copyFeedback ? (
-                <Check className="h-4 w-4 sm:h-3 sm:w-3 text-green-600" />
-              ) : (
-                <Copy className="h-4 w-4 sm:h-3 sm:w-3" />
-              )}
-              {copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
             </button>
             
             <button
@@ -207,21 +186,6 @@ export default function BoardSidebar({
               title="Backlog"
             >
               <Archive className="h-3 w-3" />
-            </button>
-            
-            <button
-              onClick={() => copyOnboardLink(projectId, () => {
-                setCopyFeedback(true);
-                setTimeout(() => setCopyFeedback(false), 2000);
-              })}
-              className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title={copyFeedback ? 'Copied!' : 'Copy AI Onboard Link'}
-            >
-              {copyFeedback ? (
-                <Check className="h-3 w-3 text-green-600" />
-              ) : (
-                <Copy className="h-3 w-3" />
-              )}
             </button>
             
             <button

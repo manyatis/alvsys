@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { getAllInstallations } from '@/lib/github-actions';
+import { getUserProjects, Project } from '@/lib/project-functions';
 
 
 interface GitHubInstallation {
@@ -30,6 +31,8 @@ export default function AccountSettings() {
   const [githubInstallations, setGithubInstallations] = useState<GitHubInstallation[]>([]);
   const [githubConnected, setGithubConnected] = useState(false);
   const [loadingGithub, setLoadingGithub] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loadingProjects, setLoadingProjects] = useState(true);
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -38,6 +41,7 @@ export default function AccountSettings() {
       return;
     }
     fetchGitHubData();
+    fetchProjects();
     setLoading(false);
   }, [session, status, router]);
 
@@ -61,6 +65,42 @@ export default function AccountSettings() {
       setGithubConnected(false);
     } finally {
       setLoadingGithub(false);
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      setLoadingProjects(true);
+      const result = await getUserProjects();
+      if (result.success) {
+        setProjects(result.projects || []);
+      }
+    } catch (error) {
+      console.error('Error fetching projects:', error);
+    } finally {
+      setLoadingProjects(false);
+    }
+  };
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
+    } catch (error) {
+      console.error('Failed to copy:', error);
     }
   };
 
@@ -295,6 +335,103 @@ export default function AccountSettings() {
               </div>
             )}
           </div>
+
+          {/* MCP Integration Section */}
+          <div className="px-6 py-6 border-b border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">MCP Integration</h2>
+            <div className="space-y-4">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h3 className="text-sm font-medium text-blue-900 dark:text-blue-300 mb-2">Environment Variable Setup</h3>
+                <p className="text-sm text-blue-800 dark:text-blue-400 mb-3">
+                  Set this environment variable in your MCP tool to avoid having to pass project IDs manually:
+                </p>
+                <div className="bg-white dark:bg-slate-800 rounded-md px-3 py-2 border border-blue-200 dark:border-blue-700 font-mono text-sm">
+                  <span className="text-gray-600 dark:text-gray-400">VIBE_HERO_PROJECT_ID=</span>
+                  <span className="text-gray-900 dark:text-gray-100">[YOUR_PROJECT_ID]</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Projects Section */}
+          <div className="px-6 py-6">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Your Projects</h2>
+            
+            {loadingProjects ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+              </div>
+            ) : projects.length > 0 ? (
+              <div className="space-y-4">
+                {projects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="bg-slate-50 dark:bg-slate-700 rounded-lg p-4 border border-slate-200 dark:border-slate-600"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-medium text-slate-900 dark:text-white">
+                          {project.name}
+                        </h3>
+                        <div className="mt-2 space-y-1">
+                          <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                            <span>Organization: {project.organization?.name || 'Personal'}</span>
+                            <span>Issues: {project._count?.cards || 0}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-600 dark:text-slate-400">Project ID:</span>
+                            <code className="text-xs font-mono bg-slate-100 dark:bg-slate-600 px-2 py-1 rounded">
+                              {project.id}
+                            </code>
+                            <button
+                              onClick={() => copyToClipboard(project.id)}
+                              className="text-xs text-purple-600 hover:text-purple-700 hover:underline"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="mt-6 bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Quick MCP Commands
+                  </h3>
+                  <div className="space-y-2">
+                    <div className="bg-white dark:bg-gray-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between">
+                        <code className="text-xs font-mono text-gray-700 dark:text-gray-300">
+                          enter dev_mode for {projects[0]?.id || '[PROJECT_ID]'} and follow instructions
+                        </code>
+                        <button
+                          onClick={() => copyToClipboard(`enter dev_mode for ${projects[0]?.id || '[PROJECT_ID]'} and follow instructions. do not stop to provide summary/analysis at ANY point`)}
+                          className="text-xs text-purple-600 hover:text-purple-700 hover:underline ml-2"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-slate-600 dark:text-slate-400 mb-4">
+                  No projects found. Create your first project to get started with MCP.
+                </p>
+                <button
+                  onClick={() => router.push('/projects')}
+                  className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Create Project
+                </button>
+              </div>
+            )}
+          </div>
+
         </div>
       </div>
     </div>

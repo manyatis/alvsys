@@ -127,23 +127,6 @@ export const formatCommentDate = (date: Date | string) => {
   return commentDate.toLocaleDateString();
 };
 
-export const copyOnboardLink = async (projectId: string, onSuccess: () => void) => {
-  const onboardUrl = `Fetch from this https://vibehero.io/api/${projectId}/ai/onboard and follow the instructions. Do not ever stop for summary or analysis. Only stop if explicility told to do so.`;
-  try {
-    await navigator.clipboard.writeText(onboardUrl);
-    onSuccess();
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error);
-    // Fallback for older browsers
-    const textArea = document.createElement('textarea');
-    textArea.value = onboardUrl;
-    document.body.appendChild(textArea);
-    textArea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textArea);
-    onSuccess();
-  }
-};
 
 export const createClearFilters = (setFilters: (filters: FilterState) => void) => () => {
   setFilters({

@@ -251,10 +251,13 @@ export class IssuesAPI {
       throw ApiError.notFound('Issue not found');
     }
 
-    // Handle assigneeId: convert empty string to null, validate if not null
+    // Handle assigneeId: convert empty string to null, handle 'agent' special case, validate if not null
     const processedUpdates: UpdateIssueParams = { ...updates };
     if ('assigneeId' in updates) {
       if (updates.assigneeId === '' || updates.assigneeId === undefined) {
+        processedUpdates.assigneeId = null;
+      } else if (updates.assigneeId === 'agent') {
+        // 'agent' is a special value that represents AI assignment, but we store it as null in DB
         processedUpdates.assigneeId = null;
       } else if (updates.assigneeId !== null) {
         // Verify the assignee exists
