@@ -28,6 +28,7 @@ export default function FeaturesPage() {
       description: 'Excellent visual representation of GitHub issues with seamless two-way sync.',
       details: [
         'Two-way GitHub issue synchronization',
+        'Sync issue status, comments, labels', 
         'Visual GitHub workflow representation',
         'Automatic branch and PR creation',
         'Status sync between platforms',

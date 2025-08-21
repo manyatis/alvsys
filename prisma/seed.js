@@ -24,7 +24,7 @@ async function main() {
     {
       planId: 'pro',
       name: 'Pro',
-      priceCents: 2900, // $29
+      priceCents: 500, // $5
       billingPeriod: 'month',
       features: [
         'Self hosting available',
