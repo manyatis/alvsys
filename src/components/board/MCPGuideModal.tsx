@@ -146,6 +146,16 @@ export default function MCPGuideModal({
               <li>Paste it into your MCP-enabled tool</li>
               <li>The AI will automatically start working on tasks</li>
             </ol>
+            
+            <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700">
+              <p className="font-medium text-blue-900 dark:text-blue-300 mb-1">Optional: Set Environment Variable</p>
+              <p className="text-blue-800 dark:text-blue-400 mb-2">
+                To avoid passing project IDs manually, set this in your MCP tool:
+              </p>
+              <div className="bg-white dark:bg-blue-950 rounded px-2 py-1 font-mono text-xs border border-blue-300 dark:border-blue-600">
+                VIBE_HERO_PROJECT_ID={projectId}
+              </div>
+            </div>
           </div>
         </div>
 

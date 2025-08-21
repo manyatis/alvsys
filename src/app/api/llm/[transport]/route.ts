@@ -13,10 +13,24 @@ const handler = createMcpHandler(
       "next_ready",
       "fetches the next ready task",
       {
-        id: z.string().min(1) 
+        id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)") 
       },
       async ({id}) => {
-        const result = await AiAPI.getNextReadyTask({projectId: id});
+        // Check for environment variable if id not provided
+        const projectId = id || process.env.VIBE_HERO_PROJECT_ID;
+        
+        if (!projectId) {
+          return {
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({
+                error: "Project ID is required. Either pass 'id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              }, null, 2) 
+            }]
+          };
+        }
+        
+        const result = await AiAPI.getNextReadyTask({projectId});
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
         };
@@ -27,10 +41,24 @@ const handler = createMcpHandler(
       "dev_mode",
       "Enters a dev mode work loop of repeadetly fetching the next_ready task and working on it.",
       {
-        id: z.string().min(1) 
+        id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)") 
       },
       async ({id}) => {
-        const result = await AiAPI.getOnboardInstructions({projectId: id});
+        // Check for environment variable if id not provided
+        const projectId = id || process.env.VIBE_HERO_PROJECT_ID;
+        
+        if (!projectId) {
+          return {
+            content: [{ 
+              type: "text", 
+              text: JSON.stringify({
+                error: "Project ID is required. Either pass 'id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              }, null, 2) 
+            }]
+          };
+        }
+        
+        const result = await AiAPI.getOnboardInstructions({projectId});
 
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }]
@@ -42,7 +70,7 @@ const handler = createMcpHandler(
       "update_task",
       "Updates a task with new status, comments, or other properties. Use this to track progress as you work on tasks.",
       {
-        projectId: z.string().min(1).describe("The project ID"),
+        projectId: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
         cardId: z.string().min(1).describe("The task/card ID to update"),
         status: z.string().optional().describe("New status (todo, in_progress, in_review, done)"),
         comment: z.string().optional().describe("Add a comment to the task"),
@@ -53,10 +81,25 @@ const handler = createMcpHandler(
       },
       async ({ projectId, cardId, status, comment, title, description, priority, storyPoints }) => {
         try {
+          // Check for environment variable if projectId not provided
+          const actualProjectId = projectId || process.env.VIBE_HERO_PROJECT_ID;
+          
+          if (!actualProjectId) {
+            return {
+              content: [{ 
+                type: "text", 
+                text: JSON.stringify({ 
+                  success: false, 
+                  error: "Project ID is required. Either pass 'projectId' parameter or set VIBE_HERO_PROJECT_ID environment variable." 
+                }, null, 2) 
+              }]
+            };
+          }
+          
           const results = [];
 
           // First, get the current task to ensure it exists and we have access
-          const existingTask = await getIssueById(cardId, projectId);
+          const existingTask = await getIssueById(cardId, actualProjectId);
           if (!existingTask.success) {
             return {
               content: [{ 
@@ -87,7 +130,7 @@ const handler = createMcpHandler(
 
             const updateResult = await updateIssueWithAgentInstructions(
               cardId,
-              projectId,
+              actualProjectId,
               updateData
             );
 
@@ -147,7 +190,7 @@ const handler = createMcpHandler(
                 success: true, 
                 results,
                 taskId: cardId,
-                projectId 
+                projectId: actualProjectId 
               }, null, 2) 
             }]
           };
