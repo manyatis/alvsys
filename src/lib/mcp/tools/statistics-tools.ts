@@ -61,16 +61,16 @@ export function registerStatisticsTools(server: Server) {
           p4: issues.filter(i => i.priority === 4).length,
           p5: issues.filter(i => i.priority === 5).length
         },
-        aiAllowedTasks: issues.filter(i => (i as any).isAiAllowedTask).length,
-        assignedTasks: issues.filter(i => i.assigneeId).length,
-        unassignedTasks: issues.filter(i => !i.assigneeId).length,
+        aiAllowedTasks: issues.filter(i => (i as { isAiAllowedTask?: boolean }).isAiAllowedTask).length,
+        assignedTasks: issues.filter(i => (i as { assigneeId?: string }).assigneeId).length,
+        unassignedTasks: issues.filter(i => !(i as { assigneeId?: string }).assigneeId).length,
         totalSprints: sprints.length,
         activeSprint: sprints.find(s => s.isActive) || null,
         completedSprints: sprints.filter(s => !s.isActive).length,
         averageIssuesPerSprint: sprints.length > 0 
-          ? Math.round(issues.filter(i => i.sprintId).length / sprints.length)
+          ? Math.round(issues.filter(i => (i as { sprintId?: string }).sprintId).length / sprints.length)
           : 0,
-        issuesWithoutSprint: issues.filter(i => !i.sprintId).length
+        issuesWithoutSprint: issues.filter(i => !(i as { sprintId?: string }).sprintId).length
       };
       
       return {
@@ -114,7 +114,7 @@ export function registerStatisticsTools(server: Server) {
         };
       }
       
-      const backlogIssues = result.issues.filter(issue => !issue.sprintId);
+      const backlogIssues = result.issues.filter(issue => !(issue as { sprintId?: string }).sprintId);
       
       return {
         content: [{ 
@@ -210,7 +210,7 @@ export function registerStatisticsTools(server: Server) {
       const assigneeMap = new Map<string, IssueActivity[]>();
       
       result.issues.forEach(issue => {
-        const assigneeId = issue.assigneeId || 'unassigned';
+        const assigneeId = (issue as { assigneeId?: string }).assigneeId || 'unassigned';
         if (!assigneeMap.has(assigneeId)) {
           assigneeMap.set(assigneeId, []);
         }
@@ -219,8 +219,8 @@ export function registerStatisticsTools(server: Server) {
           title: issue.title,
           status: issue.status,
           priority: issue.priority,
-          updatedAt: issue.updatedAt,
-          assignee: issue.assignee
+          updatedAt: issue.updatedAt.toString(),
+          assignee: (issue as { assignee?: { name: string | null } | null }).assignee
         });
       });
       
