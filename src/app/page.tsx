@@ -16,13 +16,6 @@ function HomeContent() {
 
       {/* Add padding top to account for fixed navbar */}
       <div className="pt-20">
-        {/* Banner */}
-        <div className="bg-blue-600 text-white py-3 px-6 text-center">
-          <p className="text-base font-medium">
-            Due to popular demand we will be rolling out MCP connection soon
-          </p>
-        </div>
-
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
           <div className="container mx-auto px-6 py-24 lg:py-32">
@@ -37,7 +30,7 @@ function HomeContent() {
               </div>
 
               <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Visual Issue boards with MCP support for any AI agent to complete your project tasks. Integrate seamlessly with GitHub Issues.
+                Seamlessly integrate with GitHub bringing a intuitive visual board for developers and native MCP support for agentic development.
               </p>
 
             <div className="max-w-5xl mx-auto mb-12">
@@ -259,7 +252,7 @@ function HomeContent() {
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Pro</h3>
                   <div className="flex items-baseline gap-1 mb-4">
-                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$29</span>
+                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$5</span>
                     <span className="text-slate-600 dark:text-slate-300">/month</span>
                   </div>
                   <p className="text-slate-600 dark:text-slate-300">Unlimited cloud hosting, collaboration tooling, priority support</p>

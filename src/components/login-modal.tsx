@@ -52,7 +52,7 @@ export default function LoginModal({ isOpen, onClose, callbackUrl = '/' }: Login
             Welcome to VibeHero
           </h2>
           <p className="text-slate-600 dark:text-slate-300">
-            Sign in to get started with AI-native issue tracking
+            Sign in to get started with AI Native Project Management
           </p>
         </div>
         
