@@ -41,7 +41,7 @@ export interface UpdateIssueParams {
   priority?: number;
   storyPoints?: number;
   status?: string;
-  assigneeId?: string;
+  assigneeId?: string | null;
   sprintId?: string | null;
   isAiAllowedTask?: boolean;
   githubSyncEnabled?: boolean;
@@ -251,11 +251,27 @@ export class IssuesAPI {
       throw ApiError.notFound('Issue not found');
     }
 
+    // Handle assigneeId: convert empty string to null, validate if not null
+    const processedUpdates: UpdateIssueParams = { ...updates };
+    if ('assigneeId' in updates) {
+      if (updates.assigneeId === '' || updates.assigneeId === undefined) {
+        processedUpdates.assigneeId = null;
+      } else if (updates.assigneeId !== null) {
+        // Verify the assignee exists
+        const assigneeExists = await prisma.user.findUnique({
+          where: { id: updates.assigneeId },
+        });
+        if (!assigneeExists) {
+          throw ApiError.badRequest('Invalid assignee ID');
+        }
+      }
+    }
+
     const updatedIssue = await prisma.card.update({
       where: { id: issueId },
       data: {
-        ...updates,
-        status: updates.status ? updates.status as CardStatus : undefined,
+        ...processedUpdates,
+        status: processedUpdates.status ? processedUpdates.status as CardStatus : undefined,
       },
       include: {
         assignee: {

@@ -135,7 +135,7 @@ export default function BoardSidebar({
               className="flex-1 sm:flex-initial sm:w-full flex items-center gap-2 px-3 py-2 text-left text-sm sm:text-xs text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               <Key className="h-4 w-4 sm:h-3 sm:w-3" />
-              API Keys
+              MCP Keys
             </button>
             
             <button
@@ -227,7 +227,7 @@ export default function BoardSidebar({
             <button
               onClick={() => router.push('/account')}
               className="w-full p-1.5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title="API Keys"
+              title="MCP Keys"
             >
               <Key className="h-3 w-3" />
             </button>

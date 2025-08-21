@@ -72,7 +72,7 @@ export interface Issue {
   status: IssueStatus
   projectId: string
   createdById: string
-  assigneeId?: string
+  assigneeId?: string | null
   title: string
   description?: string
   acceptanceCriteria?: string
@@ -106,7 +106,7 @@ export interface CreateIssueRequest {
   description?: string
   acceptanceCriteria?: string
   projectId: string
-  assigneeId?: string
+  assigneeId?: string | null
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }
@@ -127,7 +127,7 @@ export interface UpdateIssueRequest {
   acceptanceCriteria?: string
   status?: IssueStatus
   priority?: number
-  assigneeId?: string
+  assigneeId?: string | null
   isAiAllowedTask?: boolean
   agentInstructions?: CreateAgentInstructionRequest[]
 }

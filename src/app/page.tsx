@@ -37,7 +37,7 @@ function HomeContent() {
               </div>
 
               <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Visual Issue boards with APIs for any AI agent to complete your project tasks. Integrate seamlessly with GitHub Issues.
+                Visual Issue boards with MCP support for any AI agent to complete your project tasks. Integrate seamlessly with GitHub Issues.
               </p>
 
             <div className="max-w-5xl mx-auto mb-12">
@@ -92,7 +92,7 @@ function HomeContent() {
                   Work with Any Agent, Anywhere
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  Connect any AI agent to your project board via our APIs/MCPs:
+                  Connect any AI agent to your project board via MCP:
                 </p>
                 <div className="space-y-6">
                   <div className="flex gap-4">
@@ -105,10 +105,10 @@ function HomeContent() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        1. Visual Issues, Tasks, and Features
+                        1. Optionally Link GitHub Repository
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Optionally Sync with GitHub to your project board. Track progress in real-time.
+                        Connect your GitHub repo to sync issues and track progress visually in real-time.
                       </p>
                     </div>
                   </div>
@@ -123,10 +123,10 @@ function HomeContent() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        2. MCPs/APIs for Any Agent
+                        2. Create Issues - Specify Human/AI
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Claude, GPT, or custom agents can fetch tasks and update progress via our API. Our tooling prompts and manages them to complete tasks.
+                        Create issues and designate whether they should be handled by humans or AI agents for optimal task distribution.
                       </p>
                     </div>
                   </div>
@@ -141,10 +141,10 @@ function HomeContent() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Private and Secure
+                        3. Work Natively with MCP Support
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Copy the onboarding link from your board, prompt any agent of your choice, and watch it begin using our website. No code or AI key access required. Agentic connection via MCP.
+                        Work on issues using agentic coding with full MCP (Model Context Protocol) support for seamless AI integration.
                       </p>
                     </div>
                   </div>
@@ -159,10 +159,10 @@ function HomeContent() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        4. Continue from Anywhere
+                        4. Enter &quot;Dev Mode&quot; for Automation
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Switch between devices and agents seamlessly. Your project state stays synchronized. Continue working on your start up from any location.
+                        Let agents automatically work on all AI-allowed issues. They&apos;ll add comments, update status, push to git, and more.
                       </p>
                     </div>
                   </div>
@@ -225,7 +225,7 @@ function HomeContent() {
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Basic API access</span>
+                    <span className="text-slate-600 dark:text-slate-300">Basic MCP access</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,7 +278,7 @@ function HomeContent() {
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="text-slate-600 dark:text-slate-300">Priority API access</span>
+                    <span className="text-slate-600 dark:text-slate-300">Priority MCP access</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">

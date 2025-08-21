@@ -173,6 +173,31 @@ export class CardService {
     if (request.acceptanceCriteria !== undefined) updateData.acceptanceCriteria = request.acceptanceCriteria
     if (request.status !== undefined) updateData.status = request.status
     if (request.isAiAllowedTask !== undefined) updateData.isAiAllowedTask = request.isAiAllowedTask
+    
+    // Handle assigneeId: convert empty string to null, validate if not null
+    if (request.assigneeId !== undefined) {
+      if (request.assigneeId === '' || request.assigneeId === null) {
+        updateData.assigneeId = null
+      } else {
+        // Verify the assignee exists
+        const assigneeExists = await prisma.user.findUnique({
+          where: { id: request.assigneeId },
+        })
+        if (!assigneeExists) {
+          throw new Error('Invalid assignee ID')
+        }
+        updateData.assigneeId = request.assigneeId
+      }
+    }
+    
+    // Handle sprintId similarly
+    if (request.sprintId !== undefined) {
+      updateData.sprintId = request.sprintId === '' ? null : request.sprintId
+    }
+    
+    // Handle priority and storyPoints
+    if (request.priority !== undefined) updateData.priority = request.priority
+    if (request.storyPoints !== undefined) updateData.storyPoints = request.storyPoints
 
     // Handle agent instructions update
     if (request.agentInstructions !== undefined) {
