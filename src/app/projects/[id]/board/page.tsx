@@ -187,7 +187,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     labelIds: [],
     priority: 'all'
   });
-  const [copyFeedback, setCopyFeedback] = useState(false);
   const [inlineLabelEditorOpen, setInlineLabelEditorOpen] = useState<string | null>(null);
   
   // Drag and drop state
@@ -812,8 +811,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           setFilters={setFilters}
           showFilterMenu={showFilterMenu}
           setShowFilterMenu={setShowFilterMenu}
-          copyFeedback={copyFeedback}
-          setCopyFeedback={setCopyFeedback}
           projectId={resolvedParams.id}
           currentUserId={currentUserId || ''}
           onCreateIssue={() => openCreateModal()}
@@ -838,8 +835,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
             onToggleSprintFilter={() => setShowOnlyActiveSprint(!showOnlyActiveSprint)}
             showOnlyActiveSprint={showOnlyActiveSprint}
             onCreateSprint={openSprintModal}
-            copyFeedback={copyFeedback}
-            setCopyFeedback={setCopyFeedback}
             onManualSync={handleManualSync}
           />
 
