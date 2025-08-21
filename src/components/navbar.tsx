@@ -117,8 +117,6 @@ export default function Navbar() {
               <div 
                 ref={projectsMenuRef}
                 className="relative h-full"
-                onMouseEnter={handleProjectsMouseEnter}
-                onMouseLeave={() => setIsProjectsOpen(false)}
               >
                 <button 
                   onClick={(e) => {
@@ -130,6 +128,8 @@ export default function Navbar() {
                       router.push('/projects');
                     }
                   }}
+                  onMouseEnter={handleProjectsMouseEnter}
+                  onMouseLeave={() => setIsProjectsOpen(false)}
                   className="flex items-center gap-1 px-3 md:px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
                 >
                   Projects
@@ -141,8 +141,12 @@ export default function Navbar() {
                 </button>
                 
                 {/* Projects Dropdown Menu */}
-                {session && (
-                  <div className={`absolute top-full left-0 mt-2 w-64 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${isProjectsOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
+                {session && isProjectsOpen && (
+                  <div 
+                    className="absolute top-full left-0 mt-2 w-64 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 opacity-100 visible translate-y-0"
+                    onMouseEnter={() => setIsProjectsOpen(true)}
+                    onMouseLeave={() => setIsProjectsOpen(false)}
+                  >
                     <div className="py-2 px-2">
                       <div className="px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                         Your Projects
