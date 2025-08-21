@@ -499,10 +499,33 @@ export async function getIssueComments(issueId: string): Promise<CommentsResult>
 /**
  * Create a comment for an issue
  */
-export async function createIssueComment(issueId: string, content: string): Promise<CreateCommentResult> {
+export async function createIssueComment(issueId: string, content: string, userId?: string): Promise<CreateCommentResult> {
   try {
-    // TODO: Authentication will be handled at a higher layer
-    const userId = 'placeholder-user-id';
+    // Use the project owner as the author if no user is provided
+    let actualUserId = userId;
+    
+    if (!actualUserId) {
+      // Get the project owner to use as the comment author
+      const projectWithOwner = await prisma.card.findUnique({
+        where: { id: issueId },
+        include: {
+          project: {
+            include: {
+              owner: true
+            }
+          }
+        }
+      });
+      
+      if (!projectWithOwner?.project?.owner) {
+        return {
+          success: false,
+          error: 'No valid user found for comment authoring'
+        };
+      }
+      
+      actualUserId = projectWithOwner.project.ownerId;
+    }
 
     if (!content || content.trim() === '') {
       return {
@@ -511,15 +534,15 @@ export async function createIssueComment(issueId: string, content: string): Prom
       };
     }
 
-    // Check if issue exists
-    const issue = await prisma.card.findUnique({
-      where: { id: issueId }
+    // Validate that the user exists (actualUserId should be set by now)
+    const userExists = await prisma.user.findUnique({
+      where: { id: actualUserId! }
     });
 
-    if (!issue) {
+    if (!userExists) {
       return {
         success: false,
-        error: 'Issue not found'
+        error: 'User not found'
       };
     }
 
@@ -528,8 +551,8 @@ export async function createIssueComment(issueId: string, content: string): Prom
       data: {
         cardId: issueId,
         content: content.trim(),
-        authorId: userId,
-        isAiComment: false
+        authorId: actualUserId!,
+        isAiComment: !userId // If no userId provided, it's an AI comment
       },
       include: {
         author: {
