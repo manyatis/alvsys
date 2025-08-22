@@ -136,8 +136,8 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
               <div className="ml-11 space-y-3">
                 <ol className="list-decimal list-inside text-slate-600 dark:text-slate-300 space-y-2">
                   <li>Go to <a href="/account" className="text-blue-600 dark:text-blue-400 hover:underline">Account Settings</a> → API Keys tab</li>
-                  <li>Click "Create New Key" and give it a descriptive name (e.g., "Claude Code MCP")</li>
-                  <li>Copy the generated token immediately (you won't be able to see it again)</li>
+                  <li>Click &quot;Create New Key&quot; and give it a descriptive name (e.g., &quot;Claude Code MCP&quot;)</li>
+                  <li>Copy the generated token immediately (you won&apos;t be able to see it again)</li>
                   <li>Replace <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded text-sm">your_bearer_token_here</code> in the config with your token</li>
                 </ol>
                 <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
@@ -218,18 +218,18 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                 <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                   <h4 className="font-medium text-green-900 dark:text-green-200 mb-2">Available Commands:</h4>
                   <ul className="text-sm text-green-800 dark:text-green-300 space-y-1">
-                    <li>• <strong>Get next task:</strong> "What's the next ready task in VibeHero?"</li>
-                    <li>• <strong>Update status:</strong> "Mark task ABC123 as in progress"</li>
-                    <li>• <strong>Add comments:</strong> "Add a comment to task ABC123: Fixed the bug"</li>
-                    <li>• <strong>View backlog:</strong> "Show me the project backlog"</li>
-                    <li>• <strong>Dev mode:</strong> "Start VibeHero dev mode" (auto-fetches tasks)</li>
+                    <li>• <strong>Get next task:</strong> &quot;What&apos;s the next ready task in VibeHero?&quot;</li>
+                    <li>• <strong>Update status:</strong> &quot;Mark task ABC123 as in progress&quot;</li>
+                    <li>• <strong>Add comments:</strong> &quot;Add a comment to task ABC123: Fixed the bug&quot;</li>
+                    <li>• <strong>View backlog:</strong> &quot;Show me the project backlog&quot;</li>
+                    <li>• <strong>Dev mode:</strong> &quot;Start VibeHero dev mode&quot; (auto-fetches tasks)</li>
                   </ul>
                 </div>
                 
                 <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
                   <h4 className="font-medium text-slate-900 dark:text-slate-200 mb-2">Try this first command:</h4>
                   <code className="text-sm font-mono text-slate-800 dark:text-slate-200">
-                    "List my VibeHero projects"
+                    &quot;List my VibeHero projects&quot;
                   </code>
                 </div>
               </div>
