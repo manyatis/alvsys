@@ -173,8 +173,8 @@ export default function FeatureViewer() {
                 </video>
               )}
               
-              {/* Placeholder for other features */}
-              {(activeFeature === 2 || activeFeature === 3) && (
+              {/* MCP Support placeholder */}
+              {activeFeature === 2 && (
                 <div className="w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 flex items-center justify-center">
                   <div className="text-center">
                     <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -187,6 +187,21 @@ export default function FeatureViewer() {
                     </p>
                   </div>
                 </div>
+              )}
+              
+              {/* Dev Mode Video */}
+              {activeFeature === 3 && (
+                <video 
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  autoPlay
+                >
+                  <source src="/dev_mode_clip.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               )}
             </div>
           </div>
