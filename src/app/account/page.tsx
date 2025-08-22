@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { getAllInstallations } from '@/lib/github-actions';
 import { getUserProjects, Project } from '@/lib/project-functions';
+import McpApiKeyManager from '@/components/McpApiKeyManager';
 
 
 interface GitHubInstallation {
@@ -125,6 +126,7 @@ export default function AccountSettings() {
   const tabs = [
     { id: 'profile', label: 'Profile', icon: '👤' },
     { id: 'mcp', label: 'MCP Integration', icon: '🔗' },
+    { id: 'api-keys', label: 'API Keys', icon: '🔑' },
     { id: 'github', label: 'GitHub', icon: '📦' },
     { id: 'projects', label: 'Projects', icon: '📁' }
   ];
@@ -241,6 +243,12 @@ export default function AccountSettings() {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'api-keys' && (
+              <div className="p-6">
+                <McpApiKeyManager />
               </div>
             )}
 

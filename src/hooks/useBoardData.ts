@@ -111,28 +111,18 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
           
           // Fetch organization members
           if (projectResult.project.organization) {
-            const membersResult = await getOrganizationMembers(projectResult.project.organization.id, 'anonymous');
-            if (membersResult.success && membersResult.members) {
-              setOrganizationMembers(membersResult.members);
-              
-              // Find current user ID from session
-              const sessionUserId = (session?.user as { id?: string })?.id;
-              if (sessionUserId) {
-                setCurrentUserId(sessionUserId);
-              } else if (session?.user?.email) {
-                // Fallback: try to find user by email in organization members
-                const currentUser = membersResult.members.find((member: OrganizationMember) => 
-                  member.email === session.user!.email
-                );
-                if (currentUser) {
-                  setCurrentUserId(currentUser.id);
-                } else {
-                  console.warn('Current user not found in organization members:', {
-                    sessionEmail: session.user.email,
-                    memberEmails: membersResult.members?.map((m: OrganizationMember) => m.email)
-                  });
-                }
+            // Get user ID from session for organization member access
+            const sessionUserId = (session?.user as { id?: string })?.id;
+            if (sessionUserId) {
+              setCurrentUserId(sessionUserId);
+              const membersResult = await getOrganizationMembers(projectResult.project.organization.id, sessionUserId);
+              if (membersResult.success && membersResult.members) {
+                setOrganizationMembers(membersResult.members);
               }
+            } else {
+              // If no session user ID, we still need to try to get members
+              // This could be for public projects or when session is still loading
+              console.debug('No session user ID available, skipping organization members fetch');
             }
           }
         }

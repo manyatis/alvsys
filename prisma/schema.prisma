@@ -51,6 +51,7 @@ model User {
   organization      Organization? @relation(fields: [organizationId], references: [id])
   // API keys for AI agents
   apiKeys           APIKey[]
+  mcpApiKeys        ApiKey[]  // MCP Bearer token API keys
   accounts          Account[]
   sessions          Session[]
   createdAt         DateTime @default(now())
@@ -441,5 +442,21 @@ enum InstructionType {
   SPIKE
   CODING
   ARCHITECTURE
+}
+
+// MCP Bearer token API keys for secure access
+model ApiKey {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String    // User-friendly name for the key
+  hashedKey   String    @unique // SHA-256 hash of the actual token
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  lastUsedAt  DateTime? // Track when the key was last used
+  expiresAt   DateTime? // Optional expiration date
+  
+  @@index([userId])
+  @@index([hashedKey])
 }
 
