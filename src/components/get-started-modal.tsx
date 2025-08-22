@@ -80,11 +80,16 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
   "mcpServers": {
     "vibehero": {
       "command": "npx",
-      "args": ["-y", "@vibehero/mcp-server"],
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://vibehero.vercel.app/api/llm"
+      ],
+      "headers": {
+        "Authorization": "Bearer your_bearer_token_here"
+      },
       "env": {
-        "VIBE_HERO_BEARER_TOKEN": "your_bearer_token_here",
-        "VIBE_HERO_PROJECT_ID": "your_project_id_here",
-        "VIBE_HERO_BASE_URL": "https://vibehero.vercel.app"
+        "VIBE_HERO_PROJECT_ID": "your_project_id_here"
       }
     }
   }
@@ -106,11 +111,16 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
   "mcpServers": {
     "vibehero": {
       "command": "npx",
-      "args": ["-y", "@vibehero/mcp-server"],
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://vibehero.vercel.app/api/llm"
+      ],
+      "headers": {
+        "Authorization": "Bearer your_bearer_token_here"
+      },
       "env": {
-        "VIBE_HERO_BEARER_TOKEN": "your_bearer_token_here",
-        "VIBE_HERO_PROJECT_ID": "your_project_id_here",
-        "VIBE_HERO_BASE_URL": "https://vibehero.vercel.app"
+        "VIBE_HERO_PROJECT_ID": "your_project_id_here"
       }
     }
   }
