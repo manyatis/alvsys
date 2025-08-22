@@ -5,12 +5,14 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
+import GetStartedModal from '@/components/get-started-modal';
 import VibeHeroLogo from '@/components/vibehero-logo';
 import { getUserProjects } from '@/lib/project-functions';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isGetStartedModalOpen, setIsGetStartedModalOpen] = useState(false);
   const [loginCallbackUrl, setLoginCallbackUrl] = useState('/');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
@@ -145,7 +147,7 @@ export default function Navbar() {
                 {/* Projects Dropdown Menu */}
                 {session && isProjectsOpen && (
                   <div 
-                    className="absolute top-full left-0 mt-2 w-64 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 opacity-100 visible translate-y-0"
+                    className="absolute top-full left-0 w-64 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 opacity-100 visible translate-y-0"
                   >
                     <div className="py-2 px-2">
                       <div className="px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
@@ -219,6 +221,12 @@ export default function Navbar() {
               >
                 MCP
               </Link>
+              <button 
+                onClick={() => setIsGetStartedModalOpen(true)}
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
+              >
+                Get Started
+              </button>
 
             </div>
             
@@ -359,6 +367,15 @@ export default function Navbar() {
             >
               MCP
             </Link>
+            <button 
+              onClick={() => {
+                setIsGetStartedModalOpen(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+            >
+              Get Started
+            </button>
             
             {/* Mobile Auth Section */}
             <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -456,6 +473,12 @@ export default function Navbar() {
         isOpen={isLoginModalOpen} 
         onClose={() => setIsLoginModalOpen(false)} 
         callbackUrl={loginCallbackUrl}
+      />
+      
+      {/* Get Started Modal */}
+      <GetStartedModal 
+        isOpen={isGetStartedModalOpen} 
+        onClose={() => setIsGetStartedModalOpen(false)} 
       />
     </>
   );

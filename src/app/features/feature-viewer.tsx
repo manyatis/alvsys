@@ -173,20 +173,19 @@ export default function FeatureViewer() {
                 </video>
               )}
               
-              {/* MCP Support placeholder */}
+              {/* MCP Support Video */}
               {activeFeature === 2 && (
-                <div className="w-full h-full bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900/20 dark:to-blue-900/20 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                      {React.createElement(features[activeFeature].icon, { 
-                        className: "h-8 w-8 text-white" 
-                      })}
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {features[activeFeature].title} Demo
-                    </p>
-                  </div>
-                </div>
+                <video 
+                  className="w-full h-full object-cover"
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  autoPlay
+                >
+                  <source src="/mcp_tool_clip.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               )}
               
               {/* Dev Mode Video */}

@@ -24,50 +24,22 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Close dropdown when clicking outside (with delay)
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        // Clear any existing timeout
-        if (closeTimeoutRef.current) {
-          clearTimeout(closeTimeoutRef.current);
-        }
-        // Add a 300ms delay before closing
-        closeTimeoutRef.current = setTimeout(() => {
-          setIsOpen(false);
-        }, 300);
-      }
-    };
-
-    const handleMouseEnter = () => {
-      // Cancel close timeout when mouse enters dropdown
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-        closeTimeoutRef.current = null;
+        setIsOpen(false);
       }
     };
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
-      const dropdown = dropdownRef.current;
-      if (dropdown) {
-        dropdown.addEventListener('mouseenter', handleMouseEnter);
-      }
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      const dropdown = dropdownRef.current;
-      if (dropdown) {
-        dropdown.removeEventListener('mouseenter', handleMouseEnter);
-      }
-      if (closeTimeoutRef.current) {
-        clearTimeout(closeTimeoutRef.current);
-        closeTimeoutRef.current = null;
-      }
     };
   }, [isOpen]);
 
@@ -139,7 +111,7 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 z-50 mt-1 min-w-full max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+        <div className="absolute top-full left-0 z-50 min-w-full max-w-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <div className="p-2">
             {loading ? (
               <div className="flex items-center justify-center py-4">

@@ -25,8 +25,8 @@ const mcpHandler = createMcpHandler(
 
 // Wrap the handler with authentication
 async function authenticatedHandler(request: NextRequest) {
-  // Check if authentication is enabled via environment variable
-  const authEnabled = process.env.MCP_AUTH_ENABLED === 'true';
+  // Authentication is enabled by default, can be disabled by setting MCP_AUTH_ENABLED=false
+  const authEnabled = process.env.MCP_AUTH_ENABLED !== 'false';
   
   if (authEnabled) {
     // Verify Bearer token authentication
