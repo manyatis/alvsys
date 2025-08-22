@@ -24,22 +24,50 @@ export default function ProjectSelector({ currentProject, currentProjectId }: Pr
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
 
-  // Close dropdown when clicking outside
+  // Close dropdown when clicking outside (with delay)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        // Clear any existing timeout
+        if (closeTimeoutRef.current) {
+          clearTimeout(closeTimeoutRef.current);
+        }
+        // Add a 300ms delay before closing
+        closeTimeoutRef.current = setTimeout(() => {
+          setIsOpen(false);
+        }, 300);
+      }
+    };
+
+    const handleMouseEnter = () => {
+      // Cancel close timeout when mouse enters dropdown
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
       }
     };
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      const dropdown = dropdownRef.current;
+      if (dropdown) {
+        dropdown.addEventListener('mouseenter', handleMouseEnter);
+      }
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      const dropdown = dropdownRef.current;
+      if (dropdown) {
+        dropdown.removeEventListener('mouseenter', handleMouseEnter);
+      }
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = null;
+      }
     };
   }, [isOpen]);
 
