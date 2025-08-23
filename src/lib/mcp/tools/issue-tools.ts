@@ -16,22 +16,25 @@ const MCP_USER_ID = 'mcp-system';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
-export function registerIssueTools(server: Server) {
+interface ToolContext {
+  projectId?: string | null;
+  userId?: string;
+}
+
+export function registerIssueTools(server: Server, context?: ToolContext) {
   server.tool(
     "next_ready",
     "Fetch the next highest priority task that's ready for work",
-    {
-      id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ id }) => {
-      const projectId = id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -48,21 +51,20 @@ export function registerIssueTools(server: Server) {
     "list_issues",
     "Get all issues in a project with optional status filter",
     {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       status: z.string().optional().describe("Filter by status (REFINEMENT, READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)"),
       sprint_id: z.string().optional().describe("Filter by sprint ID"),
       // TODO: Add assignee filter when supported by getProjectIssues
       // assignee_id: z.string().optional().describe("Filter by assignee ID")
     },
-    async ({ project_id, status, sprint_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ status, sprint_id }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -79,18 +81,17 @@ export function registerIssueTools(server: Server) {
     "get_issue",
     "Get detailed information about a specific issue",
     {
-      issue_id: z.string().describe("Issue identifier"),
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
+      issue_id: z.string().describe("Issue identifier")
     },
-    async ({ issue_id, project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ issue_id }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -107,7 +108,6 @@ export function registerIssueTools(server: Server) {
     "create_issue",
     "Create a new issue in the project",
     {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       title: z.string().describe("Issue title"),
       description: z.string().optional().describe("Detailed description"),
       acceptance_criteria: z.string().optional().describe("Definition of done"),
@@ -119,15 +119,15 @@ export function registerIssueTools(server: Server) {
       assignee_id: z.string().optional().describe("User to assign to"),
       label_ids: z.array(z.string()).optional().describe("Label IDs to add")
     },
-    async ({ project_id, title, description, acceptance_criteria, is_ai_allowed_task, priority, effort_points, status, sprint_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ title, description, acceptance_criteria, is_ai_allowed_task, priority, effort_points, status, sprint_id }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -158,7 +158,6 @@ export function registerIssueTools(server: Server) {
     "update_task",
     "Updates a task with new status, comments, or other properties. Use this to track progress as you work on tasks.",
     {
-      projectId: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       cardId: z.string().min(1).describe("The task/card ID to update"),
       status: z.string().optional().describe("New status (todo, in_progress, in_review, done)"),
       comment: z.string().optional().describe("Add a comment to the task"),
@@ -167,9 +166,9 @@ export function registerIssueTools(server: Server) {
       priority: z.number().optional().describe("Update task priority (1-5)"),
       storyPoints: z.number().optional().describe("Update story points estimate"),
     },
-    async ({ projectId, cardId, status, comment, title, description, priority, storyPoints }) => {
+    async ({ cardId, status, comment, title, description, priority, storyPoints }) => {
       try {
-        const actualProjectId = projectId || process.env.VIBE_HERO_PROJECT_ID;
+        const actualProjectId = context?.projectId;
         
         if (!actualProjectId) {
           return {
@@ -177,7 +176,7 @@ export function registerIssueTools(server: Server) {
               type: "text", 
               text: JSON.stringify({ 
                 success: false, 
-                error: "Project ID is required. Either pass 'projectId' parameter or set VIBE_HERO_PROJECT_ID environment variable." 
+                error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server." 
               }, null, 2) 
             }]
           };

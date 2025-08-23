@@ -12,22 +12,25 @@ const MCP_USER_ID = 'mcp-system';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
-export function registerSprintTools(server: Server) {
+interface ToolContext {
+  projectId?: string | null;
+  userId?: string;
+}
+
+export function registerSprintTools(server: Server, context?: ToolContext) {
   server.tool(
     "list_sprints",
     "Get all sprints in a project",
-    {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -43,18 +46,16 @@ export function registerSprintTools(server: Server) {
   server.tool(
     "get_active_sprint",
     "Get the currently active sprint in a project",
-    {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -83,18 +84,17 @@ export function registerSprintTools(server: Server) {
     "get_sprint_issues",
     "Get all issues in a specific sprint",
     {
-      sprint_id: z.string().describe("Sprint identifier"),
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
+      sprint_id: z.string().describe("Sprint identifier")
     },
-    async ({ sprint_id, project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ sprint_id }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -113,20 +113,19 @@ export function registerSprintTools(server: Server) {
     "create_sprint",
     "Create a new sprint in the project",
     {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       name: z.string().describe("Sprint name"),
       start_date: z.string().optional().describe("Sprint start date (ISO format)"),
       end_date: z.string().optional().describe("Sprint end date (ISO format)")
     },
-    async ({ project_id, name, start_date, end_date }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ name, start_date, end_date }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -151,21 +150,20 @@ export function registerSprintTools(server: Server) {
     "Update an existing sprint",
     {
       sprint_id: z.string().describe("Sprint identifier"),
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       name: z.string().optional().describe("New sprint name"),
       start_date: z.string().optional().describe("New start date (ISO format)"),
       end_date: z.string().optional().describe("New end date (ISO format)"),
       is_active: z.boolean().optional().describe("Set sprint as active/inactive")
     },
-    async ({ sprint_id, project_id, name, start_date, end_date, is_active }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ sprint_id, name, start_date, end_date, is_active }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -191,18 +189,17 @@ export function registerSprintTools(server: Server) {
     "close_sprint",
     "Close a sprint and optionally move incomplete issues to next sprint",
     {
-      sprint_id: z.string().describe("Sprint identifier"),
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
+      sprint_id: z.string().describe("Sprint identifier")
     },
-    async ({ sprint_id, project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ sprint_id }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -219,18 +216,17 @@ export function registerSprintTools(server: Server) {
     "delete_sprint",
     "Delete a sprint (only if it has no issues)",
     {
-      sprint_id: z.string().describe("Sprint identifier"),
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
+      sprint_id: z.string().describe("Sprint identifier")
     },
-    async ({ sprint_id, project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ sprint_id }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };

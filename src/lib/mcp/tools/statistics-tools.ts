@@ -7,22 +7,25 @@ const MCP_USER_ID = 'mcp-system';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
-export function registerStatisticsTools(server: Server) {
+interface ToolContext {
+  projectId?: string | null;
+  userId?: string;
+}
+
+export function registerStatisticsTools(server: Server, context?: ToolContext) {
   server.tool(
     "get_project_statistics",
     "Get statistics about project issues, sprints, and progress",
-    {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -92,18 +95,16 @@ export function registerStatisticsTools(server: Server) {
   server.tool(
     "get_backlog",
     "Get all issues in the backlog (not assigned to any sprint)",
-    {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -147,18 +148,17 @@ export function registerStatisticsTools(server: Server) {
     "get_issues_by_status",
     "Get all issues with a specific status",
     {
-      status: z.string().describe("Status to filter by (REFINEMENT, READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)"),
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
+      status: z.string().describe("Status to filter by (REFINEMENT, READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)")
     },
-    async ({ status, project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ status }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -174,18 +174,16 @@ export function registerStatisticsTools(server: Server) {
   server.tool(
     "get_team_activity",
     "Get recent team activity and assignments",
-    {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ project_id }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };

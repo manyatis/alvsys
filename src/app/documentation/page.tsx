@@ -213,7 +213,8 @@ export default function Documentation() {
 claude-code mcp add vibehero \\
   --server-command "npx @vibehero/mcp-server" \\
   --description "VibeHero project and issue management" \\
-  --env "MCP_AUTH_TOKEN=your-api-token-here"
+  --header "Authorization=Bearer your-api-token-here" \\
+  --header "X-Project-Id=your-project-id-here"
 
 # For local development only (if you need to disable auth)
 # Add --env "MCP_AUTH_ENABLED=false" to disable authentication`}</pre>
@@ -468,7 +469,7 @@ AI: "Found task: 'Implement user authentication'
                     </p>
                     <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
                       <div className="text-slate-500 mb-1">Parameters:</div>
-                      <pre className="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
+                      <pre className="text-slate-700 dark:text-slate-300">No parameters required (uses project from X-Project-Id header)</pre>
                     </div>
                   </div>
 
@@ -482,7 +483,7 @@ AI: "Found task: 'Implement user authentication'
                     </p>
                     <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
                       <div className="text-slate-500 mb-1">Parameters:</div>
-                      <pre className="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
+                      <pre className="text-slate-700 dark:text-slate-300">No parameters required (uses project from X-Project-Id header)</pre>
                     </div>
                   </div>
 
@@ -493,8 +494,7 @@ AI: "Found task: 'Implement user authentication'
                     </p>
                     <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
                       <div className="text-slate-500 mb-1">Parameters:</div>
-                      <pre className="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier
-card_id: string (required) - Task/issue identifier
+                      <pre className="text-slate-700 dark:text-slate-300">{`card_id: string (required) - Task/issue identifier
 comment: string (optional) - Initial progress comment`}</pre>
                     </div>
                   </div>
@@ -506,8 +506,7 @@ comment: string (optional) - Initial progress comment`}</pre>
                     </p>
                     <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
                       <div className="text-slate-500 mb-1">Parameters:</div>
-                      <pre className="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier  
-card_id: string (required) - Task/issue identifier
+                      <pre className="text-slate-700 dark:text-slate-300">{`card_id: string (required) - Task/issue identifier
 status: string (required) - New status (READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)
 comment: string (optional) - Progress update comment`}</pre>
                     </div>
@@ -536,7 +535,7 @@ is_ai_comment: boolean (default: true) - Mark as AI-generated`}</pre>
                     </p>
                     <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
                       <div className="text-slate-500 mb-1">Parameters:</div>
-                      <pre className="text-slate-700 dark:text-slate-300">project_id: string (required) - Project identifier</pre>
+                      <pre className="text-slate-700 dark:text-slate-300">No parameters required (uses project from X-Project-Id header)</pre>
                     </div>
                   </div>
 
@@ -547,8 +546,7 @@ is_ai_comment: boolean (default: true) - Mark as AI-generated`}</pre>
                     </p>
                     <div className="bg-slate-100 dark:bg-slate-900 p-3 rounded font-mono text-xs">
                       <div className="text-slate-500 mb-1">Parameters:</div>
-                      <pre className="text-slate-700 dark:text-slate-300">{`project_id: string (required) - Project identifier
-title: string (required) - Issue title  
+                      <pre className="text-slate-700 dark:text-slate-300">{`title: string (required) - Issue title  
 description: string (optional) - Detailed description
 acceptance_criteria: string (optional) - Definition of done
 is_ai_allowed_task: boolean (default: true) - Allow AI processing`}</pre>
