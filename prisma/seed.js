@@ -11,14 +11,13 @@ async function main() {
       priceCents: 0,
       billingPeriod: 'forever',
       features: [
-        'Self hosting available',
-        'Hosted 1 project free',
-        'AI-powered issue tracking',
-        'Sprint management',
-        'Basic reporting',
-        'Community support'
+        '1 Cloud Project',
+        'Unlimited Self-Hosted',
+        'Full MCP Access',
+        'GitHub Integration',
+        'Community Support'
       ],
-      description: 'Perfect for individual developers and hobbyists',
+      description: 'Free self hosting or 1 project cloud hosting',
       isActive: true
     },
     {
@@ -27,15 +26,28 @@ async function main() {
       priceCents: 500, // $5
       billingPeriod: 'month',
       features: [
-        'Self hosting available',
-        'Hosted unlimited projects free',
-        'Full collaboration tooling',
-        'Advanced sprint planning',
-        'Team management',
-        'Priority support',
-        'Advanced analytics'
+        'Unlimited Cloud Projects',
+        'Team Collaboration',
+        'Advanced MCP Features',
+        'Priority Support',
+        'Advanced Analytics'
       ],
-      description: 'For professional developers and small teams',
+      description: 'Unlimited cloud hosting, collaboration tooling, priority support',
+      isActive: true
+    },
+    {
+      planId: 'enterprise',
+      name: 'Enterprise',
+      priceCents: 9900, // $99
+      billingPeriod: 'month',
+      features: [
+        'Everything in Pro',
+        'Custom AI Agent Integrations',
+        'Dedicated Account Manager',
+        'SLA Guarantees',
+        'Enterprise Security'
+      ],
+      description: 'Advanced features, custom integrations, dedicated support',
       isActive: true
     }
   ];

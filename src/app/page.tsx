@@ -263,7 +263,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto"
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto"
               variants={staggerContainer}
             >
               {/* Hobby Tier */}
@@ -378,6 +378,61 @@ export default function Home() {
                   className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 >
                   Subscribe Now
+                </button>
+              </motion.div>
+
+              {/* Enterprise Tier */}
+              <motion.div 
+                variants={staggerChild}
+                className="relative p-8 rounded-2xl bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/20 dark:to-slate-800 border border-purple-300 dark:border-purple-700"
+              >
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Enterprise</h3>
+                  <div className="flex items-baseline gap-1 mb-4">
+                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$99</span>
+                    <span className="text-slate-600 dark:text-slate-300">/month</span>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300">Advanced features, custom integrations, dedicated support</p>
+                </div>
+
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300 font-semibold">Everything in Pro</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Custom AI Agent Integrations</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Dedicated Account Manager</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">SLA Guarantees</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Enterprise Security</span>
+                  </li>
+                </ul>
+
+                <button
+                  onClick={() => window.location.href = '/subscribe'}
+                  className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Contact Sales
                 </button>
               </motion.div>
             </motion.div>

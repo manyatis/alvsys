@@ -250,18 +250,33 @@ export async function seedSubscriptionPlans(): Promise<SeedPlansResult> {
       {
         planId: 'pro',
         name: 'Pro',
-        priceCents: 1000, // $10/month
+        priceCents: 500, // $5/month
         billingPeriod: 'month',
         features: [
-          'Self hosting available',
-          'Hosted unlimited projects free',
-          'Full collaboration tooling',
-          'Advanced sprint planning',
-          'Team management',
-          'Priority support',
-          'Advanced analytics'
+          'Unlimited Cloud Projects',
+          'Team Collaboration',
+          'Advanced MCP Features',
+          'Priority Support',
+          'Advanced Analytics'
         ],
-        description: 'For professional developers and small teams',
+        description: 'Unlimited cloud hosting, collaboration tooling, priority support',
+        stripePriceId: null,
+        stripeProductId: null,
+        isActive: true
+      },
+      {
+        planId: 'enterprise',
+        name: 'Enterprise',
+        priceCents: 9900, // $99/month
+        billingPeriod: 'month',
+        features: [
+          'Everything in Pro',
+          'Custom AI Agent Integrations',
+          'Dedicated Account Manager',
+          'SLA Guarantees',
+          'Enterprise Security'
+        ],
+        description: 'Advanced features, custom integrations, dedicated support',
         stripePriceId: null,
         stripeProductId: null,
         isActive: true
