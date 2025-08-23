@@ -3,22 +3,25 @@ import { AiAPI } from '@/lib/api/ai';
 // Type for the MCP server
 type Server = Parameters<Parameters<typeof import('@vercel/mcp-adapter').createMcpHandler>[0]>[0];
 
-export function registerWorkflowTools(server: Server) {
+interface ToolContext {
+  projectId?: string | null;
+  userId?: string;
+}
+
+export function registerWorkflowTools(server: Server, context?: ToolContext) {
   server.tool(
     "dev_mode",
     "Enter continuous development mode - automatically process tasks",
-    {
-      id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)")
-    },
-    async ({ id }) => {
-      const projectId = id || process.env.VIBE_HERO_PROJECT_ID;
+    {},
+    async () => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -35,19 +38,18 @@ export function registerWorkflowTools(server: Server) {
     "start_working",
     "Start working on a specific task and update its status",
     {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       card_id: z.string().describe("Task/issue identifier"),
       comment: z.string().optional().describe("Initial progress comment")
     },
-    async ({ project_id, card_id, comment }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ card_id, comment }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };
@@ -87,20 +89,19 @@ export function registerWorkflowTools(server: Server) {
     "update_progress",
     "Update task status and add progress comments",
     {
-      project_id: z.string().optional().describe("The project ID (optional if VIBE_HERO_PROJECT_ID env var is set)"),
       card_id: z.string().describe("Task/issue identifier"),
       status: z.string().describe("New status (READY, IN_PROGRESS, BLOCKED, READY_FOR_REVIEW, COMPLETED)"),
       comment: z.string().optional().describe("Progress update comment")
     },
-    async ({ project_id, card_id, status, comment }) => {
-      const projectId = project_id || process.env.VIBE_HERO_PROJECT_ID;
+    async ({ card_id, status, comment }) => {
+      const projectId = context?.projectId;
       
       if (!projectId) {
         return {
           content: [{ 
             type: "text", 
             text: JSON.stringify({
-              error: "Project ID is required. Either pass 'project_id' parameter or set VIBE_HERO_PROJECT_ID environment variable."
+              error: "Project ID is required. Please provide via X-Project-Id header when configuring the MCP server."
             }, null, 2)
           }]
         };

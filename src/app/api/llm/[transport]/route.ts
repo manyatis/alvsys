@@ -7,26 +7,13 @@ import { registerWorkflowTools } from '@/lib/mcp/tools/workflow-tools';
 import { registerStatisticsTools } from '@/lib/mcp/tools/statistics-tools';
 import { verifyMcpAuth } from '@/lib/mcp/auth';
 
-// Create the base MCP handler
-const mcpHandler = createMcpHandler(
-  async (server) => {
-    // Register all tool categories
-    registerProjectTools(server);
-    registerIssueTools(server);
-    registerSprintTools(server);
-    registerWorkflowTools(server);
-    registerStatisticsTools(server);
-  },
-  {},
-  {
-    basePath: "/api/llm",
-  }
-);
-
-// Wrap the handler with authentication
+// Wrap the handler with authentication and context
 async function authenticatedHandler(request: NextRequest) {
   // Authentication is enabled by default, can be disabled by setting MCP_AUTH_ENABLED=false
   const authEnabled = process.env.MCP_AUTH_ENABLED !== 'false';
+  
+  // Extract project_id from headers
+  const projectId = request.headers.get('X-Project-Id') || request.headers.get('x-project-id');
   
   if (authEnabled) {
     // Verify Bearer token authentication
@@ -50,11 +37,45 @@ async function authenticatedHandler(request: NextRequest) {
       body: request.body,
     });
     
+    // Create MCP handler with context
+    const mcpHandler = createMcpHandler(
+      async (server) => {
+        // Pass projectId as context to all tool registrations
+        const context = { projectId, userId: authResult.userId };
+        registerProjectTools(server, context);
+        registerIssueTools(server, context);
+        registerSprintTools(server, context);
+        registerWorkflowTools(server, context);
+        registerStatisticsTools(server, context);
+      },
+      {},
+      {
+        basePath: "/api/llm",
+      }
+    );
+    
     // Pass through to MCP handler
     return mcpHandler(authenticatedRequest);
   }
   
-  // If auth is disabled, pass through directly
+  // If auth is disabled, create handler without auth but with projectId
+  const mcpHandler = createMcpHandler(
+    async (server) => {
+      // Pass projectId as context to all tool registrations
+      const context = { projectId };
+      registerProjectTools(server, context);
+      registerIssueTools(server, context);
+      registerSprintTools(server, context);
+      registerWorkflowTools(server, context);
+      registerStatisticsTools(server, context);
+    },
+    {},
+    {
+      basePath: "/api/llm",
+    }
+  );
+  
+  // Pass through directly
   return mcpHandler(request);
 }
 
