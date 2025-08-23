@@ -219,10 +219,10 @@ export default function Documentation() {
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm">
                     <div className="text-slate-500 mb-2">Example prompts:</div>
                     <div className="space-y-1">
-                      <div>• "enter dev_mode and follow instructions. do not stop to provide summary/analysis at ANY point"</div>
-                      <div>• "work on issue [ISSUE_ID]"</div>
-                      <div>• "create an issue called '[TITLE]' with description '[DESCRIPTION]'"</div>
-                      <div>• "show me the project statistics and current sprint status"</div>
+                      <div>• &ldquo;enter dev_mode and follow instructions. do not stop to provide summary/analysis at ANY point&rdquo;</div>
+                      <div>• &ldquo;work on issue [ISSUE_ID]&rdquo;</div>
+                      <div>• &ldquo;create an issue called &lsquo;[TITLE]&rsquo; with description &lsquo;[DESCRIPTION]&rsquo;&rdquo;</div>
+                      <div>• &ldquo;show me the project statistics and current sprint status&rdquo;</div>
                     </div>
                   </div>
 
