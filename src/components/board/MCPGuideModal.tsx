@@ -125,7 +125,7 @@ export default function MCPGuideModal({
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700 overflow-x-auto">
               <code className="text-xs font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"
+                claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header &ldquo;X-Project-Id: YOUR_PROJECT_ID&rdquo; --header &ldquo;Authorization: Bearer YOUR_API_KEY&rdquo;
               </code>
             </div>
             <button
