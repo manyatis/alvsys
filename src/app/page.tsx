@@ -21,7 +21,7 @@ function HomeContent() {
           <div className="container mx-auto px-6 py-24 lg:py-32">
             <div className="max-w-6xl mx-auto text-center">
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
-                AI Native Project Management Tooling
+                Project Management For The AI Era
               </h1>
 
               {/* Agents Carousel below hero text */}
@@ -30,7 +30,7 @@ function HomeContent() {
               </div>
 
               <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Seamlessly integrate with GitHub bringing a intuitive visual board for developers and native MCP support for agentic development.
+                Stunning visual issue boards, seamless integration with Github, and powerful MCP tooling to power agents autonomously.
               </p>
 
             <div className="max-w-5xl mx-auto mb-12">
@@ -155,7 +155,7 @@ function HomeContent() {
                         4. Enter &quot;Dev Mode&quot; for Automation
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Let agents automatically work on all AI-allowed issues. They&apos;ll add comments, update status, push to git, and more.
+                        Let agents autonomously work on all AI-allowed issues. They&apos;ll add comments, update status, push to git, and more.
                       </p>
                     </div>
                   </div>
