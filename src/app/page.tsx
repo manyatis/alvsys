@@ -1,15 +1,47 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import LoginModal from '@/components/login-modal';
 import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
 import AgentsCarousel from '@/components/AgentsCarousel';
 
-function HomeContent() {
+export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+  // Animation variants
+  const fadeInUp = {
+    initial: { opacity: 0, y: 80 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 1.5, ease: "easeOut" }
+  };
+
+  const fadeInUpDelay = {
+    initial: { opacity: 0, y: 80 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 1.2, delay: 0.4, ease: "easeOut" }
+  };
+
+  const fadeInScale = {
+    initial: { opacity: 0, scale: 0.6 },
+    animate: { opacity: 1, scale: 1 },
+    transition: { duration: 1.6, ease: "easeOut" }
+  };
+
+  const staggerContainer = {
+    animate: {
+      transition: {
+        staggerChildren: 0.3
+      }
+    }
+  };
+
+
+  const staggerChild = {
+    initial: { opacity: 0, y: 60 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 1.0, ease: "easeOut" }
+  };
 
   return (
     <div className="min-h-screen">
@@ -20,20 +52,40 @@ function HomeContent() {
         <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
           <div className="container mx-auto px-6 py-24 lg:py-32">
             <div className="max-w-6xl mx-auto text-center">
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8">
-                AI Native Project Management Tooling
-              </h1>
+              <motion.h1 
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, ease: "easeOut" }}
+              >
+                Project Management For The AI Era
+              </motion.h1>
 
               {/* Agents Carousel below hero text */}
-              <div className="mb-12">
+              <motion.div 
+                className="mb-12"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+              >
                 <AgentsCarousel />
-              </div>
+              </motion.div>
 
-              <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Seamlessly integrate with GitHub bringing a intuitive visual board for developers and native MCP support for agentic development.
-              </p>
+              <motion.p 
+                className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 50 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
+              >
+                Stunning visual issue boards, seamless integration with Github, and powerful MCP tooling to power agents autonomously.
+              </motion.p>
 
-            <div className="max-w-5xl mx-auto mb-12">
+            <motion.div 
+              className="max-w-5xl mx-auto mb-12"
+              initial={{ opacity: 0, scale: 0.7 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.8, delay: 0.9, ease: "easeOut" }}
+            >
               <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-700">
                 <video 
                   className="w-full h-auto"
@@ -48,10 +100,14 @@ function HomeContent() {
                   Your browser does not support the video tag.
                 </video>
               </div>
-            </div>
+            </motion.div>
 
-
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <motion.div 
+                className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 1.2, ease: "easeOut" }}
+              >
                 <button
                   onClick={() => window.location.href = '/projects'}
                   className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
@@ -64,7 +120,7 @@ function HomeContent() {
                 >
                   View Pricing
                 </button>
-              </div>
+              </motion.div>
 
             </div>
           </div>
@@ -77,18 +133,26 @@ function HomeContent() {
         </section>
 
         {/* Benefits Section */}
-        <section className="py-24 bg-slate-50 dark:bg-slate-950">
+        <motion.section 
+          className="py-24 bg-slate-50 dark:bg-slate-950"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.5 }}
+        >
           <div className="container mx-auto px-6">
             <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-              <div>
+              <motion.div variants={fadeInUp}>
                 <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
                   Work with Any Agent, Anywhere
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
                   Connect any AI agent to your project board via MCP:
                 </p>
-                <div className="space-y-6">
-                  <div className="flex gap-4">
+                <motion.div 
+                  className="space-y-6"
+                  variants={staggerContainer}
+                >
+                  <motion.div variants={staggerChild} className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,9 +168,9 @@ function HomeContent() {
                         Connect your GitHub repo to sync issues and track progress visually in real-time.
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="flex gap-4">
+                  <motion.div variants={staggerChild} className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,9 +186,9 @@ function HomeContent() {
                         Create issues and designate whether they should be handled by humans or AI agents for optimal task distribution.
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="flex gap-4">
+                  <motion.div variants={staggerChild} className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,9 +204,9 @@ function HomeContent() {
                         Work on issues using agentic coding with full MCP (Model Context Protocol) support for seamless AI integration.
                       </p>
                     </div>
-                  </div>
+                  </motion.div>
 
-                  <div className="flex gap-4">
+                  <motion.div variants={staggerChild} className="flex gap-4">
                     <div className="flex-shrink-0">
                       <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                         <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -155,43 +219,58 @@ function HomeContent() {
                         4. Enter &quot;Dev Mode&quot; for Automation
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Let agents automatically work on all AI-allowed issues. They&apos;ll add comments, update status, push to git, and more.
+                        Let agents autonomously work on all AI-allowed issues. They&apos;ll add comments, update status, push to git, and more.
                       </p>
                     </div>
-                  </div>
-                </div>
-              </div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
 
-              <div className="relative">
+              <motion.div 
+                className="relative"
+                variants={fadeInScale}
+              >
                 {/* Live Animated Demo */}
                 <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
                   <AnimatedBoardDemo
                     autoPlay={true}
                   />
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
-        </section>
+        </motion.section>
 
 
 
 
         {/* Pricing Section */}
-        <section id="pricing" className="py-24 bg-white dark:bg-slate-900">
+        <motion.section 
+          id="pricing" 
+          className="py-24 bg-white dark:bg-slate-900"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.3 }}
+        >
           <div className="container mx-auto px-6">
-            <div className="text-center mb-16">
+            <motion.div className="text-center mb-16" variants={fadeInUp}>
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
                 Simple, Transparent Pricing
               </h2>
               <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
                 Start free and scale as you grow. No hidden fees.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto"
+              variants={staggerContainer}
+            >
               {/* Hobby Tier */}
-              <div className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <motion.div 
+                variants={staggerChild}
+                className="relative p-8 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+              >
                 <div className="mb-8">
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Hobby</h3>
                   <div className="flex items-baseline gap-1 mb-4">
@@ -239,10 +318,13 @@ function HomeContent() {
                 >
                   Get Started
                 </button>
-              </div>
+              </motion.div>
 
               {/* Pro Tier */}
-              <div className="relative p-8 rounded-2xl bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500">
+              <motion.div 
+                variants={staggerChild}
+                className="relative p-8 rounded-2xl bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500"
+              >
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
                     Most Popular
@@ -297,21 +379,90 @@ function HomeContent() {
                 >
                   Subscribe Now
                 </button>
-              </div>
-            </div>
+              </motion.div>
+
+              {/* Enterprise Tier */}
+              <motion.div 
+                variants={staggerChild}
+                className="relative p-8 rounded-2xl bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/20 dark:to-slate-800 border border-purple-300 dark:border-purple-700"
+              >
+                <div className="mb-8">
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Enterprise</h3>
+                  <div className="flex items-baseline gap-1 mb-4">
+                    <span className="text-4xl font-bold text-slate-900 dark:text-white">$99</span>
+                    <span className="text-slate-600 dark:text-slate-300">/month</span>
+                  </div>
+                  <p className="text-slate-600 dark:text-slate-300">Advanced features, custom integrations, dedicated support</p>
+                </div>
+
+                <ul className="space-y-4 mb-8">
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300 font-semibold">Everything in Pro</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Custom AI Agent Integrations</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Dedicated Account Manager</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">SLA Guarantees</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Enterprise Security</span>
+                  </li>
+                </ul>
+
+                <button
+                  onClick={() => window.location.href = '/subscribe'}
+                  className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Contact Sales
+                </button>
+              </motion.div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
         {/* CTA Section */}
-        <section className="py-24 bg-blue-600">
+        <motion.section 
+          className="py-24 bg-blue-600"
+          initial="initial"
+          whileInView="animate"
+          viewport={{ once: true, amount: 0.3 }}
+        >
           <div className="container mx-auto px-6 text-center">
-            <h2 className="text-4xl font-bold text-white mb-6">
+            <motion.h2 
+              className="text-4xl font-bold text-white mb-6"
+              variants={fadeInUp}
+            >
               Start Your AI Native Project
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            </motion.h2>
+            <motion.p 
+              className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto"
+              variants={fadeInUpDelay}
+            >
               Connect your GitHub repository and let AI agents work on your project.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            </motion.p>
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4 justify-center"
+              variants={fadeInScale}
+            >
               <button
                 onClick={() => window.location.href = '/projects'}
                 className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
@@ -324,9 +475,9 @@ function HomeContent() {
               >
                 View Pricing
               </button>
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
 
       </div>
 
@@ -334,16 +485,8 @@ function HomeContent() {
       <LoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
-        callbackUrl={callbackUrl}
+        callbackUrl="/"
       />
     </div>
-  );
-}
-
-export default function Home() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <HomeContent />
-    </Suspense>
   );
 }

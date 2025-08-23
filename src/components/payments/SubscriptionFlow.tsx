@@ -166,29 +166,25 @@ export default function SubscriptionFlow() {
         </p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
         {plans.map((plan) => {
           const isHobby = plan.planId === 'hobby';
           const isPro = plan.planId === 'pro';
+          const isEnterprise = plan.planId === 'enterprise';
           
           return (
             <div
               key={plan.id}
               className={`relative p-8 rounded-2xl ${
                 isHobby
-                  ? 'bg-gradient-to-b from-green-50 to-white dark:from-green-950/20 dark:to-slate-800 border-2 border-green-500'
+                  ? 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
                   : isPro
                   ? 'bg-gradient-to-b from-blue-50 to-white dark:from-blue-950/20 dark:to-slate-800 border-2 border-blue-500'
+                  : isEnterprise
+                  ? 'bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/20 dark:to-slate-800 border border-purple-300 dark:border-purple-700'
                   : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700'
               }`}
             >
-              {isHobby && (
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-green-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                    Free Forever
-                  </span>
-                </div>
-              )}
               
               {isPro && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
@@ -229,16 +225,23 @@ export default function SubscriptionFlow() {
               {plan.planId === 'hobby' ? (
                 <button 
                   onClick={() => window.location.href = '/projects'}
-                  className="w-full px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors"
+                  className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 >
-                  Get Started Free
+                  Get Started
                 </button>
               ) : plan.planId === 'pro' ? (
                 <button 
                   onClick={() => handlePlanSelect(plan)}
                   className="w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
                 >
-                  Upgrade to Pro
+                  Subscribe Now
+                </button>
+              ) : plan.planId === 'enterprise' ? (
+                <button 
+                  onClick={() => handlePlanSelect(plan)}
+                  className="w-full px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors"
+                >
+                  Contact Sales
                 </button>
               ) : (
                 <button 
