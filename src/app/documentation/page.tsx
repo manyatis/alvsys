@@ -185,15 +185,7 @@ export default function Documentation() {
                     curl -fsSL https://anthropic.com/install-claude-code.sh | sh
                   </div>
 
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 2: Install VibeHero MCP Server</h3>
-                  <p className="text-slate-600 dark:text-slate-300">
-                    Install the VibeHero MCP server package:
-                  </p>
-                  <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm">
-                    npm install -g @vibehero/mcp-server
-                  </div>
-
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 3: Generate API Key (Required)</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 2: Generate API Key (Required)</h3>
                   <p className="text-slate-600 dark:text-slate-300">
                     Generate a Bearer token for secure authentication (required by default):
                   </p>
@@ -204,35 +196,41 @@ export default function Documentation() {
                     <li>Authentication is enabled by default (set MCP_AUTH_ENABLED=false to disable in development)</li>
                   </ol>
                   
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 4: Configure MCP Connection</h3>
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 3: Install VibeHero MCP Server</h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Add VibeHero to your Claude Code MCP configuration:
+                    Use the claude mcp add command to install and configure the VibeHero MCP server:
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm overflow-x-auto">
-                    <pre className="text-slate-700 dark:text-slate-300">{`# With Bearer token authentication (required by default)
-claude-code mcp add vibehero \\
-  --server-command "npx @vibehero/mcp-server" \\
-  --description "VibeHero project and issue management" \\
-  --header "Authorization=Bearer your-api-token-here" \\
-  --header "X-Project-Id=your-project-id-here"
-
-# For local development only (if you need to disable auth)
-# Add --env "MCP_AUTH_ENABLED=false" to disable authentication`}</pre>
+                    <pre className="text-slate-700 dark:text-slate-300">{`claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
                   </div>
 
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 5: Verify Connection</h3>
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4">
+                    <h4 className="font-semibold text-blue-900 dark:text-blue-100">📝 Note</h4>
+                    <p className="text-blue-800 dark:text-blue-200 text-sm mt-2">
+                      Replace YOUR_PROJECT_ID with your actual project ID and YOUR_API_KEY with the API key from step 2.
+                      This single command installs and configures everything needed to use VibeHero with Claude Code.
+                    </p>
+                  </div>
+
+                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-8">Step 4: Start Using VibeHero MCP</h3>
                   <p className="text-slate-600 dark:text-slate-300">
-                    Test your MCP server connection:
+                    After running the installation command, you can start using VibeHero with example prompts:
                   </p>
                   <div className="bg-slate-100 dark:bg-slate-900 p-4 rounded-lg font-mono text-sm">
-                    claude-code mcp test vibehero
+                    <div className="text-slate-500 mb-2">Example prompts:</div>
+                    <div className="space-y-1">
+                      <div>• "enter dev_mode and follow instructions. do not stop to provide summary/analysis at ANY point"</div>
+                      <div>• "work on issue [ISSUE_ID]"</div>
+                      <div>• "create an issue called '[TITLE]' with description '[DESCRIPTION]'"</div>
+                      <div>• "show me the project statistics and current sprint status"</div>
+                    </div>
                   </div>
 
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4 mt-6">
                     <h4 className="font-semibold text-green-900 dark:text-green-100">✅ Installation Complete</h4>
                     <p className="text-green-800 dark:text-green-200 text-sm mt-2">
                       Your AI assistant can now securely access VibeHero through MCP. 
-                      {' '}Bearer token authentication is required by default to ensure secure access to your projects.
+                      The installation command configures everything needed, including authentication headers and project ID.
                     </p>
                   </div>
                 </div>

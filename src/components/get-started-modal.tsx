@@ -276,53 +276,28 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
 
           {activeTab === 'code' && (
             <div className="space-y-8">
-              {/* Step 1 - Configure Settings */}
+              {/* Step 1 - Install MCP Server */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-semibold">
                     1
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                    Configure VibeHero MCP Server
+                    Install VibeHero MCP Server
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  Add the VibeHero MCP server configuration to your project&apos;s settings:
+                  Use the claude mcp add command to install and configure the VibeHero MCP server:
                 </p>
                 <div className="ml-11 space-y-3">
                   <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
                     <p className="text-sm text-amber-800 dark:text-amber-200">
-                      <strong>Configuration Location:</strong> Create or edit <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">.claude/settings.json</code> in your project root
+                      <strong>Note:</strong> You&apos;ll need your project ID and API key before running this command (see steps 2 and 3 below).
                     </p>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 relative overflow-x-auto">
                     <button
-                      onClick={() => copyToClipboard(`{
-  "mcpServers": {
-    "vibehero": {
-      "command": "npx",
-      "args": [
-        "-y", 
-        "mcp-remote",
-        "https://vibehero.vercel.app/api/llm"
-      ],
-      "headers": {
-        "Authorization": "Bearer YOUR_BEARER_TOKEN_HERE"
-      },
-      "env": {
-        "VIBE_HERO_PROJECT_ID": "YOUR_PROJECT_ID_HERE"
-      }
-    }
-  },
-  "permissions": {
-    "allow": [
-      "mcp__vibehero__add_todo",
-      "mcp__vibehero__next_ready", 
-      "mcp__vibehero__start_working",
-      "mcp__vibehero__dev_mode"
-    ]
-  }
-}`, 'claude-code')}
+                      onClick={() => copyToClipboard(`claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
                       className="absolute top-2 right-2 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                       title="Copy to clipboard"
                     >
@@ -336,32 +311,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                         </svg>
                       )}
                     </button>
-                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`{
-  "mcpServers": {
-    "vibehero": {
-      "command": "npx",
-      "args": [
-        "-y", 
-        "mcp-remote",
-        "https://vibehero.vercel.app/api/llm"
-      ],
-      "headers": {
-        "Authorization": "Bearer YOUR_BEARER_TOKEN_HERE"
-      },
-      "env": {
-        "VIBE_HERO_PROJECT_ID": "YOUR_PROJECT_ID_HERE"
-      }
-    }
-  },
-  "permissions": {
-    "allow": [
-      "mcp__vibehero__add_todo",
-      "mcp__vibehero__next_ready", 
-      "mcp__vibehero__start_working",
-      "mcp__vibehero__dev_mode"
-    ]
-  }
-}`}</pre>
+                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
                   </div>
                 </div>
               </div>
@@ -385,7 +335,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     <li>Go to <a href="/account" className="text-blue-600 dark:text-blue-400 hover:underline">Account Settings</a> → API Keys tab</li>
                     <li>Click &quot;Create New Key&quot; and give it a descriptive name (e.g., &quot;Claude Code MCP&quot;)</li>
                     <li>Copy the generated token immediately (you won&apos;t be able to see it again)</li>
-                    <li>Re-run the command from Step 1 with your actual token</li>
+                    <li>Use your token in the installation command from Step 1</li>
                   </ol>
                   <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                     <div className="flex items-start gap-3">
@@ -427,7 +377,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                           <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">vibehero.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
-                        <p className="mt-2">Replace <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">YOUR_PROJECT_ID_HERE</code> in the configuration above with your actual project ID.</p>
+                        <p className="mt-2">Use your project ID in the installation command from Step 1.</p>
                       </div>
                     </div>
                   </div>
@@ -445,18 +395,17 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  Save your settings.json file and your VibeHero MCP server will be ready to use:
+                  After running the installation command, your VibeHero MCP server will be ready to use:
                 </p>
                 
                 <div className="ml-11 space-y-3">
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-                    <h4 className="font-medium text-green-900 dark:text-green-200 mb-2">Available Commands:</h4>
+                    <h4 className="font-medium text-green-900 dark:text-green-200 mb-2">Example Prompts:</h4>
                     <ul className="text-sm text-green-800 dark:text-green-300 space-y-1">
-                      <li>• <strong>Get next task:</strong> &quot;What&apos;s the next ready task in VibeHero?&quot;</li>
-                      <li>• <strong>Update status:</strong> &quot;Mark task ABC123 as in progress&quot;</li>
-                      <li>• <strong>Add comments:</strong> &quot;Add a comment to task ABC123: Fixed the bug&quot;</li>
-                      <li>• <strong>View backlog:</strong> &quot;Show me the project backlog&quot;</li>
-                      <li>• <strong>Dev mode:</strong> &quot;Start VibeHero dev mode&quot; (auto-fetches tasks)</li>
+                      <li>• <strong>Enter Dev Mode:</strong> &quot;enter dev_mode and follow instructions. do not stop to provide summary/analysis at ANY point&quot;</li>
+                      <li>• <strong>Work on Issue:</strong> &quot;work on issue [ISSUE_ID]&quot;</li>
+                      <li>• <strong>Create Issue:</strong> &quot;create an issue called &#x27;[ISSUE_TITLE]&#x27; with description &#x27;[DESCRIPTION]&#x27;&quot;</li>
+                      <li>• <strong>Check Status:</strong> &quot;show me the project statistics and current sprint status&quot;</li>
                     </ul>
                   </div>
                   
