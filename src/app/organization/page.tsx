@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getUserOrganizations, getOrganizationMembers, inviteUserToOrganization } from '@/lib/organization-functions';
+import Link from 'next/link';
 
 interface Organization {
   id: string;
@@ -44,21 +45,24 @@ export default function OrganizationSettings() {
   const [inviteLoading, setInviteLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-
-  useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/');
-      return;
-    }
-
-    if (status === 'authenticated') {
-      fetchOrganizations();
-    }
-  }, [status, router]);
+  const [isProUser, setIsProUser] = useState(false);
 
   const fetchOrganizations = useCallback(async () => {
     try {
-      const result = await getUserOrganizations(session?.user?.id || 'anonymous');
+      const userId = session?.user?.id;
+      const userWithOrg = session?.user as {
+        id?: string;
+        organizationId?: string;
+      };
+      const userOrgId = userWithOrg?.organizationId;
+      
+      if (!userId) {
+        setError('User session not found');
+        setLoading(false);
+        return;
+      }
+      
+      const result = await getUserOrganizations(userId, userOrgId);
       if (result.success && result.organizations) {
         setOrganizations(result.organizations);
         if (result.organizations.length > 0) {
@@ -73,14 +77,41 @@ export default function OrganizationSettings() {
     } finally {
       setLoading(false);
     }
-  }, [session?.user?.id]);
+  }, [session]);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/');
+      return;
+    }
+
+    if (status === 'authenticated' && session?.user) {
+      // Check if user has Pro subscription
+      const userWithSubscription = session.user as {
+        id?: string;
+        subscriptionTier?: string;
+        subscriptionStatus?: string;
+        organizationId?: string;
+      };
+      const userTier = userWithSubscription.subscriptionTier || 'hobby';
+      const userStatus = userWithSubscription.subscriptionStatus;
+      setIsProUser(userTier === 'pro' && userStatus === 'active');
+      
+      if (userTier === 'pro' && userStatus === 'active') {
+        fetchOrganizations();
+      } else {
+        setLoading(false);
+      }
+    }
+  }, [status, router, session, fetchOrganizations]);
 
   const fetchMembers = useCallback(async (orgId: string) => {
-    if (!orgId) return;
+    if (!orgId || !session?.user?.id) return;
     
     setMemberLoading(true);
+    setError('');
     try {
-      const result = await getOrganizationMembers(orgId, session?.user?.id || 'anonymous');
+      const result = await getOrganizationMembers(orgId, session.user.id);
       if (result.success) {
         setMembers(result.members || []);
         setPendingInvitations(result.pendingInvitations || []);
@@ -93,7 +124,7 @@ export default function OrganizationSettings() {
     } finally {
       setMemberLoading(false);
     }
-  }, [session?.user?.id]);
+  }, [session]);
 
   useEffect(() => {
     if (selectedOrg) {
@@ -103,14 +134,19 @@ export default function OrganizationSettings() {
 
   const handleInviteMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMemberEmail.trim() || !selectedOrg) return;
+    if (!newMemberEmail.trim() || !selectedOrg || !session?.user?.id) return;
 
     setInviteLoading(true);
     setError('');
     setSuccessMessage('');
 
     try {
-      const result = await inviteUserToOrganization(selectedOrg, newMemberEmail.trim(), session?.user?.id || 'anonymous', session?.user?.name);
+      const result = await inviteUserToOrganization(
+        selectedOrg, 
+        newMemberEmail.trim(), 
+        session.user.id, 
+        session.user.name
+      );
 
       if (result.success) {
         if (result.user) {
@@ -120,7 +156,7 @@ export default function OrganizationSettings() {
         }
         setNewMemberEmail('');
         // Refresh members list
-        fetchMembers(selectedOrg);
+        await fetchMembers(selectedOrg);
       } else {
         setError(result.error || 'Failed to send invitation');
       }
@@ -138,6 +174,82 @@ export default function OrganizationSettings() {
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show Pro upgrade prompt for non-Pro users
+  if (!isProUser) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 dark:from-slate-900 dark:to-slate-800 py-12">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="text-center py-20">
+            <div className="mb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 bg-purple-100 dark:bg-purple-900 rounded-full mb-6">
+                <svg className="w-10 h-10 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
+                Organization Management is a Pro Feature
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto">
+                Upgrade to Pro to invite team members, manage organization settings, and collaborate with your team.
+              </p>
+              <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 max-w-md mx-auto mb-8">
+                <h2 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">
+                  Pro Plan Benefits
+                </h2>
+                <ul className="space-y-3 text-left mb-6">
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Unlimited team members</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Organization-wide project sharing</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Advanced collaboration features</span>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-slate-600 dark:text-slate-300">Priority support</span>
+                  </li>
+                </ul>
+                <div className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+                  $5<span className="text-base font-normal text-slate-600 dark:text-slate-300">/month</span>
+                </div>
+              </div>
+              <div className="flex gap-4 justify-center">
+                <Link
+                  href="/subscribe"
+                  className="inline-flex items-center px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
+                >
+                  Upgrade to Pro
+                  <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+                <Link
+                  href="/projects"
+                  className="inline-flex items-center px-6 py-3 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-semibold rounded-lg shadow-md hover:shadow-lg border border-slate-200 dark:border-slate-700 transition-all"
+                >
+                  Back to Projects
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -278,7 +390,7 @@ export default function OrganizationSettings() {
                           {invitation.email}
                         </p>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Invited by {invitation.inviter.name || invitation.inviter.email} • Expires {invitation.expiresAt.toLocaleDateString()}
+                          Invited by {invitation.inviter.name || invitation.inviter.email} • Expires {new Date(invitation.expiresAt).toLocaleDateString()}
                         </p>
                       </div>
                       <span className="text-xs px-2 py-1 bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 rounded-full">

@@ -42,7 +42,32 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, user }) {
       if (session.user && user?.id) {
-        (session.user as typeof session.user & { id: string }).id = user.id
+        // Fetch full user data including subscription info
+        const fullUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: {
+            id: true,
+            subscriptionTier: true,
+            subscriptionStatus: true,
+            organizationId: true,
+            plan: true,
+          }
+        });
+        
+        if (fullUser) {
+          const extendedUser = session.user as {
+            id?: string;
+            subscriptionTier?: string;
+            subscriptionStatus?: string | null;
+            organizationId?: string | null;
+            plan?: string;
+          };
+          extendedUser.id = fullUser.id;
+          extendedUser.subscriptionTier = fullUser.subscriptionTier;
+          extendedUser.subscriptionStatus = fullUser.subscriptionStatus;
+          extendedUser.organizationId = fullUser.organizationId;
+          extendedUser.plan = fullUser.plan;
+        }
       }
       return session
     },
