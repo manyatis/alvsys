@@ -9,7 +9,7 @@ interface GetStartedModalProps {
 
 export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProps) {
   const [copiedText, setCopiedText] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'desktop' | 'code'>('desktop')
+  const [activeTab, setActiveTab] = useState<'desktop' | 'code'>('code')
 
   const copyToClipboard = async (text: string, label: string) => {
     try {

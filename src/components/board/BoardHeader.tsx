@@ -193,13 +193,13 @@ export default function BoardHeader({
               )}
             </div>
             
-            {/* MCP Guide Button */}
+            {/* MCP Commands Button */}
             <button
               onClick={onOpenMCPGuide}
               className="flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
             >
               <Bot className="h-4 w-4" />
-              <span className="hidden sm:inline">MCP Guide</span>
+              <span className="hidden sm:inline">MCP Commands</span>
             </button>
           </div>
         </div>
