@@ -273,8 +273,7 @@ export async function seedSubscriptionPlans(): Promise<SeedPlansResult> {
           'Everything in Pro',
           'Custom AI Agent Integrations',
           'Dedicated Account Manager',
-          'SLA Guarantees',
-          'Enterprise Security'
+          'SLA Guarantees'
         ],
         description: 'Advanced features, custom integrations, dedicated support',
         stripePriceId: null,
