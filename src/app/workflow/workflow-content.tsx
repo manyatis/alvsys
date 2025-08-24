@@ -112,8 +112,7 @@ export default function WorkflowContent() {
       transition: {
         type: "spring",
         damping: 8,
-        stiffness: 80,
-        duration: 1.2
+        stiffness: 80
       }
     },
     pop: {
