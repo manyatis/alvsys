@@ -83,10 +83,9 @@ export default function WorkflowContent() {
       scale: 1,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 10,
-        stiffness: 100,
-        duration: 0.8
+        stiffness: 100
       }
     },
     pop: {
@@ -94,7 +93,7 @@ export default function WorkflowContent() {
       opacity: [1, 0.8, 0],
       transition: {
         duration: 0.5,
-        ease: "easeOut"
+        ease: "easeOut" as const
       }
     }
   };
@@ -121,7 +120,7 @@ export default function WorkflowContent() {
       rotate: 360,
       transition: {
         duration: 0.7,
-        ease: "easeOut"
+        ease: "easeOut" as const
       }
     }
   };
@@ -147,7 +146,7 @@ export default function WorkflowContent() {
           }}
           transition={{
             duration: 0.8,
-            ease: "easeOut"
+            ease: "easeOut" as const
           }}
           style={{
             left: '50%',
@@ -175,7 +174,7 @@ export default function WorkflowContent() {
               duration: Math.random() * 5 + 5,
               repeat: Infinity,
               delay: Math.random() * 5,
-              ease: "linear"
+              ease: "linear" as const
             }}
             style={{
               left: `${Math.random() * 100}%`,
