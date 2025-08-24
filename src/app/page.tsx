@@ -53,12 +53,24 @@ export default function Home() {
           <div className="container mx-auto px-6 py-24 lg:py-32">
             <div className="max-w-6xl mx-auto text-center">
               <motion.h1 
-                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 dark:text-white mb-8"
+                className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 relative"
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: "easeOut" }}
               >
-                Project Management For The AI Era
+                <span className="relative inline-block">
+                  <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 blur-3xl opacity-30"></span>
+                  <span className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+                    Project Management
+                  </span>
+                </span>
+                <span className="text-slate-900 dark:text-white"> For The </span>
+                <span className="relative inline-block">
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 blur-3xl opacity-30"></span>
+                  <span className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    AI Era
+                  </span>
+                </span>
               </motion.h1>
 
               {/* Agents Carousel below hero text */}
