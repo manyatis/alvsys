@@ -86,70 +86,72 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function processWebhookEvent(eventType: string, data: Record<string, unknown>, deliveryId: string) {
-  try {
-    // Find the project associated with this repository
-    const repository = data.repository as { full_name?: string } | undefined;
-    const repositoryName = repository?.full_name;
-    if (!repositoryName) {
-      console.log('No repository information in webhook payload');
-      return;
-    }
+// Currently unused but kept for future webhook processing
+// async function processWebhookEvent(eventType: string, data: Record<string, unknown>, deliveryId: string) {
+//   try {
+//     // Find the project associated with this repository
+//     const repository = data.repository as { full_name?: string } | undefined;
+//     const repositoryName = repository?.full_name;
+//     if (!repositoryName) {
+//       console.log('No repository information in webhook payload');
+//       return;
+//     }
 
-    const projects = await prisma.project.findMany({
-      where: {
-        githubRepoName: repositoryName,
-        githubSyncEnabled: true,
-      },
-    });
+//     const projects = await prisma.project.findMany({
+//       where: {
+//         githubRepoName: repositoryName,
+//         githubSyncEnabled: true,
+//       },
+//     });
 
-    if (projects.length === 0) {
-      console.log(`No projects found for repository ${repositoryName}`);
-      return;
-    }
+//     if (projects.length === 0) {
+//       console.log(`No projects found for repository ${repositoryName}`);
+//       return;
+//     }
 
-    // Process the event for each project
-    for (const project of projects) {
-      try {
-        await processEventForProject(project.id, eventType, data);
-      } catch (error) {
-        console.error(`Error processing event for project ${project.id}:`, error);
+//     // Process the event for each project
+//     for (const project of projects) {
+//       try {
+//         await processEventForProject(project.id, eventType, data);
+//       } catch (error) {
+//         console.error(`Error processing event for project ${project.id}:`, error);
         
-        // Update webhook event with error
-        await prisma.gitHubWebhookEvent.updateMany({
-          where: { githubEventId: deliveryId },
-          data: {
-            processingError: error instanceof Error ? error.message : 'Unknown error',
-            retryCount: { increment: 1 },
-          },
-        });
-      }
-    }
+//         // Update webhook event with error
+//         await prisma.gitHubWebhookEvent.updateMany({
+//           where: { githubEventId: deliveryId },
+//           data: {
+//             processingError: error instanceof Error ? error.message : 'Unknown error',
+//             retryCount: { increment: 1 },
+//           },
+//         });
+//       }
+//     }
 
-    // Mark webhook as processed
-    await prisma.gitHubWebhookEvent.updateMany({
-      where: { githubEventId: deliveryId },
-      data: {
-        processed: true,
-        processedAt: new Date(),
-      },
-    });
-  } catch (error) {
-    console.error('Error in processWebhookEvent:', error);
-    throw error;
-  }
-}
+//     // Mark webhook as processed
+//     await prisma.gitHubWebhookEvent.updateMany({
+//       where: { githubEventId: deliveryId },
+//       data: {
+//         processed: true,
+//         processedAt: new Date(),
+//       },
+//     });
+//   } catch (error) {
+//     console.error('Error in processWebhookEvent:', error);
+//     throw error;
+//   }
+// }
 
-async function processEventForProject(projectId: string, eventType: string, data: Record<string, unknown>) {
-  try {
-    const result = await handleWebhook(data, eventType);
-    if (!result.success) {
-      console.log(`Failed to process webhook for project ${projectId}: ${result.error}`);
-      return;
-    }
-    console.log(`Successfully processed ${eventType} webhook for project ${projectId}`);
-  } catch (error) {
-    console.error(`Error processing webhook for project ${projectId}:`, error);
-    return;
-  }
-}
+// Currently unused but kept for future implementation
+// async function processEventForProject(projectId: string, eventType: string, data: Record<string, unknown>) {
+//   try {
+//     const result = await handleWebhook(data, eventType);
+//     if (!result.success) {
+//       console.log(`Failed to process webhook for project ${projectId}: ${result.error}`);
+//       return;
+//     }
+//     console.log(`Successfully processed ${eventType} webhook for project ${projectId}`);
+//   } catch (error) {
+//     console.error(`Error processing webhook for project ${projectId}:`, error);
+//     return;
+//   }
+// }

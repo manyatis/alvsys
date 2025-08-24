@@ -243,21 +243,21 @@ export default function AnimatedBoardDemo({
     }
   };
 
-  const getPriorityText = (priority: number) => {
-    switch (priority) {
-      case 1:
-        return 'High';
-      case 2:
-        return 'Medium';
-      case 3:
-        return 'Normal';
-      case 4:
-      case 5:
-        return 'Low';
-      default:
-        return 'Normal';
-    }
-  };
+  // const getPriorityText = (priority: number) => {
+  //   switch (priority) {
+  //     case 1:
+  //       return 'High';
+  //     case 2:
+  //       return 'Medium';
+  //     case 3:
+  //       return 'Normal';
+  //     case 4:
+  //     case 5:
+  //       return 'Low';
+  //     default:
+  //       return 'Normal';
+  //   }
+  // };
 
   return (
     <div className="w-full max-w-md mx-auto space-y-3">

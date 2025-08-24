@@ -46,7 +46,7 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
-    async signIn({ user, account, profile }) {
+    async signIn({ user }) { // account, profile unused
       // New users automatically get FREE tier via database defaults
       // No need to explicitly assign - Prisma schema defaults handle this
       if (user?.id) {

@@ -1,6 +1,6 @@
 'use client'
 
-import { TruckElectricIcon } from 'lucide-react'
+// import { TruckElectricIcon } from 'lucide-react'
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 

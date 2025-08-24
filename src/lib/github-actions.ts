@@ -47,7 +47,7 @@ export async function getAllInstallations(userId: string) {
       if (appResult.installations && appResult.installations.length > 0) {
         return appResult;
       }
-    } catch (error) {
+    } catch {
       console.log('App installations failed, trying user installations');
     }
 
