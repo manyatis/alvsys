@@ -110,7 +110,7 @@ export default function WorkflowContent() {
       opacity: 1,
       rotate: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 8,
         stiffness: 80
       }
