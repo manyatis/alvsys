@@ -110,7 +110,7 @@ export default function Navbar() {
                 <VibeHeroLogo gradientId="gradient-navbar" />
                 VibeHero
               </Link>
-              <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 rounded-full border border-green-200 dark:border-green-800/30">
+              <span className="px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800/30">
                 BETA
               </span>
             </div>
@@ -272,7 +272,7 @@ export default function Navbar() {
                   </button>
                   
                   {/* User Dropdown Menu */}
-                  <div className={`absolute top-full right-0 mt-2 w-56 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${
+                  <div className={`absolute top-full right-0 w-56 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 transition-all duration-500 ${
                     isUserMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
                   }`}>
                     <div className="py-2 px-2 space-y-1">
