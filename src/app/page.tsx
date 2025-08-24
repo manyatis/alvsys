@@ -137,11 +137,15 @@ export default function Home() {
           className="py-24 bg-slate-50 dark:bg-slate-950"
           initial="initial"
           whileInView="animate"
-          viewport={{ once: true, amount: 0.5 }}
+          viewport={{ once: true, amount: 0.1, margin: "0px 0px -100px 0px" }}
         >
           <div className="container mx-auto px-6">
-            <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-              <motion.div variants={fadeInUp}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center max-w-6xl mx-auto">
+              <motion.div 
+                variants={fadeInUp} 
+                className="opacity-100"
+                style={{ opacity: 1 }}
+              >
                 <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
                   Work with Any Agent, Anywhere
                 </h2>
@@ -227,8 +231,9 @@ export default function Home() {
               </motion.div>
 
               <motion.div 
-                className="relative"
+                className="relative opacity-100"
                 variants={fadeInScale}
+                style={{ opacity: 1 }}
               >
                 {/* Live Animated Demo */}
                 <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
