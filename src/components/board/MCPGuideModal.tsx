@@ -85,7 +85,7 @@ export default function MCPGuideModal({
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-2">
             <Bot className="h-5 w-5 text-purple-600" />
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">MCP Guide</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">MCP Commands</h2>
           </div>
           <button
             onClick={onClose}
