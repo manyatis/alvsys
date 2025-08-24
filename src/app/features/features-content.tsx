@@ -147,12 +147,11 @@ export default function FeaturesContent() {
                 initial="initial"
                 whileInView="animate"
                 viewport={{ once: true, amount: 0.3 }}
-                className="grid lg:grid-cols-2 gap-16 items-center"
+                className="max-w-4xl mx-auto"
               >
                 {/* Details Section */}
                 <motion.div 
-                  variants={isEven ? fadeInLeft : fadeInRight}
-                  className={isEven ? 'lg:order-1' : 'lg:order-2'}
+                  variants={fadeInUp}
                 >
                   <div className="flex items-center gap-4 mb-6">
                     <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400">
@@ -184,8 +183,8 @@ export default function FeaturesContent() {
                   </motion.ul>
                 </motion.div>
 
-                {/* Video Section */}
-                <motion.div 
+                {/* Video Section - Temporarily commented out for new videos */}
+                {/* <motion.div 
                   variants={isEven ? fadeInRight : fadeInLeft}
                   className={isEven ? 'lg:order-2' : 'lg:order-1'}
                 >
@@ -204,7 +203,7 @@ export default function FeaturesContent() {
                       </video>
                     </div>
                   </div>
-                </motion.div>
+                </motion.div> */}
               </motion.section>
             );
           })}
