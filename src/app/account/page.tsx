@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { getAllInstallations } from '@/lib/github-actions';
@@ -28,7 +29,7 @@ export default function AccountSettings() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [,] = useState<string | null>(null);
   const [githubInstallations, setGithubInstallations] = useState<GitHubInstallation[]>([]);
   const [githubConnected, setGithubConnected] = useState(false);
   const [loadingGithub, setLoadingGithub] = useState(true);
@@ -48,7 +49,7 @@ export default function AccountSettings() {
   }, [session, status, router]);
 
 
-  const fetchGitHubData = async () => {
+  const fetchGitHubData = useCallback(async () => {
     try {
       setLoadingGithub(true);
       // Check if user is connected via GitHub
@@ -68,9 +69,9 @@ export default function AccountSettings() {
     } finally {
       setLoadingGithub(false);
     }
-  };
+  }, [session?.user?.email, session?.user?.name, session?.user?.id]);
 
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoadingProjects(true);
       const result = await getUserProjects();
@@ -82,7 +83,7 @@ export default function AccountSettings() {
     } finally {
       setLoadingProjects(false);
     }
-  };
+  }, []);
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -299,9 +300,11 @@ export default function AccountSettings() {
                               className="p-4 border border-slate-200 dark:border-slate-600 rounded-lg"
                             >
                               <div className="flex items-center gap-3 mb-3">
-                                <img
+                                <Image
                                   src={installation.account.avatar_url}
                                   alt={installation.account.login}
+                                  width={32}
+                                  height={32}
                                   className="w-8 h-8 rounded-full"
                                 />
                                 <div>

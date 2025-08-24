@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -56,7 +56,7 @@ export default function OrganizationSettings() {
     }
   }, [status, router]);
 
-  const fetchOrganizations = async () => {
+  const fetchOrganizations = useCallback(async () => {
     try {
       const result = await getUserOrganizations(session?.user?.id || 'anonymous');
       if (result.success && result.organizations) {
@@ -73,9 +73,9 @@ export default function OrganizationSettings() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session?.user?.id]);
 
-  const fetchMembers = async (orgId: string) => {
+  const fetchMembers = useCallback(async (orgId: string) => {
     if (!orgId) return;
     
     setMemberLoading(true);
@@ -93,13 +93,13 @@ export default function OrganizationSettings() {
     } finally {
       setMemberLoading(false);
     }
-  };
+  }, [session?.user?.id]);
 
   useEffect(() => {
     if (selectedOrg) {
       fetchMembers(selectedOrg);
     }
-  }, [selectedOrg]);
+  }, [selectedOrg, fetchMembers]);
 
   const handleInviteMember = async (e: React.FormEvent) => {
     e.preventDefault();

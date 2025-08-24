@@ -12,7 +12,8 @@ import {
   createIssueComment
 } from '@/lib/issue-functions';
 import { getProjectById } from '@/lib/project-functions';
-import { getProjectSprints, createSprint } from '@/lib/sprint-functions';
+import { getProjectSprints } from '@/lib/sprint-functions';
+// import { createSprint } from '@/lib/sprint-functions'; // unused
 import { getProjectLabels, createLabel as createLabelAction } from '@/lib/label-functions';
 import { syncProject } from '@/lib/github-functions';
 import { useSession } from 'next-auth/react';
@@ -180,7 +181,7 @@ export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = 
       setIsRefreshing(true);
       try {
         // Use AbortController to cancel requests if component unmounts
-        const controller = new AbortController();
+        // const controller = new AbortController(); // unused
         
         // Fetch cards
         const issuesResult = await getProjectIssues(projectId, 'anonymous');

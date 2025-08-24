@@ -1,7 +1,7 @@
 'use server';
 
 // Authentication imports removed - will be handled at a higher layer
-import { prisma } from '@/lib/prisma';
+// import { prisma } from '@/lib/prisma'; // unused
 import { CardService } from '@/services/card-service';
 import { Card } from '@/types/card';
 
