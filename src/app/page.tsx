@@ -1,25 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import LoginModal from '@/components/login-modal';
 import AnimatedBoardDemo from '@/components/board/AnimatedBoardDemo';
 import AgentsCarousel from '@/components/AgentsCarousel';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import CallbackHandler from '@/components/CallbackHandler';
 
 export default function Home() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [callbackUrl, setCallbackUrl] = useState('/');
-  const searchParams = useSearchParams();
-
-  // Check for callbackUrl in URL parameters and auto-open login modal
-  useEffect(() => {
-    const urlCallbackUrl = searchParams.get('callbackUrl');
-    if (urlCallbackUrl) {
-      setCallbackUrl(urlCallbackUrl);
-      setIsLoginModalOpen(true);
-    }
-  }, [searchParams]);
 
   // Animation variants
   const fadeInUp = {
@@ -509,6 +500,16 @@ export default function Home() {
         </motion.section>
 
       </div>
+
+      {/* Callback URL Handler */}
+      <Suspense fallback={null}>
+        <CallbackHandler 
+          onCallbackUrl={(url) => {
+            setCallbackUrl(url);
+            setIsLoginModalOpen(true);
+          }}
+        />
+      </Suspense>
 
       {/* Login Modal */}
       <LoginModal
