@@ -89,7 +89,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
               >
-                Stunning visual issue boards, seamless integration with Github, and powerful MCP tooling to power agents autonomously.
+                Seamless GitHub integration, MCP native support and powerful management boards. Exclusive developer mode MCP tool to automate your agentic workflow.
               </motion.p>
 
             <motion.div 
