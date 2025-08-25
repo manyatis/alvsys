@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Plus, Folder, Users, Calendar, Github, Zap } from 'lucide-react';
 import GitHubRepositorySelector from '@/components/GitHubRepositorySelector';
@@ -63,7 +63,7 @@ export default function ProjectsPage() {
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
     if (status === 'unauthenticated') {
-      router.push('/');
+      signIn(undefined, { callbackUrl: '/projects' });
     } else if (status === 'authenticated') {
       fetchProjects();
       fetchOrganizations();
