@@ -222,7 +222,13 @@ export default function Navbar() {
                 MCP
               </Link>
               <button 
-                onClick={() => setIsGetStartedModalOpen(true)}
+                onClick={() => {
+                  if (session) {
+                    router.push('/projects');
+                  } else {
+                    setIsGetStartedModalOpen(true);
+                  }
+                }}
                 className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
               >
                 Get Started
@@ -369,7 +375,11 @@ export default function Navbar() {
             </Link>
             <button 
               onClick={() => {
-                setIsGetStartedModalOpen(true);
+                if (session) {
+                  router.push('/projects');
+                } else {
+                  setIsGetStartedModalOpen(true);
+                }
                 setIsMobileMenuOpen(false);
               }}
               className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
