@@ -28,7 +28,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+      <footer className="bg-gradient-to-r from-purple-50 via-pink-25 to-purple-100 dark:bg-gradient-to-r dark:from-purple-950/50 dark:via-pink-950/30 dark:to-purple-900/50 border-t border-purple-200/50 dark:border-purple-700/50">
         <div className="container mx-auto px-6 py-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
@@ -70,14 +70,6 @@ export default function Footer() {
                   </Link>
                 </li>
 
-                <li>
-                  <Link 
-                    href="/documentation"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    MCP Documentation
-                  </Link>
-                </li>
               </ul>
             </div>
 

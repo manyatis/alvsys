@@ -88,7 +88,7 @@ export default function Navbar() {
   return (
     <>
       {/* Sticky Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600/20 via-pink-500/10 to-purple-700/20 dark:from-purple-900/30 dark:via-pink-900/20 dark:to-purple-800/30 backdrop-blur-sm border-b border-purple-200/50 dark:border-purple-700/50">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -195,12 +195,6 @@ export default function Navbar() {
                 className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
               >
                 Features
-              </Link>
-              <Link 
-                href="/documentation"
-                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
-              >
-                MCP
               </Link>
               <button 
                 onClick={() => {
@@ -311,7 +305,7 @@ export default function Navbar() {
         </div>
         
         {/* Mobile Menu */}
-        <div className={`md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-t border-slate-200 dark:border-slate-700 transition-all duration-300 ${
+        <div className={`md:hidden bg-gradient-to-r from-purple-600/20 via-pink-500/10 to-purple-700/20 dark:from-purple-900/30 dark:via-pink-900/20 dark:to-purple-800/30 backdrop-blur-sm border-t border-purple-200/50 dark:border-purple-700/50 transition-all duration-300 ${
           isMobileMenuOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="px-6 py-4 space-y-2">
@@ -337,13 +331,6 @@ export default function Navbar() {
               className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Features
-            </Link>
-            <Link 
-              href="/documentation"
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              MCP
             </Link>
             <button 
               onClick={() => {

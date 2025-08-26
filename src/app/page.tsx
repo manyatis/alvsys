@@ -92,7 +92,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
               >
-                Seamless GitHub integration, MCP native support and powerful management boards. Exclusive developer mode MCP tool to automate your agentic workflow.
+                Seamless GitHub integration, @claude GitHub Action support and powerful management boards. Automatically have Claude work on issues from VibeHero on creation.
               </motion.p>
 
             <motion.div 
@@ -156,10 +156,10 @@ export default function Home() {
                 style={{ opacity: 1 }}
               >
                 <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                  Work with Any Agent, Anywhere
+                  AI-Powered Development Workflow
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  Connect any AI agent to your project board via MCP:
+                  Automatically trigger Claude to work on your issues with GitHub Actions:
                 </p>
                 <motion.div 
                   className="space-y-6"
@@ -211,10 +211,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Work Natively with MCP Support
+                        3. Add @claude GitHub Action
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Work on issues using agentic coding with full MCP (Model Context Protocol) support for seamless AI integration.
+                        Install the @claude GitHub Action to automatically have Claude work on VibeHero issues when they&apos;re created.
                       </p>
                     </div>
                   </motion.div>
@@ -229,10 +229,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        4. Enter &quot;Dev Mode&quot; for Automation
+                        4. Kick Off Claude Workflows
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Let agents autonomously work on all AI-allowed issues. They&apos;ll add comments, update status, push to git, and more.
+                        From anywhere - create issues on VibeHero and have Claude automatically work on them via GitHub Actions integration.
                       </p>
                     </div>
                   </motion.div>
