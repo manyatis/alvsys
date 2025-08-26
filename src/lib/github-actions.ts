@@ -40,18 +40,8 @@ export async function getAppInstallations() {
  */
 export async function getAllInstallations(userId: string) {
   try {
-
-    // Try app installations first
-    try {
-      const appResult = await getAppInstallations();
-      if (appResult.installations && appResult.installations.length > 0) {
-        return appResult;
-      }
-    } catch {
-      console.log('App installations failed, trying user installations');
-    }
-
-    // Fall back to user installations
+    // SECURITY FIX: Only use user installations, never app installations
+    // App installations would expose all installations across all users
     return await getUserInstallations(userId);
   } catch (error) {
     console.error('Error in getAllInstallations server action:', error);
