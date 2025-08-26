@@ -138,6 +138,17 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
           })
         );
 
+        // If no installations found, prompt user to install the app
+        if (installationsWithRepos.length === 0) {
+          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
+          return {
+            installations: [],
+            needsAppInstallation: true,
+            installUrl: `https://github.com/apps/${appName}/installations/new`,
+            error: 'No GitHub App installations found. Please install the app on your repositories.',
+          };
+        }
+
         return {
           installations: installationsWithRepos,
         };
@@ -146,14 +157,14 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         const errorStatus = (error as { status?: number }).status;
         
         // If it's a 403, the user needs to authorize the app
-        if (errorStatus === 403) {
+        if (errorStatus === 403 || errorMessage.includes('GitHub App not authorized')) {
           const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
           return {
             installations: [],
             needsAppInstallation: true,
             needsAuthorization: true,
             authorizationUrl: `https://github.com/apps/${appName}/installations/new`,
-            error: 'GitHub App requires authorization. Please authorize the app to access your installations.',
+            error: 'GitHub App requires authorization. Please install and authorize the app to access your repositories.',
           };
         }
         

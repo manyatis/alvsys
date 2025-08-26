@@ -395,8 +395,16 @@ export class GitHubService {
       } catch (error) {
         // If the user hasn't authorized the GitHub App, this will fail with 403
         const errorStatus = (error as { status?: number }).status;
-        if (errorStatus === 403 || errorStatus === 404) {
-          throw new Error('GitHub App not authorized. Please install the GitHub App to continue.');
+        const errorMessage = (error as { message?: string }).message;
+        if (errorStatus === 403) {
+          // Check if it's specifically an authorization issue
+          if (errorMessage?.includes('requires authentication') || errorMessage?.includes('Bad credentials')) {
+            throw new Error('GitHub App not authorized. Please install the GitHub App to continue.');
+          }
+          // 403 might also mean the user needs to grant the app access to installations
+          throw new Error('GitHub App not authorized. Please authorize the GitHub App to access your installations.');
+        } else if (errorStatus === 404) {
+          throw new Error('GitHub App not found. Please install the GitHub App to continue.');
         }
         throw error;
       }
