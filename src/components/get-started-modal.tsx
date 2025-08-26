@@ -46,10 +46,10 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
         {/* Header */}
         <div className="px-8 pt-8 pb-4 border-b border-slate-200 dark:border-slate-700">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Get Started with VibeHero MCP
+            Get Started with VibeHero
           </h2>
           <p className="text-slate-600 dark:text-slate-300">
-            Connect Claude to your VibeHero projects using the Model Context Protocol (MCP)
+            Integrate Claude GitHub Actions to automate your development workflow
           </p>
         </div>
         
@@ -427,14 +427,14 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
             </h3>
             <div className="grid md:grid-cols-2 gap-4">
               <a
-                href="/documentation"
+                href="/features"
                 className="block p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
               >
                 <h4 className="font-medium text-slate-900 dark:text-slate-200 group-hover:text-purple-600 dark:group-hover:text-purple-400">
-                  MCP Documentation
+                  GitHub Action Features
                 </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Complete guide to using the VibeHero MCP server
+                  Learn about Claude GitHub Action integration
                 </p>
               </a>
               <a
@@ -442,10 +442,10 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                 className="block p-4 bg-slate-50 dark:bg-slate-900 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
               >
                 <h4 className="font-medium text-slate-900 dark:text-slate-200 group-hover:text-purple-600 dark:group-hover:text-purple-400">
-                  Generate Access Token
+                  Account Settings
                 </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Create your personal access token for MCP authentication
+                  Manage your VibeHero account and settings
                 </p>
               </a>
             </div>

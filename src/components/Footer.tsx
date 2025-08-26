@@ -70,14 +70,6 @@ export default function Footer() {
                   </Link>
                 </li>
 
-                <li>
-                  <Link 
-                    href="/documentation"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    MCP Documentation
-                  </Link>
-                </li>
               </ul>
             </div>
 
