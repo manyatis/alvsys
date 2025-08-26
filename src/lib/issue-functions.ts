@@ -556,6 +556,15 @@ export async function createIssueComment(issueId: string, content: string, userI
       }
     });
 
+    // Sync comment to GitHub if the project has GitHub sync enabled
+    try {
+      const { syncCommentToGitHub } = await import('@/lib/github-functions');
+      await syncCommentToGitHub(comment.id);
+    } catch (syncError) {
+      console.error('Error syncing comment to GitHub:', syncError);
+      // Don't fail comment creation if GitHub sync fails
+    }
+
     return {
       success: true,
       comment
