@@ -64,10 +64,9 @@ export default function Home() {
                 <span className="relative inline-block">
                   <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 blur-3xl opacity-30"></span>
                   <span className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                    Project Management
+                    Project Management For The
                   </span>
                 </span>
-                <span className="text-slate-900 dark:text-white"> For The </span>
                 <span className="relative inline-block">
                   <span className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 blur-3xl opacity-30"></span>
                   <span className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
