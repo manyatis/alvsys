@@ -210,7 +210,7 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Work on Issues via "Dev Mode" or Manually via MCP
+                        3. Work on Issues via <b>Dev Mode</b> or Manually via MCP
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
                         Use the MCP server to initiate dev mode, allowing agents to autonomously work on your code while you do other things! 
