@@ -391,7 +391,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       const claudeComment = `@claude Please work on this issue.
 
 Here's what needs to be done:
-${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + selectedCard.acceptanceCriteria : ''}`;
+${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + selectedCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
       
       await createIssueComment(selectedCard.id, claudeComment);
       
