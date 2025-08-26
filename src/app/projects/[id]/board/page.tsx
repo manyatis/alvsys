@@ -390,6 +390,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       const { createIssueComment } = await import('@/lib/issue-functions');
       const claudeComment = `@claude Please work on this issue.
 
+Please open a feature branch called feature/claude-vh-${selectedCard.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.
+
 Here's what needs to be done:
 ${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + selectedCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
       
