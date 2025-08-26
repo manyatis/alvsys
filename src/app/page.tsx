@@ -91,7 +91,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
               >
-                Seamless GitHub integration, @claude GitHub Action support and powerful management boards. Automatically have Claude work on issues from VibeHero on creation.
+                Seamless GitHub integration, @claude GitHub action support, powerful management boards and <b>Dev Mode</b>. Allow agents to autonomously work on your tasks in dev mode while you focus on other priorities.
               </motion.p>
 
             <motion.div 
