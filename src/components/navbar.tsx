@@ -88,7 +88,7 @@ export default function Navbar() {
   return (
     <>
       {/* Sticky Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-purple-600/20 via-pink-500/10 to-purple-700/20 dark:from-purple-900/30 dark:via-pink-900/20 dark:to-purple-800/30 backdrop-blur-sm border-b border-purple-200/50 dark:border-purple-700/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
@@ -97,7 +97,7 @@ export default function Navbar() {
                 <VibeHeroLogo gradientId="gradient-navbar" />
                 VibeHero
               </Link>
-              <span className="px-2 py-1 text-xs font-semibold bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400 rounded-full border border-purple-200 dark:border-purple-800/30">
+              <span className="px-2 py-1 text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">
                 BETA
               </span>
             </div>
@@ -121,7 +121,7 @@ export default function Navbar() {
                     }
                   }}
                   onMouseEnter={handleProjectsMouseEnter}
-                  className="flex items-center gap-1 px-3 md:px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                  className="flex items-center gap-1 px-3 md:px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-500"
                 >
                   Projects
                   {session && (
@@ -143,7 +143,7 @@ export default function Navbar() {
                       
                       {projectsLoading ? (
                         <div className="px-4 py-3 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-2">
-                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-purple-600"></div>
+                          <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-slate-600"></div>
                           Loading...
                         </div>
                       ) : projects.length > 0 ? (
@@ -155,7 +155,7 @@ export default function Navbar() {
                                 router.push(`/projects/${project.id}/board`);
                                 setIsProjectsOpen(false);
                               }}
-                              className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                              className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-500"
                             >
                               <div className="font-medium">{project.name}</div>
                               <div className="text-xs text-slate-500 dark:text-slate-400">{project.organization?.name}</div>
@@ -192,13 +192,13 @@ export default function Navbar() {
               </div>
               <Link 
                 href="/features"
-                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-500"
               >
                 Features
               </Link>
               <Link 
                 href="/installation"
-                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white font-medium hover:bg-purple-700 rounded-lg transition-all duration-500"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-500"
               >
                 Installation
               </Link>
@@ -210,7 +210,7 @@ export default function Navbar() {
                     setIsGetStartedModalOpen(true);
                   }
                 }}
-                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white active:text-slate-900 dark:active:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800 rounded-lg transition-all duration-500"
               >
                 Get Started
               </button>
@@ -237,7 +237,7 @@ export default function Navbar() {
             <div className="hidden md:flex items-center">
               {status === 'loading' ? (
                 <div className="px-6 py-2 flex items-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-slate-600"></div>
                 </div>
               ) : session ? (
                 <div 
@@ -247,9 +247,9 @@ export default function Navbar() {
                   onMouseLeave={() => setIsUserMenuOpen(false)}
                 >
                   <button 
-                    className="flex items-center gap-2 px-3 md:px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500 min-h-[44px]"
+                    className="flex items-center gap-2 px-3 md:px-6 h-full text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white active:text-slate-900 dark:active:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800 rounded-lg transition-all duration-500 min-h-[44px]"
                   >
-                    <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                    <div className="w-6 h-6 bg-slate-600 rounded-full flex items-center justify-center text-white text-xs font-semibold">
                       {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
                     </div>
                     {session.user?.email ? getUserDisplayName(session.user.email) : 'User'}
@@ -268,14 +268,14 @@ export default function Navbar() {
                           router.push('/account');
                           setIsUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-500"
                       >
                         Account Settings
                       </button>
                       <Link 
                         href="/projects"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-500"
                       >
                         Projects
                       </Link>
@@ -284,7 +284,7 @@ export default function Navbar() {
                           router.push('/organization');
                           setIsUserMenuOpen(false);
                         }}
-                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg transition-all duration-500"
+                        className="block w-full text-left px-4 py-2 text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-500"
                       >
                         Organization Settings
                       </button>
@@ -311,7 +311,7 @@ export default function Navbar() {
         </div>
         
         {/* Mobile Menu */}
-        <div className={`md:hidden bg-gradient-to-r from-purple-600/20 via-pink-500/10 to-purple-700/20 dark:from-purple-900/30 dark:via-pink-900/20 dark:to-purple-800/30 backdrop-blur-sm border-t border-purple-200/50 dark:border-purple-700/50 transition-all duration-300 ${
+        <div className={`md:hidden bg-white/90 dark:bg-slate-900/95 backdrop-blur-sm border-t border-slate-200/50 dark:border-slate-700/50 transition-all duration-300 ${
           isMobileMenuOpen ? 'max-h-[32rem] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'
         }`}>
           <div className="px-6 py-4 space-y-2">
@@ -327,21 +327,21 @@ export default function Navbar() {
                 }
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Projects
             </button>
             <Link 
               href="/features"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Features
             </Link>
             <Link 
               href="/installation"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white hover:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Installation
             </Link>
@@ -354,7 +354,7 @@ export default function Navbar() {
                 }
                 setIsMobileMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white active:text-slate-900 dark:active:text-white hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Get Started
             </button>
@@ -363,12 +363,12 @@ export default function Navbar() {
             <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
               {status === 'loading' ? (
                 <div className="flex items-center justify-center px-4 py-6">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-slate-600"></div>
                 </div>
               ) : session ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-4 px-4 py-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+                    <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
                       {session.user?.email ? getUserDisplayName(session.user.email).charAt(0).toUpperCase() : 'U'}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -388,7 +388,7 @@ export default function Navbar() {
                         router.push('/account');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg transition-all duration-300"
+                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all duration-300"
                       title="Account Settings"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,7 +401,7 @@ export default function Navbar() {
                     <Link 
                       href="/projects"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg transition-all duration-300"
+                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all duration-300"
                       title="Projects"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -416,7 +416,7 @@ export default function Navbar() {
                         router.push('/organization');
                         setIsMobileMenuOpen(false);
                       }}
-                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-purple-600 dark:hover:text-purple-400 rounded-lg transition-all duration-300"
+                      className="flex flex-col items-center gap-1 p-3 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-lg transition-all duration-300"
                       title="Organization"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
