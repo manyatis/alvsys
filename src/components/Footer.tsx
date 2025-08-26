@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 import VibeHeroLogo from '@/components/vibehero-logo';
@@ -10,21 +9,7 @@ import VibeHeroLogo from '@/components/vibehero-logo';
 export default function Footer() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { data: session } = useSession();
-  const router = useRouter();
 
-  const handlePricingClick = () => {
-    // Check if we're on the home page
-    if (window.location.pathname === '/') {
-      // Scroll to pricing section
-      const pricingSection = document.getElementById('pricing');
-      if (pricingSection) {
-        pricingSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      // Navigate to home page with pricing hash
-      router.push('/#pricing');
-    }
-  };
 
   return (
     <>
@@ -70,14 +55,6 @@ export default function Footer() {
                   </Link>
                 </li>
 
-                <li>
-                  <Link 
-                    href="/documentation"
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
-                  >
-                    MCP Documentation
-                  </Link>
-                </li>
               </ul>
             </div>
 

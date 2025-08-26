@@ -44,16 +44,16 @@ const features: Feature[] = [
     videoSrc: '/Github_Integration.mp4'
   },
   {
-    id: 'mcp-support',
-    title: 'AI Native MCP Support',
+    id: 'claude-github-action',
+    title: '@claude GitHub Action Integration',
     icon: Bot,
-    description: 'Total connection with AI agents - get tasks, update issues, and manage projects.',
+    description: 'Seamless integration with @claude GitHub action - automatically have Claude work on VibeHero issues.',
     details: [
-      'Model Context Protocol (MCP) integration',
-      'Direct AI agent communication',
-      'Task fetching and updating via MCP',
-      'Project management from any MCP tool',
-      'Environment variable configuration'
+      'Automatic Claude workflow triggering from VibeHero',
+      'Issues created in VibeHero trigger @claude GitHub action',
+      'AI agents automatically start working on new tasks',
+      'Complete integration with GitHub repositories',
+      'Kick off Claude workflows from anywhere in VibeHero'
     ],
     videoSrc: '/mcp_tool_clip.mp4'
   },
@@ -81,17 +81,6 @@ export default function FeaturesContent() {
     transition: { duration: 1.2, ease: "easeOut" }
   };
 
-  const fadeInLeft = {
-    initial: { opacity: 0, x: -60 },
-    animate: { opacity: 1, x: 0 },
-    transition: { duration: 1.2, ease: "easeOut" }
-  };
-
-  const fadeInRight = {
-    initial: { opacity: 0, x: 60 },
-    animate: { opacity: 1, x: 0 },
-    transition: { duration: 1.2, ease: "easeOut" }
-  };
 
   const staggerContainer = {
     animate: {
@@ -137,9 +126,8 @@ export default function FeaturesContent() {
       {/* Features Section */}
       <div className="container mx-auto px-6 pb-20">
         <div className="space-y-32">
-          {features.map((feature, index) => {
+          {features.map((feature) => {
             const Icon = feature.icon;
-            const isEven = index % 2 === 0;
             
             return (
               <motion.section
@@ -241,10 +229,10 @@ export default function FeaturesContent() {
               Get Started Free
             </button>
             <button 
-              onClick={() => window.location.href = '/documentation'}
+              onClick={() => window.location.href = '/features'}
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors"
             >
-              View Documentation
+              Learn More
             </button>
           </motion.div>
         </div>
