@@ -175,10 +175,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        1. Optionally Link GitHub Repository
+                        1. Optionally Link GitHub Repository & Claude GitHub Actions
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Connect your GitHub repo to sync issues and track progress visually in real-time.
+                        Connect your GitHub repo to sync issues and track progress visually in real-time. Have @claude work on your code anytime, anywhere via GitHub actions.
                       </p>
                     </div>
                   </motion.div>
@@ -211,10 +211,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Add @claude GitHub Action
+                        3. Work on Issues via "Dev Mode" or Manually via MCP
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Install the @claude GitHub Action to automatically have Claude work on VibeHero issues when they&apos;re created.
+                        Use the MCP server to initiate dev mode, allowing agents to autonomously work on your code while you do other things! 
                       </p>
                     </div>
                   </motion.div>
@@ -229,10 +229,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        4. Kick Off Claude Workflows
+                        4. Total Privacy 
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        From anywhere - create issues on VibeHero and have Claude automatically work on them via GitHub Actions integration.
+                        VibeHero never has access to your code or API keys. Optionally give access to GitHub Issues/Comments and nothing more!
                       </p>
                     </div>
                   </motion.div>
