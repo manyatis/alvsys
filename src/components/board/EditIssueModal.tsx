@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Loader2, Send, MessageCircle } from 'lucide-react';
+import { X, Loader2, Send, MessageCircle, Bot } from 'lucide-react';
 import { Card, CardStatus, Label, Comment } from '@/types/card';
 import LabelSelector from '@/components/LabelSelector';
 import AssigneeSelector from '@/components/AssigneeSelector';
@@ -39,6 +39,8 @@ interface EditIssueModalProps {
   onUpdate: (e: React.FormEvent) => void;
   onAddComment: (e: React.FormEvent) => void;
   onCreateLabel: (name: string, color: string) => Promise<void>;
+  onEngageClaudeFlow?: () => void;
+  isEngagingClaudeFlow?: boolean;
 }
 
 export default function EditIssueModal({
@@ -65,6 +67,8 @@ export default function EditIssueModal({
   onUpdate,
   onAddComment,
   onCreateLabel,
+  onEngageClaudeFlow,
+  isEngagingClaudeFlow = false,
 }: EditIssueModalProps) {
   if (!showModal || !selectedCard) return null;
 
@@ -256,6 +260,33 @@ export default function EditIssueModal({
                 <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
+
+            {/* Engage Claude Flow Button */}
+            {selectedCard.isAiAllowedTask && onEngageClaudeFlow && (
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <button
+                  type="button"
+                  onClick={onEngageClaudeFlow}
+                  disabled={isEngagingClaudeFlow}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800/50 border border-blue-300 dark:border-blue-600 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  {isEngagingClaudeFlow ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Engaging @claude...
+                    </>
+                  ) : (
+                    <>
+                      <Bot className="h-4 w-4" />
+                      Engage @claude GitHub Flow
+                    </>
+                  )}
+                </button>
+                <p className="text-xs text-blue-600 dark:text-blue-300 mt-2 text-center">
+                  Ask @claude to work on this issue via GitHub comment
+                </p>
+              </div>
+            )}
 
             <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
               <button
