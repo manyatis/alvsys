@@ -44,18 +44,18 @@ const features: Feature[] = [
     videoSrc: '/Github_Integration.mp4'
   },
   {
-    id: 'mcp-support',
-    title: 'AI Native MCP Support',
+    id: 'claude-github-action',
+    title: '@claude GitHub Action',
     icon: Bot,
-    description: 'Total connection with AI agents - get tasks, update issues, and manage projects.',
+    description: 'Automatically trigger Claude to work on VibeHero issues from anywhere using GitHub.',
     details: [
-      'Model Context Protocol (MCP) integration',
-      'Direct AI agent communication',
-      'Task fetching and updating via MCP',
-      'Project management from any MCP tool',
-      'Environment variable configuration'
+      'GitHub Action integration with Claude Code',
+      'Automatic issue processing on creation',
+      'Kick off Claude workflows from any platform',
+      'Seamless @claude mention support',
+      'Direct GitHub to AI workflow automation'
     ],
-    videoSrc: '/mcp_tool_clip.mp4'
+    videoSrc: '/claude_github_action.mp4'
   },
   {
     id: 'dev-mode',
@@ -241,10 +241,10 @@ export default function FeaturesContent() {
               Get Started Free
             </button>
             <button 
-              onClick={() => window.location.href = '/documentation'}
+              onClick={() => window.location.href = '/features'}
               className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors"
             >
-              View Documentation
+              View Features
             </button>
           </motion.div>
         </div>
