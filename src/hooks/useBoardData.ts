@@ -311,6 +311,8 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
         if (newCard.assignToClaudeOnCreate && newCard.isAiAllowedTask) {
           const claudeComment = `@claude Please work on this issue. 
 
+Please open a feature branch called feature/claude-vh-${newCard.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.
+
 Here's what needs to be done:
 ${newCard.description ? newCard.description + '\n\n' : ''}${newCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + newCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
           
