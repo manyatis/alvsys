@@ -312,7 +312,7 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
           const claudeComment = `@claude Please work on this issue. 
 
 Here's what needs to be done:
-${newCard.description ? newCard.description + '\n\n' : ''}${newCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + newCard.acceptanceCriteria : ''}`;
+${newCard.description ? newCard.description + '\n\n' : ''}${newCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + newCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
           
           try {
             await createIssueComment(result.issue.id, claudeComment);
