@@ -111,7 +111,7 @@ export default function Home() {
                   playsInline
                   controlsList="nodownload"
                 >
-                  <source src="/vibehero_demo.mp4" type="video/mp4" />
+                  <source src="/vibe_hero_demo_2.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
               </div>
