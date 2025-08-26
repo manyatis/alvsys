@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSession, signIn } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
-import { Plus, Folder, Users, Calendar, Github, Zap } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Plus, Folder, Users, Calendar, Github, Zap, CheckCircle, XCircle } from 'lucide-react';
 import GitHubRepositorySelector from '@/components/GitHubRepositorySelector';
 import { getUserUsage } from '@/lib/usage-functions';
 import { getUserProjects, createProject } from '@/lib/project-functions';
@@ -40,9 +40,10 @@ interface UsageStatus {
 
 type CreationMode = 'select' | 'vibes' | 'github';
 
-export default function ProjectsPage() {
+function ProjectsContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -59,6 +60,7 @@ export default function ProjectsPage() {
   const [creating, setCreating] = useState(false);
   const [usageStatus, setUsageStatus] = useState<UsageStatus | null>(null);
   const [showGitHubModal, setShowGitHubModal] = useState(false);
+  const [installationMessage, setInstallationMessage] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   useEffect(() => {
     console.log('Projects page - Auth status:', status);
@@ -68,8 +70,37 @@ export default function ProjectsPage() {
       fetchProjects();
       fetchOrganizations();
       fetchUsageStatus();
+      
+      // Check for GitHub installation callback parameters
+      const githubInstalled = searchParams.get('github_installed');
+      const installationId = searchParams.get('installation_id');
+      const error = searchParams.get('error');
+      
+      if (githubInstalled === 'true' && installationId) {
+        setInstallationMessage({
+          type: 'success',
+          message: 'GitHub App installed successfully! You can now create projects from your repositories.',
+        });
+        // Open GitHub modal automatically after installation
+        setTimeout(() => setShowGitHubModal(true), 1500);
+      } else if (githubInstalled === 'false' || error === 'cancelled') {
+        setInstallationMessage({
+          type: 'error',
+          message: 'GitHub App installation was cancelled. You can try again when you\'re ready.',
+        });
+      } else if (error === 'installation_failed') {
+        setInstallationMessage({
+          type: 'error',
+          message: 'GitHub App installation failed. Please try again.',
+        });
+      }
+      
+      // Clear the URL parameters after processing
+      if (githubInstalled || error) {
+        router.replace('/projects');
+      }
     }
-  }, [status, router]);
+  }, [status, router, searchParams]);
 
   const fetchProjects = async () => {
     try {
@@ -202,6 +233,28 @@ export default function ProjectsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* GitHub Installation Message */}
+        {installationMessage && (
+          <div className={`mb-4 p-4 rounded-lg flex items-center gap-2 ${
+            installationMessage.type === 'success' 
+              ? 'bg-green-50 border border-green-200 text-green-700' 
+              : 'bg-red-50 border border-red-200 text-red-700'
+          }`}>
+            {installationMessage.type === 'success' ? (
+              <CheckCircle className="h-5 w-5" />
+            ) : (
+              <XCircle className="h-5 w-5" />
+            )}
+            <span>{installationMessage.message}</span>
+            <button
+              onClick={() => setInstallationMessage(null)}
+              className="ml-auto text-sm hover:underline"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+        
         <div className="flex justify-between items-center mb-8">
           <div>
             {/* {usageStatus && (
@@ -460,5 +513,17 @@ export default function ProjectsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    }>
+      <ProjectsContent />
+    </Suspense>
   );
 }
