@@ -16,15 +16,15 @@ interface Feature {
 const features: Feature[] = [
   {
     id: 'board-management',
-    title: 'Board & Task Management',
+    title: 'AI-Native Project Management',
     icon: CheckCircle,
-    description: 'Powerful Kanban boards with sprint management and seamless GitHub integration.',
+    description: 'Built specifically for hybrid human-AI teams where both can work seamlessly on the same task boards.',
     details: [
-      'Intuitive drag-and-drop Kanban boards',
-      'Sprint planning and tracking',
-      'Priority-based task organization',
-      'Real-time collaboration',
-      'Custom labels and filtering'
+      'Queue up work ideas when inspiration strikes',
+      'Scale "vibe coding" with structured backlogs',
+      'True delegation without micromanagement',
+      'Real-time collaboration between humans and AI',
+      'Privacy-first coordination layer'
     ],
     videoSrc: '/Board Clip.mp4'
   },
@@ -32,42 +32,42 @@ const features: Feature[] = [
     id: 'github-integration',
     title: 'GitHub Integration',
     icon: GitBranch,
-    description: 'Excellent visual representation of GitHub issues with seamless two-way sync.',
+    description: 'Privacy-first management layer that coordinates without accessing your code or repositories.',
     details: [
-      'Two-way GitHub issue synchronization',
-      'Sync issue status, comments, labels', 
-      'Visual GitHub workflow representation',
-      'Automatic branch and PR creation',
-      'Status sync between platforms',
-      'GitHub Actions integration'
+      'Zero code access or data mining',
+      'Management layer only - your data stays yours',
+      'Two-way issue synchronization',
+      'Visual workflow representation',
+      'Systematic delegation to AI agents',
+      'No overhead in managing AI tasks'
     ],
     videoSrc: '/Github_Integration.mp4'
   },
   {
     id: 'claude-github-action',
-    title: '@claude GitHub Action',
+    title: 'SEAMLESS GITHUB ACTION FLOW WITH CLAUDE',
     icon: Bot,
-    description: 'Automatically trigger Claude to work on VibeHero issues from anywhere using GitHub.',
+    description: 'Kick off Claude to work on PR\'s with button click from VibeHero - moving from chaos to structured progress.',
     details: [
-      'GitHub Action integration with Claude Code',
-      'Automatic issue processing on creation',
-      'Kick off Claude workflows from any platform',
-      'Seamless @claude mention support',
-      'Direct GitHub to AI workflow automation'
+      'One-click Claude workflow activation',
+      'Button-click automation from VibeHero',
+      'Transform chaotic late-night coding sessions',
+      'Structured, predictable progress tracking',
+      'Autonomous AI agents work while you sleep'
     ],
     videoSrc: '/claude_github_action.mp4'
   },
   {
     id: 'dev-mode',
-    title: 'Dev Mode',
+    title: 'Autonomous Team Members',
     icon: Zap,
-    description: 'Switch any agent into dev mode and watch it autonomously work on tasks.',
+    description: 'Transform AI agents from occasional helpers into reliable, autonomous team members.',
     details: [
-      'Autonomous task execution',
-      'Continuous development loops',
-      'Automatic code generation and testing',
-      'Real-time progress tracking',
-      'Branch management and commits'
+      'Reliable autonomous task execution',
+      'AI agents become true team members',
+      'Systematic backlog processing',
+      'No more constant manual prompting',
+      'Focus on development, not AI management'
     ],
     videoSrc: '/dev_mode_clip.mp4'
   }
@@ -127,8 +127,8 @@ export default function FeaturesContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
             >
-              VibeHero combines the best of project management, GitHub integration, and AI automation 
-              to create the ultimate development workflow.
+              Stop wasting time babysitting AI agents with constant manual prompting. 
+              VibeHero transforms chaotic AI development workflows into structured, systematic delegation.
             </motion.p>
           </div>
         </div>
@@ -222,13 +222,13 @@ export default function FeaturesContent() {
             className="text-3xl md:text-4xl font-bold text-white mb-6"
             variants={fadeInUp}
           >
-            Ready to Experience VibeHero?
+            Ready to Stop Babysitting AI?
           </motion.h2>
           <motion.p 
             className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto"
             variants={fadeInUp}
           >
-            Start managing your projects with the power of AI automation and seamless GitHub integration.
+            Join developers who've transformed their AI workflows from chaotic to systematic. Built by developers, for developers.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"

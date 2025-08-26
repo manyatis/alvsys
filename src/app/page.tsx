@@ -64,14 +64,14 @@ export default function Home() {
                 <span className="relative inline-block">
                   <span className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-purple-600 blur-3xl opacity-30"></span>
                   <span className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                    Project Management
+                    Your AI Agent's
                   </span>
                 </span>
-                <span className="text-slate-900 dark:text-white"> For The </span>
+                <span className="text-slate-900 dark:text-white"> </span>
                 <span className="relative inline-block">
                   <span className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-600 blur-3xl opacity-30"></span>
                   <span className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                    AI Era
+                    Project Manager
                   </span>
                 </span>
               </motion.h1>
@@ -92,7 +92,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
               >
-                Seamless GitHub integration, @claude GitHub Action support and powerful management boards. Automatically have Claude work on issues from VibeHero on creation.
+                Transform AI agents from occasional helpers into reliable, autonomous team members through structured project management. No code access, no data mining - just seamless coordination between humans and AI.
               </motion.p>
 
             <motion.div 
@@ -156,10 +156,10 @@ export default function Home() {
                 style={{ opacity: 1 }}
               >
                 <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                  AI-Powered Development Workflow
+                  True Delegation, Not Micromanagement
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  Automatically trigger Claude to work on your issues with GitHub Actions:
+                  Create tasks when inspiration strikes, then walk away. Let AI agents work through backlogs systematically while you focus on what matters:
                 </p>
                 <motion.div 
                   className="space-y-6"
@@ -175,10 +175,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        1. Optionally Link GitHub Repository
+                        1. Queue Up Work Ideas Anywhere
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Connect your GitHub repo to sync issues and track progress visually in real-time.
+                        Capture spontaneous coding ideas while away from your computer. Scale "vibe coding" with structure that maintains creative flow.
                       </p>
                     </div>
                   </motion.div>
@@ -193,10 +193,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        2. Create Issues - Specify Human/AI
+                        2. AI-Native Task Boards
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Create issues and designate whether they should be handled by humans or AI agents for optimal task distribution.
+                        Built specifically for hybrid human-AI teams where both can work seamlessly on the same boards without chaos.
                       </p>
                     </div>
                   </motion.div>
@@ -211,10 +211,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Add @claude GitHub Action
+                        3. SEAMLESS GITHUB ACTION FLOW WITH CLAUDE
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Install the @claude GitHub Action to automatically have Claude work on VibeHero issues when they&apos;re created.
+                        Kick off Claude to work on PR's with button click from VibeHero. One-click automation from chaotic late-night coding to structured, predictable progress.
                       </p>
                     </div>
                   </motion.div>
@@ -229,10 +229,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        4. Kick Off Claude Workflows
+                        4. Privacy-First Management Layer
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        From anywhere - create issues on VibeHero and have Claude automatically work on them via GitHub Actions integration.
+                        We never access your code, data, or repositories. Only facilitate coordination between you and your AI agents - zero overhead, maximum delegation.
                       </p>
                     </div>
                   </motion.div>
@@ -271,13 +271,13 @@ export default function Home() {
               className="text-4xl font-bold text-white mb-6"
               variants={fadeInUp}
             >
-              Start Your AI Native Project
+              Stop Babysitting AI. Start Delegating.
             </motion.h2>
             <motion.p 
               className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto"
               variants={fadeInUpDelay}
             >
-              Connect your GitHub repository and let AI agents work on your project.
+              Join developers who've moved from chaotic AI workflows to systematic delegation. Built by developers who dogfood their own platform.
             </motion.p>
             <motion.div 
               className="flex justify-center"
