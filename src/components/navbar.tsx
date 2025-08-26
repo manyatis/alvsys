@@ -55,19 +55,6 @@ export default function Navbar() {
     return email.split('@')[0];
   };
 
-  const handlePricingClick = () => {
-    // Check if we're on the home page
-    if (window.location.pathname === '/') {
-      // Scroll to pricing section
-      const pricingSection = document.getElementById('pricing');
-      if (pricingSection) {
-        pricingSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      // Navigate to home page with pricing hash
-      router.push('/#pricing');
-    }
-  };
 
   const fetchProjects = async () => {
     if (!session || projectsLoading) return;
@@ -209,12 +196,6 @@ export default function Navbar() {
               >
                 Features
               </Link>
-              <button 
-                onClick={handlePricingClick}
-                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
-              >
-                Pricing
-              </button>
               <Link 
                 href="/documentation"
                 className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-white active:text-white font-medium hover:bg-purple-700 active:bg-purple-700 rounded-lg transition-all duration-500"
@@ -357,15 +338,6 @@ export default function Navbar() {
             >
               Features
             </Link>
-            <button 
-              onClick={() => {
-                handlePricingClick();
-                setIsMobileMenuOpen(false);
-              }}
-              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
-            >
-              Pricing
-            </button>
             <Link 
               href="/documentation"
               className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-white active:text-white hover:bg-purple-700 active:bg-purple-700 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
