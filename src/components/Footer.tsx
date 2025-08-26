@@ -69,6 +69,14 @@ export default function Footer() {
                     Projects
                   </Link>
                 </li>
+                <li>
+                  <Link 
+                    href="/installation"
+                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                  >
+                    Installation
+                  </Link>
+                </li>
 
               </ul>
             </div>
