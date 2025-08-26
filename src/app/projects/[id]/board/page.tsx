@@ -192,6 +192,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     priority: 'all'
   });
   const [inlineLabelEditorOpen, setInlineLabelEditorOpen] = useState<string | null>(null);
+  const [isEngagingClaudeFlow, setIsEngagingClaudeFlow] = useState(false);
   
   // Drag and drop state
   const [draggedCard, setDraggedCard] = useState<Card | null>(null);
@@ -379,6 +380,28 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     if (!selectedCard) return;
     
     await addComment(selectedCard.id);
+  };
+
+  const handleEngageClaudeFlow = async () => {
+    if (!selectedCard) return;
+    
+    setIsEngagingClaudeFlow(true);
+    try {
+      const { createIssueComment } = await import('@/lib/issue-functions');
+      const claudeComment = `@claude Please work on this issue.
+
+Here's what needs to be done:
+${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + selectedCard.acceptanceCriteria : ''}`;
+      
+      await createIssueComment(selectedCard.id, claudeComment);
+      
+      // Refresh comments to show the new @claude comment
+      await loadComments(selectedCard.id);
+    } catch (error) {
+      console.error('Error engaging @claude flow:', error);
+    } finally {
+      setIsEngagingClaudeFlow(false);
+    }
   };
 
 
@@ -942,6 +965,8 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         onUpdate={handleUpdateCard}
         onAddComment={handleAddComment}
         onCreateLabel={handleCreateLabel}
+        onEngageClaudeFlow={handleEngageClaudeFlow}
+        isEngagingClaudeFlow={isEngagingClaudeFlow}
       />
 
       {/* Create Sprint Modal */}
