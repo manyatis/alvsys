@@ -69,14 +69,7 @@ export default function Footer() {
                     Projects
                   </Link>
                 </li>
-                <li>
-                  <button 
-                    onClick={handlePricingClick}
-                    className="text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors text-left"
-                  >
-                    Pricing
-                  </button>
-                </li>
+
                 <li>
                   <Link 
                     href="/documentation"

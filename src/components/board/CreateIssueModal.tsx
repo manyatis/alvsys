@@ -19,6 +19,7 @@ interface NewCard {
   assigneeId: string | null;
   labelIds: string[];
   sprintId: string | null;
+  assignToClaudeOnCreate?: boolean;
 }
 
 interface CreateIssueModalProps {
@@ -236,6 +237,24 @@ export default function CreateIssueModal({
                 <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
               </label>
             </div>
+
+            {newCard.isAiAllowedTask && (
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div>
+                  <div className="text-sm font-medium text-blue-900 dark:text-blue-100">Assign to @claude</div>
+                  <div className="text-xs text-blue-600 dark:text-blue-300">Automatically comment to request @claude work on this issue</div>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newCard.assignToClaudeOnCreate || false}
+                    onChange={(e) => setNewCard({ ...newCard, assignToClaudeOnCreate: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 dark:bg-gray-600 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                </label>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 p-3">
               <input

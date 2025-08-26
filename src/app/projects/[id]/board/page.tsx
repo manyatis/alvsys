@@ -36,6 +36,7 @@ interface NewCard {
   assigneeId: string | null;
   labelIds: string[];
   sprintId: string | null;
+  assignToClaudeOnCreate?: boolean;
 }
 
 

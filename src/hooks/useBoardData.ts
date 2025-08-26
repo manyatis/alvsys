@@ -42,6 +42,7 @@ interface NewCard {
   assigneeId: string | null;
   labelIds: string[];
   sprintId: string | null;
+  assignToClaudeOnCreate?: boolean;
 }
 
 export function useBoardData(projectId: string, showOnlyActiveSprint: boolean = true, selectedSprintId: string | null = null) {
@@ -303,6 +304,21 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
         if (newCard.labelIds.length > 0) {
           for (const labelId of newCard.labelIds) {
             await addLabelToIssue(result.issue.id, labelId);
+          }
+        }
+
+        // Add @claude comment if requested
+        if (newCard.assignToClaudeOnCreate && newCard.isAiAllowedTask) {
+          const claudeComment = `@claude Please work on this issue. 
+
+Here's what needs to be done:
+${newCard.description ? newCard.description + '\n\n' : ''}${newCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + newCard.acceptanceCriteria : ''}`;
+          
+          try {
+            await createIssueComment(result.issue.id, claudeComment);
+          } catch (commentError) {
+            console.error('Error creating @claude comment:', commentError);
+            // Don't fail the entire operation if comment fails
           }
         }
         

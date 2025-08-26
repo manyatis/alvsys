@@ -1,7 +1,7 @@
 'use server';
 
-import { PrismaClient, Card, Project, Status } from '@prisma/client';
-import { GitHubService } from '@/lib/github';
+import { Card, Project } from '@prisma/client';
+import { GitHubService, parseRepositoryName } from '@/lib/github';
 import { GitHubSyncService, SyncOptions, SyncResult } from '@/services/github-sync-service';
 import { prisma } from './prisma';
 
@@ -330,7 +330,7 @@ export async function syncProject(
    */
 export async function syncCardToGitHub(
     cardId: string, 
-    userId: string
+    _userId: string
   ): Promise<CardSyncResult> {
     try {
       // Get card - access verification handled at higher layer
@@ -383,7 +383,7 @@ export async function syncCardToGitHub(
    */
 export async function disableCardSync(
     cardId: string, 
-    userId: string
+    _userId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Get card - access verification handled at higher layer
@@ -808,6 +808,87 @@ export async function unlinkProjectFromRepository(
     } catch (error) {
       console.error('Error unlinking project from repository:', error);
       return { success: false, error: 'Internal server error' };
+    }
+  }
+
+  /**
+   * Sync a comment from VibeHero to GitHub
+   */
+export async function syncCommentToGitHub(
+    commentId: string
+  ): Promise<{ success: boolean; error?: string }> {
+    try {
+      // Get the comment with related data
+      const comment = await prisma.comment.findUnique({
+        where: { id: commentId },
+        include: {
+          card: {
+            include: {
+              project: true,
+              githubSync: true,
+            }
+          },
+          author: true,
+        }
+      });
+
+      if (!comment || !comment.card) {
+        return { success: false, error: 'Comment or card not found' };
+      }
+
+      const { card } = comment;
+      
+      // Check if project has GitHub sync enabled and card is synced
+      if (!card.project.githubSyncEnabled || 
+          !card.project.githubRepoName || 
+          !card.project.githubInstallationId ||
+          !card.githubIssueId) {
+        // Not synced, skip without error
+        return { success: true };
+      }
+
+      // Create sync service
+      const syncService = await GitHubSyncService.createForProject(card.projectId);
+      if (!syncService) {
+        return { success: false, error: 'Unable to create GitHub sync service' };
+      }
+
+      const repoData = parseRepositoryName(card.project.githubRepoName);
+      if (!repoData) {
+        return { success: false, error: 'Invalid repository name format' };
+      }
+
+      const { owner, repo } = repoData;
+
+      // Create comment on GitHub
+      const githubService = await GitHubService.createForInstallation(card.project.githubInstallationId);
+      const authorName = comment.author.name || comment.author.email || 'VibeHero User';
+      const commentBody = comment.isAiComment 
+        ? `**AI Comment:**\n\n${comment.content}`
+        : `**${authorName}:**\n\n${comment.content}`;
+
+      const githubComment = await githubService.createComment(
+        owner, 
+        repo, 
+        card.githubIssueId, 
+        commentBody
+      );
+
+      // Update the comment with GitHub info
+      await prisma.comment.update({
+        where: { id: commentId },
+        data: {
+          githubCommentId: githubComment.id,
+        }
+      });
+
+      return { success: true };
+    } catch (error) {
+      console.error('Error syncing comment to GitHub:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      };
     }
   }
 
