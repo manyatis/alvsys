@@ -202,7 +202,7 @@ export default function GitHubRepositorySelector({
             Cancel
           </button>
           <a
-            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`}
+            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"

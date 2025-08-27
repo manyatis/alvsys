@@ -141,7 +141,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
       });
 
       if (!githubAccount?.access_token) {
-        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
+        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
         return {
           installations: [],
           needsAppInstallation: true,
@@ -199,7 +199,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
 
         // If no installations found, prompt user to install the app
         if (installationsWithRepos.length === 0) {
-          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
+          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
           return {
             installations: [],
             needsAppInstallation: true,
@@ -217,7 +217,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         
         // If it's a 403, the user needs to authorize the app
         if (errorStatus === 403 || errorMessage.includes('GitHub App not authorized')) {
-          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
+          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
           return {
             installations: [],
             needsAppInstallation: true,
@@ -227,7 +227,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
           };
         }
         
-        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero';
+        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
         return {
           installations: [],
           needsAppInstallation: true,
@@ -298,7 +298,7 @@ export async function getAppInstallations(): Promise<GitHubInstallationsResponse
         installations: [],
         needsAppInstallation: true,
         error: 'Failed to get GitHub App installations. Make sure the app is properly configured.',
-        installUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new`,
+        installUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`,
       };
     }
   }
