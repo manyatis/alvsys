@@ -367,16 +367,27 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
       }
     };
 
-    if (showCreateModal || showDetailModal) {
+    // Capture board ref for cleanup function
+    const boardElement = boardRef.current;
+
+    if (showCreateModal || showDetailModal || showSprintModal || showMCPGuideModal) {
       document.addEventListener('keydown', handleEscape);
       document.body.style.overflow = 'hidden';
+      // Disable board scrolling when modals are open
+      if (boardElement) {
+        boardElement.style.overflowX = 'hidden';
+      }
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.body.style.overflow = 'unset';
+      // Re-enable board scrolling when modals are closed
+      if (boardElement) {
+        boardElement.style.overflowX = 'auto';
+      }
     };
-  }, [showCreateModal, showDetailModal, saveAndCloseModal]);
+  }, [showCreateModal, showDetailModal, showSprintModal, showMCPGuideModal, saveAndCloseModal]);
 
 
   const handleAddComment = async (e: React.FormEvent) => {
