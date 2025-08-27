@@ -786,16 +786,35 @@ async function handleCommentWebhook(
         return { success: true, processed: false };
       }
 
-      // Create comment in VibeHero
-      await prisma.comment.create({
-        data: {
-          content: (comment as { body: string }).body,
+      // Check if this is a Claude/AI comment
+      const commentBody = (comment as { body: string }).body;
+      const commentUser = (comment as { user: { login: string } }).user;
+      const isClaudeComment = commentUser.login === 'claude' || 
+                             commentUser.login.includes('claude') ||
+                             commentBody.includes('@claude') ||
+                             commentBody.includes('Claude Code is working') ||
+                             commentBody.includes('Generated with [Claude Code]');
+
+      // Try to find existing comment to avoid duplicates
+      const existingComment = await prisma.comment.findFirst({
+        where: {
           cardId: syncRecord.cardId,
-          authorId: syncRecord.project.ownerId, // Use project owner for external comments
-          isAiComment: false,
           githubCommentId: (comment as { id: number }).id,
         },
       });
+
+      if (!existingComment) {
+        // Create comment in VibeHero
+        await prisma.comment.create({
+          data: {
+            content: commentBody,
+            cardId: syncRecord.cardId,
+            authorId: syncRecord.project.ownerId, // Use project owner for external comments
+            isAiComment: isClaudeComment,
+            githubCommentId: (comment as { id: number }).id,
+          },
+        });
+      }
 
       return { success: true, processed: true };
     } catch (error) {

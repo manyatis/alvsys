@@ -676,6 +676,13 @@ export class GitHubSyncService {
           authorId = user.id;
         }
 
+        // Check if this is a Claude/AI comment
+        const isClaudeComment = githubComment.user.login === 'claude' || 
+                               githubComment.user.login.includes('claude') ||
+                               githubComment.body.includes('@claude') ||
+                               githubComment.body.includes('Claude Code is working') ||
+                               githubComment.body.includes('Generated with [Claude Code]');
+
         // Create new comment
         await prisma.comment.create({
           data: {
@@ -686,6 +693,7 @@ export class GitHubSyncService {
             authorId,
             githubCommentId: githubComment.id,
             githubSyncEnabled: true,
+            isAiComment: isClaudeComment,
           },
         });
       }
