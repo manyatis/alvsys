@@ -506,9 +506,9 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
   }
 
   /**
-   * Sync a specific GitHub issue to VibeHero
+   * Sync a specific GitHub issue to memolab
    */
-  static async syncIssueToVibeHero(
+  static async syncIssueTomemolab(
     projectId: string,
     issueNumber: number,
     userId: string
@@ -538,8 +538,8 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         };
       }
 
-      // Sync issue to VibeHero
-      const result = await syncService.syncIssueToVibeHero(issueNumber);
+      // Sync issue to memolab
+      const result = await syncService.syncIssueTomemolab(issueNumber);
 
       if (!result.success) {
         return { success: false, error: result.error };
@@ -561,7 +561,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         card: syncRecord?.card || undefined 
       };
     } catch (error) {
-      console.error('Error syncing issue to VibeHero:', error);
+      console.error('Error syncing issue to memolab:', error);
       return { success: false, error: 'Internal server error' };
     }
   }
@@ -683,7 +683,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         case 'edited':
         case 'closed':
         case 'reopened':
-          await syncService.syncIssueToVibeHero((issue as { number: number }).number);
+          await syncService.syncIssueTomemolab((issue as { number: number }).number);
           break;
         default:
           return { success: true, processed: false };
@@ -724,7 +724,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         return { success: true, processed: false };
       }
 
-      // Create comment in VibeHero
+      // Create comment in memolab
       await prisma.comment.create({
         data: {
           content: (comment as { body: string }).body,

@@ -149,7 +149,7 @@ If you're experiencing GitHub sync issues:
    - Select your account/organization
    - Grant access to repositories
 
-6. **Re-link the repository in VibeHero**
+6. **Re-link the repository in memolab**
    - Go to project settings
    - Use GitHub integration UI
    - Select the new installation
