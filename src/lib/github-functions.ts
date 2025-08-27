@@ -812,6 +812,7 @@ async function handleCommentWebhook(
             authorId: syncRecord.project.ownerId, // Use project owner for external comments
             isAiComment: isClaudeComment,
             githubCommentId: (comment as { id: number }).id,
+            githubSyncEnabled: true,
           },
         });
       }
