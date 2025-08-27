@@ -1,14 +1,14 @@
-# VibeHero
+# MemoLab
 
 **Your code never leaves your system. Your API keys stay yours.**
 
 Hosted on Vercel with Supabase (PostgreSQL) - no sketchy infrastructure, just boring, reliable services.
 
-Autonomous AI agent that works through your GitHub issues while you sleep. Create issues from your phone, let AI solve them.
+Give your AI agents memory. Turn GitHub issues into vectorized memory banks that make AI smarter over time, not dumber as projects grow.
 
 ## How it works
 - You run your own AI agent locally
-- Connect it to VibeHero via API 
+- Connect it to MemoLab via API 
 - We never see your code or API keys
 - Agent autonomously works through your issue board
 
@@ -17,7 +17,7 @@ Autonomous AI agent that works through your GitHub issues while you sleep. Creat
 2. Copy `.env.example` to `.env`
 3. Add your keys
 4. `npm install && npm run dev`
-5. Or use hosted version: [vibehero.io](https://vibehero.io)
+5. Or use hosted version: [memolab.io](https://memolab.io)
 
 ## License
 MIT

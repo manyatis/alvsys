@@ -154,7 +154,7 @@ export default function SubscriptionFlow() {
     );
   }
 
-  // Plans Selection Step - Show VibeHero pricing plans from database
+  // Plans Selection Step - Show MemoLab pricing plans from database
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -162,7 +162,7 @@ export default function SubscriptionFlow() {
           Choose Your Plan
         </h2>
         <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-          Unlock the full potential of AI-powered development with VibeHero&apos;s subscription plans.
+          Unlock the full potential of AI-powered development with MemoLab&apos;s subscription plans.
         </p>
       </div>
       

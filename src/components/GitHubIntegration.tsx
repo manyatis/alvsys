@@ -298,7 +298,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
               <div className="text-sm text-yellow-700 mb-3">
                 <strong>GitHub App Required</strong><br />
-                To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
+                To sync with GitHub, you need to install the MemoLab GitHub App on your repositories.
               </div>
               <a 
                 href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new?state=${projectId}`}

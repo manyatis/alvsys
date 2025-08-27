@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
 import GetStartedModal from '@/components/get-started-modal';
-import VibeHeroLogo from '@/components/vibehero-logo';
+import MemoLabLogo from '@/components/memolab-logo';
 import { getUserProjects } from '@/lib/project-functions';
 
 export default function Navbar() {
@@ -94,8 +94,8 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center gap-3">
               <Link href="/" className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
-                <VibeHeroLogo gradientId="gradient-navbar" />
-                VibeHero
+                <MemoLabLogo gradientId="gradient-navbar" />
+                MemoLab
               </Link>
               <span className="px-2 py-1 text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">
                 BETA

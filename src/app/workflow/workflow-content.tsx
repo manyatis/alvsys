@@ -204,7 +204,7 @@ export default function WorkflowContent() {
               <div className="relative">
                 <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-purple-600 p-8 rounded-3xl shadow-2xl backdrop-blur-lg bg-opacity-90 border-2 border-white/20">
                   <h1 className="text-4xl md:text-5xl font-bold text-white text-center">
-                    VibeHero
+                    MemoLab
                   </h1>
                   <p className="text-xl md:text-2xl text-purple-100 text-center mt-2">
                     Semantic Layer for Project Intelligence

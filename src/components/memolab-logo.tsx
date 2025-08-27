@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface VibeHeroLogoProps {
+interface MemoLabLogoProps {
   className?: string;
   gradientId?: string;
 }
 
-export default function VibeHeroLogo({ className = "w-8 h-8", gradientId = "gradient" }: VibeHeroLogoProps) {
+export default function MemoLabLogo({ className = "w-8 h-8", gradientId = "gradient" }: MemoLabLogoProps) {
   return (
     <svg 
       className={className} 

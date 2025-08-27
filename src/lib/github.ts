@@ -73,10 +73,10 @@ export function getGitHubWebhooks(): Webhooks {
 }
 
 /**
- * Status mapping between VibeHero and GitHub
+ * Status mapping between MemoLab and GitHub
  */
 export const STATUS_MAPPING = {
-  // VibeHero -> GitHub
+  // MemoLab -> GitHub
   REFINEMENT: 'open',
   READY: 'open',
   IN_PROGRESS: 'open',
@@ -87,7 +87,7 @@ export const STATUS_MAPPING = {
 } as const;
 
 /**
- * Reverse status mapping (GitHub -> VibeHero)
+ * Reverse status mapping (GitHub -> MemoLab)
  */
 export const GITHUB_STATUS_MAPPING = {
   open: 'READY', // Default new GitHub issues to ready (To Do)
@@ -95,9 +95,9 @@ export const GITHUB_STATUS_MAPPING = {
 } as const;
 
 /**
- * Map GitHub issue state and state_reason to VibeHero status
+ * Map GitHub issue state and state_reason to MemoLab status
  */
-export function getVibeHeroStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null | undefined): string {
+export function getMemoLabStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null | undefined): string {
   if (state === 'open') {
     return 'READY';
   } else if (state === 'closed') {
@@ -111,7 +111,7 @@ export function getVibeHeroStatusFromGitHub(state: 'open' | 'closed', state_reas
 }
 
 /**
- * GitHub Issue and VibeHero Card types
+ * GitHub Issue and MemoLab Card types
  */
 export interface GitHubIssue {
   id: number;

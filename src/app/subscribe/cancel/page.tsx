@@ -15,7 +15,7 @@ export default function SubscriptionCancelPage() {
             </div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Subscription Cancelled</h1>
             <p className="text-slate-600 dark:text-slate-300 mb-6">
-              No worries! Your subscription wasn&apos;t created. You can try again anytime or continue using VibeHero with our free tier.
+              No worries! Your subscription wasn&apos;t created. You can try again anytime or continue using MemoLab with our free tier.
             </p>
             <div className="space-y-3">
               <button
