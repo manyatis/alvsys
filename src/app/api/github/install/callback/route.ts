@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
       }
     } else {
       // User is not authenticated - store installation temporarily and redirect to login
-      const cookieStore = cookies();
+      const cookieStore = await cookies();
       
       // Store installation in a secure cookie that expires in 10 minutes
       const installationData = JSON.stringify({
@@ -108,6 +108,14 @@ async function linkInstallationToUser(installationId: string, userId: string, st
       permissions: installation.permissions,
     });
 
+    if (!installation.account) {
+      throw new Error('Installation account is missing');
+    }
+
+    // Handle account login for both user and organization accounts
+    const accountLogin = 'login' in installation.account ? installation.account.login : installation.account.name;
+    const accountType = installation.target_type;
+
     // Store the installation in the database
     await prisma.gitHubInstallation.upsert({
       where: { githubInstallationId: installationId },
@@ -119,8 +127,8 @@ async function linkInstallationToUser(installationId: string, userId: string, st
       create: { 
         githubInstallationId: installationId,
         githubAccountId: installation.account.id.toString(),
-        githubAccountLogin: installation.account.login,
-        githubAccountType: installation.account.type,
+        githubAccountLogin: accountLogin,
+        githubAccountType: accountType,
         repositorySelection: installation.repository_selection,
         targetType: installation.target_type,
         permissions: installation.permissions,

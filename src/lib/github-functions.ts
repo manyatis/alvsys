@@ -400,7 +400,7 @@ export async function syncProject(
    */
 export async function syncCardToGitHub(
     cardId: string, 
-    _userId: string
+    userId: string
   ): Promise<CardSyncResult> {
     try {
       // Get card - access verification handled at higher layer
@@ -453,7 +453,7 @@ export async function syncCardToGitHub(
    */
 export async function disableCardSync(
     cardId: string, 
-    _userId: string
+    userId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Get card - access verification handled at higher layer

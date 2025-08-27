@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { cookies } from 'next/headers';
@@ -6,7 +6,7 @@ import { cookies } from 'next/headers';
 /**
  * Get GitHub installation status for the current user
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const installationCookie = cookieStore.get('github_installation_pending');
     
     let hasPendingInstallation = false;
