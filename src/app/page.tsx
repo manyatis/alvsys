@@ -61,11 +61,14 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, ease: "easeOut" }}
               >
-                <span className="relative inline-block">
-                  <span className="absolute inset-0 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-600 blur-3xl opacity-20"></span>
-                  <span className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                    Your AI Agent&apos;s Workspace
-                  </span>
+                {/* Background gradient effects behind text */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[120%] h-[200%] bg-gradient-to-r from-purple-400/30 via-pink-500/20 to-blue-500/30 rounded-full filter blur-3xl animate-pulse"></div>
+                  <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-gradient-to-br from-purple-500/20 to-pink-400/20 rounded-full filter blur-2xl animate-blob"></div>
+                  <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-400/20 to-purple-500/20 rounded-full filter blur-2xl animate-blob animation-delay-2000"></div>
+                </div>
+                <span className="relative text-slate-900 dark:text-white">
+                  AI Agents With Project Memory
                 </span>
               </motion.h1>
 
@@ -85,7 +88,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
               >
-                Seamless GitHub integration, @claude GitHub action support, powerful management boards and <b>Dev Mode</b>. Allow agents to autonomously work on your tasks in dev mode while you focus on other priorities.
+                Turn your GitHub issues into a <b>vectorized memory bank</b>. We are the semantic layer between AI agents and your project history, making them smarter as your project grows - not dumber.
               </motion.p>
 
             <motion.div 
@@ -127,11 +130,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Decorative background elements */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-slate-300 dark:bg-slate-700 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob"></div>
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-slate-300 dark:bg-slate-700 rounded-full mix-blend-multiply filter blur-3xl opacity-15 animate-blob animation-delay-2000"></div>
-          </div>
         </section>
 
         {/* Benefits Section */}
@@ -149,10 +147,10 @@ export default function Home() {
                 style={{ opacity: 1 }}
               >
                 <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                  AI-Powered Development Workflow
+                  The Semantic Layer For Project Knowledge
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  Automatically trigger Claude to work on your issues with GitHub Actions:
+                  Transform GitHub issues into searchable AI memory. Soon supporting Atlassian, Trello, and more:
                 </p>
                 <motion.div 
                   className="space-y-6"
@@ -168,10 +166,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        1. Optionally Link GitHub Repository & Claude GitHub Actions
+                        1. GitHub Issues → Vector Memory
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Connect your GitHub repo to sync issues and track progress visually in real-time. Have @claude work on your code anytime, anywhere via GitHub actions.
+                        We automatically convert every GitHub issue, comment, and solution into searchable vectors. AI agents find relevant context instantly.
                       </p>
                     </div>
                   </motion.div>
@@ -186,10 +184,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        2. Create Issues - Specify Human/AI
+                        2. Semantic Layer Intelligence
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Create issues and designate whether they should be handled by humans or AI agents for optimal task distribution.
+                        We sit between AI agents and your issue systems, providing intelligent context that grows smarter with every interaction.
                       </p>
                     </div>
                   </motion.div>
@@ -204,10 +202,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Work on Issues via <b>Dev Mode</b> or Manually via MCP
+                        3. Multi-Platform Memory Bank
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Use the MCP server to initiate dev mode, allowing agents to autonomously work on your code while you do other things! 
+                        Starting with GitHub, expanding to Atlassian, Trello, and more. One unified memory bank across all your project management tools.
                       </p>
                     </div>
                   </motion.div>
@@ -222,10 +220,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        4. Total Privacy 
+                        4. Growing AI Intelligence
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        VibeHero never has access to your code or API keys. Optionally give access to GitHub Issues/Comments and nothing more!
+                        Unlike traditional AI that forgets, your agents remember every solution, mistake, and optimization - becoming project experts over time.
                       </p>
                     </div>
                   </motion.div>
@@ -264,13 +262,13 @@ export default function Home() {
               className="text-4xl font-bold text-slate-900 dark:text-white mb-6"
               variants={fadeInUp}
             >
-              Start Your AI Native Project
+              Your Project&apos;s AI Memory Bank
             </motion.h2>
             <motion.p 
               className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto"
               variants={fadeInUpDelay}
             >
-              Connect your GitHub repository and let AI agents work on your project.
+              Transform your GitHub issues into intelligent, searchable memory that makes AI agents smarter with every task.
             </motion.p>
             <motion.div 
               className="flex justify-center"
