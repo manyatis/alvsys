@@ -301,7 +301,7 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
                 To sync with GitHub, you need to install the MemoLab GitHub App on your repositories.
               </div>
               <a 
-                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new?state=${projectId}`}
+                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new?state=${projectId}`}
                 className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                 onClick={() => {
                   // Store the project context in localStorage for the installation flow
