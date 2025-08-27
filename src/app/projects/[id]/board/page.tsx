@@ -297,10 +297,15 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           sprintId: newCard.sprintId, // Retain sprint
         });
       } else {
+        // Close modal regardless of create success/failure
         closeModal();
       }
     } catch (error) {
       console.error('Error creating card:', error);
+      // Still close modal on error unless "create another" is checked
+      if (!createAnother) {
+        closeModal();
+      }
     }
   };
 
