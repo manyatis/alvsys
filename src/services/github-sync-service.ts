@@ -389,9 +389,12 @@ export class GitHubSyncService {
     for (const githubIssue of issuesToProcess) {
       try {
         const existingSync = syncByIssueId.get(githubIssue.number);
+        let cardId: string;
 
         if (existingSync) {
           // Update existing card - last writer wins
+          cardId = existingSync.cardId;
+          
           // Try to find assignee
           let assigneeId = null;
           if ((githubIssue as GitHubIssue).assignees && (githubIssue as GitHubIssue).assignees.length > 0) {
@@ -462,6 +465,8 @@ export class GitHubSyncService {
             },
           });
 
+          cardId = card.id;
+
           await prisma.gitHubIssueSync.upsert({
             where: {
               cardId: card.id,
@@ -484,9 +489,9 @@ export class GitHubSyncService {
           result.synced.cardsCreated++;
         }
 
-        // Sync comments if enabled
-        if (options.syncComments && existingSync?.cardId) {
-          await this.syncCommentsFromGitHub(owner, repo, githubIssue.number, existingSync.cardId);
+        // Sync comments if enabled - now works for both existing and newly created cards
+        if (options.syncComments) {
+          await this.syncCommentsFromGitHub(owner, repo, githubIssue.number, cardId);
         }
       } catch (error) {
         result.conflicts.push({
