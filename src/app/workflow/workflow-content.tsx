@@ -46,29 +46,29 @@ export default function WorkflowContent() {
   const steps = [
     {
       number: 1,
-      title: "Link GitHub Account",
-      description: "Connect your repository for seamless sync",
+      title: "GitHub Issues Vectorized",
+      description: "Every issue becomes searchable memory",
       position: { top: '25%', left: '20%' },
       color: "from-purple-500 to-pink-500"
     },
     {
       number: 2,
-      title: "Create Issues Anywhere",
-      description: "GitHub, AI agents, or visual boards",
+      title: "Semantic Layer Intelligence",
+      description: "AI + GitHub with smart context",
       position: { top: '35%', right: '25%' },
       color: "from-blue-500 to-cyan-500"
     },
     {
       number: 3,
-      title: "AI Agent Work Modes",
-      description: "Co-pilot or autonomous dev mode",
+      title: "Memory-Driven Development",
+      description: "Agents reference project history",
       position: { bottom: '35%', left: '30%' },
       color: "from-green-500 to-emerald-500"
     },
     {
       number: 4,
-      title: "Review & Iterate",
-      description: "Comment feedback, agent iterates",
+      title: "Growing Project Intelligence",
+      description: "Vector memory bank expands",
       position: { bottom: '25%', right: '20%' },
       color: "from-orange-500 to-red-500"
     }
@@ -207,7 +207,7 @@ export default function WorkflowContent() {
                     VibeHero
                   </h1>
                   <p className="text-xl md:text-2xl text-purple-100 text-center mt-2">
-                    Vibe Coding Meets Project Management
+                    Semantic Layer for Project Intelligence
                   </p>
                 </div>
                 <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-40 -z-10 animate-pulse"></div>

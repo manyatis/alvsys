@@ -16,58 +16,58 @@ interface Feature {
 const features: Feature[] = [
   {
     id: 'board-management',
-    title: 'Board & Task Management',
+    title: 'GitHub Issues → Vector Memory',
     icon: CheckCircle,
-    description: 'Powerful Kanban boards with sprint management and seamless GitHub integration.',
+    description: 'Automatically convert every GitHub issue and comment into searchable AI memory.',
     details: [
-      'Intuitive drag-and-drop Kanban boards',
-      'Sprint planning and tracking',
-      'Priority-based task organization',
-      'Real-time collaboration',
-      'Custom labels and filtering'
+      'Real-time vectorization of all GitHub content',
+      'Semantic search across project history',
+      'Issue-to-memory pipeline automation',
+      'Cross-project knowledge linking',
+      'Multi-repository memory consolidation'
     ],
     videoSrc: '/Board Clip.mp4'
   },
   {
     id: 'github-integration',
-    title: 'GitHub Integration',
+    title: 'Semantic Layer Intelligence',
     icon: GitBranch,
-    description: 'Excellent visual representation of GitHub issues with seamless two-way sync.',
+    description: 'We sit between AI agents and GitHub, providing intelligent context and memory.',
     details: [
-      'Two-way GitHub issue synchronization',
-      'Sync issue status, comments, labels', 
-      'Visual GitHub workflow representation',
-      'Automatic branch and PR creation',
-      'Status sync between platforms',
-      'GitHub Actions integration'
+      'Intelligent abstraction over GitHub APIs',
+      'Context-aware issue relationships', 
+      'Smart filtering of relevant history',
+      'Multi-platform integration roadmap',
+      'Atlassian and Trello support coming soon',
+      'Unified memory across all tools'
     ],
     videoSrc: '/Github_Integration.mp4'
   },
   {
     id: 'claude-github-action',
-    title: '@claude GitHub Action',
+    title: 'Growing Project Intelligence',
     icon: Bot,
-    description: 'Automatically trigger Claude to work on VibeHero issues from anywhere using GitHub.',
+    description: 'AI agents get smarter with every GitHub interaction, building project-specific expertise.',
     details: [
-      'GitHub Action integration with Claude Code',
-      'Automatic issue processing on creation',
-      'Kick off Claude workflows from any platform',
-      'Seamless @claude mention support',
-      'Direct GitHub to AI workflow automation'
+      'Project-specific learning curves',
+      'Avoid repeating past mistakes',
+      'Version conflict pattern recognition',
+      'Security vulnerability memory',
+      'Performance optimization history'
     ],
     videoSrc: '/claude_github_action.mp4'
   },
   {
     id: 'dev-mode',
-    title: 'Dev Mode',
+    title: 'Memory-Driven Development',
     icon: Zap,
-    description: 'Switch any agent into dev mode and watch it autonomously work on tasks.',
+    description: 'AI agents reference vectorized project history while working, avoiding past pitfalls.',
     details: [
-      'Autonomous task execution',
-      'Continuous development loops',
-      'Automatic code generation and testing',
-      'Real-time progress tracking',
-      'Branch management and commits'
+      'Real-time memory consultation during tasks',
+      'Instant access to similar past issues',
+      'Work-loop detection and prevention',
+      'Debugging strategy recommendations',
+      'Implementation pattern suggestions'
     ],
     videoSrc: '/dev_mode_clip.mp4'
   }
@@ -81,17 +81,6 @@ export default function FeaturesContent() {
     transition: { duration: 1.2, ease: "easeOut" }
   };
 
-  const fadeInLeft = {
-    initial: { opacity: 0, x: -60 },
-    animate: { opacity: 1, x: 0 },
-    transition: { duration: 1.2, ease: "easeOut" }
-  };
-
-  const fadeInRight = {
-    initial: { opacity: 0, x: 60 },
-    animate: { opacity: 1, x: 0 },
-    transition: { duration: 1.2, ease: "easeOut" }
-  };
 
   const staggerContainer = {
     animate: {
@@ -127,8 +116,8 @@ export default function FeaturesContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
             >
-              VibeHero combines the best of project management, GitHub integration, and AI automation 
-              to create the ultimate development workflow.
+              The semantic layer that transforms GitHub issues into AI memory. Turn project history 
+              into searchable intelligence that makes agents smarter as your codebase grows.
             </motion.p>
           </div>
         </div>
@@ -137,9 +126,8 @@ export default function FeaturesContent() {
       {/* Features Section */}
       <div className="container mx-auto px-6 pb-20">
         <div className="space-y-32">
-          {features.map((feature, index) => {
+          {features.map((feature) => {
             const Icon = feature.icon;
-            const isEven = index % 2 === 0;
             
             return (
               <motion.section
@@ -222,13 +210,13 @@ export default function FeaturesContent() {
             className="text-3xl md:text-4xl font-bold text-white mb-6"
             variants={fadeInUp}
           >
-            Ready to Experience VibeHero?
+            Turn GitHub Issues Into AI Intelligence
           </motion.h2>
           <motion.p 
             className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto"
             variants={fadeInUp}
           >
-            Start managing your projects with the power of AI automation and seamless GitHub integration.
+            We are the semantic layer that makes your project history searchable and actionable for AI agents.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"
