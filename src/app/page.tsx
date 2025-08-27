@@ -68,7 +68,7 @@ export default function Home() {
                   <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-400/20 to-purple-500/20 rounded-full filter blur-2xl animate-blob animation-delay-2000"></div>
                 </div>
                 <span className="relative text-slate-900 dark:text-white">
-                  AI Agents With Project Memory
+                  Give Your AI Agents Memory
                 </span>
               </motion.h1>
 
