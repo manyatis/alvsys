@@ -178,7 +178,7 @@ export default function GitHubRepositorySelector({
             GitHub App Required
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
+            To sync with GitHub, you need to install the MemoLab GitHub App on your repositories.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             After installation, you may need to authorize the app and grant repository access.

@@ -46,10 +46,10 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
         {/* Header */}
         <div className="px-8 pt-8 pb-4 border-b border-slate-200 dark:border-slate-700">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Get Started with VibeHero MCP
+            Get Started with MemoLab MCP
           </h2>
           <p className="text-slate-600 dark:text-slate-300">
-            Connect Claude to your VibeHero projects using the Model Context Protocol (MCP)
+            Connect Claude to your MemoLab projects using the Model Context Protocol (MCP)
           </p>
         </div>
         
@@ -94,7 +94,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  Add the VibeHero MCP server to your Claude Desktop configuration file:
+                  Add the MemoLab MCP server to your Claude Desktop configuration file:
                 </p>
                 <div className="ml-11 space-y-3">
                   <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
@@ -210,7 +210,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                       <div className="text-sm text-amber-800 dark:text-amber-200">
                         <p><strong>Where to find your Project ID:</strong></p>
                         <ul className="mt-1 space-y-1">
-                          <li>• Open any project in VibeHero</li>
+                          <li>• Open any project in MemoLab</li>
                           <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">vibehero.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
@@ -242,7 +242,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  After saving your configuration, restart Claude Desktop and start working with your VibeHero projects:
+                  After saving your configuration, restart Claude Desktop and start working with your MemoLab projects:
                 </p>
                 
                 <div className="ml-11 space-y-3">
@@ -255,18 +255,18 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                     <h4 className="font-medium text-green-900 dark:text-green-200 mb-2">Available Commands:</h4>
                     <ul className="text-sm text-green-800 dark:text-green-300 space-y-1">
-                      <li>• <strong>Get next task:</strong> &quot;What&apos;s the next ready task in VibeHero?&quot;</li>
+                      <li>• <strong>Get next task:</strong> &quot;What&apos;s the next ready task in MemoLab?&quot;</li>
                       <li>• <strong>Update status:</strong> &quot;Mark task ABC123 as in progress&quot;</li>
                       <li>• <strong>Add comments:</strong> &quot;Add a comment to task ABC123: Fixed the bug&quot;</li>
                       <li>• <strong>View backlog:</strong> &quot;Show me the project backlog&quot;</li>
-                      <li>• <strong>Dev mode:</strong> &quot;Start VibeHero dev mode&quot; (auto-fetches tasks)</li>
+                      <li>• <strong>Dev mode:</strong> &quot;Start MemoLab dev mode&quot; (auto-fetches tasks)</li>
                     </ul>
                   </div>
                   
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
                     <h4 className="font-medium text-slate-900 dark:text-slate-200 mb-2">Try this first command:</h4>
                     <code className="text-sm font-mono text-slate-800 dark:text-slate-200">
-                      &quot;List my VibeHero projects&quot;
+                      &quot;List my MemoLab projects&quot;
                     </code>
                   </div>
                 </div>
@@ -283,11 +283,11 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     1
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                    Install VibeHero MCP Server
+                    Install MemoLab MCP Server
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  Use the claude mcp add command to install and configure the VibeHero MCP server:
+                  Use the claude mcp add command to install and configure the MemoLab MCP server:
                 </p>
                 <div className="ml-11 space-y-3">
                   <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
@@ -373,7 +373,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                       <div className="text-sm text-amber-800 dark:text-amber-200">
                         <p><strong>Where to find your Project ID:</strong></p>
                         <ul className="mt-1 space-y-1">
-                          <li>• Open any project in VibeHero</li>
+                          <li>• Open any project in MemoLab</li>
                           <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">vibehero.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
@@ -391,11 +391,11 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     4
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                    Start Using VibeHero MCP
+                    Start Using MemoLab MCP
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  After running the installation command, your VibeHero MCP server will be ready to use:
+                  After running the installation command, your MemoLab MCP server will be ready to use:
                 </p>
                 
                 <div className="ml-11 space-y-3">
@@ -412,7 +412,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
                     <h4 className="font-medium text-slate-900 dark:text-slate-200 mb-2">Try this first command:</h4>
                     <code className="text-sm font-mono text-slate-800 dark:text-slate-200">
-                      &quot;List my VibeHero projects&quot;
+                      &quot;List my MemoLab projects&quot;
                     </code>
                   </div>
                 </div>
@@ -434,7 +434,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   MCP Documentation
                 </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Complete guide to using the VibeHero MCP server
+                  Complete guide to using the MemoLab MCP server
                 </p>
               </a>
               <a

@@ -250,7 +250,7 @@ Acceptance Criteria:
 $CARD_ACCEPTANCE
 
 Task ID: $CARD_ID
-Auto-implemented by VibeHero AI via MCP"
+Auto-implemented by MemoLab AI via MCP"
 
 # PUSH TO REMOTE
 git push origin feature/vibehero
@@ -260,7 +260,7 @@ git push origin feature/vibehero
 goto @LOOP_START
 
 # THIS IS A CONTINUOUS PROCESS - NO STOPPING - NO SUMMARIES - ONLY EXECUTION
-# Use MCP tools throughout for all VibeHero API interactions`;
+# Use MCP tools throughout for all MemoLab API interactions`;
 
     return onboardingInstructions;
   }

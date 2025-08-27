@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VibeHero - AI Native Project Management",
-  description: "Issue tracking built for the AI era. Transform your development workflow with intelligent task management.",
+  title: "MemoLab - Give Your AI Agents Memory",
+  description: "Turn GitHub issues into vectorized memory banks. The semantic layer that makes AI agents smarter over time.",
 };
 
 export default function RootLayout({

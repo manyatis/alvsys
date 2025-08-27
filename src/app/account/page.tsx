@@ -191,7 +191,7 @@ export default function AccountSettings() {
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900 dark:text-white">MCP Integration</h2>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-                      VibeHero uses Model Context Protocol (MCP) for AI integrations
+                      MemoLab uses Model Context Protocol (MCP) for AI integrations
                     </p>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function AccountSettings() {
                 <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
                   <h3 className="text-blue-800 dark:text-blue-300 font-medium mb-2">MCP Integration Active</h3>
                   <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
-                    This instance of VibeHero is integrated with Claude Code via MCP. No API keys are needed.
+                    This instance of MemoLab is integrated with Claude Code via MCP. No API keys are needed.
                   </p>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>

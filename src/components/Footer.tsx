@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
-import VibeHeroLogo from '@/components/vibehero-logo';
+import MemoLabLogo from '@/components/memolab-logo';
 
 export default function Footer() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -35,9 +35,9 @@ export default function Footer() {
             {/* Logo and Description */}
             <div className="md:col-span-1">
               <Link href="/" className="flex items-center gap-2 mb-4 w-fit">
-                <VibeHeroLogo gradientId="gradient-footer" />
+                <MemoLabLogo gradientId="gradient-footer" />
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
-                  VibeHero
+                  MemoLab
                 </span>
               </Link>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
@@ -126,11 +126,11 @@ export default function Footer() {
           <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                © 2025 VibeHero. All rights reserved.
+                © 2025 MemoLab. All rights reserved.
               </p>
               <div className="flex items-center gap-4 mt-4 md:mt-0">
                 <span className="text-xs text-slate-500 dark:text-slate-500">
-                  Built with VibeHero
+                  Built with MemoLab
                 </span>
               </div>
             </div>

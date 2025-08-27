@@ -568,9 +568,9 @@ export async function verifyProjectAccess(projectId: string, userId: string): Pr
   }
 
   /**
-   * Sync a specific GitHub issue to VibeHero
+   * Sync a specific GitHub issue to MemoLab
    */
-export async function syncIssueToVibeHero(
+export async function syncIssueToMemoLab(
     projectId: string,
     issueNumber: number,
     userId: string
@@ -600,8 +600,8 @@ export async function syncIssueToVibeHero(
         };
       }
 
-      // Sync issue to VibeHero
-      const result = await syncService.syncIssueToVibeHero(issueNumber);
+      // Sync issue to MemoLab
+      const result = await syncService.syncIssueToMemoLab(issueNumber);
 
       if (!result.success) {
         return { success: false, error: result.error };
@@ -623,7 +623,7 @@ export async function syncIssueToVibeHero(
         card: syncRecord?.card || undefined 
       };
     } catch (error) {
-      console.error('Error syncing issue to VibeHero:', error);
+      console.error('Error syncing issue to MemoLab:', error);
       return { success: false, error: 'Internal server error' };
     }
   }
@@ -745,7 +745,7 @@ async function handleIssueWebhook(
         case 'edited':
         case 'closed':
         case 'reopened':
-          await syncService.syncIssueToVibeHero((issue as { number: number }).number);
+          await syncService.syncIssueToMemoLab((issue as { number: number }).number);
           break;
         default:
           return { success: true, processed: false };
@@ -804,7 +804,7 @@ async function handleCommentWebhook(
       });
 
       if (!existingComment) {
-        // Create comment in VibeHero
+        // Create comment in MemoLab
         await prisma.comment.create({
           data: {
             content: commentBody,
@@ -902,7 +902,7 @@ export async function unlinkProjectFromRepository(
   }
 
   /**
-   * Sync a comment from VibeHero to GitHub
+   * Sync a comment from MemoLab to GitHub
    */
 export async function syncCommentToGitHub(
     commentId: string
@@ -952,7 +952,7 @@ export async function syncCommentToGitHub(
 
       // Create comment on GitHub
       const githubService = await GitHubService.createForInstallation(card.project.githubInstallationId);
-      const authorName = comment.author.name || comment.author.email || 'VibeHero User';
+      const authorName = comment.author.name || comment.author.email || 'MemoLab User';
       const commentBody = comment.isAiComment 
         ? `**AI Comment:**\n\n${comment.content}`
         : `**${authorName}:**\n\n${comment.content}`;
@@ -1110,7 +1110,7 @@ export async function createProjectFromRepository(
           const syncResult = await syncService.syncProject({
             syncComments: true,
             syncLabels: true,
-            initialSync: true, // Only sync FROM GitHub TO VibeHero during project creation
+            initialSync: true, // Only sync FROM GitHub TO MemoLab during project creation
           });
 
           console.log('Sync result:', syncResult);

@@ -1,5 +1,5 @@
 import { PrismaClient, Card, Project, Status, GitHubIssueSync } from '@prisma/client';
-import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, getVibeHeroStatusFromGitHub, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
+import { GitHubService, GitHubIssue, STATUS_MAPPING, GITHUB_STATUS_MAPPING, getMemoLabStatusFromGitHub, parseRepositoryName, GitHubRateLimitError } from '@/lib/github';
 import { prisma } from '@/lib/prisma';
 
 // const prisma = new PrismaClient();
@@ -7,7 +7,7 @@ import { prisma } from '@/lib/prisma';
 export interface SyncOptions {
   syncComments: boolean;
   syncLabels: boolean;
-  initialSync?: boolean; // If true, only sync FROM GitHub TO VibeHero
+  initialSync?: boolean; // If true, only sync FROM GitHub TO MemoLab
 }
 
 export interface SyncResult {
@@ -57,7 +57,7 @@ export class GitHubSyncService {
   }
 
   /**
-   * Sync all issues/cards between GitHub and VibeHero
+   * Sync all issues/cards between GitHub and MemoLab
    */
   async syncProject(options: SyncOptions): Promise<SyncResult> {
     const result: SyncResult = {
@@ -95,7 +95,7 @@ export class GitHubSyncService {
       const syncByCardId = new Map(existingSyncs.map(sync => [sync.cardId, sync]));
       const syncByIssueId = new Map(existingSyncs.map(sync => [sync.githubIssueId, sync]));
 
-      // Sync from GitHub to VibeHero
+      // Sync from GitHub to MemoLab
       await this.syncFromGitHub(owner, repo, syncByIssueId, result, options);
       
       // Only sync back to GitHub if not an initial sync
@@ -247,9 +247,9 @@ export class GitHubSyncService {
   }
 
   /**
-   * Sync specific GitHub issue to VibeHero
+   * Sync specific GitHub issue to MemoLab
    */
-  async syncIssueToVibeHero(issueNumber: number): Promise<{ success: boolean; error?: string }> {
+  async syncIssueToMemoLab(issueNumber: number): Promise<{ success: boolean; error?: string }> {
     try {
       if (!this.project.githubRepoName) {
         throw new Error('Project not linked to GitHub repository');
@@ -306,7 +306,7 @@ export class GitHubSyncService {
         
         // Only update status if GitHub issue is closed (to mark as completed or cancelled)
         if (githubIssue.state === 'closed') {
-          updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status;
+          updateData.status = getMemoLabStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status;
         }
         
         card = await prisma.card.update({
@@ -319,7 +319,7 @@ export class GitHubSyncService {
           data: {
             title: githubIssue.title,
             description: githubIssue.body || '',
-            status: getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status,
+            status: getMemoLabStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status,
             projectId: this.project.id,
             assigneeId,
             githubIssueId: githubIssue.number,
@@ -360,7 +360,7 @@ export class GitHubSyncService {
   }
 
   /**
-   * Sync from GitHub to VibeHero
+   * Sync from GitHub to MemoLab
    */
   private async syncFromGitHub(
     owner: string,
@@ -421,7 +421,7 @@ export class GitHubSyncService {
           
           // Only update status if GitHub issue is closed (to mark as completed or cancelled)
           if (githubIssue.state === 'closed') {
-            updateData.status = getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status;
+            updateData.status = getMemoLabStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status;
           }
           
           await prisma.card.update({
@@ -455,7 +455,7 @@ export class GitHubSyncService {
             data: {
               title: githubIssue.title,
               description: githubIssue.body || '',
-              status: getVibeHeroStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status,
+              status: getMemoLabStatusFromGitHub(githubIssue.state as 'open' | 'closed', githubIssue.state_reason) as Status,
               projectId: this.project.id,
               assigneeId,
               githubIssueId: githubIssue.number,
@@ -503,7 +503,7 @@ export class GitHubSyncService {
   }
 
   /**
-   * Sync from VibeHero to GitHub
+   * Sync from MemoLab to GitHub
    */
   private async syncToGitHub(
     owner: string,
@@ -643,7 +643,7 @@ export class GitHubSyncService {
   }
 
   /**
-   * Sync comments from GitHub to VibeHero
+   * Sync comments from GitHub to MemoLab
    */
   private async syncCommentsFromGitHub(owner: string, repo: string, issueNumber: number, cardId: string) {
     const githubComments = await this.githubService.getIssueComments(owner, repo, issueNumber);

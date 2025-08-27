@@ -55,10 +55,10 @@ export default function InstallationPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            VibeHero Installation Guide
+            MemoLab Installation Guide
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Connect Claude Code to VibeHero and supercharge your development workflow with AI-powered issue management
+            Connect Claude Code to MemoLab and supercharge your development workflow with AI-powered issue management
           </p>
         </div>
 
@@ -72,8 +72,8 @@ export default function InstallationPage() {
             <p className="font-medium">Get up and running in 3 steps:</p>
             <ol className="list-decimal list-inside space-y-2 ml-4">
               <li>Install Claude Code from Anthropic</li>
-              <li>Create a VibeHero project and get your API key</li>
-              <li>Connect Claude to VibeHero using the MCP command below</li>
+              <li>Create a MemoLab project and get your API key</li>
+              <li>Connect Claude to MemoLab using the MCP command below</li>
             </ol>
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function InstallationPage() {
             </div>
             
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              First, you&apos;ll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with VibeHero.
+              First, you&apos;ll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with MemoLab.
             </p>
 
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
@@ -118,7 +118,7 @@ export default function InstallationPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Option A: Create New Project</h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-4">
-                  Start fresh with a new VibeHero project:
+                  Start fresh with a new MemoLab project:
                 </p>
                 <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300 ml-4">
                   <li>Sign up at <a href="https://vibehero.io" className="text-purple-600 hover:text-purple-700 underline">vibehero.io</a></li>
@@ -134,7 +134,7 @@ export default function InstallationPage() {
                   Connect an existing GitHub repository:
                 </p>
                 <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300 ml-4">
-                  <li>Go to your VibeHero dashboard</li>
+                  <li>Go to your MemoLab dashboard</li>
                   <li>Click &quot;Import from GitHub&quot;</li>
                   <li>Authorize the GitHub integration</li>
                   <li>Select your repository</li>
@@ -152,7 +152,7 @@ export default function InstallationPage() {
             </div>
 
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Set up GitHub Actions to automatically sync your repository with VibeHero:
+              Set up GitHub Actions to automatically sync your repository with MemoLab:
             </p>
 
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 mb-4">
@@ -187,7 +187,7 @@ export default function InstallationPage() {
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Find Your Project ID</h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-3">
-                  You&apos;ll need your Project ID to connect Claude Code to VibeHero:
+                  You&apos;ll need your Project ID to connect Claude Code to MemoLab:
                 </p>
                 <ol className="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300 ml-4 mb-4">
                   <li>Go to <a href="/account" className="text-purple-600 hover:text-purple-700 underline">Account Settings</a></li>
@@ -222,11 +222,11 @@ export default function InstallationPage() {
           <section className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-8">
             <div className="flex items-center gap-3 mb-6">
               <Bot className="h-8 w-8 text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">5. Connect Claude Code to VibeHero</h2>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">5. Connect Claude Code to MemoLab</h2>
             </div>
 
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Use the Model Context Protocol (MCP) to connect Claude Code to your VibeHero project:
+              Use the Model Context Protocol (MCP) to connect Claude Code to your MemoLab project:
             </p>
 
             <div className="space-y-4 mb-6">
@@ -320,7 +320,7 @@ export default function InstallationPage() {
             <div className="space-y-4 mb-6">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">What is Dev Mode?</h3>
               <div className="text-gray-600 dark:text-gray-300 space-y-3">
-                <p>Dev Mode is VibeHero&apos;s most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
+                <p>Dev Mode is MemoLab&apos;s most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
                 <ul className="list-disc list-inside space-y-1 ml-4">
                   <li>Automatically pulls the next available task from your board</li>
                   <li>Works on implementing the solution</li>
@@ -358,7 +358,7 @@ export default function InstallationPage() {
               <h2 className="text-2xl font-bold text-green-900 dark:text-green-300">You&apos;re All Set! 🎉</h2>
             </div>
             <p className="text-green-800 dark:text-green-400 mb-6 max-w-2xl mx-auto">
-              Claude Code is now connected to your VibeHero project. Start by trying one of the example commands above, 
+              Claude Code is now connected to your MemoLab project. Start by trying one of the example commands above, 
               or dive straight into Dev Mode for full automation!
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
