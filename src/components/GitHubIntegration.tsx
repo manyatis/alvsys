@@ -301,10 +301,15 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
                 To sync with GitHub, you need to install the VibeHero GitHub App on your repositories.
               </div>
               <a 
-                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibehero'}/installations/new?state=${projectId}`}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'vibe-hero'}/installations/new?state=${projectId}`}
                 className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                onClick={() => {
+                  // Store the project context in localStorage for the installation flow
+                  localStorage.setItem('github_install_context', JSON.stringify({
+                    projectId,
+                    timestamp: Date.now()
+                  }));
+                }}
               >
                 Install GitHub App
               </a>

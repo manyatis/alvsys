@@ -73,7 +73,66 @@ export interface ProjectGitHubStatus {
  */
 export async function getUserInstallations(userId: string): Promise<GitHubInstallationsResponse> {
     try {
-      // Get user's GitHub account (if connected via OAuth)
+      // First, check for stored installations in our database
+      const storedInstallations = await prisma.gitHubInstallation.findMany({
+        where: {
+          userId: userId,
+          isActive: true,
+        },
+      });
+
+      if (storedInstallations.length > 0) {
+        // We have stored installations, fetch their repositories
+        const installations: GitHubInstallation[] = [];
+        
+        for (const stored of storedInstallations) {
+          try {
+            const githubService = await GitHubService.createForInstallation(stored.githubInstallationId);
+            const repos = await githubService.getInstallationRepositories(stored.githubInstallationId);
+            
+            installations.push({
+              id: parseInt(stored.githubInstallationId),
+              account: {
+                login: stored.githubAccountLogin,
+                type: stored.githubAccountType,
+                avatar_url: '', // We could store this if needed
+              },
+              repository_selection: stored.repositorySelection,
+              permissions: stored.permissions as Record<string, string>,
+              repositories: repos.repositories.map(repo => ({
+                id: repo.id,
+                name: repo.name,
+                full_name: repo.full_name,
+                description: repo.description,
+                private: repo.private,
+                html_url: repo.html_url,
+                default_branch: repo.default_branch,
+              })),
+            });
+          } catch (error) {
+            console.error(`Error fetching repos for installation ${stored.githubInstallationId}:`, error);
+            // Add installation with error for debugging
+            installations.push({
+              id: parseInt(stored.githubInstallationId),
+              account: {
+                login: stored.githubAccountLogin,
+                type: stored.githubAccountType,
+                avatar_url: '',
+              },
+              repository_selection: stored.repositorySelection,
+              repositories: [],
+              error: 'Failed to fetch repositories',
+            });
+          }
+        }
+
+        return {
+          installations,
+          needsAppInstallation: false,
+        };
+      }
+
+      // No stored installations, check OAuth token for dynamic fetching
       const githubAccount = await prisma.account.findFirst({
         where: {
           userId: userId,
@@ -341,7 +400,7 @@ export async function syncProject(
    */
 export async function syncCardToGitHub(
     cardId: string, 
-    _userId: string
+    userId: string
   ): Promise<CardSyncResult> {
     try {
       // Get card - access verification handled at higher layer
@@ -394,7 +453,7 @@ export async function syncCardToGitHub(
    */
 export async function disableCardSync(
     cardId: string, 
-    _userId: string
+    userId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Get card - access verification handled at higher layer
