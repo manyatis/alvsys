@@ -106,12 +106,12 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     <button
                       onClick={() => copyToClipboard(`{
   "mcpServers": {
-    "vibehero": {
+    "memolab": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
-        "https://vibehero.vercel.app/api/llm"
+        "https://memolab.vercel.app/api/llm"
       ],
       "headers": {
         "Authorization": "Bearer your_bearer_token_here",
@@ -135,12 +135,12 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     </button>
                     <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`{
   "mcpServers": {
-    "vibehero": {
+    "memolab": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
-        "https://vibehero.vercel.app/api/llm"
+        "https://memolab.vercel.app/api/llm"
       ],
       "headers": {
         "Authorization": "Bearer your_bearer_token_here",
@@ -211,7 +211,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                         <p><strong>Where to find your Project ID:</strong></p>
                         <ul className="mt-1 space-y-1">
                           <li>• Open any project in MemoLab</li>
-                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">vibehero.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
+                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">memolab.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
                       </div>
@@ -297,7 +297,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 relative overflow-x-auto">
                     <button
-                      onClick={() => copyToClipboard(`claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
+                      onClick={() => copyToClipboard(`claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
                       className="absolute top-2 right-2 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                       title="Copy to clipboard"
                     >
@@ -311,7 +311,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                         </svg>
                       )}
                     </button>
-                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http vibehero https://vibehero.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
+                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
                   </div>
                 </div>
               </div>
@@ -374,7 +374,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                         <p><strong>Where to find your Project ID:</strong></p>
                         <ul className="mt-1 space-y-1">
                           <li>• Open any project in MemoLab</li>
-                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">vibehero.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
+                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">memolab.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
                         <p className="mt-2">Use your project ID in the installation command from Step 1.</p>

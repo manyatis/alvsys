@@ -1,15 +1,15 @@
 # GitHub Issues Integration
 
-This document explains how to set up and use the GitHub Issues integration in VibeHero.
+This document explains how to set up and use the GitHub Issues integration in memolab.
 
 ## Overview
 
 The GitHub integration allows you to:
-- **Link projects to GitHub repositories** - Connect VibeHero projects with GitHub repos
+- **Link projects to GitHub repositories** - Connect memolab projects with GitHub repos
 - **Bidirectional sync** - Keep issues and cards synchronized between both systems
 - **Automatic webhooks** - Real-time updates when issues change on GitHub
 - **Comment synchronization** - Comments flow between both platforms
-- **Status mapping** - Intelligent mapping between VibeHero card statuses and GitHub issue states
+- **Status mapping** - Intelligent mapping between memolab card statuses and GitHub issue states
 - **Optional integration** - Can be enabled/disabled per project
 
 ## Setup
@@ -19,8 +19,8 @@ The GitHub integration allows you to:
 1. Go to GitHub Settings > Developer settings > GitHub Apps
 2. Click "New GitHub App"
 3. Fill in the app details:
-   - **App name**: `VibeHero Integration` (or your preferred name)
-   - **Homepage URL**: Your VibeHero instance URL
+   - **App name**: `memolab Integration` (or your preferred name)
+   - **Homepage URL**: Your memolab instance URL
    - **Webhook URL**: `https://your-domain.com/api/webhooks/github`
    - **Webhook secret**: Generate a random secret (save for later)
 
@@ -91,13 +91,13 @@ npm run db:migrate
 When setting up sync, you can configure:
 
 - **Direction**:
-  - `VIBES_TO_GITHUB` - Only sync VibeHero cards to GitHub issues
-  - `GITHUB_TO_VIBES` - Only sync GitHub issues to VibeHero cards
+  - `VIBES_TO_GITHUB` - Only sync memolab cards to GitHub issues
+  - `GITHUB_TO_VIBES` - Only sync GitHub issues to memolab cards
   - `BIDIRECTIONAL` - Sync both ways (recommended)
 
 - **Conflict Resolution**:
   - `MANUAL` - Require manual intervention for conflicts
-  - `VIBES_WINS` - VibeHero always wins conflicts
+  - `VIBES_WINS` - memolab always wins conflicts
   - `GITHUB_WINS` - GitHub always wins conflicts
   - `LATEST_TIMESTAMP` - Most recent update wins
 
@@ -107,7 +107,7 @@ When setting up sync, you can configure:
 
 ### Status Mapping
 
-| VibeHero Status | GitHub State |
+| memolab Status | GitHub State |
 |----------------|--------------|
 | REFINEMENT     | open         |
 | READY          | open         |
@@ -120,14 +120,14 @@ When setting up sync, you can configure:
 
 Once linked, the following events trigger automatic sync:
 
-**From GitHub to VibeHero:**
+**From GitHub to memolab:**
 - Issue created → New card created in REFINEMENT status
 - Issue updated → Card title/description updated
 - Issue closed → Card status changed to COMPLETED
 - Issue reopened → Card status changed to REFINEMENT
 - Comment added → Comment added to card
 
-**From VibeHero to GitHub:**
+**From memolab to GitHub:**
 - Card created with sync enabled → New issue created
 - Card updated → Issue title/description updated
 - Card completed → Issue closed
@@ -282,7 +282,7 @@ Extended existing models:
 ## Future Enhancements
 
 - **Pull Request Integration** - Link cards to pull requests
-- **Advanced User Mapping** - Map GitHub users to VibeHero users
+- **Advanced User Mapping** - Map GitHub users to memolab users
 - **Rich Label Sync** - Sync label colors and descriptions
 - **Attachment Sync** - Sync file attachments between systems
 - **Branch Linking** - Connect cards to specific branches
