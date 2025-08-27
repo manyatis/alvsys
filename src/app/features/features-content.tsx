@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle, GitBranch, Zap, Bot, ChevronRight } from 'lucide-react';
+import { CheckCircle, GitBranch, Zap, Bot, ChevronRight, Code2, Brain, Users, Workflow } from 'lucide-react';
 
 interface Feature {
   id: string;
@@ -15,59 +15,59 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    id: 'board-management',
-    title: 'GitHub Issues → Vector Memory',
-    icon: CheckCircle,
-    description: 'Automatically convert every GitHub issue and comment into searchable AI memory.',
+    id: 'mcp-tooling',
+    title: 'MCP-Enabled AI Agents',
+    icon: Code2,
+    description: 'Deploy AI agents with Model Context Protocol tools that interact natively with your development stack.',
     details: [
-      'Real-time vectorization of all GitHub content',
-      'Semantic search across project history',
-      'Issue-to-memory pipeline automation',
-      'Cross-project knowledge linking',
-      'Multi-repository memory consolidation'
+      'Native MCP integration for all major AI models',
+      'Direct GitHub, IDE, and toolchain interactions',
+      'Custom tool development and deployment',
+      'Secure sandboxed execution environments',
+      'Real-time agent monitoring and control'
     ],
     videoSrc: '/Board Clip.mp4'
   },
   {
-    id: 'github-integration',
-    title: 'Semantic Layer Intelligence',
-    icon: GitBranch,
-    description: 'We sit between AI agents and GitHub, providing intelligent context and memory.',
+    id: 'knowledge-bank',
+    title: 'Institutional Knowledge Bank',
+    icon: Brain,
+    description: 'Build a vectorized repository from your entire development history that AI agents access instantly.',
     details: [
-      'Intelligent abstraction over GitHub APIs',
-      'Context-aware issue relationships', 
-      'Smart filtering of relevant history',
-      'Multi-platform integration roadmap',
-      'Atlassian and Trello support coming soon',
-      'Unified memory across all tools'
+      'Automatic vectorization of GitHub issues and PRs',
+      'Code pattern and architecture learning', 
+      'Documentation and comment analysis',
+      'Cross-repository knowledge synthesis',
+      'Historical decision and rationale tracking',
+      'Team-specific best practices extraction'
     ],
     videoSrc: '/Github_Integration.mp4'
   },
   {
-    id: 'claude-github-action',
-    title: 'Growing Project Intelligence',
-    icon: Bot,
-    description: 'AI agents get smarter with every GitHub interaction, building project-specific expertise.',
+    id: 'bulk-automation',
+    title: 'Bulk Task Automation',
+    icon: Workflow,
+    description: 'Queue and assign tasks to AI agents in bulk while maintaining quality control.',
     details: [
-      'Project-specific learning curves',
-      'Avoid repeating past mistakes',
-      'Version conflict pattern recognition',
-      'Security vulnerability memory',
-      'Performance optimization history'
+      'Batch task creation and assignment',
+      'Intelligent work distribution algorithms',
+      'Priority-based execution queues',
+      'Automated workflow orchestration',
+      'Progress tracking and reporting dashboards'
     ],
     videoSrc: '/claude_github_action.mp4'
   },
   {
-    id: 'dev-mode',
-    title: 'Memory-Driven Development',
-    icon: Zap,
-    description: 'AI agents reference vectorized project history while working, avoiding past pitfalls.',
+    id: 'human-ai-collab',
+    title: 'Human-AI Collaboration Hub',
+    icon: Users,
+    description: 'Seamless handoffs between AI agents and developers with full visibility and control.',
     details: [
-      'Real-time memory consultation during tasks',
-      'Instant access to similar past issues',
-      'Work-loop detection and prevention',
-      'Debugging strategy recommendations',
-      'Implementation pattern suggestions'
+      'Real-time agent activity monitoring',
+      'Code review and approval workflows',
+      'Human intervention and guidance tools',
+      'Quality assurance checkpoints',
+      'Performance metrics and analytics'
     ],
     videoSrc: '/dev_mode_clip.mp4'
   }
@@ -116,8 +116,8 @@ export default function FeaturesContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
             >
-              The semantic layer that transforms GitHub issues into AI memory. Turn project history 
-              into searchable intelligence that makes agents smarter as your codebase grows.
+              Everything you need to build an AI-powered development team. Deploy intelligent agents 
+              that work alongside humans with MCP tooling, institutional knowledge, and automated workflows.
             </motion.p>
           </div>
         </div>
@@ -210,13 +210,13 @@ export default function FeaturesContent() {
             className="text-3xl md:text-4xl font-bold text-white mb-6"
             variants={fadeInUp}
           >
-            Turn GitHub Issues Into AI Intelligence
+            Build Your AI-Powered Development Team
           </motion.h2>
           <motion.p 
             className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto"
             variants={fadeInUp}
           >
-            We are the semantic layer that makes your project history searchable and actionable for AI agents.
+            Deploy intelligent AI agents equipped with MCP tools and institutional knowledge to accelerate your development.
           </motion.p>
           <motion.div 
             className="flex flex-col sm:flex-row gap-4 justify-center"

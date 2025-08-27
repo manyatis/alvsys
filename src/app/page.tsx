@@ -68,7 +68,7 @@ export default function Home() {
                   <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-gradient-to-tr from-blue-400/20 to-purple-500/20 rounded-full filter blur-2xl animate-blob animation-delay-2000"></div>
                 </div>
                 <span className="relative text-slate-900 dark:text-white">
-                  Give Your AI Agents Memory
+                  The AI Agentic Workplace Platform
                 </span>
               </motion.h1>
 
@@ -88,7 +88,7 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1.2, delay: 0.6, ease: "easeOut" }}
               >
-                Turn your GitHub issues into a <b>vectorized memory bank</b>. We are the semantic layer between AI agents and your project history, making them smarter as your project grows - not dumber.
+                Empower AI agents to work alongside human developers with <b>MCP tooling</b>, institutional knowledge, and automated workflows. Scale your development team with intelligent AI collaboration.
               </motion.p>
 
             <motion.div 
@@ -147,10 +147,10 @@ export default function Home() {
                 style={{ opacity: 1 }}
               >
                 <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-6">
-                  The Semantic Layer For Project Knowledge
+                  Where AI Agents and Human Developers Collaborate
                 </h2>
                 <p className="text-lg text-slate-600 dark:text-slate-300 mb-8">
-                  Transform GitHub issues into searchable AI memory. Soon supporting Atlassian, Trello, and more:
+                  Build an AI-powered workforce that seamlessly integrates with your development team:
                 </p>
                 <motion.div 
                   className="space-y-6"
@@ -166,10 +166,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        1. GitHub Issues → Vector Memory
+                        1. MCP-Enabled AI Agents
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        We automatically convert every GitHub issue, comment, and solution into searchable vectors. AI agents find relevant context instantly.
+                        Deploy AI agents with Model Context Protocol (MCP) tooling that interact with your codebase, GitHub, and development stack natively.
                       </p>
                     </div>
                   </motion.div>
@@ -184,10 +184,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        2. Semantic Layer Intelligence
+                        2. Institutional Knowledge Bank
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        We sit between AI agents and your issue systems, providing intelligent context that grows smarter with every interaction.
+                        Build a vectorized knowledge repository from your GitHub issues, documentation, and code history that AI agents can access instantly.
                       </p>
                     </div>
                   </motion.div>
@@ -202,10 +202,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        3. Multi-Platform Memory Bank
+                        3. Bulk Task Automation
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Starting with GitHub, expanding to Atlassian, Trello, and more. One unified memory bank across all your project management tools.
+                        Queue and assign tasks to AI agents in bulk. Automate repetitive workflows while human developers focus on complex problems.
                       </p>
                     </div>
                   </motion.div>
@@ -220,10 +220,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
-                        4. Growing AI Intelligence
+                        4. Human-AI Collaboration Hub
                       </h3>
                       <p className="text-slate-600 dark:text-slate-300">
-                        Unlike traditional AI that forgets, your agents remember every solution, mistake, and optimization - becoming project experts over time.
+                        Seamless handoffs between AI agents and developers. Track progress, review AI work, and maintain quality control across your hybrid workforce.
                       </p>
                     </div>
                   </motion.div>
@@ -262,13 +262,13 @@ export default function Home() {
               className="text-4xl font-bold text-slate-900 dark:text-white mb-6"
               variants={fadeInUp}
             >
-              Your Project&apos;s AI Memory Bank
+              Build Your AI-Powered Development Team
             </motion.h2>
             <motion.p 
               className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto"
               variants={fadeInUpDelay}
             >
-              Transform your GitHub issues into intelligent, searchable memory that makes AI agents smarter with every task.
+              Deploy intelligent AI agents that work alongside your developers, equipped with MCP tools and institutional knowledge to accelerate delivery.
             </motion.p>
             <motion.div 
               className="flex justify-center"

@@ -162,7 +162,7 @@ export default function SubscriptionFlow() {
           Choose Your Plan
         </h2>
         <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
-          Unlock the full potential of AI-powered development with MemoLab&apos;s subscription plans.
+          Deploy AI agents at scale with enterprise-grade MCP tooling and institutional knowledge management.
         </p>
       </div>
       
