@@ -109,6 +109,10 @@ export class GitHubSyncService {
         data: { githubLastSyncAt: new Date() },
       });
 
+      // Trigger vector sync after successful GitHub sync (decoupled)
+      const { VectorSyncTrigger } = await import('@/lib/vector-sync-trigger');
+      VectorSyncTrigger.triggerProjectSyncInBackground(this.project.id);
+
     } catch (error) {
       result.success = false;
       if (error instanceof GitHubRateLimitError) {
