@@ -64,7 +64,7 @@ export default function Home() {
                 <span className="relative inline-block">
                   <span className="absolute inset-0 bg-gradient-to-r from-purple-600 via-purple-700 to-purple-600 blur-3xl opacity-20"></span>
                   <span className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
-                    Project Management
+                    Agentic AI Workspace
                   </span>
                 </span>
                 <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent"> For The </span>
@@ -261,20 +261,20 @@ export default function Home() {
 
         {/* CTA Section */}
         <motion.section 
-          className="py-24 bg-gradient-to-r from-purple-600 to-purple-700"
+          className="py-24 bg-slate-50 dark:bg-slate-950"
           initial="initial"
           whileInView="animate"
           viewport={{ once: true, amount: 0.3 }}
         >
           <div className="container mx-auto px-6 text-center">
             <motion.h2 
-              className="text-4xl font-bold text-white mb-6"
+              className="text-4xl font-bold text-slate-900 dark:text-white mb-6"
               variants={fadeInUp}
             >
               Start Your AI Native Project
             </motion.h2>
             <motion.p 
-              className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto"
+              className="text-xl text-slate-600 dark:text-slate-300 mb-8 max-w-2xl mx-auto"
               variants={fadeInUpDelay}
             >
               Connect your GitHub repository and let AI agents work on your project.
@@ -285,7 +285,7 @@ export default function Home() {
             >
               <button
                 onClick={() => window.location.href = '/projects'}
-                className="px-8 py-4 bg-white text-purple-600 font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
+                className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all"
               >
                 Get Started Free
               </button>
