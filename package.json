@@ -10,9 +10,11 @@
     "postinstall": "npx prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
+    "db:reset": "prisma migrate reset && node scripts/apply-vector-schema.js",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
-    "db:seed": "node prisma/seed.js"
+    "db:seed": "node prisma/seed.js",
+    "vector:setup": "node scripts/apply-vector-schema.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
