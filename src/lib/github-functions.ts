@@ -786,14 +786,46 @@ async function handleCommentWebhook(
         return { success: true, processed: false };
       }
 
-      // Create comment in VibeHero
+      // Try to find the user by GitHub username first
+      let authorId = syncRecord.project.ownerId; // Default to project owner
+      const githubUser = (comment as { user: { login: string; id: number } }).user;
+      
+      if (githubUser) {
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { username: githubUser.login },
+              {
+                accounts: {
+                  some: {
+                    provider: 'github',
+                    providerAccountId: githubUser.id.toString(),
+                  },
+                },
+              },
+            ],
+          },
+        });
+
+        if (user) {
+          authorId = user.id;
+        }
+      }
+
+      // Create comment in VibeHero with proper attribution
+      const commentBody = (comment as { body: string }).body;
+      const content = authorId === syncRecord.project.ownerId
+        ? `**From GitHub (@${githubUser?.login || 'unknown'}):**\n\n${commentBody}`
+        : commentBody;
+
       await prisma.comment.create({
         data: {
-          content: (comment as { body: string }).body,
+          content,
           cardId: syncRecord.cardId,
-          authorId: syncRecord.project.ownerId, // Use project owner for external comments
+          authorId,
           isAiComment: false,
           githubCommentId: (comment as { id: number }).id,
+          githubSyncEnabled: true,
         },
       });
 

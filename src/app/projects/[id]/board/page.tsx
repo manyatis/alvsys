@@ -282,25 +282,34 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     try {
       await createCard(newCard);
       
-      if (createAnother) {
-        // Keep modal open and retain labels, status, priority, effort
-        setNewCard({
-          title: '',
-          description: '',
-          acceptanceCriteria: '',
-          status: newCard.status, // Retain status
-          priority: newCard.priority, // Retain priority
-          effortPoints: newCard.effortPoints, // Retain effort points
-          isAiAllowedTask: true,
-          assigneeId: null,
-          labelIds: newCard.labelIds, // Retain labels
-          sprintId: newCard.sprintId, // Retain sprint
-        });
-      } else {
-        closeModal();
-      }
+      // Wait a small amount for the isCreatingIssue state to reset
+      setTimeout(() => {
+        if (createAnother) {
+          // Keep modal open and retain labels, status, priority, effort
+          setNewCard({
+            title: '',
+            description: '',
+            acceptanceCriteria: '',
+            status: newCard.status, // Retain status
+            priority: newCard.priority, // Retain priority
+            effortPoints: newCard.effortPoints, // Retain effort points
+            isAiAllowedTask: true,
+            assigneeId: null,
+            labelIds: newCard.labelIds, // Retain labels
+            sprintId: newCard.sprintId, // Retain sprint
+          });
+        } else {
+          closeModal();
+        }
+      }, 100);
     } catch (error) {
       console.error('Error creating card:', error);
+      // Ensure modal can be closed even on error
+      setTimeout(() => {
+        if (!createAnother) {
+          closeModal();
+        }
+      }, 100);
     }
   };
 
