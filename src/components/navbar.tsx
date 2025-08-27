@@ -197,6 +197,12 @@ export default function Navbar() {
                 Features
               </Link>
               <Link 
+                href="/demo"
+                className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-500"
+              >
+                Demo
+              </Link>
+              <Link 
                 href="/installation"
                 className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-all duration-500"
               >
@@ -337,6 +343,13 @@ export default function Navbar() {
               className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Features
+            </Link>
+            <Link 
+              href="/demo"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
+            >
+              Demo
             </Link>
             <Link 
               href="/installation"

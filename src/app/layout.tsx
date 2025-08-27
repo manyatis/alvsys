@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MemoLab - Give Your AI Agents Memory",
-  description: "Turn GitHub issues into vectorized memory banks. The semantic layer that makes AI agents smarter over time.",
+  title: "MemoLab - The AI Agentic Workplace Platform",
+  description: "Deploy AI agents alongside human developers with MCP tooling, institutional knowledge banks, and automated workflows. Build your AI-powered development team.",
 };
 
 export default function RootLayout({
