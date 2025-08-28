@@ -165,30 +165,32 @@ export class IssuesAPI {
     // Increment usage after successful card creation
     await UsageService.incrementCardUsage(userId);
 
-    // Auto-sync to GitHub if the project has GitHub sync enabled
-    try {
-      const project = await prisma.project.findUnique({
-        where: { id: projectId },
-        select: { githubSyncEnabled: true, githubInstallationId: true, githubRepoName: true },
-      });
-      
-      if (project?.githubSyncEnabled && project.githubInstallationId && project.githubRepoName) {
-        const githubSyncService = await GitHubSyncService.createForProject(projectId);
-        if (githubSyncService) {
-          // Enable GitHub sync for this card and sync it to GitHub
-          await prisma.card.update({
-            where: { id: issue.id },
-            data: { githubSyncEnabled: true },
-          });
-          
-          await githubSyncService.syncCardToGitHub(issue.id);
-          console.log(`Auto-synced new card ${issue.id} to GitHub`);
+    // Auto-sync to GitHub if the project has GitHub sync enabled - run in background
+    setImmediate(async () => {
+      try {
+        const project = await prisma.project.findUnique({
+          where: { id: projectId },
+          select: { githubSyncEnabled: true, githubInstallationId: true, githubRepoName: true },
+        });
+        
+        if (project?.githubSyncEnabled && project.githubInstallationId && project.githubRepoName) {
+          const githubSyncService = await GitHubSyncService.createForProject(projectId);
+          if (githubSyncService) {
+            // Enable GitHub sync for this card and sync it to GitHub
+            await prisma.card.update({
+              where: { id: issue.id },
+              data: { githubSyncEnabled: true },
+            });
+            
+            await githubSyncService.syncCardToGitHub(issue.id);
+            console.log(`Background GitHub sync completed for new card ${issue.id}`);
+          }
         }
+      } catch (error) {
+        // Log the error but don't fail the card creation
+        console.error('Failed to auto-sync card to GitHub in background:', error);
       }
-    } catch (error) {
-      // Log the error but don't fail the card creation
-      console.error('Failed to auto-sync card to GitHub:', error);
-    }
+    });
 
     return issue;
   }
@@ -294,16 +296,20 @@ export class IssuesAPI {
       },
     });
 
-    // Sync to GitHub if enabled
+    // Sync to GitHub if enabled - run in background to avoid blocking UI
     if (updatedIssue.githubSyncEnabled && updatedIssue.githubIssueId) {
-      try {
-        const githubSyncService = await GitHubSyncService.createForProject(projectId);
-        if (githubSyncService) {
-          await githubSyncService.syncCardToGitHub(issueId);
+      // Start GitHub sync in background without awaiting
+      setImmediate(async () => {
+        try {
+          const githubSyncService = await GitHubSyncService.createForProject(projectId);
+          if (githubSyncService) {
+            await githubSyncService.syncCardToGitHub(issueId);
+            console.log(`Background GitHub sync completed for card ${issueId}`);
+          }
+        } catch (error) {
+          console.error('Failed to sync issue to GitHub in background:', error);
         }
-      } catch (error) {
-        console.error('Failed to sync issue to GitHub:', error);
-      }
+      });
     }
 
     return updatedIssue;
