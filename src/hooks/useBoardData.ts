@@ -314,7 +314,7 @@ export function useCardOperations(projectId: string, refreshCards: () => Promise
 Please open a feature branch called feature/claude-vh-${newCard.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.
 
 Here's what needs to be done:
-${newCard.description ? newCard.description + '\n\n' : ''}${newCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + newCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
+${newCard.description ? newCard.description + '\n\n' : ''}${newCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + newCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build and create a pull request before marking this task as complete.`;
           
           try {
             await createIssueComment(result.issue.id, claudeComment);

@@ -409,7 +409,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
 Please open a feature branch called feature/claude-vh-${selectedCard.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.
 
 Here's what needs to be done:
-${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + selectedCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
+${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCard.acceptanceCriteria ? 'Acceptance Criteria:\n' + selectedCard.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build and create a pull request before marking this task as complete.`;
       
       await createIssueComment(selectedCard.id, claudeComment);
       
@@ -444,7 +444,7 @@ ${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCa
 Please open a feature branch called feature/claude-vh-${card.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.
 
 Here's what needs to be done:
-${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 'Acceptance Criteria:\n' + card.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
+${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 'Acceptance Criteria:\n' + card.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build and create a pull request before marking this task as complete.`;
         
         await createIssueComment(card.id, claudeComment);
       }
