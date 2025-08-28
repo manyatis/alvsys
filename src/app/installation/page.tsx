@@ -116,6 +116,7 @@ export default function InstallationPage() {
               </div>
               
               <p className="text-gray-400 mb-4">
+
                 First, you&apos;ll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with Alvsys.
               </p>
 
@@ -158,7 +159,9 @@ export default function InstallationPage() {
                     Start fresh with a new Alvsys project:
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4">
-                    <li>Sign up at <a href="https://https://alvsys.com" className="text-emerald-400 hover:text-emerald-300 underline">https://alvsys.com</a></li>
+
+                    <li>Sign up at <a href="https://alvsys.com" className="text-emerald-400 hover:text-emerald-300 underline">alvsys.io</a></li>
+
                     <li>Click &quot;Create New Project&quot; on your dashboard</li>
                     <li>Give your project a name and description</li>
                     <li>Your project ID will be automatically generated</li>
@@ -240,7 +243,9 @@ export default function InstallationPage() {
                 <div>
                   <h3 className="text-lg font-medium mb-3">Find Your Project ID</h3>
                   <p className="text-gray-400 mb-3">
+
                     You&apos;ll need your Project ID to connect Claude Code to Alvsys:
+
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4 mb-4">
                     <li>Go to <a href="/account" className="text-emerald-400 hover:text-emerald-300 underline">Account Settings</a></li>
@@ -401,6 +406,7 @@ export default function InstallationPage() {
                   <h3 className="text-lg font-medium">What is Dev Mode?</h3>
                   <div className="text-gray-400 space-y-3">
                     <p>Dev Mode is Alvsys&apos;s most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
+
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Automatically pulls the next available task from your board</li>
                       <li>Works on implementing the solution</li>
