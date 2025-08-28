@@ -297,7 +297,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 relative overflow-x-auto">
                     <button
-                      onClick={() => copyToClipboard(`claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
+                      onClick={() => copyToClipboard(`claude mcp add --transport http alvsys https://alvsys.com/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
                       className="absolute top-2 right-2 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                       title="Copy to clipboard"
                     >
@@ -311,7 +311,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                         </svg>
                       )}
                     </button>
-                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
+                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http alvsys https://alvsys.com/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
                   </div>
                 </div>
               </div>
