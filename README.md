@@ -17,7 +17,7 @@ Agent workspace automation platform. Empower AI agents with structured task queu
 2. Copy `.env.example` to `.env`
 3. Add your keys
 4. `npm install && npm run dev`
-5. Or use hosted version: [alvsys.io](https://alvsys.io)
+5. Or use hosted version: [https://alvsys.com](https://https://alvsys.com)
 
 ## License
 MIT
