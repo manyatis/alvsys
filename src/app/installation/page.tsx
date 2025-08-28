@@ -116,7 +116,7 @@ export default function InstallationPage() {
               </div>
               
               <p className="text-gray-400 mb-4">
-                First, you'll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with MemoLab.
+                First, you&apos;ll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with MemoLab.
               </p>
 
               <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-4">
@@ -159,7 +159,7 @@ export default function InstallationPage() {
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4">
                     <li>Sign up at <a href="https://memolab.io" className="text-emerald-400 hover:text-emerald-300 underline">memolab.io</a></li>
-                    <li>Click "Create New Project" on your dashboard</li>
+                    <li>Click &quot;Create New Project&quot; on your dashboard</li>
                     <li>Give your project a name and description</li>
                     <li>Your project ID will be automatically generated</li>
                   </ol>
@@ -172,7 +172,7 @@ export default function InstallationPage() {
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4">
                     <li>Go to your MemoLab dashboard</li>
-                    <li>Click "Import from GitHub"</li>
+                    <li>Click &quot;Import from GitHub&quot;</li>
                     <li>Authorize the GitHub integration</li>
                     <li>Select your repository</li>
                     <li>Your issues will be automatically imported</li>
@@ -240,11 +240,11 @@ export default function InstallationPage() {
                 <div>
                   <h3 className="text-lg font-medium mb-3">Find Your Project ID</h3>
                   <p className="text-gray-400 mb-3">
-                    You'll need your Project ID to connect Claude Code to MemoLab:
+                    You&apos;ll need your Project ID to connect Claude Code to MemoLab:
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4 mb-4">
                     <li>Go to <a href="/account" className="text-emerald-400 hover:text-emerald-300 underline">Account Settings</a></li>
-                    <li>Click on the "Projects" tab</li>
+                    <li>Click on the &quot;Projects&quot; tab</li>
                     <li>Find your project and copy the Project ID</li>
                   </ol>
                 </div>
@@ -256,15 +256,15 @@ export default function InstallationPage() {
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4 mb-4">
                     <li>Go to <a href="/account" className="text-emerald-400 hover:text-emerald-300 underline">Account Settings</a></li>
-                    <li>Click on the "API Keys" tab</li>
-                    <li>Click "Generate New Key"</li>
-                    <li>Give it a descriptive name (e.g., "Claude Code")</li>
+                    <li>Click on the &quot;API Keys&quot; tab</li>
+                    <li>Click &quot;Generate New Key&quot;</li>
+                    <li>Give it a descriptive name (e.g., &quot;Claude Code&quot;)</li>
                     <li>Copy and securely store the generated token</li>
                   </ol>
 
                   <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                     <p className="text-yellow-400/90 text-sm">
-                      <strong>Important:</strong> Store your API token securely. You won't be able to see it again after creation.
+                      <strong>Important:</strong> Store your API token securely. You won&apos;t be able to see it again after creation.
                     </p>
                   </div>
                 </div>
@@ -400,7 +400,7 @@ export default function InstallationPage() {
                 <div className="space-y-4 mb-6">
                   <h3 className="text-lg font-medium">What is Dev Mode?</h3>
                   <div className="text-gray-400 space-y-3">
-                    <p>Dev Mode is MemoLab's most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
+                    <p>Dev Mode is MemoLab&apos;s most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Automatically pulls the next available task from your board</li>
                       <li>Works on implementing the solution</li>
@@ -445,7 +445,7 @@ export default function InstallationPage() {
               <div className="relative">
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <Check className="h-8 w-8 text-emerald-400" />
-                  <h2 className="text-2xl font-semibold">You're All Set!</h2>
+                  <h2 className="text-2xl font-semibold">You&apos;re All Set!</h2>
                 </div>
                 <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
                   Claude Code is now connected to your MemoLab project. Start by trying one of the example commands above, 

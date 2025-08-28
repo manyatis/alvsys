@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Code2, Brain, Workflow, Users, ChevronRight, ArrowRight, Sparkles, Shield, Zap, GitBranch, Activity, Lock } from 'lucide-react';
+import { Code2, Brain, Workflow, Users, ChevronRight, ArrowRight, Sparkles, GitBranch } from 'lucide-react';
 
 interface Feature {
   id: string;
