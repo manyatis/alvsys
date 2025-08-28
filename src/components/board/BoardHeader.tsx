@@ -30,6 +30,8 @@ interface BoardHeaderProps {
   onCreateSprint?: () => void;
   onManualSync?: () => void;
   onOpenMCPGuide?: () => void;
+  onAssignAllToClaude?: () => void;
+  isAssigningToClaude?: boolean;
 }
 
 export default function BoardHeader({
@@ -47,6 +49,8 @@ export default function BoardHeader({
   onCreateSprint,
   onManualSync,
   onOpenMCPGuide,
+  onAssignAllToClaude,
+  isAssigningToClaude = false,
 }: BoardHeaderProps) {
   const [showSprintMenu, setShowSprintMenu] = useState(false);
   const [showEllipsisMenu, setShowEllipsisMenu] = useState(false);
@@ -192,6 +196,18 @@ export default function BoardHeader({
                 </div>
               )}
             </div>
+            
+            {/* Assign All to Claude Button */}
+            <button
+              onClick={onAssignAllToClaude}
+              disabled={isAssigningToClaude}
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              <Bot className={`h-4 w-4 ${isAssigningToClaude ? 'animate-pulse' : ''}`} />
+              <span className="hidden sm:inline">
+                {isAssigningToClaude ? 'Assigning...' : 'Assign All to @Claude'}
+              </span>
+            </button>
             
             {/* MCP Commands Button */}
             <button

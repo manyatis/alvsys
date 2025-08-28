@@ -422,6 +422,45 @@ ${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCa
     }
   };
 
+  const handleAssignAllToClaudeFlow = async () => {
+    if (!cards.length) return;
+    
+    setIsEngagingClaudeFlow(true);
+    try {
+      const { createIssueComment } = await import('@/lib/issue-functions');
+      
+      // Filter cards that are not completed
+      const assignableCards = cards.filter(card => card.status !== CardStatus.COMPLETED);
+      
+      if (assignableCards.length === 0) {
+        alert('No assignable cards found. All cards are already completed.');
+        return;
+      }
+      
+      // Create bulk assignment comment for all cards
+      for (const card of assignableCards) {
+        const claudeComment = `@claude Please work on this issue.
+
+Please open a feature branch called feature/claude-vh-${card.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}.
+
+Here's what needs to be done:
+${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 'Acceptance Criteria:\n' + card.acceptanceCriteria + '\n\n' : ''}Please make sure to run the project build before marking this task as complete.`;
+        
+        await createIssueComment(card.id, claudeComment);
+      }
+      
+      alert(`Successfully assigned ${assignableCards.length} cards to @Claude!`);
+      
+      // Refresh cards to show the new comments
+      await refreshCards();
+    } catch (error) {
+      console.error('Error assigning all to @claude flow:', error);
+      alert('Failed to assign all cards to @Claude. Please try again.');
+    } finally {
+      setIsEngagingClaudeFlow(false);
+    }
+  };
+
 
 
 
@@ -892,6 +931,8 @@ ${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCa
             onCreateSprint={openSprintModal}
             onManualSync={handleManualSync}
             onOpenMCPGuide={openMCPGuideModal}
+            onAssignAllToClaude={handleAssignAllToClaudeFlow}
+            isAssigningToClaude={isEngagingClaudeFlow}
           />
 
         {/* Board */}
