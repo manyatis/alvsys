@@ -3,12 +3,12 @@ import FeaturesContent from './features-content';
 
 // Static metadata for better SEO and social sharing
 export const metadata = {
-  title: 'Features - MemoLab | The Semantic Layer for AI Project Memory',
-  description: 'Turn GitHub issues into vectorized AI memory. The semantic layer between AI agents and project management tools that makes agents smarter over time.',
-  keywords: 'semantic layer, vector database, GitHub issues, AI memory, project intelligence, vectorized memory bank, AI agents',
+  title: 'Features - Agent Workspace Automation Platform',
+  description: 'Empower AI agents with structured task queues, institutional knowledge, and automated work sessions. A workspace designed for agent efficiency and cleaner project management.',
+  keywords: 'agent workspace, task automation, institutional knowledge, work sessions, agent efficiency, project management, AI collaboration',
   openGraph: {
-    title: 'Features - MemoLab | The Semantic Layer for AI Project Memory',
-    description: 'Turn GitHub issues into vectorized AI memory. The semantic layer between AI agents and project management tools that makes agents smarter over time.',
+    title: 'Features - Agent Workspace Automation Platform',
+    description: 'Empower AI agents with structured task queues, institutional knowledge, and automated work sessions. A workspace designed for agent efficiency and cleaner project management.',
     type: 'website',
   },
 };

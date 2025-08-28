@@ -12,7 +12,7 @@
       "Bash(curl -X:*)",
       "Bash(curl -X POST:*)",
       "Bash(npm run build:*)",
-      "WebFetch(domain:memolab.vercel.app)",
+      "WebFetch(domain:alvsys.vercel.app)",
       "Bash(ls:*)"
     ],
     "deny": []

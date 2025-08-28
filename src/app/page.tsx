@@ -38,10 +38,10 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.1 }}
               >
                 <span className="block text-white">
-                  The AI Agentic
+                  Agent Workspace
                 </span>
                 <span className="block mt-2">
-                  <span className="text-gradient-primary">Workplace Platform</span>
+                  <span className="text-gradient-primary">Automation Platform</span>
                 </span>
               </motion.h1>
 
@@ -52,8 +52,8 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                Deploy intelligent AI agents that work seamlessly alongside your development team. 
-                Enterprise-grade MCP tooling, institutional knowledge, and automated workflows.
+                Empower AI agents with structured task queues, institutional knowledge, and automated work sessions. 
+                A workspace designed for agent efficiency and cleaner project management.
               </motion.p>
 
               {/* CTA Buttons */}
@@ -109,49 +109,49 @@ export default function Home() {
               className="text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
-                <span className="text-white">Enterprise-Ready Features</span>
+                <span className="text-white">Workspace Features</span>
               </h2>
               <p className="text-lg text-gray-500 max-w-xl mx-auto">
-                Everything you need to deploy AI agents at scale
+                Everything agents need for structured, efficient work
               </p>
             </motion.div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {[
                 {
-                  icon: Code2,
-                  title: "MCP-Enabled Agents",
-                  description: "Deploy agents with native Model Context Protocol support for seamless tool integration",
+                  icon: Workflow,
+                  title: "Task Queue Management",
+                  description: "Organize agent work with structured task queues and priority management",
                   gradient: "from-emerald-500 to-green-500"
                 },
                 {
                   icon: Shield,
                   title: "Institutional Knowledge",
-                  description: "Build a vectorized repository from your entire development history",
+                  description: "Centralized knowledge base for agents to reference project history and patterns",
                   gradient: "from-green-500 to-emerald-500"
                 },
                 {
-                  icon: Workflow,
-                  title: "Bulk Automation",
-                  description: "Queue and orchestrate thousands of AI tasks with intelligent distribution",
+                  icon: Code2,
+                  title: "Automated Work Sessions",
+                  description: "Structure agent work sessions with clear objectives and deliverables",
                   gradient: "from-lime-500 to-green-500"
                 },
                 {
                   icon: Users,
-                  title: "Human-AI Collaboration",
-                  description: "Seamless handoffs between AI agents and developers with full visibility",
+                  title: "Project Organization",
+                  description: "Keep projects clean with organized workflows and systematic task management",
                   gradient: "from-teal-500 to-emerald-500"
                 },
                 {
                   icon: Zap,
-                  title: "Real-time Monitoring",
-                  description: "Track agent performance, costs, and outputs in real-time",
+                  title: "Efficiency Tracking",
+                  description: "Monitor agent productivity and identify workflow optimization opportunities",
                   gradient: "from-emerald-400 to-green-500"
                 },
                 {
                   icon: Sparkles,
-                  title: "Self-Improving AI",
-                  description: "Agents that learn from your codebase and get smarter over time",
+                  title: "Agent Empowerment",
+                  description: "Provide agents with tools and structure to work independently and effectively",
                   gradient: "from-green-400 to-emerald-500"
                 }
               ].map((feature, index) => {
@@ -198,8 +198,8 @@ export default function Home() {
               className="space-y-6"
             >
               <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
-                Ready to transform your
-                <span className="block mt-1 text-gradient-primary">development workflow?</span>
+                Ready to empower your
+                <span className="block mt-1 text-gradient-primary">AI agents?</span>
               </h2>
 
               <div className="flex justify-center pt-6">

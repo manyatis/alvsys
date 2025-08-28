@@ -125,11 +125,11 @@ export default function MCPGuideModal({
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700 overflow-x-auto">
               <code className="text-xs font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header &ldquo;X-Project-Id: YOUR_PROJECT_ID&rdquo; --header &ldquo;Authorization: Bearer YOUR_API_KEY&rdquo;
+                claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header &ldquo;X-Project-Id: YOUR_PROJECT_ID&rdquo; --header &ldquo;Authorization: Bearer YOUR_API_KEY&rdquo;
               </code>
             </div>
             <button
-              onClick={() => handleCopy(`claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'install-command')}
+              onClick={() => handleCopy(`claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'install-command')}
               className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
             >
               {copiedItem === 'install-command' ? (
@@ -192,7 +192,7 @@ export default function MCPGuideModal({
                 To avoid passing project IDs in installation, set this in your environment:
               </p>
               <div className="bg-white dark:bg-blue-950 rounded px-2 py-1 font-mono text-xs border border-blue-300 dark:border-blue-600">
-                VIBE_HERO_PROJECT_ID={projectId}
+                ALVSYS_PROJECT_ID={projectId}
               </div>
             </div>
           </div>

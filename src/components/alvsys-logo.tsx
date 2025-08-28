@@ -1,11 +1,11 @@
 import React from 'react';
 
-interface MemoLabLogoProps {
+interface AlvsysLogoProps {
   className?: string;
   gradientId?: string;
 }
 
-export default function MemoLabLogo({ className = "w-8 h-8", gradientId = "gradient" }: MemoLabLogoProps) {
+export default function AlvsysLogo({ className = "w-8 h-8", gradientId = "gradient" }: AlvsysLogoProps) {
   return (
     <svg 
       className={className} 

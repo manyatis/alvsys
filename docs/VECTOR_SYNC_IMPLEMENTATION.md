@@ -1,4 +1,4 @@
-# MemoLab Vector Sync Implementation Plan
+# Alvsys Vector Sync Implementation Plan
 
 ## 🎯 **Goal**
 Transform GitHub issues into a vectorized memory bank that AI agents can use to get smarter over time, avoiding past mistakes and referencing successful patterns.
