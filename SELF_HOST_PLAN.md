@@ -1,10 +1,10 @@
-# memolab Self-Hosting Plan
+# alvsys Self-Hosting Plan
 
 ## Overview
-This document outlines a plan for enabling memolab to be self-hosted in a simplified, development-focused mode without the marketing pages, authentication complexity, and SaaS features.
+This document outlines a plan for enabling alvsys to be self-hosted in a simplified, development-focused mode without the marketing pages, authentication complexity, and SaaS features.
 
 ## Goals
-- Create a self-contained version of memolab suitable for local development and self-hosting
+- Create a self-contained version of alvsys suitable for local development and self-hosting
 - Remove marketing/landing pages and SaaS-specific features
 - Simplify authentication (single user or bypass)
 - Focus on core functionality: project boards, GitHub integration, and MCP support
@@ -40,12 +40,12 @@ Create deployment modes using environment variables:
 
 ```env
 # Self-hosted mode
-memolab_MODE=selfhost
+alvsys_MODE=selfhost
 # Skip authentication
-memolab_AUTH_BYPASS=true
+alvsys_AUTH_BYPASS=true
 # Default user/project
-memolab_DEFAULT_USER_ID=self-host-user
-memolab_DEFAULT_PROJECT_ID=default-project
+alvsys_DEFAULT_USER_ID=self-host-user
+alvsys_DEFAULT_PROJECT_ID=default-project
 ```
 
 ### Phase 2: Conditional Rendering
@@ -102,10 +102,10 @@ Create Docker setup for easy self-hosting:
 #### docker-compose.yml
 ```yaml
 services:
-  memolab:
+  alvsys:
     build: .
     environment:
-      - memolab_MODE=selfhost
+      - alvsys_MODE=selfhost
       - DATABASE_URL=postgresql://...
     ports:
       - "3000:3000"
@@ -113,7 +113,7 @@ services:
   postgres:
     image: postgres:15
     environment:
-      - POSTGRES_DB=memolab
+      - POSTGRES_DB=alvsys
     volumes:
       - postgres_data:/var/lib/postgresql/data
 ```
@@ -165,10 +165,10 @@ Optimize build for self-host mode:
 ### Runtime Environment Variables
 ```env
 # Core Settings
-memolab_MODE=selfhost|saas
-memolab_AUTH_BYPASS=true|false
-memolab_DEFAULT_USER_NAME="Self-Host User"
-memolab_DEFAULT_PROJECT_NAME="My Project"
+alvsys_MODE=selfhost|saas
+alvsys_AUTH_BYPASS=true|false
+alvsys_DEFAULT_USER_NAME="Self-Host User"
+alvsys_DEFAULT_PROJECT_NAME="My Project"
 
 # GitHub Integration (Optional)
 GITHUB_CLIENT_ID=your_client_id
@@ -179,18 +179,18 @@ GITHUB_WEBHOOK_SECRET=your_webhook_secret
 VIBE_HERO_PROJECT_ID=auto-generated-on-seed
 
 # Database
-DATABASE_URL=postgresql://user:pass@localhost:5432/memolab
+DATABASE_URL=postgresql://user:pass@localhost:5432/alvsys
 
 # Features Toggle
-memolab_ENABLE_GITHUB=true|false
-memolab_ENABLE_MCP=true|false
-memolab_ENABLE_MULTIPLAYER=true|false
+alvsys_ENABLE_GITHUB=true|false
+alvsys_ENABLE_MCP=true|false
+alvsys_ENABLE_MULTIPLAYER=true|false
 ```
 
 ### Build-Time Configuration
 ```javascript
 // next.config.js
-const isSelfHost = process.env.memolab_MODE === 'selfhost';
+const isSelfHost = process.env.alvsys_MODE === 'selfhost';
 
 module.exports = {
   experimental: {
@@ -205,7 +205,7 @@ module.exports = {
       return [
         {
           source: '/',
-          destination: `/projects/${process.env.memolab_DEFAULT_PROJECT_ID}/board`
+          destination: `/projects/${process.env.alvsys_DEFAULT_PROJECT_ID}/board`
         }
       ];
     }
@@ -273,7 +273,7 @@ module.exports = {
 
 ## Success Criteria
 
-- [ ] Can start memolab in self-host mode with single environment variable
+- [ ] Can start alvsys in self-host mode with single environment variable
 - [ ] No authentication required in self-host mode
 - [ ] Direct access to project board functionality
 - [ ] GitHub integration works (when configured)

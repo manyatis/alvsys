@@ -178,7 +178,7 @@ export default function GitHubRepositorySelector({
             GitHub App Required
           </h3>
           <p className="text-gray-500 dark:text-gray-400 mb-4">
-            To sync with GitHub, you need to install the MemoLab GitHub App on your repositories.
+            To sync with GitHub, you need to install the alvsys GitHub App on your repositories.
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             After installation, you may need to authorize the app and grant repository access.
@@ -202,7 +202,7 @@ export default function GitHubRepositorySelector({
             Cancel
           </button>
           <a
-            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`}
+            href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"

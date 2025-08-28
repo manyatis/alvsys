@@ -141,7 +141,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
       });
 
       if (!githubAccount?.access_token) {
-        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
+        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys';
         return {
           installations: [],
           needsAppInstallation: true,
@@ -199,7 +199,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
 
         // If no installations found, prompt user to install the app
         if (installationsWithRepos.length === 0) {
-          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
+          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys';
           return {
             installations: [],
             needsAppInstallation: true,
@@ -217,7 +217,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         
         // If it's a 403, the user needs to authorize the app
         if (errorStatus === 403 || errorMessage.includes('GitHub App not authorized')) {
-          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
+          const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys';
           return {
             installations: [],
             needsAppInstallation: true,
@@ -227,7 +227,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
           };
         }
         
-        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab';
+        const appName = process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys';
         return {
           installations: [],
           needsAppInstallation: true,
@@ -298,7 +298,7 @@ export async function getAppInstallations(): Promise<GitHubInstallationsResponse
         installations: [],
         needsAppInstallation: true,
         error: 'Failed to get GitHub App installations. Make sure the app is properly configured.',
-        installUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`,
+        installUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`,
       };
     }
   }
@@ -568,9 +568,9 @@ export async function verifyProjectAccess(projectId: string, userId: string): Pr
   }
 
   /**
-   * Sync a specific GitHub issue to MemoLab
+   * Sync a specific GitHub issue to alvsys
    */
-export async function syncIssueToMemoLab(
+export async function syncIssueToalvsys(
     projectId: string,
     issueNumber: number,
     userId: string
@@ -623,7 +623,7 @@ export async function syncIssueToMemoLab(
         card: syncRecord?.card || undefined 
       };
     } catch (error) {
-      console.error('Error syncing issue to MemoLab:', error);
+      console.error('Error syncing issue to alvsys:', error);
       return { success: false, error: 'Internal server error' };
     }
   }
@@ -804,7 +804,7 @@ async function handleCommentWebhook(
       });
 
       if (!existingComment) {
-        // Create comment in MemoLab
+        // Create comment in alvsys
         await prisma.comment.create({
           data: {
             content: commentBody,
@@ -902,7 +902,7 @@ export async function unlinkProjectFromRepository(
   }
 
   /**
-   * Sync a comment from MemoLab to GitHub
+   * Sync a comment from alvsys to GitHub
    */
 export async function syncCommentToGitHub(
     commentId: string
@@ -952,7 +952,7 @@ export async function syncCommentToGitHub(
 
       // Create comment on GitHub
       const githubService = await GitHubService.createForInstallation(card.project.githubInstallationId);
-      const authorName = comment.author.name || comment.author.email || 'MemoLab User';
+      const authorName = comment.author.name || comment.author.email || 'alvsys User';
       const commentBody = comment.isAiComment 
         ? `**AI Comment:**\n\n${comment.content}`
         : `**${authorName}:**\n\n${comment.content}`;
@@ -1110,7 +1110,7 @@ export async function createProjectFromRepository(
           const syncResult = await syncService.syncProject({
             syncComments: true,
             syncLabels: true,
-            initialSync: true, // Only sync FROM GitHub TO MemoLab during project creation
+            initialSync: true, // Only sync FROM GitHub TO alvsys during project creation
           });
 
           console.log('Sync result:', syncResult);

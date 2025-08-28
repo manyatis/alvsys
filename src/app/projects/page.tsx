@@ -287,7 +287,7 @@ function ProjectsContent() {
               No projects yet
             </h3>
             <p className="text-gray-500 dark:text-gray-400 mb-6">
-              Create your first project to get started with MemoLab
+              Create your first project to get started with alvsys
             </p>
             <div className="flex justify-center">
               <button
@@ -347,7 +347,7 @@ function ProjectsContent() {
                   <Zap className="h-6 w-6 text-purple-600 mt-1" />
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      New MemoLab Project
+                      New alvsys Project
                     </h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Start fresh with a new project
@@ -388,12 +388,12 @@ function ProjectsContent() {
         </div>
       )}
 
-      {/* MemoLab Project Form */}
+      {/* alvsys Project Form */}
       {showCreateModal && creationMode === 'vibes' && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 md:p-6 max-w-md w-full mx-2 md:mx-4">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              New MemoLab Project
+              New alvsys Project
             </h2>
             <form onSubmit={handleCreateProject}>
               <div className="form-group-professional">

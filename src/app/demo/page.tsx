@@ -40,7 +40,7 @@ export default function DemoPage() {
             </motion.div>
 
             <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
-              See <span className="text-gradient-primary">MemoLab</span> in Action
+              See <span className="text-gradient-primary">alvsys</span> in Action
             </h1>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
               Watch how AI agents collaborate with your development team using MCP tooling, 

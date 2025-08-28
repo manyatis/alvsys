@@ -111,7 +111,7 @@ export function getAlvsysStatusFromGitHub(state: 'open' | 'closed', state_reason
 }
 
 /**
- * GitHub Issue and MemoLab Card types
+ * GitHub Issue and alvsys Card types
  */
 export interface GitHubIssue {
   id: number;

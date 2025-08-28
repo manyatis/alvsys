@@ -1,4 +1,4 @@
--- MemoLab Vector Database Schema for Supabase
+-- alvsys Vector Database Schema for Supabase
 -- Run this on your Supabase instance after main schema
 
 -- Enable pgvector extension

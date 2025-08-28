@@ -298,10 +298,10 @@ export default function GitHubIntegration({ projectId, currentUserId, onSyncStat
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded">
               <div className="text-sm text-yellow-700 mb-3">
                 <strong>GitHub App Required</strong><br />
-                To sync with GitHub, you need to install the MemoLab GitHub App on your repositories.
+                To sync with GitHub, you need to install the alvsys GitHub App on your repositories.
               </div>
               <a 
-                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new?state=${projectId}`}
+                href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new?state=${projectId}`}
                 className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
                 onClick={() => {
                   // Store the project context in localStorage for the installation flow

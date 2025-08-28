@@ -182,10 +182,10 @@ curl /api/vector-sync?projectId=xxx
 ```typescript
 // Future MCP tools for AI agents
 mcp_tools: {
-  "memolab/search_memory": "Search project memory",
-  "memolab/get_context": "Get context for current task",
-  "memolab/save_lesson": "Document lessons learned",
-  "memolab/avoid_patterns": "Check for known failure patterns"
+  "alvsys/search_memory": "Search project memory",
+  "alvsys/get_context": "Get context for current task",
+  "alvsys/save_lesson": "Document lessons learned",
+  "alvsys/avoid_patterns": "Check for known failure patterns"
 }
 ```
 
@@ -234,4 +234,4 @@ All core components are built and ready. Next steps:
 4. **Monitor and iterate** based on results
 5. **Build MCP integration** once flow is stable
 
-The foundation is solid - MemoLab's semantic layer is ready to make AI agents smarter! 🧠✨
+The foundation is solid - alvsys's semantic layer is ready to make AI agents smarter! 🧠✨

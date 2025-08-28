@@ -154,7 +154,7 @@ export default function SubscriptionFlow() {
     );
   }
 
-  // Plans Selection Step - Show MemoLab pricing plans from database
+  // Plans Selection Step - Show alvsys pricing plans from database
   return (
     <div className="space-y-8">
       <div className="text-center">
