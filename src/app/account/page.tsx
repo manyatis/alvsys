@@ -113,7 +113,7 @@ export default function AccountSettings() {
       <div className="min-h-screen bg-white dark:bg-slate-900 pt-20">
         <div className="container mx-auto px-6 py-12">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
           </div>
         </div>
       </div>
@@ -266,7 +266,7 @@ export default function AccountSettings() {
 
                 {loadingGithub ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
                   </div>
                 ) : githubConnected ? (
                   <div className="space-y-4">
@@ -397,7 +397,7 @@ export default function AccountSettings() {
                 
                 {loadingProjects ? (
                   <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
                   </div>
                 ) : projects.length > 0 ? (
                   <div className="space-y-4">

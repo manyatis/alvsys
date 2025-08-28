@@ -225,7 +225,7 @@ function ProjectsContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
   }
@@ -272,7 +272,7 @@ function ProjectsContent() {
             <button
               onClick={openCreateModal}
               disabled={usageStatus?.isAtProjectLimit}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               <Plus className="h-5 w-5" />
               New Project
@@ -293,7 +293,7 @@ function ProjectsContent() {
               <button
                 onClick={openCreateModal}
                 disabled={usageStatus?.isAtProjectLimit}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 <Plus className="h-5 w-5" />
                 New Project
@@ -309,7 +309,7 @@ function ProjectsContent() {
                 className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow cursor-pointer p-6"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <Folder className="h-8 w-8 text-purple-600" />
+                  <Folder className="h-8 w-8 text-green-600" />
                   <span className="text-sm text-gray-500 dark:text-gray-400">
                     {project._count?.cards || 0} issues
                   </span>
@@ -341,10 +341,10 @@ function ProjectsContent() {
             <div className="space-y-4">
               <button
                 onClick={() => setCreationMode('vibes')}
-                className="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-purple-500 dark:hover:border-purple-400 transition-colors text-left"
+                className="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-500 dark:hover:border-green-400 transition-colors text-left"
               >
                 <div className="flex items-start gap-3">
-                  <Zap className="h-6 w-6 text-purple-600 mt-1" />
+                  <Zap className="h-6 w-6 text-green-600 mt-1" />
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       New alvsys Project
@@ -358,7 +358,7 @@ function ProjectsContent() {
 
               <button
                 onClick={() => setShowGitHubModal(true)}
-                className="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-purple-500 dark:hover:border-purple-400 transition-colors text-left"
+                className="w-full p-4 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:border-green-500 dark:hover:border-green-400 transition-colors text-left"
               >
                 <div className="flex items-start gap-3">
                   <Github className="h-6 w-6 text-gray-700 dark:text-gray-300 mt-1" />
@@ -520,7 +520,7 @@ export default function ProjectsPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     }>
       <ProjectsContent />

@@ -173,7 +173,7 @@ export default function OrganizationSettings() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-purple-50 dark:from-slate-900 dark:to-slate-800 py-12">
         <div className="container mx-auto px-6">
           <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
           </div>
         </div>
       </div>
@@ -333,7 +333,7 @@ export default function OrganizationSettings() {
             
             {memberLoading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>
               </div>
             ) : members.length > 0 ? (
               <div className="space-y-3">
