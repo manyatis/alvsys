@@ -103,7 +103,7 @@ async function testVectorSync() {
       });
     }
 
-    console.log('\n🎉 All tests passed! MemoLab vector sync is working correctly.');
+    console.log('\n🎉 All tests passed! alvsys vector sync is working correctly.');
     
   } catch (error) {
     console.error('❌ Test failed:', error.message);

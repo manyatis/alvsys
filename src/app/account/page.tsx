@@ -191,7 +191,7 @@ export default function AccountSettings() {
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900 dark:text-white">MCP Integration</h2>
                     <p className="text-slate-600 dark:text-slate-300 text-sm mt-1">
-                      MemoLab uses Model Context Protocol (MCP) for AI integrations
+                      alvsys uses Model Context Protocol (MCP) for AI integrations
                     </p>
                   </div>
                 </div>
@@ -199,7 +199,7 @@ export default function AccountSettings() {
                 <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
                   <h3 className="text-blue-800 dark:text-blue-300 font-medium mb-2">MCP Integration Active</h3>
                   <p className="text-blue-700 dark:text-blue-300 text-sm mb-3">
-                    This instance of MemoLab is integrated with Claude Code via MCP. No API keys are needed.
+                    This instance of alvsys is integrated with Claude Code via MCP. No API keys are needed.
                   </p>
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -356,7 +356,7 @@ export default function AccountSettings() {
                     {/* Install GitHub App Button */}
                     <div className="mt-4">
                       <a
-                        href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memolab'}/installations/new`}
+                        href={`https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white font-medium rounded-lg transition-colors"

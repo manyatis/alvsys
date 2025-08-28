@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
 
     if (!projectId) {
       return NextResponse.json({
-        message: 'MemoLab Vector Sync API',
+        message: 'alvsys Vector Sync API',
         endpoints: {
           'POST /': 'Sync vectors',
           'POST / with action=sync-project': 'Sync specific project',

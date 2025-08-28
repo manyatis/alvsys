@@ -149,7 +149,7 @@ export async function createStripeSession(
       
       // First, create or get the product
       const product = await getStripe().products.create({
-        name: `MemoLab ${subscriptionPlan.name} Plan`,
+        name: `alvsys ${subscriptionPlan.name} Plan`,
         description: subscriptionPlan.description || undefined,
         metadata: {
           planId: subscriptionPlan.planId,

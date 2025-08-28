@@ -85,7 +85,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
           installations: [],
           needsAppInstallation: true,
           error: 'GitHub account not connected',
-          authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`,
+          authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`,
         };
       }
 
@@ -149,7 +149,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
             installations: [],
             needsAppInstallation: true,
             needsAuthorization: true,
-            authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`,
+            authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`,
             error: 'GitHub App requires authorization. Please authorize the app to access your installations.',
           };
         }
@@ -158,7 +158,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
           installations: [],
           needsAppInstallation: true,
           error: errorMessage,
-          authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`,
+          authorizationUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`,
         };
       }
     } catch (error) {
@@ -224,7 +224,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         installations: [],
         needsAppInstallation: true,
         error: 'Failed to get GitHub App installations. Make sure the app is properly configured.',
-        installUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'memo-lab'}/installations/new`,
+        installUrl: `https://github.com/apps/${process.env.NEXT_PUBLIC_GITHUB_APP_NAME || 'alvsys'}/installations/new`,
       };
     }
   }
@@ -506,9 +506,9 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
   }
 
   /**
-   * Sync a specific GitHub issue to memolab
+   * Sync a specific GitHub issue to alvsys
    */
-  static async syncIssueTomemolab(
+  static async syncIssueToalvsys(
     projectId: string,
     issueNumber: number,
     userId: string
@@ -538,8 +538,8 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         };
       }
 
-      // Sync issue to memolab
-      const result = await syncService.syncIssueTomemolab(issueNumber);
+      // Sync issue to alvsys
+      const result = await syncService.syncIssueToalvsys(issueNumber);
 
       if (!result.success) {
         return { success: false, error: result.error };
@@ -561,7 +561,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         card: syncRecord?.card || undefined 
       };
     } catch (error) {
-      console.error('Error syncing issue to memolab:', error);
+      console.error('Error syncing issue to alvsys:', error);
       return { success: false, error: 'Internal server error' };
     }
   }
@@ -683,7 +683,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         case 'edited':
         case 'closed':
         case 'reopened':
-          await syncService.syncIssueTomemolab((issue as { number: number }).number);
+          await syncService.syncIssueToalvsys((issue as { number: number }).number);
           break;
         default:
           return { success: true, processed: false };
@@ -724,7 +724,7 @@ export async function getUserInstallations(userId: string): Promise<GitHubInstal
         return { success: true, processed: false };
       }
 
-      // Create comment in memolab
+      // Create comment in alvsys
       await prisma.comment.create({
         data: {
           content: (comment as { body: string }).body,
