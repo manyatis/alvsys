@@ -36,7 +36,7 @@ export default function Footer() {
             <div className="md:col-span-1">
               <Link href="/" className="flex items-center gap-2 mb-4 w-fit">
                 {/* <AlvsysLogo gradientId="gradient-footer" /> */}
-                <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
+                <span className="text-2xl font-bold text-slate-900 dark:text-white">
                   Alvsys
                 </span>
               </Link>
@@ -88,7 +88,7 @@ export default function Footer() {
               <ul className="space-y-3">
                 <li>
                   <a 
-                    href="https://github.com/slightlymikey/alvsys"
+                    href="https://github.com/manyatis/alvsys"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
