@@ -14,14 +14,13 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       
-      {/* Premium gradient background */}
-      <div className="fixed inset-0 gradient-mesh opacity-30 pointer-events-none" />
+      {/* Subtle gradient background */}
+      <div className="fixed inset-0 gradient-mesh opacity-20 pointer-events-none" />
       
-      {/* Animated blobs for depth */}
+      {/* Animated blobs for subtle depth */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-full animate-blob" />
-        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-pink-500/20 to-indigo-500/20 rounded-full animate-blob animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full bg-gradient-to-tr from-purple-500/20 to-pink-500/20 rounded-full animate-blob animation-delay-4000" />
+        <div className="absolute -top-1/2 -left-1/2 w-[150%] h-[150%] bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full animate-blob" />
+        <div className="absolute -bottom-1/2 -right-1/2 w-[120%] h-[120%] bg-gradient-to-tl from-green-500/8 to-transparent rounded-full animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative z-10">
@@ -33,10 +32,10 @@ export default function Home() {
 
               {/* Main headline */}
               <motion.h1 
-                className="text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter"
-                initial={{ opacity: 0, y: 30 }}
+                className="text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.1 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
               >
                 <span className="block text-white">
                   The AI Agentic
@@ -48,10 +47,10 @@ export default function Home() {
 
               {/* Subtitle */}
               <motion.p 
-                className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed"
-                initial={{ opacity: 0, y: 30 }}
+                className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
               >
                 Deploy intelligent AI agents that work seamlessly alongside your development team. 
                 Enterprise-grade MCP tooling, institutional knowledge, and automated workflows.
@@ -59,21 +58,21 @@ export default function Home() {
 
               {/* CTA Buttons */}
               <motion.div 
-                className="flex flex-col sm:flex-row gap-4 justify-center pt-8"
-                initial={{ opacity: 0, y: 30 }}
+                className="flex flex-col sm:flex-row gap-3 justify-center pt-6"
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.3 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
               >
                 <button
                   onClick={() => window.location.href = '/projects'}
-                  className="btn-premium group"
+                  className="btn-premium group text-sm"
                 >
                   Start Building
-                  <ArrowRight className="inline ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="inline ml-2 w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>
                 <button
                   onClick={() => window.location.href = '/features'}
-                  className="btn-premium-outline"
+                  className="btn-premium-outline text-sm"
                 >
                   View Demo
                 </button>
@@ -103,16 +102,16 @@ export default function Home() {
         <section className="relative py-32 px-6">
           <div className="max-w-7xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="text-center mb-20"
+              transition={{ duration: 0.6 }}
+              className="text-center mb-16"
             >
-              <h2 className="text-5xl md:text-6xl font-bold tracking-tight mb-6">
-                <span className="text-gradient">Enterprise-Ready Features</span>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-4">
+                <span className="text-white">Enterprise-Ready Features</span>
               </h2>
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              <p className="text-lg text-gray-500 max-w-xl mx-auto">
                 Everything you need to deploy AI agents at scale
               </p>
             </motion.div>
@@ -123,65 +122,62 @@ export default function Home() {
                   icon: Code2,
                   title: "MCP-Enabled Agents",
                   description: "Deploy agents with native Model Context Protocol support for seamless tool integration",
-                  gradient: "from-indigo-500 to-blue-500"
+                  gradient: "from-emerald-500 to-green-500"
                 },
                 {
                   icon: Shield,
                   title: "Institutional Knowledge",
                   description: "Build a vectorized repository from your entire development history",
-                  gradient: "from-purple-500 to-indigo-500"
+                  gradient: "from-green-500 to-emerald-500"
                 },
                 {
                   icon: Workflow,
                   title: "Bulk Automation",
                   description: "Queue and orchestrate thousands of AI tasks with intelligent distribution",
-                  gradient: "from-pink-500 to-purple-500"
+                  gradient: "from-lime-500 to-green-500"
                 },
                 {
                   icon: Users,
                   title: "Human-AI Collaboration",
                   description: "Seamless handoffs between AI agents and developers with full visibility",
-                  gradient: "from-blue-500 to-cyan-500"
+                  gradient: "from-teal-500 to-emerald-500"
                 },
                 {
                   icon: Zap,
                   title: "Real-time Monitoring",
                   description: "Track agent performance, costs, and outputs in real-time",
-                  gradient: "from-cyan-500 to-teal-500"
+                  gradient: "from-emerald-400 to-green-500"
                 },
                 {
                   icon: Sparkles,
                   title: "Self-Improving AI",
                   description: "Agents that learn from your codebase and get smarter over time",
-                  gradient: "from-teal-500 to-green-500"
+                  gradient: "from-green-400 to-emerald-500"
                 }
               ].map((feature, index) => {
                 const Icon = feature.icon;
                 return (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 40 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    transition={{ duration: 0.4, delay: index * 0.05 }}
                     className="group relative"
                   >
-                    <div className="glass rounded-2xl p-8 h-full hover-glow transition-all duration-300 hover:scale-[1.02]">
-                      {/* Icon with gradient background */}
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.gradient} p-2.5 mb-6`}>
-                        <Icon className="w-full h-full text-white" />
+                    <div className="border border-white/[0.04] rounded-xl p-6 h-full transition-all duration-200 hover:border-white/[0.08] hover:bg-white/[0.01]">
+                      {/* Icon with subtle gradient */}
+                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${feature.gradient} p-2 mb-4 opacity-90`}>
+                        <Icon className="w-full h-full text-black" />
                       </div>
                       
-                      <h3 className="text-xl font-semibold mb-3 text-white">
+                      <h3 className="text-lg font-medium mb-2 text-white">
                         {feature.title}
                       </h3>
                       
-                      <p className="text-gray-400 leading-relaxed">
+                      <p className="text-sm text-gray-500 leading-relaxed">
                         {feature.description}
                       </p>
-
-                      {/* Hover gradient overlay */}
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/0 to-white/0 group-hover:from-white/[0.02] group-hover:to-white/[0.05] transition-all duration-300 pointer-events-none" />
                     </div>
                   </motion.div>
                 );
@@ -192,27 +188,27 @@ export default function Home() {
 
 
         {/* CTA Section */}
-        <section className="relative py-32 px-6">
-          <div className="max-w-4xl mx-auto text-center">
+        <section className="relative py-24 px-6">
+          <div className="max-w-3xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="space-y-8"
+              transition={{ duration: 0.6 }}
+              className="space-y-6"
             >
-              <h2 className="text-5xl md:text-6xl font-bold tracking-tight">
-                Ready to Transform Your
-                <span className="block mt-2 text-gradient-primary">Development Workflow?</span>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight">
+                Ready to transform your
+                <span className="block mt-1 text-gradient-primary">development workflow?</span>
               </h2>
 
-              <div className="flex justify-center pt-8">
+              <div className="flex justify-center pt-6">
                 <button
                   onClick={() => window.location.href = '/projects'}
-                  className="btn-premium text-lg px-8 py-4 group"
+                  className="btn-premium text-sm group"
                 >
                   Get Started Free
-                  <ArrowRight className="inline ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="inline ml-2 w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
             </motion.div>

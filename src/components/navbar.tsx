@@ -5,14 +5,12 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
-import GetStartedModal from '@/components/get-started-modal';
 import MemoLabLogo from '@/components/memolab-logo';
 import { getUserProjects } from '@/lib/project-functions';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isGetStartedModalOpen, setIsGetStartedModalOpen] = useState(false);
   const [loginCallbackUrl, setLoginCallbackUrl] = useState('/');
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
@@ -88,16 +86,15 @@ export default function Navbar() {
   return (
     <>
       {/* Sticky Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/90 backdrop-blur-sm border-b border-slate-200/50 dark:border-slate-700/50">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/5">
         <div className="container mx-auto px-6">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center gap-3">
-              <Link href="/" className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
-                {/* <MemoLabLogo gradientId="gradient-navbar" /> */}
+              <Link href="/" className="flex items-center gap-2 text-xl font-semibold text-white">
                 MemoLab
               </Link>
-              <span className="px-2 py-1 text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">
+              <span className="px-2 py-0.5 text-[10px] font-medium bg-emerald-500/10 text-emerald-400 rounded border border-emerald-500/20">
                 BETA
               </span>
             </div>
@@ -208,18 +205,12 @@ export default function Navbar() {
               >
                 Installation
               </Link>
-              <button 
-                onClick={() => {
-                  if (session) {
-                    router.push('/projects');
-                  } else {
-                    setIsGetStartedModalOpen(true);
-                  }
-                }}
+              <Link 
+                href="/projects"
                 className="px-3 md:px-6 h-full flex items-center text-sm text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white active:text-slate-900 dark:active:text-white font-medium hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800 rounded-lg transition-all duration-500"
               >
                 Get Started
-              </button>
+              </Link>
 
             </div>
             
@@ -358,19 +349,13 @@ export default function Navbar() {
             >
               Installation
             </Link>
-            <button 
-              onClick={() => {
-                if (session) {
-                  router.push('/projects');
-                } else {
-                  setIsGetStartedModalOpen(true);
-                }
-                setIsMobileMenuOpen(false);
-              }}
+            <Link 
+              href="/projects"
+              onClick={() => setIsMobileMenuOpen(false)}
               className="block w-full text-left px-4 py-4 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white active:text-slate-900 dark:active:text-white hover:bg-slate-100 dark:hover:bg-slate-800 active:bg-slate-100 dark:active:bg-slate-800 rounded-lg font-medium transition-all duration-300 min-h-[44px]"
             >
               Get Started
-            </button>
+            </Link>
             
             {/* Mobile Auth Section */}
             <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -471,10 +456,6 @@ export default function Navbar() {
       />
       
       {/* Get Started Modal */}
-      <GetStartedModal 
-        isOpen={isGetStartedModalOpen} 
-        onClose={() => setIsGetStartedModalOpen(false)} 
-      />
     </>
   );
 }

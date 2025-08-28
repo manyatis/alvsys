@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Code2, Brain, Workflow, Users, ChevronRight, ArrowRight, Sparkles, Shield, Zap, GitBranch, Activity, Lock } from 'lucide-react';
+import { Code2, Brain, Workflow, Users, ChevronRight, ArrowRight, Sparkles, GitBranch } from 'lucide-react';
 
 interface Feature {
   id: string;
@@ -11,7 +11,6 @@ interface Feature {
   description: string;
   details: string[];
   gradient: string;
-  stats?: { label: string; value: string }[];
 }
 
 const features: Feature[] = [
@@ -20,7 +19,7 @@ const features: Feature[] = [
     title: 'MCP-Enabled AI Agents',
     icon: Code2,
     description: 'Deploy AI agents with Model Context Protocol tools that interact natively with your development stack.',
-    gradient: 'from-indigo-500 to-blue-500',
+    gradient: 'from-emerald-500 to-green-500',
     details: [
       'Native MCP integration for all major AI models',
       'Direct GitHub, IDE, and toolchain interactions',
@@ -28,18 +27,13 @@ const features: Feature[] = [
       'Secure sandboxed execution environments',
       'Real-time agent monitoring and control'
     ],
-    stats: [
-      { label: 'Tool Integrations', value: '500+' },
-      { label: 'Response Time', value: '<100ms' },
-      { label: 'Success Rate', value: '99.9%' }
-    ]
   },
   {
     id: 'knowledge-bank',
     title: 'Institutional Knowledge Bank',
     icon: Brain,
     description: 'Build a vectorized repository from your entire development history that AI agents access instantly.',
-    gradient: 'from-purple-500 to-indigo-500',
+    gradient: 'from-green-500 to-emerald-500',
     details: [
       'Automatic vectorization of GitHub issues and PRs',
       'Code pattern and architecture learning', 
@@ -48,18 +42,13 @@ const features: Feature[] = [
       'Historical decision and rationale tracking',
       'Team-specific best practices extraction'
     ],
-    stats: [
-      { label: 'Vectors Processed', value: '1B+' },
-      { label: 'Query Speed', value: '<50ms' },
-      { label: 'Accuracy', value: '98.5%' }
-    ]
   },
   {
     id: 'bulk-automation',
     title: 'Bulk Task Automation',
     icon: Workflow,
     description: 'Queue and assign tasks to AI agents in bulk while maintaining quality control.',
-    gradient: 'from-pink-500 to-purple-500',
+    gradient: 'from-lime-500 to-green-500',
     details: [
       'Batch task creation and assignment',
       'Intelligent work distribution algorithms',
@@ -67,18 +56,13 @@ const features: Feature[] = [
       'Automated workflow orchestration',
       'Progress tracking and reporting dashboards'
     ],
-    stats: [
-      { label: 'Tasks/Hour', value: '10,000+' },
-      { label: 'Parallel Agents', value: '1,000+' },
-      { label: 'Efficiency Gain', value: '50x' }
-    ]
   },
   {
     id: 'human-ai-collab',
     title: 'Human-AI Collaboration Hub',
     icon: Users,
     description: 'Seamless handoffs between AI agents and developers with full visibility and control.',
-    gradient: 'from-blue-500 to-cyan-500',
+    gradient: 'from-teal-500 to-emerald-500',
     details: [
       'Real-time agent activity monitoring',
       'Code review and approval workflows',
@@ -86,11 +70,6 @@ const features: Feature[] = [
       'Quality assurance checkpoints',
       'Performance metrics and analytics'
     ],
-    stats: [
-      { label: 'Active Teams', value: '5,000+' },
-      { label: 'Daily Handoffs', value: '100K+' },
-      { label: 'Quality Score', value: '9.8/10' }
-    ]
   }
 ];
 
@@ -98,13 +77,13 @@ export default function FeaturesContent() {
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden">
       
-      {/* Premium gradient background */}
-      <div className="fixed inset-0 gradient-mesh opacity-20 pointer-events-none" />
+      {/* Subtle gradient background */}
+      <div className="fixed inset-0 gradient-mesh opacity-15 pointer-events-none" />
       
       {/* Animated blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -right-1/2 w-[800px] h-[800px] bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full animate-blob" />
-        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] bg-gradient-to-tl from-pink-500/10 to-indigo-500/10 rounded-full animate-blob animation-delay-2000" />
+        <div className="absolute -top-1/2 -right-1/2 w-[800px] h-[800px] bg-gradient-to-br from-emerald-500/8 to-transparent rounded-full animate-blob" />
+        <div className="absolute -bottom-1/2 -left-1/2 w-[800px] h-[800px] bg-gradient-to-tl from-green-500/6 to-transparent rounded-full animate-blob animation-delay-2000" />
       </div>
 
       <div className="relative z-10">
@@ -124,7 +103,7 @@ export default function FeaturesContent() {
                 transition={{ duration: 0.6 }}
                 className="inline-flex items-center gap-2 px-4 py-2 glass-subtle rounded-full mb-8"
               >
-                <Sparkles className="w-4 h-4 text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-emerald-400" />
                 <span className="text-sm font-medium text-gray-300">
                   Enterprise Features
                 </span>
@@ -192,7 +171,7 @@ export default function FeaturesContent() {
                               transition={{ duration: 0.5, delay: 0.3 + detailIndex * 0.1 }}
                               className="flex items-start gap-3 group"
                             >
-                              <ChevronRight className="w-5 h-5 text-indigo-400 mt-0.5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                              <ChevronRight className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
                               <span className="text-gray-300">{detail}</span>
                             </motion.li>
                           ))}
@@ -216,7 +195,7 @@ export default function FeaturesContent() {
                       </div>
                     </motion.div>
 
-                    {/* Visual Side - Stats Card */}
+                    {/* Visual Side - Feature Card */}
                     <motion.div 
                       className={isEven ? 'lg:order-2' : 'lg:order-1'}
                       initial={{ opacity: 0, scale: 0.95 }}
@@ -224,50 +203,12 @@ export default function FeaturesContent() {
                       viewport={{ once: true }}
                       transition={{ duration: 0.8, delay: 0.4 }}
                     >
-                      <div className="glass rounded-3xl p-10 hover-glow">
-                        <div className="space-y-8">
-                          {/* Feature Badge */}
-                          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${feature.gradient} bg-opacity-10`}>
-                            <Activity className="w-4 h-4 text-white" />
-                            <span className="text-sm font-medium text-white">Live Metrics</span>
-                          </div>
-
-                          {/* Stats Grid */}
-                          {feature.stats && (
-                            <div className="grid grid-cols-3 gap-6">
-                              {feature.stats.map((stat, statIndex) => (
-                                <motion.div 
-                                  key={statIndex}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  whileInView={{ opacity: 1, y: 0 }}
-                                  viewport={{ once: true }}
-                                  transition={{ duration: 0.5, delay: 0.5 + statIndex * 0.1 }}
-                                  className="text-center"
-                                >
-                                  <div className="text-2xl md:text-3xl font-bold text-gradient-primary mb-1">
-                                    {stat.value}
-                                  </div>
-                                  <div className="text-sm text-gray-400">
-                                    {stat.label}
-                                  </div>
-                                </motion.div>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Security Badges */}
-                          <div className="flex flex-wrap gap-4 pt-4 border-t border-gray-800">
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                              <Shield className="w-4 h-4" />
-                              <span>SOC 2 Certified</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                              <Lock className="w-4 h-4" />
-                              <span>End-to-End Encrypted</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-400">
-                              <Zap className="w-4 h-4" />
-                              <span>99.99% SLA</span>
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-3xl blur-3xl" />
+                        <div className="relative glass rounded-3xl p-12 hover-glow">
+                          <div className="flex items-center justify-center">
+                            <div className={`p-16 rounded-full bg-gradient-to-br ${feature.gradient} opacity-20`}>
+                              <Icon className="w-32 h-32 text-white opacity-60" />
                             </div>
                           </div>
                         </div>
@@ -305,12 +246,11 @@ export default function FeaturesContent() {
               transition={{ duration: 1 }}
               className="glass rounded-3xl p-12"
             >
-              <div className="grid md:grid-cols-4 gap-8 text-center">
+              <div className="grid md:grid-cols-3 gap-8 text-center">
                 {[
                   { icon: GitBranch, name: 'GitHub', desc: 'Native Integration' },
-                  { icon: Code2, name: 'VS Code', desc: 'Extension Available' },
-                  { icon: Shield, name: 'AWS', desc: 'Cloud Infrastructure' },
-                  { icon: Zap, name: 'Slack', desc: 'Real-time Updates' }
+                  { icon: Workflow, name: 'GitHub Actions', desc: 'CI/CD Automation' },
+                  { icon: Code2, name: 'MCP Protocol', desc: 'Tool Ecosystem' }
                 ].map((integration, index) => {
                   const IntIcon = integration.icon;
                   return (
@@ -323,7 +263,7 @@ export default function FeaturesContent() {
                       className="group"
                     >
                       <div className="inline-flex p-4 rounded-2xl glass-subtle mb-4 group-hover:scale-110 transition-transform">
-                        <IntIcon className="w-8 h-8 text-indigo-400" />
+                        <IntIcon className="w-8 h-8 text-emerald-400" />
                       </div>
                       <h3 className="text-lg font-semibold mb-1">{integration.name}</h3>
                       <p className="text-sm text-gray-400">{integration.desc}</p>
