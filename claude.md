@@ -1,1 +1,1 @@
-claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: cmek8wawo0002l704jz13jxr4" --header "Authorization: Bearer vMiQJohENjuy82-GkZpVTUTZOeTNHLab0erKyISbSAo" 
+claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: cmek8wawo0002l704jz13jxr4" --header "Authorization: Bearer vMiQJohENjuy82-GkZpVTUTZOeTNHLab0erKyISbSAo" 

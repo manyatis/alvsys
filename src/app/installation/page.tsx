@@ -74,7 +74,7 @@ export default function InstallationPage() {
               <span className="text-gradient-primary">Installation Guide</span>
             </h1>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Connect Claude Code to MemoLab and supercharge your development workflow with AI-powered issue management
+              Connect Claude Code to Alvsys and supercharge your development workflow with AI-powered issue management
             </p>
           </motion.div>
 
@@ -93,8 +93,8 @@ export default function InstallationPage() {
               <p className="font-medium">Get up and running in 3 steps:</p>
               <ol className="list-decimal list-inside space-y-2 ml-4">
                 <li>Install Claude Code from Anthropic</li>
-                <li>Create a MemoLab project and get your API key</li>
-                <li>Connect Claude to MemoLab using the MCP command below</li>
+                <li>Create a Alvsys project and get your API key</li>
+                <li>Connect Claude to Alvsys using the MCP command below</li>
               </ol>
             </div>
           </motion.div>
@@ -116,7 +116,8 @@ export default function InstallationPage() {
               </div>
               
               <p className="text-gray-400 mb-4">
-                First, you&apos;ll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with MemoLab.
+
+                First, you&apos;ll need to install Claude Code from Anthropic. This is your AI coding assistant that will work with Alvsys.
               </p>
 
               <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4 mb-4">
@@ -155,10 +156,10 @@ export default function InstallationPage() {
                 <div>
                   <h3 className="text-lg font-medium mb-3">Option A: Create New Project</h3>
                   <p className="text-gray-400 mb-4">
-                    Start fresh with a new MemoLab project:
+                    Start fresh with a new Alvsys project:
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4">
-                    <li>Sign up at <a href="https://memolab.io" className="text-emerald-400 hover:text-emerald-300 underline">memolab.io</a></li>
+                    <li>Sign up at <a href="https://alvsys.com" className="text-emerald-400 hover:text-emerald-300 underline">alvsys.io</a></li>
                     <li>Click &quot;Create New Project&quot; on your dashboard</li>
                     <li>Give your project a name and description</li>
                     <li>Your project ID will be automatically generated</li>
@@ -171,7 +172,7 @@ export default function InstallationPage() {
                     Connect an existing GitHub repository:
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4">
-                    <li>Go to your MemoLab dashboard</li>
+                    <li>Go to your Alvsys dashboard</li>
                     <li>Click &quot;Import from GitHub&quot;</li>
                     <li>Authorize the GitHub integration</li>
                     <li>Select your repository</li>
@@ -197,7 +198,7 @@ export default function InstallationPage() {
               </div>
 
               <p className="text-gray-400 mb-4">
-                Set up GitHub Actions to automatically sync your repository with MemoLab:
+                Set up GitHub Actions to automatically sync your repository with Alvsys:
               </p>
 
               <div className="bg-white/5 rounded-lg p-4 mb-4 border border-white/10">
@@ -240,7 +241,9 @@ export default function InstallationPage() {
                 <div>
                   <h3 className="text-lg font-medium mb-3">Find Your Project ID</h3>
                   <p className="text-gray-400 mb-3">
-                    You&apos;ll need your Project ID to connect Claude Code to MemoLab:
+
+                    You&apos;ll need your Project ID to connect Claude Code to Alvsys:
+
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4 mb-4">
                     <li>Go to <a href="/account" className="text-emerald-400 hover:text-emerald-300 underline">Account Settings</a></li>
@@ -283,11 +286,11 @@ export default function InstallationPage() {
                 <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-400 to-green-500">
                   <Bot className="h-6 w-6 text-black" />
                 </div>
-                <h2 className="text-2xl font-semibold">5. Connect Claude Code to MemoLab</h2>
+                <h2 className="text-2xl font-semibold">5. Connect Claude Code to Alvsys</h2>
               </div>
 
               <p className="text-gray-400 mb-6">
-                Use the Model Context Protocol (MCP) to connect Claude Code to your MemoLab project:
+                Use the Model Context Protocol (MCP) to connect Claude Code to your Alvsys project:
               </p>
 
               <div className="space-y-4 mb-6">
@@ -296,7 +299,7 @@ export default function InstallationPage() {
                   Replace YOUR_PROJECT_ID and YOUR_API_KEY with your actual values:
                 </p>
                 <CodeBlock
-                  code='claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"'
+                  code='claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"'
                   copyId="mcp-install"
                 />
               </div>
@@ -347,7 +350,7 @@ export default function InstallationPage() {
                   <h3 className="text-lg font-medium mb-3">Work on a Specific Issue</h3>
                   <p className="text-gray-400 text-sm mb-3">Have Claude work on an issue by description keyword:</p>
                   <CodeBlock
-                    code='work on the "description" issue'
+                    code='work on the &quot;description&quot; issue'
                     copyId="work-issue"
                   />
                 </div>
@@ -365,7 +368,7 @@ export default function InstallationPage() {
                   <h3 className="text-lg font-medium mb-3">Find Human-Only Tasks</h3>
                   <p className="text-gray-400 text-sm mb-3">Get the next task that requires human intervention:</p>
                   <CodeBlock
-                    code="what's the next human only task?"
+                    code="what&apos;s the next human only task?"
                     copyId="human-task"
                   />
                 </div>
@@ -400,7 +403,8 @@ export default function InstallationPage() {
                 <div className="space-y-4 mb-6">
                   <h3 className="text-lg font-medium">What is Dev Mode?</h3>
                   <div className="text-gray-400 space-y-3">
-                    <p>Dev Mode is MemoLab&apos;s most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
+                    <p>Dev Mode is Alvsys&apos;s most powerful feature - it puts Claude Code into a continuous work loop where it:</p>
+
                     <ul className="list-disc list-inside space-y-1 ml-4">
                       <li>Automatically pulls the next available task from your board</li>
                       <li>Works on implementing the solution</li>
@@ -448,7 +452,7 @@ export default function InstallationPage() {
                   <h2 className="text-2xl font-semibold">You&apos;re All Set!</h2>
                 </div>
                 <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-                  Claude Code is now connected to your MemoLab project. Start by trying one of the example commands above, 
+                  Claude Code is now connected to your Alvsys project. Start by trying one of the example commands above, 
                   or dive straight into Dev Mode for full automation!
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">

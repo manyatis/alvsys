@@ -5,7 +5,7 @@ import { useSession, signOut } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
-import MemoLabLogo from '@/components/memolab-logo';
+// import AlvsysLogo from '@/components/alvsys-logo';
 import { getUserProjects } from '@/lib/project-functions';
 
 export default function Navbar() {
@@ -92,7 +92,7 @@ export default function Navbar() {
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center gap-3">
               <Link href="/" className="flex items-center gap-2 text-xl font-semibold text-white">
-                MemoLab
+                Alvsys
               </Link>
               <span className="px-2 py-0.5 text-[10px] font-medium bg-emerald-500/10 text-emerald-400 rounded border border-emerald-500/20">
                 BETA

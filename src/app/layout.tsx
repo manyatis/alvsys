@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MemoLab - The AI Agentic Workplace Platform",
-  description: "Deploy AI agents alongside human developers with MCP tooling, institutional knowledge banks, and automated workflows. Build your AI-powered development team.",
+  title: "Agent Workspace Automation Platform",
+  description: "Empower AI agents with structured task queues, institutional knowledge, and automated work sessions. A workspace designed for agent efficiency and cleaner project management.",
 };
 
 export default function RootLayout({

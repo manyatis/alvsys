@@ -15,60 +15,60 @@ interface Feature {
 
 const features: Feature[] = [
   {
-    id: 'mcp-tooling',
-    title: 'MCP-Enabled AI Agents',
-    icon: Code2,
-    description: 'Deploy AI agents with Model Context Protocol tools that interact natively with your development stack.',
+    id: 'task-queue-management',
+    title: 'Task Queue Management',
+    icon: Workflow,
+    description: 'Organize agent work with structured task queues, priority management, and automated distribution.',
     gradient: 'from-emerald-500 to-green-500',
     details: [
-      'Native MCP integration for all major AI models',
-      'Direct GitHub, IDE, and toolchain interactions',
-      'Custom tool development and deployment',
-      'Secure sandboxed execution environments',
-      'Real-time agent monitoring and control'
+      'Structured task queues with priority levels',
+      'Intelligent work distribution algorithms',
+      'Automated session planning and scheduling',
+      'Progress tracking and status monitoring',
+      'Queue optimization and load balancing'
     ],
   },
   {
     id: 'knowledge-bank',
-    title: 'Institutional Knowledge Bank',
+    title: 'Institutional Knowledge',
     icon: Brain,
-    description: 'Build a vectorized repository from your entire development history that AI agents access instantly.',
+    description: 'Centralized knowledge repository that agents reference for context, patterns, and project history.',
     gradient: 'from-green-500 to-emerald-500',
     details: [
-      'Automatic vectorization of GitHub issues and PRs',
-      'Code pattern and architecture learning', 
-      'Documentation and comment analysis',
-      'Cross-repository knowledge synthesis',
-      'Historical decision and rationale tracking',
-      'Team-specific best practices extraction'
+      'Vectorized project documentation and history',
+      'Code pattern and architecture references', 
+      'Team decisions and rationale tracking',
+      'Cross-project knowledge synthesis',
+      'Best practices and lessons learned',
+      'Searchable context for informed decisions'
     ],
   },
   {
-    id: 'bulk-automation',
-    title: 'Bulk Task Automation',
-    icon: Workflow,
-    description: 'Queue and assign tasks to AI agents in bulk while maintaining quality control.',
+    id: 'automated-sessions',
+    title: 'Automated Work Sessions',
+    icon: Code2,
+    description: 'Structure agent work sessions with clear objectives, deliverables, and success criteria.',
     gradient: 'from-lime-500 to-green-500',
     details: [
-      'Batch task creation and assignment',
-      'Intelligent work distribution algorithms',
-      'Priority-based execution queues',
-      'Automated workflow orchestration',
-      'Progress tracking and reporting dashboards'
+      'Session planning with defined objectives',
+      'Deliverable tracking and validation',
+      'Automated progress checkpoints',
+      'Session outcome documentation',
+      'Structured work methodologies'
     ],
   },
   {
-    id: 'human-ai-collab',
-    title: 'Human-AI Collaboration Hub',
+    id: 'workspace-efficiency',
+    title: 'Workspace Efficiency',
     icon: Users,
-    description: 'Seamless handoffs between AI agents and developers with full visibility and control.',
+    description: 'Optimize agent productivity with organized workflows and systematic project management.',
     gradient: 'from-teal-500 to-emerald-500',
     details: [
-      'Real-time agent activity monitoring',
-      'Code review and approval workflows',
-      'Human intervention and guidance tools',
-      'Quality assurance checkpoints',
-      'Performance metrics and analytics'
+      'Clean project organization structures',
+      'Workflow optimization recommendations',
+      'Resource utilization tracking',
+      'Bottleneck identification and resolution',
+      'Efficiency metrics and insights'
     ],
   }
 ];
@@ -110,11 +110,11 @@ export default function FeaturesContent() {
               </motion.div>
 
               <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-6">
-                <span className="text-gradient-primary">Powerful Features</span>
+                <span className="text-gradient-primary">Workspace Features</span>
               </h1>
               <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
-                Everything you need to build an AI-powered development team. Deploy intelligent agents 
-                that work alongside humans with MCP tooling, institutional knowledge, and automated workflows.
+                Everything needed to empower agents with structured work environments. Task automation, 
+                institutional knowledge, and organized workflows for maximum efficiency and cleaner projects.
               </p>
             </motion.div>
           </div>
@@ -232,10 +232,10 @@ export default function FeaturesContent() {
               className="text-center mb-16"
             >
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-                <span className="text-gradient">Seamless Integrations</span>
+                <span className="text-gradient">Agent Integrations</span>
               </h2>
               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Works with your existing development stack out of the box
+                Connect with existing tools to create a comprehensive agent workspace
               </p>
             </motion.div>
 
@@ -286,12 +286,12 @@ export default function FeaturesContent() {
               className="space-y-8"
             >
               <h2 className="text-5xl md:text-6xl font-bold tracking-tight">
-                Ready to Deploy
-                <span className="block mt-2 text-gradient-primary">AI Agents at Scale?</span>
+                Ready to Build Your
+                <span className="block mt-2 text-gradient-primary">Agent Workspace?</span>
               </h2>
               
               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                Join the future of software development with intelligent AI collaboration.
+                Transform how agents work with structured tasks, knowledge, and efficient workflows.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
@@ -303,10 +303,10 @@ export default function FeaturesContent() {
                   <ArrowRight className="inline ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button 
-                  onClick={() => window.location.href = '/workflow'}
+                  onClick={() => window.location.href = '/demo'}
                   className="btn-glass text-lg px-8 py-4"
                 >
-                  See Workflow
+                  See Demo
                 </button>
               </div>
             </motion.div>

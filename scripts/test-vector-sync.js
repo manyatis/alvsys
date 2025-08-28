@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * MemoLab Vector Sync Test Script
+ * Alvsys Vector Sync Test Script
  * 
  * This script tests the vector sync flow:
  * 1. Read data from main database  
@@ -16,7 +16,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function testVectorSync() {
-  console.log('🧪 Testing MemoLab Vector Sync Flow\n');
+  console.log('🧪 Testing Alvsys Vector Sync Flow\n');
 
   try {
     // Test 1: Check database connection

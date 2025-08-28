@@ -1,9 +1,8 @@
 'use server';
 
 // Authentication imports removed - will be handled at a higher layer
-import { PrismaClient } from '@prisma/client';
 import { UsageService } from '@/services/usage-service';
-import { prisma } from './prisma';
+// import { prisma } from './prisma';
 
 
 export interface UsageStatus {

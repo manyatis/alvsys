@@ -2,29 +2,29 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import LoginModal from '@/components/login-modal';
-import MemoLabLogo from '@/components/memolab-logo';
+// import AlvsysLogo from '@/components/alvsys-logo';
 
 export default function Footer() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { data: session } = useSession();
-  const router = useRouter();
+  // const router = useRouter();
 
-  const handlePricingClick = () => {
-    // Check if we're on the home page
-    if (window.location.pathname === '/') {
-      // Scroll to pricing section
-      const pricingSection = document.getElementById('pricing');
-      if (pricingSection) {
-        pricingSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      // Navigate to home page with pricing hash
-      router.push('/#pricing');
-    }
-  };
+  // const handlePricingClick = () => {
+  //   // Check if we're on the home page
+  //   if (window.location.pathname === '/') {
+  //     // Scroll to pricing section
+  //     const pricingSection = document.getElementById('pricing');
+  //     if (pricingSection) {
+  //       pricingSection.scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //   } else {
+  //     // Navigate to home page with pricing hash
+  //     router.push('/#pricing');
+  //   }
+  // };
 
   return (
     <>
@@ -35,13 +35,13 @@ export default function Footer() {
             {/* Logo and Description */}
             <div className="md:col-span-1">
               <Link href="/" className="flex items-center gap-2 mb-4 w-fit">
-                {/* <MemoLabLogo gradientId="gradient-footer" /> */}
+                {/* <AlvsysLogo gradientId="gradient-footer" /> */}
                 <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-purple-700 bg-clip-text text-transparent">
-                  MemoLab
+                  Alvsys
                 </span>
               </Link>
               <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                Your AI Native Project Management. Set up tasks, walk away, and let your AI agents get to work.
+                Agent workspace automation platform. Empower AI agents with structured task queues, institutional knowledge, and automated work sessions.
               </p>
               <div className="flex items-center gap-2">
                 <span className="px-2 py-1 text-xs font-semibold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-700">
@@ -88,7 +88,7 @@ export default function Footer() {
               <ul className="space-y-3">
                 <li>
                   <a 
-                    href="https://github.com/slightlymikey/memolab"
+                    href="https://github.com/slightlymikey/alvsys"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
@@ -126,11 +126,11 @@ export default function Footer() {
           <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-sm text-slate-600 dark:text-slate-400">
-                © 2025 MemoLab. All rights reserved.
+                © 2025 Alvsys. All rights reserved.
               </p>
               <div className="flex items-center gap-4 mt-4 md:mt-0">
                 <span className="text-xs text-slate-500 dark:text-slate-500">
-                  Built with MemoLab
+                  Built with Alvsys
                 </span>
               </div>
             </div>

@@ -202,7 +202,7 @@ PROJECT_ID: ${project.id}
 
 @LOOP_START:
 # FETCH NEXT TASK using MCP tool
-Use the mcp__memolab__next_ready tool to fetch the next available task.
+Use the mcp__alvsys__next_ready tool to fetch the next available task.
 
 # PARSE TASK RESPONSE
 Extract the following from the response:
@@ -213,11 +213,11 @@ Extract the following from the response:
 - CARD_REQUIREMENTS (combine description + acceptanceCriteria)
 
 # IF NO TASK: WAIT AND RETRY
-If response.card is null, wait 60 seconds and call mcp__memolab__next_ready again
+If response.card is null, wait 60 seconds and call mcp__alvsys__next_ready again
 
 
 # CREATE BRANCH
-git checkout -b feature/memolab || git checkout feature/memolab
+git checkout -b feature/alvsys || git checkout feature/alvsys
 
 # EXECUTE TASK IMPLEMENTATION
 ## READ REQUIREMENTS: $CARD_REQUIREMENTS
@@ -237,7 +237,7 @@ Run tests if available: npm test || yarn test
 
 # MARK COMPLETE
 Use update_task MCP tool to update the card status to "READY_FOR_REVIEW"
-Add comment: "Implementation complete. Branch: feature/memolab. All acceptance criteria addressed."
+Add comment: "Implementation complete. Branch: feature/alvsys. All acceptance criteria addressed."
 
 
 # COMMIT CHANGES
@@ -250,17 +250,17 @@ Acceptance Criteria:
 $CARD_ACCEPTANCE
 
 Task ID: $CARD_ID
-Auto-implemented by MemoLab AI via MCP"
+Auto-implemented by Alvsys AI via MCP"
 
 # PUSH TO REMOTE
-git push origin feature/memolab
+git push origin feature/alvsys
 
 
 # CONTINUE TO NEXT TASK
 goto @LOOP_START
 
 # THIS IS A CONTINUOUS PROCESS - NO STOPPING - NO SUMMARIES - ONLY EXECUTION
-# Use MCP tools throughout for all MemoLab API interactions`;
+# Use MCP tools throughout for all Alvsys API interactions`;
 
     return onboardingInstructions;
   }

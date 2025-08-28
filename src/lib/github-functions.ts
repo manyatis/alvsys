@@ -600,8 +600,8 @@ export async function syncIssueToMemoLab(
         };
       }
 
-      // Sync issue to MemoLab
-      const result = await syncService.syncIssueToMemoLab(issueNumber);
+      // Sync issue to Alvsys
+      const result = await syncService.syncIssueToAlvsys(issueNumber);
 
       if (!result.success) {
         return { success: false, error: result.error };
@@ -745,7 +745,7 @@ async function handleIssueWebhook(
         case 'edited':
         case 'closed':
         case 'reopened':
-          await syncService.syncIssueToMemoLab((issue as { number: number }).number);
+          await syncService.syncIssueToAlvsys((issue as { number: number }).number);
           break;
         default:
           return { success: true, processed: false };

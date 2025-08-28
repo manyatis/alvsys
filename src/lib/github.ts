@@ -73,10 +73,10 @@ export function getGitHubWebhooks(): Webhooks {
 }
 
 /**
- * Status mapping between MemoLab and GitHub
+ * Status mapping between Alvsys and GitHub
  */
 export const STATUS_MAPPING = {
-  // MemoLab -> GitHub
+  // Alvsys -> GitHub
   REFINEMENT: 'open',
   READY: 'open',
   IN_PROGRESS: 'open',
@@ -87,7 +87,7 @@ export const STATUS_MAPPING = {
 } as const;
 
 /**
- * Reverse status mapping (GitHub -> MemoLab)
+ * Reverse status mapping (GitHub -> Alvsys)
  */
 export const GITHUB_STATUS_MAPPING = {
   open: 'READY', // Default new GitHub issues to ready (To Do)
@@ -95,9 +95,9 @@ export const GITHUB_STATUS_MAPPING = {
 } as const;
 
 /**
- * Map GitHub issue state and state_reason to MemoLab status
+ * Map GitHub issue state and state_reason to Alvsys status
  */
-export function getMemoLabStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null | undefined): string {
+export function getAlvsysStatusFromGitHub(state: 'open' | 'closed', state_reason: 'completed' | 'not_planned' | 'reopened' | null | undefined): string {
   if (state === 'open') {
     return 'READY';
   } else if (state === 'closed') {

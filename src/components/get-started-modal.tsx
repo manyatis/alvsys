@@ -46,10 +46,10 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
         {/* Header */}
         <div className="px-8 pt-8 pb-4 border-b border-slate-200 dark:border-slate-700">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Get Started with MemoLab MCP
+            Get Started with Alvsys MCP
           </h2>
           <p className="text-slate-600 dark:text-slate-300">
-            Connect Claude to your MemoLab projects using the Model Context Protocol (MCP)
+            Connect Claude to your Alvsys projects using the Model Context Protocol (MCP)
           </p>
         </div>
         
@@ -94,7 +94,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  Add the MemoLab MCP server to your Claude Desktop configuration file:
+                  Add the Alvsys MCP server to your Claude Desktop configuration file:
                 </p>
                 <div className="ml-11 space-y-3">
                   <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
@@ -106,12 +106,12 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     <button
                       onClick={() => copyToClipboard(`{
   "mcpServers": {
-    "memolab": {
+    "alvsys": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
-        "https://memolab.vercel.app/api/llm"
+        "https://alvsys.vercel.app/api/llm"
       ],
       "headers": {
         "Authorization": "Bearer your_bearer_token_here",
@@ -135,12 +135,12 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     </button>
                     <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`{
   "mcpServers": {
-    "memolab": {
+    "alvsys": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote",
-        "https://memolab.vercel.app/api/llm"
+        "https://alvsys.vercel.app/api/llm"
       ],
       "headers": {
         "Authorization": "Bearer your_bearer_token_here",
@@ -210,8 +210,8 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                       <div className="text-sm text-amber-800 dark:text-amber-200">
                         <p><strong>Where to find your Project ID:</strong></p>
                         <ul className="mt-1 space-y-1">
-                          <li>• Open any project in MemoLab</li>
-                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">memolab.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
+                          <li>• Open any project in Alvsys</li>
+                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">alvsys.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
                       </div>
@@ -242,7 +242,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  After saving your configuration, restart Claude Desktop and start working with your MemoLab projects:
+                  After saving your configuration, restart Claude Desktop and start working with your Alvsys projects:
                 </p>
                 
                 <div className="ml-11 space-y-3">
@@ -255,18 +255,18 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
                     <h4 className="font-medium text-green-900 dark:text-green-200 mb-2">Available Commands:</h4>
                     <ul className="text-sm text-green-800 dark:text-green-300 space-y-1">
-                      <li>• <strong>Get next task:</strong> &quot;What&apos;s the next ready task in MemoLab?&quot;</li>
+                      <li>• <strong>Get next task:</strong> &quot;What&apos;s the next ready task in Alvsys?&quot;</li>
                       <li>• <strong>Update status:</strong> &quot;Mark task ABC123 as in progress&quot;</li>
                       <li>• <strong>Add comments:</strong> &quot;Add a comment to task ABC123: Fixed the bug&quot;</li>
                       <li>• <strong>View backlog:</strong> &quot;Show me the project backlog&quot;</li>
-                      <li>• <strong>Dev mode:</strong> &quot;Start MemoLab dev mode&quot; (auto-fetches tasks)</li>
+                      <li>• <strong>Dev mode:</strong> &quot;Start Alvsys dev mode&quot; (auto-fetches tasks)</li>
                     </ul>
                   </div>
                   
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
                     <h4 className="font-medium text-slate-900 dark:text-slate-200 mb-2">Try this first command:</h4>
                     <code className="text-sm font-mono text-slate-800 dark:text-slate-200">
-                      &quot;List my MemoLab projects&quot;
+                      &quot;List my Alvsys projects&quot;
                     </code>
                   </div>
                 </div>
@@ -283,11 +283,11 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     1
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                    Install MemoLab MCP Server
+                    Install Alvsys MCP Server
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  Use the claude mcp add command to install and configure the MemoLab MCP server:
+                  Use the claude mcp add command to install and configure the Alvsys MCP server:
                 </p>
                 <div className="ml-11 space-y-3">
                   <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
@@ -297,7 +297,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 relative overflow-x-auto">
                     <button
-                      onClick={() => copyToClipboard(`claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
+                      onClick={() => copyToClipboard(`claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'claude-code')}
                       className="absolute top-2 right-2 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                       title="Copy to clipboard"
                     >
@@ -311,7 +311,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                         </svg>
                       )}
                     </button>
-                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http memolab https://memolab.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
+                    <pre className="text-sm font-mono text-slate-800 dark:text-slate-200">{`claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`}</pre>
                   </div>
                 </div>
               </div>
@@ -373,8 +373,8 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                       <div className="text-sm text-amber-800 dark:text-amber-200">
                         <p><strong>Where to find your Project ID:</strong></p>
                         <ul className="mt-1 space-y-1">
-                          <li>• Open any project in MemoLab</li>
-                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">memolab.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
+                          <li>• Open any project in Alvsys</li>
+                          <li>• Look at the URL: <code className="bg-amber-100 dark:bg-amber-900 px-1 rounded">alvsys.vercel.app/projects/<strong>[PROJECT_ID]</strong>/board</code></li>
                           <li>• Or go to Project Settings → Copy Project ID</li>
                         </ul>
                         <p className="mt-2">Use your project ID in the installation command from Step 1.</p>
@@ -391,11 +391,11 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                     4
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
-                    Start Using MemoLab MCP
+                    Start Using Alvsys MCP
                   </h3>
                 </div>
                 <p className="text-slate-600 dark:text-slate-300 ml-11">
-                  After running the installation command, your MemoLab MCP server will be ready to use:
+                  After running the installation command, your Alvsys MCP server will be ready to use:
                 </p>
                 
                 <div className="ml-11 space-y-3">
@@ -412,7 +412,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
                     <h4 className="font-medium text-slate-900 dark:text-slate-200 mb-2">Try this first command:</h4>
                     <code className="text-sm font-mono text-slate-800 dark:text-slate-200">
-                      &quot;List my MemoLab projects&quot;
+                      &quot;List my Alvsys projects&quot;
                     </code>
                   </div>
                 </div>
@@ -434,7 +434,7 @@ export default function GetStartedModal({ isOpen, onClose }: GetStartedModalProp
                   MCP Documentation
                 </h4>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Complete guide to using the MemoLab MCP server
+                  Complete guide to using the Alvsys MCP server
                 </p>
               </a>
               <a
