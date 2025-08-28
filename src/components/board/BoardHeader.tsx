@@ -204,7 +204,7 @@ export default function BoardHeader({
               className="flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               <Bot className={`h-4 w-4 ${isAssigningToClaude ? 'animate-pulse' : ''}`} />
-              <span className="hidden sm:inline">
+              <span>
                 {isAssigningToClaude ? 'Assigning...' : 'Assign All to @Claude'}
               </span>
             </button>
@@ -215,7 +215,7 @@ export default function BoardHeader({
               className="flex items-center justify-center gap-2 px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
             >
               <Bot className="h-4 w-4" />
-              <span className="hidden sm:inline">MCP Commands</span>
+              <span>MCP Commands</span>
             </button>
           </div>
         </div>
