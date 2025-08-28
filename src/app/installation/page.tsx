@@ -159,7 +159,7 @@ export default function InstallationPage() {
                     Start fresh with a new Alvsys project:
                   </p>
                   <ol className="list-decimal list-inside space-y-2 text-gray-400 ml-4">
-                    <li>Sign up at <a href="https://alvsys.com" className="text-emerald-400 hover:text-emerald-300 underline">alvsys.io</a></li>
+                    <li>Sign up at <a href="https://alvsys.com" className="text-emerald-400 hover:text-emerald-300 underline">alvsys.com</a></li>
                     <li>Click &quot;Create New Project&quot; on your dashboard</li>
                     <li>Give your project a name and description</li>
                     <li>Your project ID will be automatically generated</li>
@@ -299,7 +299,7 @@ export default function InstallationPage() {
                   Replace YOUR_PROJECT_ID and YOUR_API_KEY with your actual values:
                 </p>
                 <CodeBlock
-                  code='claude mcp add --transport http alvsys https://alvsys.io/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"'
+                  code='claude mcp add --transport http alvsys https://alvsys.com/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"'
                   copyId="mcp-install"
                 />
               </div>
