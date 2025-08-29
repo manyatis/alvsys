@@ -27,23 +27,30 @@ interface ComplaintWithEmbedding {
   embedding: number[] | null;
 }
 
+interface ComplaintData {
+  id: string;
+  content: string;
+  title: string | null;
+  source: string;
+  sourceUrl: string;
+  embedding: number[] | null;
+}
+
 // Cluster complaints using pgvector similarity
 async function clusterComplaints(): Promise<Map<string, ComplaintWithEmbedding[]>> {
   const clusters = new Map<string, ComplaintWithEmbedding[]>();
   const SIMILARITY_THRESHOLD = 0.75; // Cosine similarity threshold
   
   // Get all complaints with embeddings that don't have categories yet
-  const complaints = await prisma.userComplaint.findMany({
-    where: {
-      categoryId: null,
-      embedding: {
-        not: null
-      }
-    },
-    orderBy: {
-      scrapedAt: 'desc'
-    }
-  });
+  // Use raw SQL due to Prisma limitations with vector types
+  const complaints = await prisma.$queryRaw<ComplaintData[]>`
+    SELECT id, content, title, source, source_url as "sourceUrl", embedding
+    FROM "UserComplaint"
+    WHERE category_id IS NULL 
+      AND embedding IS NOT NULL
+    ORDER BY scraped_at DESC
+    LIMIT 100
+  `;
 
   console.log(`Clustering ${complaints.length} complaints with embeddings...`);
 
@@ -147,12 +154,12 @@ export async function POST() {
     console.log('Starting categorization process...');
     
     // First, generate embeddings for complaints that don't have them
-    const complaintsWithoutEmbeddings = await prisma.userComplaint.findMany({
-      where: {
-        embedding: null
-      },
-      take: 50 // Process in batches to respect rate limits
-    });
+    const complaintsWithoutEmbeddings = await prisma.$queryRaw<{id: string, title: string | null, content: string}[]>`
+      SELECT id, title, content
+      FROM "UserComplaint"
+      WHERE embedding IS NULL
+      LIMIT 50
+    `;
     
     console.log(`Generating embeddings for ${complaintsWithoutEmbeddings.length} complaints...`);
     
