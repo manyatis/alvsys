@@ -429,11 +429,11 @@ ${selectedCard.description ? selectedCard.description + '\n\n' : ''}${selectedCa
     try {
       const { createIssueComment } = await import('@/lib/issue-functions');
       
-      // Filter cards that are not completed
-      const assignableCards = cards.filter(card => card.status !== CardStatus.COMPLETED);
+      // Filter cards that are in "To Do" status only
+      const assignableCards = cards.filter(card => card.status === CardStatus.READY);
       
       if (assignableCards.length === 0) {
-        alert('No assignable cards found. All cards are already completed.');
+        alert('No assignable cards found. No cards are in "To Do" status.');
         return;
       }
       
