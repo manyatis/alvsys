@@ -324,9 +324,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     e.preventDefault();
     if (!selectedCard) return;
     
+    // Close modal immediately for instant feedback
+    closeDetailModal();
+    
+    // Process update in background
     try {
       await updateCard(selectedCard, selectedCardLabelIds, selectedCardAssigneeId);
-      closeDetailModal();
     } catch (error) {
       console.error('Error updating card:', error);
     }
@@ -346,9 +349,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
   const saveAndCloseModal = useCallback(async () => {
     if (!selectedCard) return;
     
+    // Close modal immediately for instant feedback
+    closeDetailModal();
+    
+    // Process update in background
     try {
       await updateCard(selectedCard, selectedCardLabelIds, selectedCardAssigneeId);
-      closeDetailModal();
     } catch (error) {
       console.error('Error updating card:', error);
     }
