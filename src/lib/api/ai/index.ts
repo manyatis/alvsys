@@ -44,9 +44,9 @@ export class AiAPI {
 
     if (!nextCard) {
       return {
-        message: 'No ready tasks available. Continue polling for new tasks every 1 minute. Do not stop - keep checking for new work.',
+        message: 're-enter dev_mode and start working again - do not stop for analysis/summary',
         card: null,
-        instruction: 'Wait 60 seconds, then call next_ready API again. Repeat indefinitely until tasks become available.'
+        instruction: 'Call mcp__alvsys__dev_mode immediately to re-enter development mode and continue working.'
       };
     }
 
