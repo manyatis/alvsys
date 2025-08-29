@@ -767,12 +767,25 @@ async function handleCommentWebhook(
     try {
       const { action, comment, issue, repository, installation } = payload;
       
-      if (!(installation as { id?: number })?.id || action !== 'created') {
+      // Handle both 'created' and 'edited' actions instead of just 'created'
+      if (!(installation as { id?: number })?.id || !['created', 'edited'].includes(action as string)) {
         return { success: true, processed: false };
       }
 
+      const commentBody = (comment as { body: string }).body;
+      const commentUser = (comment as { user: { login: string } }).user;
+      
+      // Enhanced Claude/AI comment detection with case insensitive matching
+      const isClaudeComment = commentUser.login.toLowerCase() === 'claude' || 
+                             commentUser.login.toLowerCase().includes('claude') ||
+                             commentUser.login.includes('[bot]') ||
+                             commentBody.includes('@claude') ||
+                             commentBody.includes('Claude Code is working') ||
+                             commentBody.includes('Generated with [Claude Code]') ||
+                             commentBody.includes('🤖');
+
       // Find the project and sync record
-      const syncRecord = await prisma.gitHubIssueSync.findFirst({
+      let syncRecord = await prisma.gitHubIssueSync.findFirst({
         where: {
           githubIssueId: (issue as { number: number }).number,
           githubRepoName: (repository as { full_name: string }).full_name,
@@ -782,18 +795,47 @@ async function handleCommentWebhook(
         },
       });
 
+      // If no sync record exists and this is a Claude comment, auto-sync the GitHub issue first
+      if (!syncRecord && isClaudeComment) {
+        console.log(`Claude comment detected but no sync record exists for issue ${(issue as { number: number }).number}. Auto-syncing issue...`);
+        
+        // Find the project linked to this repository
+        const project = await prisma.project.findFirst({
+          where: {
+            githubInstallationId: (installation as { id: number }).id.toString(),
+            githubRepoName: (repository as { full_name: string }).full_name,
+            githubSyncEnabled: true,
+          },
+        });
+
+        if (project) {
+          // Create sync service and sync the GitHub issue to alvsys
+          const syncService = await GitHubSyncService.createForProject(project.id);
+          if (syncService) {
+            try {
+              await syncService.syncIssueToAlvsys((issue as { number: number }).number);
+              console.log(`Successfully auto-synced issue ${(issue as { number: number }).number}`);
+              
+              // Now try to find the sync record again
+              syncRecord = await prisma.gitHubIssueSync.findFirst({
+                where: {
+                  githubIssueId: (issue as { number: number }).number,
+                  githubRepoName: (repository as { full_name: string }).full_name,
+                },
+                include: {
+                  project: true,
+                },
+              });
+            } catch (error) {
+              console.error(`Failed to auto-sync issue ${(issue as { number: number }).number}:`, error);
+            }
+          }
+        }
+      }
+
       if (!syncRecord) {
         return { success: true, processed: false };
       }
-
-      // Check if this is a Claude/AI comment
-      const commentBody = (comment as { body: string }).body;
-      const commentUser = (comment as { user: { login: string } }).user;
-      const isClaudeComment = commentUser.login === 'claude' || 
-                             commentUser.login.includes('claude') ||
-                             commentBody.includes('@claude') ||
-                             commentBody.includes('Claude Code is working') ||
-                             commentBody.includes('Generated with [Claude Code]');
 
       // Try to find existing comment to avoid duplicates
       const existingComment = await prisma.comment.findFirst({
