@@ -4,12 +4,14 @@
 generator client {
   provider = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  extensions = [vector]
 }
 
 model Session {
@@ -460,3 +462,65 @@ model ApiKey {
   @@index([hashedKey])
 }
 
+// Models for SaaS Ideas finder
+model DataSource {
+  id            String    @id @default(cuid())
+  name          String    // e.g., "Reddit - r/saas"
+  type          String    // "reddit", "twitter", "hackernews", "producthunt", etc.
+  url           String    // Base URL or API endpoint
+  config        Json      // Configuration like subreddit name, API keys, etc.
+  isActive      Boolean   @default(true)
+  scrapeInterval Int?     // Minutes between scrapes (null = manual only)
+  lastScrapedAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  complaints    UserComplaint[]
+  
+  @@index([type])
+  @@index([isActive])
+}
+
+model UserComplaint {
+  id            String    @id @default(cuid())
+  source        String    // e.g., "reddit", "twitter", etc.
+  sourceUrl     String    @unique // URL to the original post/comment - UNIQUE to prevent duplicates
+  dataSourceId  String?   // Link to DataSource configuration
+  dataSource    DataSource? @relation(fields: [dataSourceId], references: [id])
+  subreddit     String?   // For Reddit sources
+  author        String?   // Username of the complainer
+  title         String?   // Post title if available
+  content       String    @db.Text // The actual complaint text
+  sentiment     String?   // AI-analyzed sentiment
+  businessIdeas Json?     // AI-generated business ideas from this complaint
+  metadata      Json?     // Additional metadata from the source
+  embedding     Unsupported("vector(1536)")? // Vector embedding for similarity search (OpenAI text-embedding-3-small)
+  categoryId    String?   // Category this complaint belongs to
+  category      ComplaintCategory? @relation(fields: [categoryId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  scrapedAt     DateTime  @default(now()) // When this was scraped (for dedup)
+  
+  @@index([source])
+  @@index([subreddit])
+  @@index([createdAt])
+  @@index([dataSourceId])
+  @@index([categoryId])
+  @@index([scrapedAt])
+}
+
+model ComplaintCategory {
+  id              String    @id @default(cuid())
+  name            String    // Category name (e.g., "Poor Customer Service")
+  description     String?   @db.Text // AI-generated description
+  complaintCount  Int       @default(0) // Number of complaints in this category
+  businessIdeas   Json?     // AI-generated business opportunities
+  viabilityScore  Float?    // 0-1 score of business viability
+  centerEmbedding Unsupported("vector(1536)")? // Center point of this cluster
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  complaints      UserComplaint[]
+  
+  @@index([viabilityScore])
+}
