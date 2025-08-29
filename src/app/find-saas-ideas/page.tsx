@@ -1,7 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { RefreshCw, ExternalLink, TrendingUp, Brain, AlertTriangle } from 'lucide-react';
+import { RefreshCw, ExternalLink, TrendingUp, Brain, AlertTriangle, Database, Search, BarChart3 } from 'lucide-react';
+
+interface Complaint {
+  id: string;
+  title: string | null;
+  content: string;
+  source: string;
+  sourceUrl: string;
+  author: string | null;
+  subreddit: string | null;
+  createdAt: string;
+  scrapedAt: string;
+}
 
 interface ComplaintCategory {
   id: string;
@@ -9,7 +21,10 @@ interface ComplaintCategory {
   description: string;
   complaintCount: number;
   viabilityScore?: number;
+  complaints?: Complaint[];
   businessIdeas?: {
+    targetProduct?: string;
+    productCategory?: string;
     coreProblems: string[];
     marketAnalysis: string;
     ideas: Array<{
@@ -32,9 +47,14 @@ export default function FindSaaSIdeasPage() {
   const [categories, setCategories] = useState<ComplaintCategory[]>([]);
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [scrapingLoader, setScrapingLoader] = useState(false);
+  const [embeddingLoader, setEmbeddingLoader] = useState(false);
+  const [categorizingLoader, setCategorizingLoader] = useState(false);
+  const [businessIdeasLoader, setBusinessIdeasLoader] = useState(false);
   const [message, setMessage] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<ComplaintCategory | null>(null);
   const [currentStep, setCurrentStep] = useState('');
+  const [embeddingStatus, setEmbeddingStatus] = useState<{total: number, withEmbeddings: number, remaining: number, progress: number} | null>(null);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -42,7 +62,38 @@ export default function FindSaaSIdeasPage() {
       const response = await fetch('/api/find-saas-ideas/categorize');
       const data = await response.json();
       if (data.success) {
-        setCategories(data.categories || []);
+        // Sort categories by priority: PURSUE > MAYBE > AVOID > no analysis, then by viability score
+        const sortedCategories = (data.categories || []).sort((a, b) => {
+          // First, sort by recommendation priority
+          const getRecommendationPriority = (rec) => {
+            switch (rec) {
+              case 'PURSUE': return 3;
+              case 'MAYBE': return 2;
+              case 'AVOID': return 1;
+              default: return 0; // No analysis yet
+            }
+          };
+          
+          const aPriority = getRecommendationPriority(a.businessIdeas?.recommendation);
+          const bPriority = getRecommendationPriority(b.businessIdeas?.recommendation);
+          
+          if (aPriority !== bPriority) {
+            return bPriority - aPriority; // Higher priority first
+          }
+          
+          // If same recommendation, sort by viability score (higher first)
+          const aViability = a.viabilityScore || 0;
+          const bViability = b.viabilityScore || 0;
+          
+          if (aViability !== bViability) {
+            return bViability - aViability;
+          }
+          
+          // Finally, sort by complaint count (more complaints first)
+          return b.complaintCount - a.complaintCount;
+        });
+        
+        setCategories(sortedCategories);
       }
     } catch (error) {
       console.error('Error fetching categories:', error);
@@ -52,75 +103,203 @@ export default function FindSaaSIdeasPage() {
     }
   };
 
+  const fetchEmbeddingStatus = async () => {
+    try {
+      const response = await fetch('/api/find-saas-ideas/embeddings');
+      const data = await response.json();
+      if (data.success) {
+        setEmbeddingStatus(data.status);
+      }
+    } catch (error) {
+      console.error('Error fetching embedding status:', error);
+    }
+  };
+
+  const runScraping = async () => {
+    setScrapingLoader(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/find-saas-ideas/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessage(`✅ Scraping complete! Found ${data.newComplaints} new complaints from ${data.totalScraped} posts.`);
+        await fetchEmbeddingStatus(); // Refresh embedding status
+      } else {
+        setMessage(`❌ Scraping failed: ${data.message || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error in scraping:', error);
+      setMessage(`❌ Scraping error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setScrapingLoader(false);
+    }
+  };
+
+  const runEmbeddings = async () => {
+    setEmbeddingLoader(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/find-saas-ideas/embeddings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessage(`✅ Embeddings complete! Processed ${data.processed} complaints, ${data.errors} errors.`);
+        await fetchEmbeddingStatus(); // Refresh embedding status
+      } else {
+        setMessage(`❌ Embeddings failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error in embeddings:', error);
+      setMessage(`❌ Embeddings error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setEmbeddingLoader(false);
+    }
+  };
+
+  const runCategorization = async () => {
+    setCategorizingLoader(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/find-saas-ideas/categorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setMessage(`✅ Categorization complete! Created ${data.categories?.length || 0} new categories.`);
+        await fetchCategories(); // Refresh categories
+      } else {
+        setMessage(`❌ Categorization failed: ${data.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error('Error in categorization:', error);
+      setMessage(`❌ Categorization error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    } finally {
+      setCategorizingLoader(false);
+    }
+  };
+
+  const runBusinessIdeas = async () => {
+    setBusinessIdeasLoader(true);
+    setMessage('');
+    
+    try {
+      setCurrentStep('Generating business ideas for categories...');
+      
+      // Get categories without business ideas
+      const categoriesWithoutIdeas = categories.filter(c => !c.businessIdeas);
+      
+      if (categoriesWithoutIdeas.length === 0) {
+        setMessage('✅ All categories already have business ideas');
+        setCurrentStep('');
+        setBusinessIdeasLoader(false);
+        return;
+      }
+      
+      let successCount = 0;
+      let errorCount = 0;
+      
+      for (const category of categoriesWithoutIdeas) {
+        try {
+          setCurrentStep(`Generating ideas for: ${category.name}...`);
+          const response = await fetch('/api/find-saas-ideas/business-ideas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ categoryId: category.id })
+          });
+          
+          const data = await response.json();
+          if (data.success) {
+            successCount++;
+            // Update the category in state and re-sort
+            setCategories(prev => {
+              const updated = prev.map(c => 
+                c.id === category.id 
+                  ? { ...c, businessIdeas: data.businessIdeas, viabilityScore: data.businessIdeas.overallViability }
+                  : c
+              );
+              
+              // Re-sort after updating
+              return updated.sort((a, b) => {
+                const getRecommendationPriority = (rec) => {
+                  switch (rec) {
+                    case 'PURSUE': return 3;
+                    case 'MAYBE': return 2;
+                    case 'AVOID': return 1;
+                    default: return 0;
+                  }
+                };
+                
+                const aPriority = getRecommendationPriority(a.businessIdeas?.recommendation);
+                const bPriority = getRecommendationPriority(b.businessIdeas?.recommendation);
+                
+                if (aPriority !== bPriority) {
+                  return bPriority - aPriority;
+                }
+                
+                const aViability = a.viabilityScore || 0;
+                const bViability = b.viabilityScore || 0;
+                
+                if (aViability !== bViability) {
+                  return bViability - aViability;
+                }
+                
+                return b.complaintCount - a.complaintCount;
+              });
+            });
+          } else {
+            errorCount++;
+          }
+        } catch (error) {
+          console.error(`Error generating ideas for category ${category.id}:`, error);
+          errorCount++;
+        }
+      }
+      
+      setMessage(`✅ Business ideas generation complete: ${successCount} succeeded, ${errorCount} failed`);
+      setCurrentStep('');
+    } catch (error) {
+      console.error('Error in business ideas generation:', error);
+      setMessage(`❌ Business ideas error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      setCurrentStep('');
+    } finally {
+      setBusinessIdeasLoader(false);
+    }
+  };
+
   const findSaaSIdeas = async () => {
     setProcessing(true);
     setMessage('');
     
     try {
-      // Step 1: Scrape Reddit
-      setCurrentStep('Scraping Reddit for complaints...');
-      const scrapeResponse = await fetch('/api/find-saas-ideas/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
-      });
-      const scrapeData = await scrapeResponse.json();
-      
-      if (!scrapeData.success) {
-        throw new Error(scrapeData.message || 'Failed to scrape data');
-      }
-      
-      // Step 2: Categorize complaints
-      setCurrentStep('Categorizing similar complaints...');
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Brief pause
-      
-      const categorizeResponse = await fetch('/api/find-saas-ideas/categorize', {
+      setCurrentStep('Running complete SaaS idea discovery pipeline...');
+      const response = await fetch('/api/find-saas-ideas/run-all', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
-      const categorizeData = await categorizeResponse.json();
+      const data = await response.json();
       
-      if (!categorizeData.success) {
-        throw new Error(categorizeData.message || 'Failed to categorize complaints');
+      if (data.success) {
+        setMessage(data.message);
+        await fetchCategories(); // Refresh categories
+        await fetchEmbeddingStatus(); // Refresh embedding status
+      } else {
+        setMessage(`❌ Pipeline failed: ${data.message || data.error || 'Unknown error'}`);
       }
       
-      // Step 3: Generate business ideas for categories
-      setCurrentStep('Generating business ideas with AI...');
-      await fetchCategories(); // Refresh categories
-      
-      // Get categories without business ideas and generate them
-      const categoriesResponse = await fetch('/api/find-saas-ideas/categorize');
-      const categoriesData = await categoriesResponse.json();
-      
-      if (categoriesData.success && categoriesData.categories) {
-        const categoriesNeedingIdeas = categoriesData.categories.filter(
-          (cat: ComplaintCategory) => !cat.businessIdeas && cat.complaintCount >= 2
-        );
-        
-        for (const category of categoriesNeedingIdeas) {
-          try {
-            await fetch('/api/find-saas-ideas/business-ideas', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ categoryId: category.id })
-            });
-            // Small delay between API calls
-            await new Promise(resolve => setTimeout(resolve, 500));
-          } catch (error) {
-            console.error(`Failed to generate ideas for category ${category.id}:`, error);
-          }
-        }
-      }
-      
-      // Final refresh
-      await fetchCategories();
-      
-      setMessage(`✅ Complete! Scraped ${scrapeData.totalScraped} posts, found ${scrapeData.newComplaints} new complaints, created ${categorizeData.categories?.length || 0} categories`);
       setCurrentStep('');
-      
     } catch (error) {
-      console.error('Error in SaaS idea generation:', error);
-      setMessage(`❌ Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
+      console.error('Error in complete pipeline:', error);
+      setMessage(`❌ Pipeline error: ${error instanceof Error ? error.message : 'Unknown error occurred'}`);
       setCurrentStep('');
     } finally {
       setProcessing(false);
@@ -128,30 +307,72 @@ export default function FindSaaSIdeasPage() {
   };
 
   const handleCategoryClick = async (category: ComplaintCategory) => {
-    if (category.businessIdeas) {
-      setSelectedCategory(category);
-      return;
-    }
-
-    // Generate business ideas for this category
     try {
-      const response = await fetch('/api/find-saas-ideas/business-ideas', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ categoryId: category.id })
-      });
-      const data = await response.json();
-      if (data.success) {
-        const updatedCategory = { ...category, businessIdeas: data.businessIdeas, viabilityScore: data.businessIdeas.overallViability };
-        setSelectedCategory(updatedCategory);
-        // Update categories list
-        setCategories(prev => prev.map(c => c.id === category.id ? updatedCategory : c));
+      // First, fetch the category with its complaints if we don't have them
+      let categoryWithComplaints = category;
+      if (!category.complaints) {
+        const response = await fetch(`/api/find-saas-ideas/categorize?categoryId=${category.id}`);
+        const data = await response.json();
+        if (data.success) {
+          categoryWithComplaints = data.category;
+        }
       }
+
+      // Generate business ideas if not present
+      if (!categoryWithComplaints.businessIdeas) {
+        const response = await fetch('/api/find-saas-ideas/business-ideas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ categoryId: category.id })
+        });
+        const data = await response.json();
+        if (data.success) {
+          categoryWithComplaints = { 
+            ...categoryWithComplaints, 
+            businessIdeas: data.businessIdeas, 
+            viabilityScore: data.businessIdeas.overallViability 
+          };
+          // Update categories list and maintain sorting
+          setCategories(prev => {
+            const updated = prev.map(c => c.id === category.id ? categoryWithComplaints : c);
+            
+            // Re-sort after updating
+            return updated.sort((a, b) => {
+              const getRecommendationPriority = (rec) => {
+                switch (rec) {
+                  case 'PURSUE': return 3;
+                  case 'MAYBE': return 2;
+                  case 'AVOID': return 1;
+                  default: return 0;
+                }
+              };
+              
+              const aPriority = getRecommendationPriority(a.businessIdeas?.recommendation);
+              const bPriority = getRecommendationPriority(b.businessIdeas?.recommendation);
+              
+              if (aPriority !== bPriority) {
+                return bPriority - aPriority;
+              }
+              
+              const aViability = a.viabilityScore || 0;
+              const bViability = b.viabilityScore || 0;
+              
+              if (aViability !== bViability) {
+                return bViability - aViability;
+              }
+              
+              return b.complaintCount - a.complaintCount;
+            });
+          });
+        }
+      }
+
+      setSelectedCategory(categoryWithComplaints);
     } catch (error) {
-      console.error('Error generating business ideas:', error);
-      setMessage('Failed to generate business ideas');
+      console.error('Error loading category details:', error);
+      setMessage('Failed to load category details');
     }
   };
 
@@ -173,6 +394,7 @@ export default function FindSaaSIdeasPage() {
 
   useEffect(() => {
     fetchCategories();
+    fetchEmbeddingStatus();
   }, []);
 
   if (selectedCategory) {
@@ -202,6 +424,21 @@ export default function FindSaaSIdeasPage() {
                   {selectedCategory.businessIdeas.recommendation}
                 </span>
               </div>
+
+              {/* Target Product Section */}
+              {(selectedCategory.businessIdeas.targetProduct || selectedCategory.businessIdeas.productCategory) && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                  <h3 className="font-medium text-blue-900 mb-2">Target Analysis</h3>
+                  <div className="text-sm text-blue-800">
+                    {selectedCategory.businessIdeas.targetProduct && (
+                      <p><span className="font-medium">Primary Target:</span> {selectedCategory.businessIdeas.targetProduct}</p>
+                    )}
+                    {selectedCategory.businessIdeas.productCategory && (
+                      <p><span className="font-medium">Category:</span> {selectedCategory.businessIdeas.productCategory}</p>
+                    )}
+                  </div>
+                </div>
+              )}
               
               <div className="grid md:grid-cols-2 gap-6 mb-6">
                 <div>
@@ -293,6 +530,52 @@ export default function FindSaaSIdeasPage() {
                 </div>
               </div>
             )}
+
+            {/* Customer Complaints Section */}
+            {selectedCategory.complaints && selectedCategory.complaints.length > 0 && (
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+                <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                  Customer Complaints
+                  <span className="text-sm text-gray-500 font-normal">({selectedCategory.complaints.length})</span>
+                </h2>
+                
+                <div className="max-h-96 overflow-y-auto space-y-4 pr-2">
+                  {selectedCategory.complaints.map((complaint) => (
+                    <div key={complaint.id} className="border border-gray-100 rounded-lg p-4 hover:bg-gray-50">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <span className="px-2 py-1 bg-gray-100 rounded">{complaint.source}</span>
+                          {complaint.subreddit && <span>r/{complaint.subreddit}</span>}
+                          {complaint.author && <span>by {complaint.author}</span>}
+                          <span>{new Date(complaint.scrapedAt).toLocaleDateString()}</span>
+                        </div>
+                        {complaint.sourceUrl && (
+                          <a
+                            href={complaint.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                      
+                      {complaint.title && (
+                        <h4 className="font-medium text-gray-900 mb-2 text-sm">{complaint.title}</h4>
+                      )}
+                      
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        {complaint.content.length > 300 
+                          ? `${complaint.content.substring(0, 300)}...` 
+                          : complaint.content
+                        }
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -312,13 +595,93 @@ export default function FindSaaSIdeasPage() {
         <div className="flex items-center gap-4 flex-wrap">
           <button
             onClick={findSaaSIdeas} 
-            disabled={processing}
+            disabled={processing || scrapingLoader || embeddingLoader || categorizingLoader}
             className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transition-all transform hover:scale-105 shadow-lg"
           >
             <Brain className={`h-5 w-5 ${processing ? 'animate-spin' : ''}`} />
-            {processing ? 'Finding SaaS Ideas...' : 'Find SaaS Ideas'}
+            {processing ? 'Finding SaaS Ideas...' : 'Run All Steps'}
           </button>
 
+        </div>
+
+        {/* Individual Step Buttons */}
+        <div className="bg-gray-50 rounded-lg p-4">
+          <h3 className="text-sm font-medium text-gray-700 mb-3">Or run individual steps:</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Step 1: Scraping */}
+            <button
+              onClick={runScraping}
+              disabled={scrapingLoader || processing}
+              className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transition-all shadow-sm"
+            >
+              <Search className={`h-4 w-4 text-blue-600 ${scrapingLoader ? 'animate-spin' : ''}`} />
+              <div className="text-left">
+                <div className="font-medium text-sm">1. Scrape Data</div>
+                <div className="text-xs text-gray-500">Fetch complaints from Reddit</div>
+              </div>
+            </button>
+
+            {/* Step 2: Embeddings */}
+            <button
+              onClick={runEmbeddings}
+              disabled={embeddingLoader || processing}
+              className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transition-all shadow-sm"
+            >
+              <Database className={`h-4 w-4 text-green-600 ${embeddingLoader ? 'animate-spin' : ''}`} />
+              <div className="text-left">
+                <div className="font-medium text-sm">2. Generate Embeddings</div>
+                <div className="text-xs text-gray-500">
+                  {embeddingStatus ? `${embeddingStatus.remaining} remaining` : 'Process complaints'}
+                </div>
+              </div>
+            </button>
+
+            {/* Step 3: Categorization */}
+            <button
+              onClick={runCategorization}
+              disabled={categorizingLoader || processing}
+              className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transition-all shadow-sm"
+            >
+              <BarChart3 className={`h-4 w-4 text-purple-600 ${categorizingLoader ? 'animate-spin' : ''}`} />
+              <div className="text-left">
+                <div className="font-medium text-sm">3. Categorize</div>
+                <div className="text-xs text-gray-500">Group similar complaints</div>
+              </div>
+            </button>
+
+            {/* Step 4: Business Ideas */}
+            <button
+              onClick={runBusinessIdeas}
+              disabled={businessIdeasLoader || processing}
+              className="px-4 py-3 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 transition-all shadow-sm"
+            >
+              <Brain className={`h-4 w-4 text-orange-600 ${businessIdeasLoader ? 'animate-spin' : ''}`} />
+              <div className="text-left">
+                <div className="font-medium text-sm">4. Generate Ideas</div>
+                <div className="text-xs text-gray-500">AI business analysis</div>
+              </div>
+            </button>
+          </div>
+
+          {/* Progress indicator for embeddings */}
+          {embeddingStatus && embeddingStatus.total > 0 && (
+            <div className="mt-3 pt-3 border-t border-gray-200">
+              <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                <span>Embedding Progress</span>
+                <span>{embeddingStatus.progress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-green-600 h-2 rounded-full transition-all" 
+                  style={{width: `${embeddingStatus.progress}%`}}
+                ></div>
+              </div>
+              <div className="text-xs text-gray-500 mt-1">
+                {embeddingStatus.withEmbeddings} / {embeddingStatus.total} complaints processed
+              </div>
+            </div>
+          )}
         </div>
 
         {currentStep && (

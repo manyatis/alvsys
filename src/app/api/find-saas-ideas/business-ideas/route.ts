@@ -42,16 +42,20 @@ ${JSON.stringify(sampleComplaints, null, 2)}
 Analyze these complaints and generate business ideas. Be CRITICAL and OBJECTIVE.
 
 Requirements:
-1. Identify the core problems being expressed
-2. Evaluate if these are widespread, monetizable problems
-3. Suggest 0-3 business ideas ONLY if truly viable
-4. For each idea, provide a viability score (0-1)
-5. Be honest if there's no real opportunity here
+1. Identify what specific product, service, or company is being complained about (if any)
+2. Determine the product category or industry
+3. Identify the core problems being expressed
+4. Evaluate if these are widespread, monetizable problems
+5. Suggest 0-3 business ideas ONLY if truly viable
+6. For each idea, provide a viability score (0-1)
+7. Be honest if there's no real opportunity here
 
 Return a JSON object with:
 {
+  "targetProduct": "Name of the specific product/service being complained about (if identifiable)",
+  "productCategory": "Category/industry of the target (e.g., 'Project Management Tools', 'E-commerce Platform', 'Social Media')",
   "coreProblems": ["problem1", "problem2"],
-  "marketAnalysis": "Brief analysis of market opportunity",
+  "marketAnalysis": "Brief analysis of market opportunity and competition",
   "ideas": [
     {
       "name": "Business idea name",
@@ -71,6 +75,8 @@ Return a JSON object with:
 
 If there's no viable opportunity, return:
 {
+  "targetProduct": "Product name if identifiable, or null",
+  "productCategory": "Category if identifiable, or null",
   "coreProblems": [...],
   "marketAnalysis": "Why this isn't a good opportunity",
   "ideas": [],
@@ -91,7 +97,19 @@ If there's no viable opportunity, return:
       throw new Error('No response from OpenAI');
     }
     
-    const businessIdeas = JSON.parse(result);
+    // Clean up the response - remove markdown code blocks if present
+    let cleanedResult = result.trim();
+    if (cleanedResult.startsWith('```json')) {
+      cleanedResult = cleanedResult.substring(7); // Remove ```json
+    } else if (cleanedResult.startsWith('```')) {
+      cleanedResult = cleanedResult.substring(3); // Remove ```
+    }
+    if (cleanedResult.endsWith('```')) {
+      cleanedResult = cleanedResult.substring(0, cleanedResult.length - 3); // Remove trailing ```
+    }
+    cleanedResult = cleanedResult.trim(); // Trim any remaining whitespace
+    
+    const businessIdeas = JSON.parse(cleanedResult);
     
     // Update category with business ideas
     await prisma.complaintCategory.update({

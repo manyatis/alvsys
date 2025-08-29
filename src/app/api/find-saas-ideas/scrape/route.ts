@@ -14,7 +14,7 @@ interface ScrapedContent {
   author?: string;
   title?: string;
   content: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 async function filterComplaints(posts: ScrapedContent[]): Promise<string[]> {
@@ -154,9 +154,9 @@ async function fetchRedditPosts(subreddit: string, dataSourceId?: string, lastSc
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await _request.json();
     const { dataSourceIds } = body; // Allow scraping specific data sources
 
     // Get active data sources
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
 
     // Filter posts to only keep actual complaints using OpenAI
     console.log(`Filtering ${allComplaints.length} posts through OpenAI...`);
-    let complaintUrls: string[] = [];
+    const complaintUrls: string[] = [];
     
     // Process in batches of 20 to stay within token limits
     for (let i = 0; i < allComplaints.length; i += 20) {
@@ -265,7 +265,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // Fetch all complaints with data source information
     const complaints = await prisma.userComplaint.findMany({
