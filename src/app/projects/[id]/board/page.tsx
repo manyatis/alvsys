@@ -52,48 +52,48 @@ const statusColumns: {
     status: CardStatus.REFINEMENT, 
     title: 'Refinement', 
     color: 'border-gray-300', 
-    bgColor: 'bg-zinc-900/50 border border-zinc-800',
-    textColor: 'text-gray-700',
+    bgColor: 'bg-black border border-zinc-700',
+    textColor: 'text-gray-300',
     icon: RefreshCw 
   },
   { 
     status: CardStatus.READY, 
     title: 'To Do', 
     color: 'border-blue-300', 
-    bgColor: 'bg-blue-950/30 border border-blue-800/50',
-    textColor: 'text-blue-700',
+    bgColor: 'bg-black border border-blue-700',
+    textColor: 'text-blue-400',
     icon: Clock 
   },
   { 
     status: CardStatus.IN_PROGRESS, 
     title: 'In Progress', 
     color: 'border-yellow-300', 
-    bgColor: 'bg-yellow-950/30 border border-yellow-800/50',
-    textColor: 'text-yellow-700',
+    bgColor: 'bg-black border border-yellow-700',
+    textColor: 'text-yellow-400',
     icon: Zap 
   },
   { 
     status: CardStatus.BLOCKED, 
     title: 'Blocked', 
     color: 'border-red-300', 
-    bgColor: 'bg-red-950/30 border border-red-800/50',
-    textColor: 'text-red-700',
+    bgColor: 'bg-black border border-red-700',
+    textColor: 'text-red-400',
     icon: AlertCircle 
   },
   { 
     status: CardStatus.READY_FOR_REVIEW, 
     title: 'Review', 
     color: 'border-purple-300', 
-    bgColor: 'bg-purple-950/30 border border-purple-800/50',
-    textColor: 'text-purple-700',
+    bgColor: 'bg-black border border-purple-700',
+    textColor: 'text-purple-400',
     icon: CheckCircle 
   },
   { 
     status: CardStatus.COMPLETED, 
     title: 'Done', 
     color: 'border-green-300', 
-    bgColor: 'bg-green-950/30 border border-emerald-800/50',
-    textColor: 'text-green-700',
+    bgColor: 'bg-black border border-green-700',
+    textColor: 'text-green-400',
     icon: CheckCircle 
   },
 ];
