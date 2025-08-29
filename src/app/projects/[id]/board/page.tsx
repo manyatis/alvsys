@@ -324,9 +324,12 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     e.preventDefault();
     if (!selectedCard) return;
     
+    // Close modal immediately for better UX
+    closeDetailModal();
+    
+    // Update in background
     try {
       await updateCard(selectedCard, selectedCardLabelIds, selectedCardAssigneeId);
-      closeDetailModal();
     } catch (error) {
       console.error('Error updating card:', error);
     }
@@ -343,16 +346,6 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
     }, 300);
   }, [resetComments]);
 
-  const saveAndCloseModal = useCallback(async () => {
-    if (!selectedCard) return;
-    
-    try {
-      await updateCard(selectedCard, selectedCardLabelIds, selectedCardAssigneeId);
-      closeDetailModal();
-    } catch (error) {
-      console.error('Error updating card:', error);
-    }
-  }, [selectedCard, selectedCardLabelIds, selectedCardAssigneeId, updateCard, closeDetailModal]);
 
   // Handle escape key and close modal
   useEffect(() => {
@@ -362,7 +355,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
           setModalVisible(false);
           setTimeout(() => setShowCreateModal(false), 300);
         } else if (showDetailModal) {
-          saveAndCloseModal();
+          closeDetailModal();
         }
       }
     };
@@ -387,7 +380,7 @@ export default function ProjectBoardPage({ params }: { params: Promise<{ id: str
         boardElement.style.overflowX = 'auto';
       }
     };
-  }, [showCreateModal, showDetailModal, showSprintModal, showMCPGuideModal, saveAndCloseModal]);
+  }, [showCreateModal, showDetailModal, showSprintModal, showMCPGuideModal, closeDetailModal]);
 
 
   const handleAddComment = async (e: React.FormEvent) => {
@@ -1020,7 +1013,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
         currentUserId={currentUserId}
         sprints={sprints}
         statusColumns={statusColumns}
-        onClose={saveAndCloseModal}
+        onClose={closeDetailModal}
         onUpdate={handleUpdateCard}
         onAddComment={handleAddComment}
         onCreateLabel={handleCreateLabel}
