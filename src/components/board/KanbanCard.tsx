@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { MoreVertical, Bot } from 'lucide-react';
+import { MoreVertical, Bot, MessageCircle } from 'lucide-react';
 import { Card, Label } from '@/types/card';
 import { getPriorityColor, getInitials } from '@/utils/board-utils';
 import InlineLabelEditor from '@/components/InlineLabelEditor';
@@ -211,6 +211,14 @@ export default function KanbanCard({
             <div className="flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded border bg-purple-100 text-purple-600 border-purple-200">
               <Bot className="h-2.5 w-2.5" />
               <span className="hidden sm:inline">AI</span>
+            </div>
+          )}
+          
+          {/* Comment count badge */}
+          {card.comments && card.comments.length > 0 && (
+            <div className="flex items-center gap-0.5 sm:gap-1 px-1 sm:px-1.5 py-0.5 text-xs font-medium rounded border bg-zinc-800 text-emerald-400 border-zinc-700">
+              <MessageCircle className="h-2.5 w-2.5" />
+              <span>{card.comments.length}</span>
             </div>
           )}
         </div>
