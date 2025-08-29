@@ -125,11 +125,11 @@ export default function MCPGuideModal({
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-md px-3 py-2 border border-gray-200 dark:border-gray-700 overflow-x-auto">
               <code className="text-xs font-mono text-gray-700 dark:text-gray-300 whitespace-nowrap">
-                claude mcp add --transport http alvsys https://alvsys.com/api/llm/mcp --header &ldquo;X-Project-Id: YOUR_PROJECT_ID&rdquo; --header &ldquo;Authorization: Bearer YOUR_API_KEY&rdquo;
+                claude mcp add --transport http alvsys https://www.alvsys.com/api/llm/mcp --header &ldquo;X-Project-Id: YOUR_PROJECT_ID&rdquo; --header &ldquo;Authorization: Bearer YOUR_API_KEY&rdquo;
               </code>
             </div>
             <button
-              onClick={() => handleCopy(`claude mcp add --transport http alvsys https://alvsys.com/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'install-command')}
+              onClick={() => handleCopy(`claude mcp add --transport http alvsys https://www.alvsys.com/api/llm/mcp --header "X-Project-Id: YOUR_PROJECT_ID" --header "Authorization: Bearer YOUR_API_KEY"`, 'install-command')}
               className="mt-2 flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
             >
               {copiedItem === 'install-command' ? (
