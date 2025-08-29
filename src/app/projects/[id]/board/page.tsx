@@ -52,7 +52,7 @@ const statusColumns: {
     status: CardStatus.REFINEMENT, 
     title: 'Refinement', 
     color: 'border-gray-300', 
-    bgColor: 'bg-gray-50 dark:bg-gray-700',
+    bgColor: 'bg-zinc-900/50 border border-zinc-800',
     textColor: 'text-gray-700',
     icon: RefreshCw 
   },
@@ -60,7 +60,7 @@ const statusColumns: {
     status: CardStatus.READY, 
     title: 'To Do', 
     color: 'border-blue-300', 
-    bgColor: 'bg-blue-50 dark:bg-gray-700',
+    bgColor: 'bg-blue-950/30 border border-blue-800/50',
     textColor: 'text-blue-700',
     icon: Clock 
   },
@@ -68,7 +68,7 @@ const statusColumns: {
     status: CardStatus.IN_PROGRESS, 
     title: 'In Progress', 
     color: 'border-yellow-300', 
-    bgColor: 'bg-yellow-50 dark:bg-gray-700',
+    bgColor: 'bg-yellow-950/30 border border-yellow-800/50',
     textColor: 'text-yellow-700',
     icon: Zap 
   },
@@ -76,7 +76,7 @@ const statusColumns: {
     status: CardStatus.BLOCKED, 
     title: 'Blocked', 
     color: 'border-red-300', 
-    bgColor: 'bg-red-50 dark:bg-gray-700',
+    bgColor: 'bg-red-950/30 border border-red-800/50',
     textColor: 'text-red-700',
     icon: AlertCircle 
   },
@@ -84,7 +84,7 @@ const statusColumns: {
     status: CardStatus.READY_FOR_REVIEW, 
     title: 'Review', 
     color: 'border-purple-300', 
-    bgColor: 'bg-purple-50 dark:bg-gray-700',
+    bgColor: 'bg-purple-950/30 border border-purple-800/50',
     textColor: 'text-purple-700',
     icon: CheckCircle 
   },
@@ -92,7 +92,7 @@ const statusColumns: {
     status: CardStatus.COMPLETED, 
     title: 'Done', 
     color: 'border-green-300', 
-    bgColor: 'bg-green-50 dark:bg-gray-700',
+    bgColor: 'bg-green-950/30 border border-emerald-800/50',
     textColor: 'text-green-700',
     icon: CheckCircle 
   },
@@ -894,7 +894,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
 
   if (loading) {
     return (
-      <div className="h-[calc(100vh-80px)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="h-[calc(100vh-80px)] flex items-center justify-center bg-black pt-20">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
@@ -902,7 +902,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
 
   return (
     <>
-      <div className="h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 flex flex-col sm:flex-row w-full max-w-full pt-20">
+      <div className="h-[calc(100vh-80px)] bg-black flex flex-col sm:flex-row w-full max-w-full pt-20">
         {/* Left Sidebar */}
         <BoardSidebar
           sidebarCollapsed={sidebarCollapsed}
@@ -942,7 +942,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
           />
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+        <div className="flex-1 p-2 md:p-4 bg-black relative overflow-hidden">
           {/* Scroll Indicators */}
           {scrollDirection === 'left' && (
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-2 rounded-r-lg z-50 animate-pulse shadow-lg">

@@ -80,11 +80,11 @@ export default function EditIssueModal({
         }`}
         onClick={onClose}
       >
-        <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
+        <div className="absolute inset-0 bg-black/80"></div>
       </div>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
         <div 
-          className={`bg-white dark:bg-gray-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
+          className={`bg-zinc-900 border border-zinc-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-2'
@@ -104,14 +104,14 @@ export default function EditIssueModal({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
                 Summary *
               </label>
               <input
                 type="text"
                 value={selectedCard.title}
                 onChange={(e) => setSelectedCard({ ...selectedCard, title: e.target.value })}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors"
+                className="w-full px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white transition-colors"
                 placeholder="What needs to be done?"
                 required
               />
@@ -119,14 +119,14 @@ export default function EditIssueModal({
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   Status
                 </label>
                 <div className="relative">
                   <select
                     value={selectedCard.status}
                     onChange={(e) => setSelectedCard({ ...selectedCard, status: e.target.value as CardStatus })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    className="w-full px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
                   >
                     {statusColumns.map((col) => (
                       <option key={col.status} value={col.status}>
@@ -143,14 +143,14 @@ export default function EditIssueModal({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   Priority
                 </label>
                 <div className="relative">
                   <select
                     value={selectedCard.priority}
                     onChange={(e) => setSelectedCard({ ...selectedCard, priority: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    className="w-full px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
                   >
                     <option value={1}>Highest</option>
                     <option value={2}>High</option>
@@ -167,14 +167,14 @@ export default function EditIssueModal({
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs font-medium text-zinc-300 mb-1">
                   Effort Points
                 </label>
                 <div className="relative">
                   <select
                     value={selectedCard.storyPoints}
                     onChange={(e) => setSelectedCard({ ...selectedCard, storyPoints: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
+                    className="w-full px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white appearance-none bg-white dark:bg-gray-700 transition-colors cursor-pointer"
                   >
                     <option value={1}>1 point</option>
                     <option value={3}>3 points</option>
@@ -191,27 +191,27 @@ export default function EditIssueModal({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
                 Description
               </label>
               <textarea
                 value={selectedCard.description || ''}
                 onChange={(e) => setSelectedCard({ ...selectedCard, description: e.target.value })}
                 rows={2}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
+                className="w-full px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white transition-colors resize-none"
                 placeholder="Add a description..."
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs font-medium text-zinc-300 mb-1">
                 Acceptance Criteria
               </label>
               <textarea
                 value={selectedCard.acceptanceCriteria || ''}
                 onChange={(e) => setSelectedCard({ ...selectedCard, acceptanceCriteria: e.target.value })}
                 rows={2}
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors resize-none"
+                className="w-full px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white transition-colors resize-none"
                 placeholder="Define what done means..."
               />
             </div>
@@ -292,7 +292,7 @@ export default function EditIssueModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                className="flex-1 px-4 py-2 text-sm text-zinc-300 border border-zinc-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
               >
                 Cancel
               </button>
@@ -355,7 +355,7 @@ export default function EditIssueModal({
                           {formatCommentDate(comment.createdAt)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                      <p className="text-sm text-zinc-300 whitespace-pre-wrap">
                         {comment.content}
                       </p>
                     </div>
@@ -370,7 +370,7 @@ export default function EditIssueModal({
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Add a comment..."
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white transition-colors"
+                className="flex-1 px-3 py-2 text-sm border border-zinc-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none bg-zinc-800 text-white transition-colors"
               />
               <button
                 type="submit"

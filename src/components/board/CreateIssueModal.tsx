@@ -74,11 +74,11 @@ export default function CreateIssueModal({
         }`}
         onClick={onClose}
       >
-        <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
+        <div className="absolute inset-0 bg-black/80"></div>
       </div>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" onClick={onClose}>
         <div
-          className={`bg-white dark:bg-gray-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[85vh] shadow-2xl transform transition-all duration-300 my-4 flex flex-col overflow-y-auto ${
+          className={`bg-zinc-900 border border-zinc-800 rounded-xl md:rounded-2xl p-4 md:p-6 w-full max-w-sm md:max-w-md lg:max-w-lg max-h-[85vh] shadow-2xl transform transition-all duration-300 my-4 flex flex-col overflow-y-auto ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-4'
@@ -86,12 +86,12 @@ export default function CreateIssueModal({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-base md:text-lg font-semibold text-white">
               Create Issue
             </h2>
             <button 
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              className="text-zinc-400 hover:text-zinc-300 transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
