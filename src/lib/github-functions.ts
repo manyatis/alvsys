@@ -771,8 +771,18 @@ async function handleCommentWebhook(
         return { success: true, processed: false };
       }
 
+      // Check if this is a Claude/AI comment first
+      const commentBody = (comment as { body: string }).body;
+      const commentUser = (comment as { user: { login: string } }).user;
+      const isClaudeComment = commentUser.login === 'claude' || 
+                             commentUser.login.includes('claude') ||
+                             commentUser.login.includes('[bot]') ||
+                             commentBody.includes('@claude') ||
+                             commentBody.includes('Claude Code is working') ||
+                             commentBody.includes('Generated with [Claude Code]');
+
       // Find the project and sync record
-      const syncRecord = await prisma.gitHubIssueSync.findFirst({
+      let syncRecord = await prisma.gitHubIssueSync.findFirst({
         where: {
           githubIssueId: (issue as { number: number }).number,
           githubRepoName: (repository as { full_name: string }).full_name,
@@ -782,18 +792,42 @@ async function handleCommentWebhook(
         },
       });
 
+      // If no sync record exists but we have a Claude comment, try to find the project directly
+      if (!syncRecord && isClaudeComment) {
+        const project = await prisma.project.findFirst({
+          where: {
+            githubRepoName: (repository as { full_name: string }).full_name,
+            githubSyncEnabled: true,
+          },
+        });
+
+        if (project) {
+          // Try to sync the issue first to create the sync record
+          try {
+            const syncService = await GitHubSyncService.createForProject(project.id);
+            if (syncService) {
+              await syncService.syncIssueToAlvsys((issue as { number: number }).number);
+              
+              // Try to find the sync record again
+              syncRecord = await prisma.gitHubIssueSync.findFirst({
+                where: {
+                  githubIssueId: (issue as { number: number }).number,
+                  githubRepoName: (repository as { full_name: string }).full_name,
+                },
+                include: {
+                  project: true,
+                },
+              });
+            }
+          } catch (syncError) {
+            console.error('Failed to sync issue for comment:', syncError);
+          }
+        }
+      }
+
       if (!syncRecord) {
         return { success: true, processed: false };
       }
-
-      // Check if this is a Claude/AI comment
-      const commentBody = (comment as { body: string }).body;
-      const commentUser = (comment as { user: { login: string } }).user;
-      const isClaudeComment = commentUser.login === 'claude' || 
-                             commentUser.login.includes('claude') ||
-                             commentBody.includes('@claude') ||
-                             commentBody.includes('Claude Code is working') ||
-                             commentBody.includes('Generated with [Claude Code]');
 
       // Try to find existing comment to avoid duplicates
       const existingComment = await prisma.comment.findFirst({
