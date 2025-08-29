@@ -147,12 +147,12 @@ export async function POST() {
     console.log('Starting categorization process...');
     
     // First, generate embeddings for complaints that don't have them
-    const complaintsWithoutEmbeddings = await prisma.userComplaint.findMany({
-      where: {
-        embedding: null
-      },
-      take: 50 // Process in batches to respect rate limits
-    });
+    const complaintsWithoutEmbeddings = await prisma.$queryRaw`
+      SELECT id, title, content
+      FROM "UserComplaint"
+      WHERE embedding IS NULL
+      LIMIT 50
+    ` as Array<{id: string, title: string | null, content: string}>;
     
     console.log(`Generating embeddings for ${complaintsWithoutEmbeddings.length} complaints...`);
     
