@@ -80,24 +80,28 @@ export default function EditIssueModal({
         }`}
         onClick={onClose}
       >
-        <div className="absolute inset-0 bg-gray-900 opacity-50"></div>
+        <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={onClose}>
         <div 
-          className={`bg-white dark:bg-gray-800 rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
+          className={`rounded-2xl p-6 w-96 max-h-[85vh] overflow-y-auto shadow-2xl transform transition-all duration-300 ${
             modalVisible 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-95 opacity-0 translate-y-2'
           }`}
+          style={{ background: 'var(--surface-elevated)' }}
           onClick={(e) => e.stopPropagation()}
         >
           <form onSubmit={onUpdate} className="space-y-4">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Edit Issue</h2>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Edit Issue</h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400"
+                className="transition-colors"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -245,10 +249,10 @@ export default function EditIssueModal({
               </div>
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <div className="flex items-center justify-between p-3 rounded-lg" style={{ background: 'var(--surface-glass)', border: '1px solid var(--border-subtle)' }}>
               <div>
-                <div className="text-sm font-medium text-gray-900 dark:text-white">AI Agent Access</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Allow AI agents to work on this issue</div>
+                <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>AI Agent Access</div>
+                <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Allow AI agents to work on this issue</div>
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
@@ -263,12 +267,17 @@ export default function EditIssueModal({
 
             {/* Engage Claude Flow Button */}
             {selectedCard.isAiAllowedTask && onEngageClaudeFlow && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="p-3 rounded-lg" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid var(--accent-primary)' }}>
                 <button
                   type="button"
                   onClick={onEngageClaudeFlow}
                   disabled={isEngagingClaudeFlow}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800/50 border border-blue-300 dark:border-blue-600 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-700/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  style={{ 
+                    color: 'var(--accent-primary)', 
+                    background: 'rgba(16, 185, 129, 0.2)', 
+                    border: '1px solid var(--accent-primary)' 
+                  }}
                 >
                   {isEngagingClaudeFlow ? (
                     <>
@@ -282,24 +291,24 @@ export default function EditIssueModal({
                     </>
                   )}
                 </button>
-                <p className="text-xs text-blue-600 dark:text-blue-300 mt-2 text-center">
+                <p className="text-xs mt-2 text-center" style={{ color: 'var(--accent-secondary)' }}>
                   Ask @claude to work on this issue via GitHub comment
                 </p>
               </div>
             )}
 
-            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex gap-3 pt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium"
+                className="btn-professional-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isUpdating}
-                className="flex-1 px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium shadow-sm flex items-center justify-center gap-2"
+                className="btn-professional-primary flex items-center justify-center gap-2"
               >
                 {isUpdating && <Loader2 className="h-4 w-4 animate-spin" />}
                 {isUpdating ? 'Updating...' : 'Update Issue'}
@@ -308,10 +317,10 @@ export default function EditIssueModal({
           </form>
           
           {/* Comments Section */}
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+          <div className="pt-4 mt-4" style={{ borderTop: '1px solid var(--border-subtle)' }}>
             <div className="flex items-center gap-2 mb-3">
               <MessageCircle className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-              <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+              <h3 className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
                 Comments ({comments.length})
               </h3>
             </div>

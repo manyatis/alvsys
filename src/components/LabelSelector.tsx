@@ -126,11 +126,11 @@ export default function LabelSelector({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border-default)' }}>
           {/* Available Labels */}
           <div className="p-2">
             {availableLabels.length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+              <p className="text-sm text-center py-2" style={{ color: 'var(--text-tertiary)' }}>
                 No labels yet
               </p>
             ) : (
@@ -139,11 +139,13 @@ export default function LabelSelector({
                   key={label.id}
                   type="button"
                   onClick={() => toggleLabel(label.id)}
-                  className="w-full flex items-center gap-2 px-2 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 rounded transition-colors"
+                  className="w-full flex items-center gap-2 px-2 py-2 text-sm rounded transition-colors"
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'var(--surface-glass)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 >
-                  <div className="flex items-center justify-center w-4 h-4 border border-gray-300 dark:border-gray-600 rounded">
+                  <div className="flex items-center justify-center w-4 h-4 border rounded" style={{ borderColor: 'var(--border-default)' }}>
                     {selectedLabelIds.includes(label.id) && (
-                      <Check className="h-3 w-3 text-blue-600" />
+                      <Check className="h-3 w-3" style={{ color: 'var(--accent-primary)' }} />
                     )}
                   </div>
                   <span
@@ -161,12 +163,15 @@ export default function LabelSelector({
             )}
 
             {/* Create New Label */}
-            <div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+            <div className="pt-2 mt-2" style={{ borderTop: '1px solid var(--border-subtle)' }}>
               {!showCreateForm ? (
                 <button
                   type="button"
                   onClick={() => setShowCreateForm(true)}
-                  className="w-full flex items-center gap-2 px-2 py-2 text-sm text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/20 rounded transition-colors"
+                  className="w-full flex items-center gap-2 px-2 py-2 text-sm rounded transition-colors"
+                  style={{ color: 'var(--accent-primary)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                 >
                   <Plus className="h-4 w-4" />
                   Create new label
@@ -178,7 +183,13 @@ export default function LabelSelector({
                     value={newLabelName}
                     onChange={(e) => setNewLabelName(e.target.value)}
                     placeholder="Label name..."
-                    className="w-full px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+                    className="w-full px-2 py-1.5 text-sm border rounded focus:ring-1 focus:outline-none"
+                    style={{ 
+                      background: 'var(--surface-elevated)', 
+                      borderColor: 'var(--border-default)', 
+                      color: 'var(--text-primary)',
+                      '--tw-ring-color': 'var(--accent-primary)'
+                    }}
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -199,12 +210,13 @@ export default function LabelSelector({
                           e.preventDefault();
                           setSelectedColor(color);
                         }}
-                        className={`w-6 h-6 rounded border-2 ${
-                          selectedColor === color 
-                            ? 'border-gray-400 dark:border-gray-300' 
-                            : 'border-gray-200 dark:border-gray-600'
-                        }`}
-                        style={{ backgroundColor: color }}
+                        className="w-6 h-6 rounded border-2"
+                        style={{ 
+                          backgroundColor: color,
+                          borderColor: selectedColor === color 
+                            ? 'var(--text-primary)' 
+                            : 'var(--border-default)'
+                        }}
                       />
                     ))}
                   </div>
@@ -217,7 +229,12 @@ export default function LabelSelector({
                         setShowCreateForm(false);
                         setNewLabelName('');
                       }}
-                      className="flex-1 px-2 py-1.5 text-xs text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                      className="flex-1 px-2 py-1.5 text-xs border rounded transition-colors"
+                      style={{ 
+                        color: 'var(--text-secondary)', 
+                        borderColor: 'var(--border-default)', 
+                        background: 'var(--surface-elevated)' 
+                      }}
                     >
                       Cancel
                     </button>
@@ -229,7 +246,11 @@ export default function LabelSelector({
                         handleCreateLabel();
                       }}
                       disabled={!newLabelName.trim() || isCreating}
-                      className="flex-1 px-2 py-1.5 text-xs text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      className="flex-1 px-2 py-1.5 text-xs rounded disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      style={{ 
+                        background: 'var(--accent-primary)', 
+                        color: 'black' 
+                      }}
                     >
                       {isCreating ? 'Creating...' : 'Create'}
                     </button>

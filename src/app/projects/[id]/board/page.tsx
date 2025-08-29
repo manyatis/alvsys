@@ -888,7 +888,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
 
   if (loading) {
     return (
-      <div className="h-[calc(100vh-80px)] flex items-center justify-center bg-gray-50 dark:bg-gray-900 pt-20">
+      <div className="h-[calc(100vh-80px)] flex items-center justify-center pt-20" style={{ background: 'var(--background)' }}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
       </div>
     );
@@ -896,7 +896,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
 
   return (
     <>
-      <div className="h-[calc(100vh-80px)] bg-gray-50 dark:bg-gray-900 flex flex-col sm:flex-row w-full max-w-full pt-20">
+      <div className="h-[calc(100vh-80px)] flex flex-col sm:flex-row w-full max-w-full pt-20" style={{ background: 'var(--background)' }}>
         {/* Left Sidebar */}
         <BoardSidebar
           sidebarCollapsed={sidebarCollapsed}
@@ -936,7 +936,7 @@ ${card.description ? card.description + '\n\n' : ''}${card.acceptanceCriteria ? 
           />
 
         {/* Board */}
-        <div className="flex-1 p-2 md:p-4 bg-gray-50 dark:bg-gray-900 relative overflow-hidden">
+        <div className="flex-1 p-2 md:p-4 relative overflow-hidden" style={{ background: 'var(--background)' }}>
           {/* Scroll Indicators */}
           {scrollDirection === 'left' && (
             <div className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-2 rounded-r-lg z-50 animate-pulse shadow-lg">
