@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { Prisma } from '@prisma/client';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
@@ -188,8 +189,9 @@ export async function POST(request: NextRequest) {
       console.log(`Scraping from ${dataSource.name}...`);
       
       if (dataSource.type === 'reddit') {
-        const subreddit = dataSource.config?.subreddit || dataSource.url.replace('https://reddit.com/r/', '');
-        const complaints = await fetchRedditPosts(subreddit, dataSource.id, dataSource.lastScrapedAt);
+        const config = dataSource.config as Record<string, unknown> | null;
+        const subreddit = (config?.subreddit as string) || dataSource.url.replace('https://reddit.com/r/', '');
+        const complaints = await fetchRedditPosts(subreddit, dataSource.id, dataSource.lastScrapedAt ?? undefined);
         allComplaints.push(...complaints);
       }
       
@@ -238,8 +240,18 @@ export async function POST(request: NextRequest) {
         });
 
         if (!existing) {
+          const createData = {
+            source: complaint.source,
+            sourceUrl: complaint.sourceUrl,
+            content: complaint.content,
+            ...(complaint.subreddit && { subreddit: complaint.subreddit }),
+            ...(complaint.author && { author: complaint.author }),
+            ...(complaint.title && { title: complaint.title }),
+            ...(complaint.metadata && { metadata: complaint.metadata }),
+            ...(complaint.dataSourceId && { dataSourceId: complaint.dataSourceId })
+          };
           const created = await prisma.userComplaint.create({
-            data: complaint
+            data: createData as Prisma.UserComplaintCreateInput
           });
           stored.push(created);
         }

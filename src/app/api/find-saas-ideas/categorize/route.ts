@@ -33,17 +33,13 @@ async function clusterComplaints(): Promise<Map<string, ComplaintWithEmbedding[]
   const SIMILARITY_THRESHOLD = 0.75; // Cosine similarity threshold
   
   // Get all complaints with embeddings that don't have categories yet
-  const complaints = await prisma.userComplaint.findMany({
-    where: {
-      categoryId: null,
-      embedding: {
-        not: null
-      }
-    },
-    orderBy: {
-      scrapedAt: 'desc'
-    }
-  });
+  const complaints = await prisma.$queryRaw`
+    SELECT id, content, title, embedding, "scrapedAt"
+    FROM "UserComplaint" 
+    WHERE "categoryId" IS NULL 
+      AND embedding IS NOT NULL
+    ORDER BY "scrapedAt" DESC
+  ` as ComplaintWithEmbedding[];
 
   console.log(`Clustering ${complaints.length} complaints with embeddings...`);
 
@@ -147,12 +143,12 @@ export async function POST() {
     console.log('Starting categorization process...');
     
     // First, generate embeddings for complaints that don't have them
-    const complaintsWithoutEmbeddings = await prisma.userComplaint.findMany({
-      where: {
-        embedding: null
-      },
-      take: 50 // Process in batches to respect rate limits
-    });
+    const complaintsWithoutEmbeddings = await prisma.$queryRaw`
+      SELECT id, title, content
+      FROM "UserComplaint"
+      WHERE embedding IS NULL
+      LIMIT 50
+    ` as Array<{id: string, title: string | null, content: string}>;
     
     console.log(`Generating embeddings for ${complaintsWithoutEmbeddings.length} complaints...`);
     
