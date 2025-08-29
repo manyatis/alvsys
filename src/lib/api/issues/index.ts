@@ -95,6 +95,11 @@ export class IssuesAPI {
           }
         },
         sprint: true,
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',

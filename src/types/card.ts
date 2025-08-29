@@ -83,6 +83,9 @@ export interface Card {
   agentInstructions: AgentInstruction[]
   comments?: Comment[]
   labels?: CardLabel[]
+  _count?: {
+    comments: number
+  }
   createdAt: Date
   updatedAt: Date
   
