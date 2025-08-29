@@ -3,7 +3,12 @@ import { NextResponse } from 'next/server';
 export async function POST() {
   try {
     console.log('Starting complete SaaS idea discovery process...');
-    const results = {
+    const results: {
+      scraping: { success: boolean; message?: string; totalScraped?: number; newComplaints?: number } | null;
+      embeddings: { success: boolean; error?: string; processed?: number } | null;
+      categorization: { success: boolean; error?: string; categories?: Array<{ id: string; name: string }> } | null;
+      businessIdeas: Array<{ categoryId: string; categoryName: string; success: boolean; businessIdeas?: unknown; error?: string }> | null;
+    } = {
       scraping: null,
       embeddings: null,
       categorization: null,
@@ -24,8 +29,8 @@ export async function POST() {
     
     results.scraping = await scrapeResponse.json();
     
-    if (!results.scraping.success) {
-      throw new Error(`Scraping failed: ${results.scraping.message}`);
+    if (!results.scraping?.success) {
+      throw new Error(`Scraping failed: ${results.scraping?.message || 'Unknown error'}`);
     }
 
     // Step 2: Generate embeddings
@@ -41,8 +46,8 @@ export async function POST() {
     
     results.embeddings = await embeddingsResponse.json();
     
-    if (!results.embeddings.success) {
-      throw new Error(`Embeddings failed: ${results.embeddings.error}`);
+    if (!results.embeddings?.success) {
+      throw new Error(`Embeddings failed: ${results.embeddings?.error || 'Unknown error'}`);
     }
 
     // Step 3: Categorize complaints
@@ -58,8 +63,8 @@ export async function POST() {
     
     results.categorization = await categorizeResponse.json();
     
-    if (!results.categorization.success) {
-      throw new Error(`Categorization failed: ${results.categorization.error}`);
+    if (!results.categorization?.success) {
+      throw new Error(`Categorization failed: ${results.categorization?.error || 'Unknown error'}`);
     }
 
     // Step 4: Generate business ideas for new categories
@@ -105,12 +110,12 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: `✅ Complete pipeline finished! Scraped ${results.scraping.totalScraped} posts, found ${results.scraping.newComplaints} new complaints, processed ${results.embeddings.processed} embeddings, created ${results.categorization.categories?.length || 0} categories`,
+      message: `✅ Complete pipeline finished! Scraped ${results.scraping?.totalScraped || 0} posts, found ${results.scraping?.newComplaints || 0} new complaints, processed ${results.embeddings?.processed || 0} embeddings, created ${results.categorization?.categories?.length || 0} categories`,
       results,
       summary: {
-        totalScraped: results.scraping.totalScraped,
-        newComplaints: results.scraping.newComplaints,
-        embeddingsProcessed: results.embeddings.processed,
+        totalScraped: results.scraping?.totalScraped || 0,
+        newComplaints: results.scraping?.newComplaints || 0,
+        embeddingsProcessed: results.embeddings?.processed || 0,
         categoriesCreated: results.categorization.categories?.length || 0,
         businessIdeasGenerated: results.businessIdeas?.filter(r => r.success).length || 0
       }

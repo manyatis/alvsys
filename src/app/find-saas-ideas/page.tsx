@@ -63,9 +63,17 @@ export default function FindSaaSIdeasPage() {
       const data = await response.json();
       if (data.success) {
         // Sort categories by priority: PURSUE > MAYBE > AVOID > no analysis, then by viability score
-        const sortedCategories = (data.categories || []).sort((a, b) => {
+        interface Category {
+          recommendation?: string;
+          analysis?: { viabilityScore?: number };
+          businessIdeas?: { recommendation?: string };
+          viabilityScore?: number;
+          complaintCount?: number;
+          [key: string]: unknown;
+        }
+        const sortedCategories = (data.categories || []).sort((a: Category, b: Category) => {
           // First, sort by recommendation priority
-          const getRecommendationPriority = (rec) => {
+          const getRecommendationPriority = (rec: string | undefined) => {
             switch (rec) {
               case 'PURSUE': return 3;
               case 'MAYBE': return 2;
@@ -90,7 +98,7 @@ export default function FindSaaSIdeasPage() {
           }
           
           // Finally, sort by complaint count (more complaints first)
-          return b.complaintCount - a.complaintCount;
+          return (b.complaintCount || 0) - (a.complaintCount || 0);
         });
         
         setCategories(sortedCategories);
@@ -230,7 +238,7 @@ export default function FindSaaSIdeasPage() {
               
               // Re-sort after updating
               return updated.sort((a, b) => {
-                const getRecommendationPriority = (rec) => {
+                const getRecommendationPriority = (rec: string | undefined) => {
                   switch (rec) {
                     case 'PURSUE': return 3;
                     case 'MAYBE': return 2;
@@ -340,7 +348,7 @@ export default function FindSaaSIdeasPage() {
             
             // Re-sort after updating
             return updated.sort((a, b) => {
-              const getRecommendationPriority = (rec) => {
+              const getRecommendationPriority = (rec: string | undefined) => {
                 switch (rec) {
                   case 'PURSUE': return 3;
                   case 'MAYBE': return 2;
