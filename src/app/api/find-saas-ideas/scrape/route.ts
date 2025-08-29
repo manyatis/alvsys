@@ -188,8 +188,8 @@ export async function POST(_request: NextRequest) {
       console.log(`Scraping from ${dataSource.name}...`);
       
       if (dataSource.type === 'reddit') {
-        const subreddit = dataSource.config?.subreddit || dataSource.url.replace('https://reddit.com/r/', '');
-        const complaints = await fetchRedditPosts(subreddit, dataSource.id, dataSource.lastScrapedAt);
+        const subreddit = (dataSource.config as {subreddit?: string})?.subreddit || dataSource.url.replace('https://reddit.com/r/', '');
+        const complaints = await fetchRedditPosts(subreddit, dataSource.id, dataSource.lastScrapedAt || undefined);
         allComplaints.push(...complaints);
       }
       
@@ -239,7 +239,16 @@ export async function POST(_request: NextRequest) {
 
         if (!existing) {
           const created = await prisma.userComplaint.create({
-            data: complaint
+            data: {
+              source: complaint.source,
+              sourceUrl: complaint.sourceUrl,
+              content: complaint.content,
+              title: complaint.title,
+              author: complaint.author,
+              subreddit: complaint.subreddit,
+              metadata: complaint.metadata ? JSON.parse(JSON.stringify(complaint.metadata)) : undefined,
+              dataSourceId: complaint.dataSourceId || null
+            }
           });
           stored.push(created);
         }

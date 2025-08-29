@@ -14,6 +14,15 @@ interface ComplaintWithEmbedding {
   embedding: number[] | null;
 }
 
+interface ComplaintData {
+  id: string;
+  content: string;
+  title: string | null;
+  source: string;
+  sourceUrl: string;
+  embedding: number[] | null;
+}
+
 // Cluster complaints using pgvector similarity
 async function clusterComplaints(similarityThreshold: number = 0.65): Promise<Map<string, ComplaintWithEmbedding[]>> {
   const clusters = new Map<string, ComplaintWithEmbedding[]>();
@@ -215,6 +224,7 @@ export async function POST(request: Request) {
     const categorizedComplaints = await prisma.userComplaint.count({
       where: { categoryId: { not: null } }
     });
+
     
     const uncategorizedWithEmbeddingsResult = await prisma.$queryRaw`
       SELECT COUNT(*) as count FROM "UserComplaint" WHERE "categoryId" IS NULL AND embedding IS NOT NULL
