@@ -767,7 +767,16 @@ async function handleCommentWebhook(
     try {
       const { action, comment, issue, repository, installation } = payload;
       
-      if (!(installation as { id?: number })?.id || action !== 'created') {
+      console.log(`GitHub comment webhook: action=${action}, issue=${(issue as {number: number})?.number}, repo=${(repository as {full_name: string})?.full_name}`);
+      
+      if (!(installation as { id?: number })?.id) {
+        console.log('No installation ID in webhook payload');
+        return { success: true, processed: false };
+      }
+      
+      // Handle both created and edited comment actions
+      if (action !== 'created' && action !== 'edited') {
+        console.log(`Ignoring comment action: ${action}`);
         return { success: true, processed: false };
       }
 
@@ -783,6 +792,7 @@ async function handleCommentWebhook(
       });
 
       if (!syncRecord) {
+        console.log(`No sync record found for issue ${(issue as { number: number }).number} in repo ${(repository as { full_name: string }).full_name}`);
         return { success: true, processed: false };
       }
 
@@ -790,10 +800,13 @@ async function handleCommentWebhook(
       const commentBody = (comment as { body: string }).body;
       const commentUser = (comment as { user: { login: string } }).user;
       const isClaudeComment = commentUser.login === 'claude' || 
-                             commentUser.login.includes('claude') ||
+                             commentUser.login.toLowerCase().includes('claude') ||
                              commentBody.includes('@claude') ||
                              commentBody.includes('Claude Code is working') ||
-                             commentBody.includes('Generated with [Claude Code]');
+                             commentBody.includes('Generated with [Claude Code]') ||
+                             commentBody.includes('🤖 Generated with [Claude Code]');
+      
+      console.log(`Processing comment from ${commentUser.login}, isClaudeComment: ${isClaudeComment}`);
 
       // Try to find existing comment to avoid duplicates
       const existingComment = await prisma.comment.findFirst({
@@ -804,6 +817,7 @@ async function handleCommentWebhook(
       });
 
       if (!existingComment) {
+        console.log(`Creating new comment for card ${syncRecord.cardId}`);
         // Create comment in alvsys
         await prisma.comment.create({
           data: {
@@ -815,6 +829,9 @@ async function handleCommentWebhook(
             githubSyncEnabled: true,
           },
         });
+        console.log(`Successfully created comment for GitHub comment ${(comment as { id: number }).id}`);
+      } else {
+        console.log(`Comment already exists for GitHub comment ${(comment as { id: number }).id}`);
       }
 
       return { success: true, processed: true };
